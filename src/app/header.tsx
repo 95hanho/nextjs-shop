@@ -1,0 +1,21 @@
+import { FiHeart, FiShoppingCart } from "react-icons/fi";
+import MemberMenu from "./member_menu";
+
+export default function Header() {
+	return (
+		<header id="header">
+			<h1>NEXTJS-SHOP</h1>
+			<div className="header-wrap">
+				<div className="header-btn">
+					<MemberMenu />
+					<button>
+						<FiHeart />
+					</button>
+					<button>
+						<FiShoppingCart />
+					</button>
+				</div>
+			</div>
+		</header>
+	);
+}
