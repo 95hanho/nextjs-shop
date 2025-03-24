@@ -2,7 +2,10 @@ import Link from "next/link";
 
 export default function Login() {
 	return (
-		<div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
+		<div
+			id="login"
+			style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}
+		>
 			<div>
 				<h2>로그인</h2>
 				<form action="">
