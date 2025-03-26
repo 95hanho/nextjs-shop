@@ -15,15 +15,27 @@ const init_joinForm: JoinForm = {
 	email: "",
 	birthday: "",
 };
-
-const regex_obj = {
-	id: /^[a-zA-Z][a-zA-Z0-9_]{6,15}$/, // 영문으로 시작하고 영문, 숫자, 언더스코어를 포함하는 6자이상 15자 이하 조합
-	password: /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*])[a-zA-Z\d!@#$%^&*]{8,}$/, // 영문, 숫자, 특수문자 1개이상을 포함하는 8자이상의 조합
+const init_joinFormFocus: JoinFormFocus = {
+	id: false,
+	password: false,
+	password_check: false,
+	name: false,
+	zonecode: false,
+	address: false,
+	phone1: false,
+	phone2: false,
+	phone3: false,
+	mobile1: false,
+	mobile2: false,
+	mobile3: false,
+	email: false,
+	birthday: false,
 };
 
 export default function Member_join() {
 	const [joinForm, set_joinForm] = useState(init_joinForm);
-	const [idAlert, set_idAlert] = useState("");
+	const joinFormRefs = useRef<Partial<JoinFormRefs>>({});
+	const [joinFormFocus, set_joinFormFocus] = useState(init_joinFormFocus);
 
 	const change_joinForm = (e: ChangeEvent) => {
 		const { name, value } = e.target;
@@ -31,6 +43,12 @@ export default function Member_join() {
 			...prev,
 			[name]: value,
 		}));
+	};
+
+	const change_joinFormFocus = (field: keyof JoinForm, value: boolean) => {
+		if (!joinForm[field]) {
+			set_joinFormFocus((prev) => ({ ...prev, [field]: value }));
+		}
 	};
 
 	const join_submit = (e: FormEvent) => {
@@ -59,10 +77,7 @@ export default function Member_join() {
 									placeholder="아이디를 입력해주세요."
 									name="id"
 									value={joinForm.id}
-									onChange={(e) => {
-										check_idRegex(e.target.value);
-										change_joinForm(e);
-									}}
+									onChange={change_joinForm}
 								/>
 							</div>
 							{/* <p className="c_red">

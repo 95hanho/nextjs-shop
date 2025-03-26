@@ -42,7 +42,7 @@ body {
   border-radius: 15px;
   padding: 10px 7px;
   text-align: center;
-  font-size: 17px;
+  font-size: 20px;
   width: 140px;
   left: -60px;
   box-shadow: 2px 2px 2px #aaa;
@@ -115,56 +115,203 @@ body {
   text-decoration: underline;
 }
 
-#login {
+/* 로그인, 회원가입 */
+.member-wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
 }
-#login .login-wrap {
-  width: 300px;
-  height: 500px;
+.member-wrapper .form-wrap {
+  width: 350px;
   background-color: #fff;
   border: 5px double #777;
   border-radius: 25px;
   text-align: center;
+  overflow: hidden;
+  box-shadow: 3px 3px 3px #aaa;
+  padding: 0 20px;
 }
-#login .login-wrap h2 {
-  padding: 10px 0;
-  font-size: 40px;
+.member-wrapper .form-wrap.join {
+  width: 500px;
 }
-#login .login-wrap form .login-input {
+.member-wrapper .form-wrap h2 {
+  padding: 15px 0;
+  font-size: 45px;
+  color: #555;
+}
+.member-wrapper .form-wrap form {
+  /* 로그인 */
+}
+.member-wrapper .form-wrap form .login-input {
   position: relative;
-  margin-bottom: 20px;
+  padding: 25px 50px 7px 15px;
+  border: 3px solid #ccc;
+  cursor: pointer;
+  border-radius: 0 0 10px 10px;
 }
-#login .login-wrap form .login-input input {
+.member-wrapper .form-wrap form .login-input:first-child {
+  border-bottom: none;
+  border-radius: 10px 10px 0 0;
+}
+.member-wrapper .form-wrap form .login-input input {
   width: 100%;
-  padding: 20px 10px 7px 10px;
-  border-right: none;
-  border-left: none;
+  border: none;
   outline: none;
   font-size: 25px;
 }
-#login .login-wrap form .login-input button {
+.member-wrapper .form-wrap form .login-input label {
   position: absolute;
   display: block;
   top: 0;
-  width: 100%;
+  left: 0;
   height: 100%;
-  text-align: left;
-  padding: 15px 10px;
+  padding: 15px;
   font-size: 35px;
   color: #aaa;
+  pointer-events: none;
   transition: all 0.5s;
-  cursor: text;
 }
-#login .login-wrap form .login-input button.focus {
-  height: 20px;
-  padding: 5px 10px;
+.member-wrapper .form-wrap form .login-input label.placeholder {
+  width: 100%;
+  text-align: left;
+}
+.member-wrapper .form-wrap form .login-input .show-pwd {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  right: 0;
+  font-size: 30px;
+  height: 100%;
+  padding-right: 10px;
+  color: #777;
+}
+.member-wrapper .form-wrap form .login-input.focus {
+  cursor: initial;
+}
+.member-wrapper .form-wrap form .login-input.focus input {
+  position: relative;
+}
+.member-wrapper .form-wrap form .login-input.focus .placeholder {
+  width: auto;
+  height: 0;
+  padding: 5px 15px;
   font-size: 20px;
-  color: #000;
+  color: #666;
 }
-
+.member-wrapper .form-wrap form .submit-wrap {
+  margin: 20px 0;
+}
+.member-wrapper .form-wrap form .submit-wrap input[type=submit] {
+  width: 200px;
+  height: 50px;
+  border: 1px solid #aaa;
+  border-radius: 12px;
+  font-size: 35px;
+  font-weight: bold;
+  background-color: rgb(174, 179, 169);
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0px 0px 5px #aaa;
+}
+.member-wrapper .form-wrap form .submit-wrap input[type=submit]:hover {
+  background-color: rgb(155, 158, 153);
+  color: #eee;
+  font-size: 40px;
+  transition: all 0.3s;
+}
+.member-wrapper .form-wrap form .submit-wrap input[type=submit]:active {
+  box-shadow: none;
+  transition: all 0s;
+  transform: translate(1px, 1px);
+  background-color: rgb(20, 196, 20);
+  border-color: #fff;
+}
+.member-wrapper .form-wrap form .join-input {
+  display: flex;
+  font-size: 23px;
+  text-align: left;
+  margin-bottom: 10px;
+}
+.member-wrapper .form-wrap form .join-input .join-label {
+  padding-top: 10px;
+  width: 30%;
+}
+.member-wrapper .form-wrap form .join-input .join-text {
+  width: 70%;
+  height: 100%;
+}
+.member-wrapper .form-wrap form .join-input .join-text > div input {
+  width: 70%;
+  padding: 7px 10px;
+  font-size: 20px;
+}
+.member-wrapper .form-wrap form .join-input .join-text > div .search-btn {
+  width: 25%;
+  margin-left: 5px;
+  padding: 7px 10px;
+  border-radius: 5px;
+  color: #fff;
+  font-size: 20px;
+  font-weight: bold;
+}
+.member-wrapper .form-wrap form .join-input .join-text > div .search-btn.address {
+  border: 2px solid #ad9090;
+  background: #e47474;
+}
+.member-wrapper .form-wrap form .join-input .join-text > div .search-btn.address:hover {
+  background: #d66d6d;
+}
+.member-wrapper .form-wrap form .join-input .join-text > div .search-btn.phone {
+  border: 2px solid #83a77e;
+  background: #59d449;
+}
+.member-wrapper .form-wrap form .join-input .join-text > div .search-btn.phone:hover {
+  background: #55cc45;
+}
+.member-wrapper .form-wrap form .join-space {
+  height: 30px;
+}
+.member-wrapper .form-wrap .find-wrap {
+  display: flex;
+  justify-content: space-around;
+  font-size: 20px;
+  padding: 0 0 0 0;
+}
+.member-wrapper .form-wrap .find-wrap a:hover {
+  text-decoration: underline;
+}
+.member-wrapper .form-wrap .sns-login {
+  margin: 10px 0;
+}
+.member-wrapper .form-wrap .sns-login button {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 5px;
+  font-size: 25px;
+  box-shadow: 0px 0px 5px #aaa;
+}
+.member-wrapper .form-wrap .sns-login button.naver-login {
+  background-color: #03c75a;
+  color: white;
+}
+.member-wrapper .form-wrap .sns-login button.naver-login:hover {
+  background-color: #04ac4f;
+}
+.member-wrapper .form-wrap .sns-login button.kakao-login {
+  background-color: #fee500;
+  color: #3c1e1e;
+}
+.member-wrapper .form-wrap .sns-login button.kakao-login:hover {
+  background-color: #ebd303;
+}
+.member-wrapper .form-wrap .sns-login button svg {
+  margin-right: 10px;
+}
+.member-wrapper .form-wrap .sns-login button:active {
+  box-shadow: none;
+  transform: translate(1px, 1px);
+}
 main {
   min-width: 900px;
   position: relative;
