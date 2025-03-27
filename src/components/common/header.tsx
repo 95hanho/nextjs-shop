@@ -1,8 +1,8 @@
 "use client";
 
 import { FiHeart, FiShoppingCart } from "react-icons/fi";
-import MemberMenu from "./member_menu";
-import Nav from "./nav";
+import MemberMenu from "./Member_menu";
+import Nav from "./Nav";
 import { usePathname, useRouter } from "next/navigation";
 
 export default function Header() {

@@ -14,32 +14,32 @@ input,
 textarea,
 select,
 button {
-  font-family: "NanumPenScript", "Noto Sans KR", sans-serif;
+	font-family: "NanumPenScript", "NotoSansKR", sans-serif;
 }
 /* 스크롤 */
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+	width: 5px;
+	height: 5px;
 }
 ::-webkit-scrollbar-thumb {
-  background-color: rgb(91, 90, 255);
+	background-color: rgb(91, 90, 255);
 }
 ::-webkit-scrollbar-track {
-  background-color: #eaeaea;
-  border-left: 1px solid #ccc;
+	background-color: #eaeaea;
+	border-left: 1px solid #ccc;
 }
 ul,
 li {
-  list-style: none;
+	list-style: none;
 }
 * {
-  margin: 0;
-  padding: 0;
-  vertical-align: middle;
-  box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+	vertical-align: middle;
+	box-sizing: border-box;
 }
 body {
-  color: rgba(0, 0, 0, 0.85);
+	color: rgba(0, 0, 0, 0.85);
 }
 h1,
 h2,
@@ -47,30 +47,30 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: "NanumPenScript", "Noto Sans KR", "Nanum Gothic", "Noto Serif KR",
-    "Nanum Pen Script", "Roboto";
+	font-family: "NanumPenScript", "NotoSansKR", "Nanum Gothic", "Noto Serif KR", "Nanum Pen Script", "Roboto";
 }
 strong,
 b {
-  line-height: 1;
+	line-height: 1;
 }
 ul,
 li {
-  list-style: none;
+	list-style: none;
 }
 a {
-  cursor: pointer;
-  color: rgba(0, 0, 0, 0.85);
-  text-decoration: none;
+	cursor: pointer;
+	color: rgba(0, 0, 0, 0.85);
+	text-decoration: none;
 }
 p {
-  margin-bottom: 0;
+	margin-bottom: 0;
+	font-family: "NotoSansKR";
 }
 /* 투명버튼 접근성 고려한 클래스이름 블라인드 */
 .blind {
-  display: block;
-  text-indent: -2000px;
-  overflow: hidden;
+	display: block;
+	text-indent: -2000px;
+	overflow: hidden;
 }
 header,
 main,
@@ -78,104 +78,104 @@ footer,
 section,
 nav,
 aside {
-  display: block;
+	display: block;
 }
 .hide {
-  display: none !important;
+	display: none !important;
 }
 button {
-  border: 0 none;
-  cursor: pointer;
-  background-color: transparent;
+	border: 0 none;
+	cursor: pointer;
+	background-color: transparent;
 }
 a {
-  text-decoration: none;
+	text-decoration: none;
 }
 img {
-  border-style: none;
-  max-width: 100%;
-  -webkit-user-drag: none;
-  -khtml-user-drag: none;
-  -moz-user-drag: none;
-  -o-user-drag: none;
-  user-drag: none;
-  user-select: none;
-  /*  */
-  /* -webkit-user-select: none;
+	border-style: none;
+	max-width: 100%;
+	-webkit-user-drag: none;
+	-khtml-user-drag: none;
+	-moz-user-drag: none;
+	-o-user-drag: none;
+	user-drag: none;
+	user-select: none;
+	/*  */
+	/* -webkit-user-select: none;
   -khtml-user-select: none;
   -moz-user-select: none;
   -o-user-select: none;
   user-select: none; */
 }
 .c_red {
-  color: red !important;
+	color: red !important;
 }
 .c_green {
-  color: green !important;
+	color: green !important;
 }
 .c_mediumseagreen {
-  color: mediumseagreen !important;
+	color: mediumseagreen !important;
 }
 .c_blue {
-  color: blue !important;
+	color: blue !important;
 }
 .c_black {
-  color: #000 !important;
+	color: #000 !important;
 }
 .c_gray {
-  color: gray !important;
+	color: gray !important;
 }
 .c_darkgray {
-  color: darkgray !important;
+	color: darkgray !important;
 }
 .c_yellow {
-  color: yellow !important;
+	color: yellow !important;
 }
 .c_white {
-  color: #fff !important;
+	color: #fff !important;
 }
 .c_warning {
-  color: #ffc041 !important;
+	color: #ffc041 !important;
 }
 .f_bold {
-  font-weight: bold !important;
+	font-weight: bold !important;
 }
 .align_left {
-  text-align: left !important;
+	text-align: left !important;
 }
 .align_right {
-  text-align: right !important;
+	text-align: right !important;
 }
 .align_center {
-  text-align: center !important;
+	text-align: center !important;
 }
 .read-only {
-  background-color: cornsilk !important;
-  border: 1px solid black;
+	background-color: cornsilk !important;
+	border: 1px solid black;
 }
 .transparent {
-  opacity: 0.2;
+	opacity: 0.2;
 }
 .flex_center {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 .inline-block {
-  display: inline-block;
+	display: inline-block;
 }
 .isLink_btn {
-  cursor: pointer;
+	cursor: pointer;
 }
 .isLink_btn:hover {
-  text-decoration: underline;
+	text-decoration: underline;
 }
 .text_readonly {
-  background-color: navajowhite !important;
+	background-color: navajowhite !important;
 }
 .f-left {
-  float: left;
+	float: left;
 }
 .f-right {
-  float: right;
+	float: right;
 }

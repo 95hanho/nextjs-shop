@@ -245,6 +245,9 @@ body {
   width: 70%;
   padding: 7px 10px;
   font-size: 20px;
+  border: 1px solid #aaa;
+  border-radius: 5px;
+  outline: none;
 }
 .member-wrapper .form-wrap form .join-input .join-text > div .search-btn {
   width: 25%;
@@ -255,19 +258,31 @@ body {
   font-size: 20px;
   font-weight: bold;
 }
-.member-wrapper .form-wrap form .join-input .join-text > div .search-btn.address {
+.member-wrapper .form-wrap form .join-input .join-text > div .search-btn.zonecode {
   border: 2px solid #ad9090;
-  background: #e47474;
+  background: #ee6666;
 }
-.member-wrapper .form-wrap form .join-input .join-text > div .search-btn.address:hover {
-  background: #d66d6d;
+.member-wrapper .form-wrap form .join-input .join-text > div .search-btn.zonecode:hover {
+  background: #df6060;
 }
 .member-wrapper .form-wrap form .join-input .join-text > div .search-btn.phone {
   border: 2px solid #83a77e;
-  background: #59d449;
+  background: #4fdb3d;
 }
 .member-wrapper .form-wrap form .join-input .join-text > div .search-btn.phone:hover {
-  background: #55cc45;
+  background: #4acc39;
+}
+.member-wrapper .form-wrap form .join-input .join-text p {
+  display: none;
+  margin-top: 5px;
+  font-size: 15px;
+}
+.member-wrapper .form-wrap form .join-input .join-text.alert-on > div input {
+  border: 1px solid #f00;
+  color: #f00;
+}
+.member-wrapper .form-wrap form .join-input .join-text.alert-on p {
+  display: block;
 }
 .member-wrapper .form-wrap form .join-space {
   height: 30px;

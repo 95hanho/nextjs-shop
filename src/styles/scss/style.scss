@@ -242,6 +242,9 @@ body {
 							width: 70%;
 							padding: 7px 10px;
 							font-size: 20px;
+							border: 1px solid #aaa;
+							border-radius: 5px;
+							outline: none;
 						}
 						.search-btn {
 							width: 25%;
@@ -251,20 +254,36 @@ body {
 							color: #fff;
 							font-size: 20px;
 							font-weight: bold;
-							&.address {
+							&.zonecode {
 								border: 2px solid #ad9090;
-								background: #e47474;
+								background: #ee6666;
 								&:hover {
-									background: #d66d6d;
+									background: #df6060;
 								}
 							}
 							&.phone {
 								border: 2px solid #83a77e;
-								background: #59d449;
+								background: #4fdb3d;
 								&:hover {
-									background: #55cc45;
+									background: #4acc39;
 								}
 							}
+						}
+					}
+					p {
+						display: none;
+						margin-top: 5px;
+						font-size: 15px;
+					}
+					&.alert-on {
+						> div {
+							input {
+								border: 1px solid #f00;
+								color: #f00;
+							}
+						}
+						p {
+							display: block;
 						}
 					}
 				}

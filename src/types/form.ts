@@ -11,10 +11,12 @@ export interface JoinForm extends LoginData {
 	name: string;
 	zonecode: string;
 	address: string;
+	birthday: string;
 	phone: string;
 	email: string;
-	birthday: string;
 }
+
+/* ------------------------------------------------ */
 
 export interface JoinFormRefs {
 	id: HTMLInputElement | null;
