@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, FormEvent, JoinForm, JoinFormFocus, JoinFormRefs } from "@/types/form";
+import { ChangeEvent, FormEvent, JoinForm, JoinFormRefs } from "@/types/form";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import JoinInput from "./JoinInput";
@@ -29,7 +29,7 @@ const init_joinAlert: JoinForm = {
 };
 
 const joinFormRegex: { [key: string]: RegExp } = {
-	id: /^[a-zA-Z][a-zA-Z0-9_]{6,15}$/,
+	id: /^[a-zA-Z][a-zA-Z0-9_]{5,14}$/,
 	password: /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*])[a-zA-Z\d!@#$%^&*]{8,20}$/,
 	phone: /^(010|011|016|017|018|019)\d{3,4}\d{4}$/,
 	email: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
@@ -77,7 +77,6 @@ export default function Member_join() {
 				[name]: ment,
 			}));
 		}
-		console.log("change_joinForm");
 		set_joinForm((prev) => ({
 			...prev,
 			[name]: value,
@@ -86,7 +85,6 @@ export default function Member_join() {
 
 	const validate_joinForm = (e: ChangeEvent) => {
 		let { name, value } = e.target;
-		console.log(name, value);
 		value = value.trim();
 		let ment = "";
 		if (joinFormRegex[name]) {
@@ -106,7 +104,6 @@ export default function Member_join() {
 					numericValue.slice(6, 8);
 			}
 		}
-		console.log(name, value);
 		set_joinForm((prev) => ({
 			...prev,
 			[name]: value,
@@ -118,9 +115,27 @@ export default function Member_join() {
 	};
 
 	const join_submit = (e: FormEvent) => {
+		console.log("join_submit");
 		e.preventDefault();
+		const keys = Object.keys(joinForm);
+		for (let i = 0; i < keys.length; i++) {
+			const key = keys[i];
+			const value = joinForm[key];
+			const alertOn = joinAlert[key];
+			if (!alertOn && !value) {
+				set_joinAlert((prev) => ({
+					...prev,
+					[key]: "해당 내용을 입력해주세요.",
+				}));
+				joinFormRefs.current[key]?.focus();
+				break;
+			}
+			if (alertOn) {
+				joinFormRefs.current[key]?.focus();
+				break;
+			}
+		}
 		// 회원가입 로직 추가
-		console.log(joinForm);
 	};
 
 	const addressPopup = () => {
@@ -152,6 +167,9 @@ export default function Member_join() {
 						alertMessage={joinAlert.id}
 						onChange={change_joinForm}
 						onBlur={validate_joinForm}
+						ref={(el) => {
+							joinFormRefs.current.id = el;
+						}}
 					/>
 					<JoinInput
 						name="password"
@@ -162,6 +180,9 @@ export default function Member_join() {
 						alertMessage={joinAlert.password}
 						onChange={change_joinForm}
 						onBlur={validate_joinForm}
+						ref={(el) => {
+							joinFormRefs.current.password = el;
+						}}
 					/>
 					<JoinInput
 						name="password_check"
@@ -172,6 +193,9 @@ export default function Member_join() {
 						alertMessage={joinAlert.password_check}
 						onChange={change_joinForm}
 						onBlur={validate_joinForm}
+						ref={(el) => {
+							joinFormRefs.current.password_check = el;
+						}}
 					/>
 					<div className="join-space"></div>
 					<JoinInput
@@ -182,6 +206,9 @@ export default function Member_join() {
 						alertMessage={joinAlert.name}
 						onChange={change_joinForm}
 						onBlur={validate_joinForm}
+						ref={(el) => {
+							joinFormRefs.current.name = el;
+						}}
 					/>
 					<JoinInput
 						name="zonecode"
@@ -202,6 +229,9 @@ export default function Member_join() {
 						alertMessage={joinAlert.address}
 						onChange={change_joinForm}
 						onBlur={validate_joinForm}
+						ref={(el) => {
+							joinFormRefs.current.address = el;
+						}}
 					/>
 					<JoinInput
 						name="birthday"
@@ -211,6 +241,9 @@ export default function Member_join() {
 						alertMessage={joinAlert.birthday}
 						onChange={change_joinForm}
 						onBlur={validate_joinForm}
+						ref={(el) => {
+							joinFormRefs.current.birthday = el;
+						}}
 					/>
 					<div className="join-space"></div>
 					<JoinInput
@@ -223,6 +256,9 @@ export default function Member_join() {
 						onChange={change_joinForm}
 						searchBtn={{ txt: "인증", fnc: () => {} }}
 						onBlur={validate_joinForm}
+						ref={(el) => {
+							joinFormRefs.current.phone = el;
+						}}
 					/>
 					<JoinInput
 						name="email"
@@ -233,6 +269,9 @@ export default function Member_join() {
 						alertMessage={joinAlert.email}
 						onChange={change_joinForm}
 						onBlur={validate_joinForm}
+						ref={(el) => {
+							joinFormRefs.current.email = el;
+						}}
 					/>
 					<div className="submit-wrap">
 						<input type="submit" value={"회원가입"} />

@@ -14,6 +14,7 @@ export interface JoinForm extends LoginData {
 	birthday: string;
 	phone: string;
 	email: string;
+	[key: string]: string;
 }
 
 /* ------------------------------------------------ */
@@ -25,14 +26,10 @@ export interface JoinFormRefs {
 	name: HTMLInputElement | null;
 	zonecode: HTMLInputElement | null;
 	address: HTMLInputElement | null;
-	phone1: HTMLInputElement | null;
-	phone2: HTMLInputElement | null;
-	phone3: HTMLInputElement | null;
-	mobile1: HTMLInputElement | null;
-	mobile2: HTMLInputElement | null;
-	mobile3: HTMLInputElement | null;
+	phone: HTMLInputElement | null;
 	email: HTMLInputElement | null;
 	birthday: HTMLInputElement | null;
+	[key: string]: HTMLInputElement | null | undefined;
 }
 
 export interface JoinFormFocus {

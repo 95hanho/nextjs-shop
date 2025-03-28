@@ -1,4 +1,5 @@
 import { ChangeEvent } from "@/types/form";
+import { forwardRef } from "react";
 
 interface FormInputProps {
 	name: string;
@@ -14,20 +15,21 @@ interface FormInputProps {
 	searchBtn?: { txt: string; fnc: () => void };
 }
 
-export default function JoinInput({
-	name,
-	label,
-	placeholder,
-	type = "text",
-	value,
-	alertMessage,
-	onChange,
-	onBlur,
-	readOnly = false,
-	onClick,
-	searchBtn,
-	ref,
-}: FormInputProps) {
+const JoinInput = forwardRef<HTMLInputElement, FormInputProps>((props, ref) => {
+	const {
+		name,
+		label,
+		placeholder,
+		type = "text",
+		value,
+		alertMessage,
+		onChange,
+		onBlur,
+		readOnly = false,
+		onClick,
+		searchBtn,
+	}: FormInputProps = props;
+
 	return (
 		<div className="join-input">
 			<div className="join-label">
@@ -44,6 +46,7 @@ export default function JoinInput({
 						onBlur={onBlur}
 						readOnly={readOnly}
 						onClick={onClick}
+						ref={ref}
 					/>
 					{searchBtn && (
 						<button className={`search-btn ${name}`} onClick={searchBtn.fnc}>
@@ -57,4 +60,6 @@ export default function JoinInput({
 			</div>
 		</div>
 	);
-}
+});
+
+export default JoinInput;
