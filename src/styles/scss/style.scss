@@ -276,15 +276,24 @@ body {
 						margin-top: 5px;
 						font-size: 15px;
 					}
-					&.alert-on {
+					&.fail,
+					&.success p {
+						display: block;
+					}
+					&.fail {
 						> div {
 							input {
 								border: 1px solid #f00;
 								color: #f00;
 							}
 						}
-						p {
-							display: block;
+					}
+					&.success {
+						> div {
+							input {
+								border: 1px solid #0f0;
+								border: 1px solid rgb(90, 161, 90);
+							}
 						}
 					}
 				}

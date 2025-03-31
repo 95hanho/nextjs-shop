@@ -278,12 +278,16 @@ body {
   margin-top: 5px;
   font-size: 15px;
 }
-.member-wrapper .form-wrap form .join-input .join-text.alert-on > div input {
+.member-wrapper .form-wrap form .join-input .join-text.fail, .member-wrapper .form-wrap form .join-input .join-text.success p {
+  display: block;
+}
+.member-wrapper .form-wrap form .join-input .join-text.fail > div input {
   border: 1px solid #f00;
   color: #f00;
 }
-.member-wrapper .form-wrap form .join-input .join-text.alert-on p {
-  display: block;
+.member-wrapper .form-wrap form .join-input .join-text.success > div input {
+  border: 1px solid #0f0;
+  border: 1px solid rgb(90, 161, 90);
 }
 .member-wrapper .form-wrap form .join-space {
   height: 30px;

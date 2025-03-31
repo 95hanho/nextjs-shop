@@ -4,17 +4,18 @@ import { ChangeEvent, FormEvent, JoinForm, JoinFormRefs } from "@/types/form";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import JoinInput from "./JoinInput";
+import { authService } from "@/api";
 
 const init_joinForm: JoinForm = {
-	id: "",
-	password: "",
-	password_check: "",
-	name: "",
-	zonecode: "",
-	address: "",
-	birthday: "",
-	phone: "",
-	email: "",
+	id: "hoseongs",
+	password: "aaaaaa1!",
+	password_check: "aaaaaa1!",
+	name: "한호성",
+	zonecode: "서울 송파구 중대로 121",
+	address: "2층",
+	birthday: "1995/08/14",
+	phone: "01085546674",
+	email: "ehfqntuqntu@naver.com",
 };
 const init_joinAlert: JoinForm = {
 	id: "",
@@ -62,8 +63,10 @@ const isValidDateString = (dateStr: string): boolean => {
 
 export default function Member_join() {
 	const [joinForm, set_joinForm] = useState(init_joinForm);
-	const [joinAlert, set_joinAlert] = useState(init_joinAlert);
+	const [joinFailAlert, set_joinFailAlert] = useState(init_joinAlert);
+	const [joinSuccessAlert, set_joinSuccessAlert] = useState(init_joinAlert);
 	const joinFormRefs = useRef<Partial<JoinFormRefs>>({});
+	const [phoneAuth, set_phoneAuth] = useState(false);
 
 	const change_joinForm = (e: ChangeEvent) => {
 		let { name, value } = e.target;
@@ -72,7 +75,7 @@ export default function Member_join() {
 			if (joinForm.password && joinForm.password != value) {
 				ment = "비밀번호와 일치하지 않습니다.";
 			}
-			set_joinAlert((prev) => ({
+			set_joinFailAlert((prev) => ({
 				...prev,
 				[name]: ment,
 			}));
@@ -83,34 +86,62 @@ export default function Member_join() {
 		}));
 	};
 
-	const validate_joinForm = (e: ChangeEvent) => {
+	const validate_joinForm = async (e: ChangeEvent) => {
+		console.log("validate_joinForm");
 		let { name, value } = e.target;
 		value = value.trim();
-		let ment = "";
+		let failMent = "";
+		let successMent = "";
+		const addMentObj: { [key: string]: string } = {};
 		if (joinFormRegex[name]) {
 			if (!joinFormRegex[name].test(value)) {
-				ment = joinFormRegexFailMent[name];
+				failMent = joinFormRegexFailMent[name];
 			}
-		} else if (name == "birthday") {
-			const numericValue = value.replace(/[^0-9]/g, ""); // 숫자가 아닌 문자는 제거
-			if (!isValidDateString(numericValue)) {
-				ment = joinFormRegexFailMent[name];
-			} else {
-				value =
-					numericValue.slice(0, 4) +
-					"/" +
-					numericValue.slice(4, 6) +
-					"/" +
-					numericValue.slice(6, 8);
+		}
+		if (!failMent) {
+			if (name == "id") {
+				await authService
+					.id_duplcheck({ id: joinForm.id })
+					.then(() => {
+						successMent = "사용가능한 아이디입니다.";
+					})
+					.catch((err) => {
+						failMent = "중복된 아이디가 존재합니다.";
+					});
+			} else if (name == "password") {
+				if (joinForm.password_check && joinForm.password_check != value) {
+					addMentObj.password_check = "비밀번호와 일치하지 않습니다.";
+				} else addMentObj.password_check = "";
+			} else if (name == "password_check") {
+				if (joinForm.password && joinForm.password != value) {
+					failMent = "비밀번호와 일치하지 않습니다.";
+				}
+			} else if (name == "birthday") {
+				const numericValue = value.replace(/[^0-9]/g, ""); // 숫자가 아닌 문자는 제거
+				if (!isValidDateString(numericValue)) {
+					failMent = joinFormRegexFailMent[name];
+				} else {
+					value =
+						numericValue.slice(0, 4) +
+						"/" +
+						numericValue.slice(4, 6) +
+						"/" +
+						numericValue.slice(6, 8);
+				}
 			}
 		}
 		set_joinForm((prev) => ({
 			...prev,
 			[name]: value,
 		}));
-		set_joinAlert((prev) => ({
+		set_joinFailAlert((prev) => ({
 			...prev,
-			[name]: ment,
+			[name]: failMent,
+			...addMentObj,
+		}));
+		set_joinSuccessAlert((prev) => ({
+			...prev,
+			[name]: successMent,
 		}));
 	};
 
@@ -121,9 +152,9 @@ export default function Member_join() {
 		for (let i = 0; i < keys.length; i++) {
 			const key = keys[i];
 			const value = joinForm[key];
-			const alertOn = joinAlert[key];
+			const alertOn = joinFailAlert[key];
 			if (!alertOn && !value) {
-				set_joinAlert((prev) => ({
+				set_joinFailAlert((prev) => ({
 					...prev,
 					[key]: "해당 내용을 입력해주세요.",
 				}));
@@ -136,6 +167,9 @@ export default function Member_join() {
 			}
 		}
 		// 회원가입 로직 추가
+		authService.join_member(joinForm).then(({ data }) => {
+			console.log(data);
+		});
 	};
 
 	const addressPopup = () => {
@@ -164,7 +198,8 @@ export default function Member_join() {
 						label="아이디"
 						placeholder="아이디를 입력해주세요."
 						value={joinForm.id}
-						alertMessage={joinAlert.id}
+						failMessage={joinFailAlert.id}
+						successMessage={joinSuccessAlert.id}
 						onChange={change_joinForm}
 						onBlur={validate_joinForm}
 						ref={(el) => {
@@ -177,7 +212,7 @@ export default function Member_join() {
 						placeholder="비밀번호를 입력해주세요."
 						type="password"
 						value={joinForm.password}
-						alertMessage={joinAlert.password}
+						failMessage={joinFailAlert.password}
 						onChange={change_joinForm}
 						onBlur={validate_joinForm}
 						ref={(el) => {
@@ -190,7 +225,7 @@ export default function Member_join() {
 						placeholder="비밀번호를 한 번 더 입력해주세요."
 						type="password"
 						value={joinForm.password_check}
-						alertMessage={joinAlert.password_check}
+						failMessage={joinFailAlert.password_check}
 						onChange={change_joinForm}
 						onBlur={validate_joinForm}
 						ref={(el) => {
@@ -203,7 +238,7 @@ export default function Member_join() {
 						label="이름"
 						placeholder="이름을 입력해주세요."
 						value={joinForm.name}
-						alertMessage={joinAlert.name}
+						failMessage={joinFailAlert.name}
 						onChange={change_joinForm}
 						onBlur={validate_joinForm}
 						ref={(el) => {
@@ -215,7 +250,7 @@ export default function Member_join() {
 						label="주소"
 						placeholder="주소를 입력해주세요."
 						value={joinForm.zonecode}
-						alertMessage={joinAlert.zonecode}
+						failMessage={joinFailAlert.zonecode}
 						readOnly
 						onClick={addressPopup}
 						onBlur={validate_joinForm}
@@ -226,7 +261,7 @@ export default function Member_join() {
 						label="상세주소"
 						placeholder="상세주소를 입력해주세요."
 						value={joinForm.address}
-						alertMessage={joinAlert.address}
+						failMessage={joinFailAlert.address}
 						onChange={change_joinForm}
 						onBlur={validate_joinForm}
 						ref={(el) => {
@@ -238,7 +273,7 @@ export default function Member_join() {
 						label="생년월일"
 						placeholder="YYYY/MM/DD"
 						value={joinForm.birthday}
-						alertMessage={joinAlert.birthday}
+						failMessage={joinFailAlert.birthday}
 						onChange={change_joinForm}
 						onBlur={validate_joinForm}
 						ref={(el) => {
@@ -252,9 +287,14 @@ export default function Member_join() {
 						placeholder="휴대폰번호를 입력해주세요."
 						type="tel"
 						value={joinForm.phone}
-						alertMessage={joinAlert.phone}
+						failMessage={joinFailAlert.phone}
 						onChange={change_joinForm}
-						searchBtn={{ txt: "인증", fnc: () => {} }}
+						searchBtn={{
+							txt: "인증",
+							fnc: () => {
+								set_phoneAuth(true);
+							},
+						}}
 						onBlur={validate_joinForm}
 						ref={(el) => {
 							joinFormRefs.current.phone = el;
@@ -266,7 +306,7 @@ export default function Member_join() {
 						placeholder="이메일을 입력해주세요."
 						type="text"
 						value={joinForm.email}
-						alertMessage={joinAlert.email}
+						failMessage={joinFailAlert.email}
 						onChange={change_joinForm}
 						onBlur={validate_joinForm}
 						ref={(el) => {

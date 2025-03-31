@@ -7,7 +7,8 @@ interface FormInputProps {
 	placeholder: string;
 	type?: string;
 	value: string;
-	alertMessage: string;
+	failMessage: string;
+	successMessage?: string;
 	onChange?: (e: ChangeEvent) => void;
 	onBlur?: (e: ChangeEvent) => void;
 	readOnly?: boolean;
@@ -22,7 +23,8 @@ const JoinInput = forwardRef<HTMLInputElement, FormInputProps>((props, ref) => {
 		placeholder,
 		type = "text",
 		value,
-		alertMessage,
+		failMessage,
+		successMessage,
 		onChange,
 		onBlur,
 		readOnly = false,
@@ -35,7 +37,7 @@ const JoinInput = forwardRef<HTMLInputElement, FormInputProps>((props, ref) => {
 			<div className="join-label">
 				<label htmlFor={name}>{label}</label>
 			</div>
-			<div className={`join-text${alertMessage ? " alert-on" : ""}`}>
+			<div className={`join-text${failMessage ? " fail" : ""}${successMessage ? " success" : ""}`}>
 				<div>
 					<input
 						type={type}
@@ -54,8 +56,8 @@ const JoinInput = forwardRef<HTMLInputElement, FormInputProps>((props, ref) => {
 						</button>
 					)}
 				</div>
-				<p className="c_red">
-					* <span>{alertMessage}</span>
+				<p className={`${failMessage ? "c_red" : ""}${successMessage ? "c_green" : ""}`}>
+					* <span>{failMessage || successMessage}</span>
 				</p>
 			</div>
 		</div>
