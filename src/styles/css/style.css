@@ -131,7 +131,7 @@ body {
   text-align: center;
   overflow: hidden;
   box-shadow: 3px 3px 3px #aaa;
-  padding: 0 20px;
+  padding: 20px;
 }
 .member-wrapper .form-wrap.join {
   width: 500px;
@@ -278,7 +278,7 @@ body {
   margin-top: 5px;
   font-size: 15px;
 }
-.member-wrapper .form-wrap form .join-input .join-text.fail, .member-wrapper .form-wrap form .join-input .join-text.success p {
+.member-wrapper .form-wrap form .join-input .join-text.fail p, .member-wrapper .form-wrap form .join-input .join-text.success p {
   display: block;
 }
 .member-wrapper .form-wrap form .join-input .join-text.fail > div input {
