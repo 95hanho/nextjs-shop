@@ -1,356 +1,405 @@
 body {
-  background-color: #eee;
+	background-color: #eee;
 }
 #header {
-  height: 50px;
-  display: flex;
-  justify-content: center; /* 가운데 정렬 */
-  align-items: center;
-  padding: 0 20px;
-  background-color: #f8f9fa;
-  position: sticky; /* 버튼 컨테이너의 절대 위치를 위한 설정 */
-  top: 0;
-  z-index: 1;
-  h1 {
-    font-size: 24px;
-    color: gray;
-    font-weight: bold;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
-    margin: 0;
-  }
-  .header-wrap {
-    display: flex;
-    align-items: center;
-    position: absolute;
-    right: 20px; /* 오른쪽에 배치 */
-    .header-btn {
-      button {
-        position: relative;
-        background: none;
-        border: none;
-        margin-left: 20px;
-        cursor: pointer;
-        font-size: 24px;
-      }
-      .member-menu {
-        position: absolute;
-        top: calc(100% + 10px);
-        border: 1px solid #aaa;
-        border-radius: 15px;
-        padding: 10px 7px;
-        text-align: center;
-        font-size: 20px;
-        width: 140px;
-        left: -60px;
-        box-shadow: 2px 2px 2px #aaa;
-        background-color: #fff;
-        ul > li {
-          padding: 5px 0;
-          &:nth-child(n + 2) {
-            border-top: 1px solid #ccc;
-          }
-          a {
-            &:hover {
-              text-decoration: underline;
-            }
-          }
-        }
-      }
-    }
-  }
+	height: 50px;
+	display: flex;
+	justify-content: center; /* 가운데 정렬 */
+	align-items: center;
+	padding: 0 20px;
+	background-color: #f8f9fa;
+	position: sticky; /* 버튼 컨테이너의 절대 위치를 위한 설정 */
+	top: 0;
+	z-index: 1;
+	h1 {
+		a {
+			font-size: 30px;
+			color: gray;
+			font-weight: bold;
+			text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
+			margin: 0;
+		}
+	}
+	.header-wrap {
+		display: flex;
+		align-items: center;
+		position: absolute;
+		right: 20px; /* 오른쪽에 배치 */
+		.header-btn {
+			> a,
+			> button {
+				position: relative;
+				background: none;
+				border: none;
+				margin-left: 20px;
+				cursor: pointer;
+				font-size: 24px;
+			}
+			.member-menu {
+				position: absolute;
+				top: calc(100% + 10px);
+				border: 1px solid #aaa;
+				border-radius: 15px;
+				padding: 10px 7px;
+				text-align: center;
+				font-size: 20px;
+				width: 140px;
+				left: -60px;
+				box-shadow: 2px 2px 2px #aaa;
+				background-color: #fff;
+				ul > li {
+					padding: 5px 0;
+					&:nth-child(n + 2) {
+						border-top: 1px solid #ccc;
+					}
+					a,
+					button {
+						font-size: 20px;
+						&:hover {
+							text-decoration: underline;
+						}
+					}
+				}
+			}
+		}
+	}
 }
 #nav {
-  height: 50px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 20px;
-  background-color: #f8f9fa;
-  min-width: 900px; /* 최소 너비 설정 */
-  .gender-container {
-    display: flex;
-    align-items: center;
-    .gender-btn {
-      background: none;
-      border: 1px solid gray;
-      padding: 5px 15px;
-      cursor: pointer;
-      font-size: 16px;
-      color: gray;
-      background-color: transparent;
-      margin-right: -1px; /* 버튼들이 붙어있도록 마진 조정 */
-      border-radius: 0 20px 20px 0;
-      &:first-of-type {
-        border-radius: 20px 0 0 20px; /* 왼쪽 버튼의 모서리 */
-      }
-      &:last-of-type {
-        border-radius: 0 20px 20px 0; /* 오른쪽 버튼의 모서리 */
-        margin-right: 0;
-      }
-      &.active {
-        color: #fff;
-        background-color: gray;
-        &:hover {
-          color: white;
-        }
-      }
-    }
-  }
-  .nav-menu {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    a {
-      margin: 0 15px;
-      font-size: 16px;
-      color: gray;
-      cursor: pointer;
-      text-decoration: none;
+	height: 50px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 0 20px;
+	background-color: #f8f9fa;
+	min-width: 900px; /* 최소 너비 설정 */
+	.gender-container {
+		display: flex;
+		align-items: center;
+		.gender-btn {
+			background: none;
+			border: 1px solid gray;
+			padding: 5px 15px;
+			cursor: pointer;
+			font-size: 16px;
+			color: gray;
+			background-color: transparent;
+			margin-right: -1px; /* 버튼들이 붙어있도록 마진 조정 */
+			border-radius: 0 20px 20px 0;
+			&:first-of-type {
+				border-radius: 20px 0 0 20px; /* 왼쪽 버튼의 모서리 */
+			}
+			&:last-of-type {
+				border-radius: 0 20px 20px 0; /* 오른쪽 버튼의 모서리 */
+				margin-right: 0;
+			}
+			&.active {
+				color: #fff;
+				background-color: gray;
+				&:hover {
+					color: white;
+				}
+			}
+		}
+	}
+	.nav-menu {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		position: absolute;
+		left: 50%;
+		transform: translateX(-50%);
+		a {
+			margin: 0 15px;
+			font-size: 16px;
+			color: gray;
+			cursor: pointer;
+			text-decoration: none;
 
-      &:hover {
-        text-decoration: underline;
-      }
-    }
-  }
+			&:hover {
+				text-decoration: underline;
+			}
+		}
+	}
 }
 /* 로그인, 회원가입 */
 .member-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  padding: 30px 0;
-  .form-wrap {
-    width: 350px;
-    background-color: #fff;
-    border: 5px double #777;
-    border-radius: 25px;
-    text-align: center;
-    overflow: hidden;
-    box-shadow: 3px 3px 3px #aaa;
-    padding: 20px;
-    &.join {
-      width: 500px;
-    }
-    h2 {
-      padding: 15px 0;
-      font-size: 45px;
-      color: #555;
-    }
-    form {
-      /* 로그인 */
-      .login-input {
-        position: relative;
-        padding: 25px 50px 7px 15px;
-        border: 3px solid #ccc;
-        cursor: pointer;
-        border-radius: 0 0 10px 10px;
-        &:first-child {
-          border-bottom: none;
-          border-radius: 10px 10px 0 0;
-        }
-        input {
-          width: 100%;
-          border: none;
-          outline: none;
-          font-size: 25px;
-        }
-        label {
-          position: absolute;
-          display: block;
-          top: 0;
-          left: 0;
-          height: 100%;
-          padding: 15px;
-          font-size: 35px;
-          color: #aaa;
-          pointer-events: none;
-          transition: all 0.5s;
-          &.placeholder {
-            width: 100%;
-            text-align: left;
-          }
-        }
-        .show-pwd {
-          position: absolute;
-          cursor: pointer;
-          top: 0;
-          right: 0;
-          font-size: 30px;
-          height: 100%;
-          padding-right: 10px;
-          color: #777;
-        }
-        &.focus {
-          cursor: initial;
-          input {
-            position: relative;
-          }
-          .placeholder {
-            width: auto;
-            height: 0;
-            padding: 5px 15px;
-            font-size: 20px;
-            color: #666;
-          }
-        }
-      }
-      .submit-wrap {
-        margin: 20px 0;
-        input[type="submit"] {
-          width: 200px;
-          height: 50px;
-          border: 1px solid #aaa;
-          border-radius: 12px;
-          font-size: 35px;
-          font-weight: bold;
-          background-color: rgb(174, 179, 169);
-          color: #fff;
-          cursor: pointer;
-          box-shadow: 0px 0px 5px #aaa;
-          &:hover {
-            background-color: rgb(155, 158, 153);
-            color: #eee;
-            font-size: 40px;
-            transition: all 0.3s;
-          }
-          &:active {
-            box-shadow: none;
-            transition: all 0s;
-            transform: translate(1px, 1px);
-            background-color: rgb(20, 196, 20);
-            border-color: #fff;
-          }
-        }
-      }
-      .join-input {
-        display: flex;
-        font-size: 23px;
-        text-align: left;
-        margin-bottom: 10px;
-        .join-label {
-          padding-top: 10px;
-          width: 30%;
-        }
-        .join-text {
-          width: 70%;
-          height: 100%;
-          > div {
-            input {
-              width: 70%;
-              padding: 7px 10px;
-              font-size: 20px;
-              border: 1px solid #aaa;
-              border-radius: 5px;
-              outline: none;
-            }
-            .search-btn {
-              width: 25%;
-              margin-left: 5px;
-              padding: 7px 10px;
-              border-radius: 5px;
-              color: #fff;
-              font-size: 20px;
-              font-weight: bold;
-              &.zonecode {
-                border: 2px solid #ad9090;
-                background: #ee6666;
-                &:hover {
-                  background: #df6060;
-                }
-              }
-              &.phone {
-                border: 2px solid #83a77e;
-                background: #4fdb3d;
-                &:hover {
-                  background: #4acc39;
-                }
-              }
-            }
-          }
-          p {
-            display: none;
-            margin-top: 5px;
-            font-size: 15px;
-          }
-          &.fail p,
-          &.success p {
-            display: block;
-          }
-          &.fail {
-            > div {
-              input {
-                border: 1px solid #f00;
-                color: #f00;
-              }
-            }
-          }
-          &.success {
-            > div {
-              input {
-                border: 1px solid #0f0;
-                border: 1px solid rgb(90, 161, 90);
-              }
-            }
-          }
-        }
-      }
-      .join-space {
-        height: 30px;
-      }
-    }
-    .find-wrap {
-      display: flex;
-      justify-content: space-around;
-      font-size: 20px;
-      padding: 0 0 0 0;
-      a {
-        &:hover {
-          text-decoration: underline;
-        }
-      }
-    }
-    .sns-login {
-      margin: 10px 0;
-      button {
-        width: 100%;
-        padding: 8px 10px;
-        border-radius: 5px;
-        font-size: 25px;
-        &.naver-login {
-          background-color: #03c75a;
-          color: white;
-          &:hover {
-            background-color: #04ac4f;
-          }
-        }
-        &.kakao-login {
-          background-color: #fee500;
-          color: #3c1e1e;
-          &:hover {
-            background-color: #ebd303;
-          }
-        }
-        svg {
-          margin-right: 10px;
-        }
-        box-shadow: 0px 0px 5px #aaa;
-        &:active {
-          box-shadow: none;
-          transform: translate(1px, 1px);
-        }
-      }
-    }
-  }
-  &#memberJoin {
-    .form-wrap {
-    }
-  }
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	min-height: 100vh;
+	padding: 50px 0;
+	.form-wrap {
+		width: 350px;
+		background-color: #fff;
+		border: 5px double #777;
+		border-radius: 25px;
+		text-align: center;
+		overflow: hidden;
+		box-shadow: 3px 3px 3px #aaa;
+		padding: 20px;
+		&.join {
+			width: 500px;
+		}
+		h2 {
+			padding: 15px 0;
+			font-size: 45px;
+		}
+		h3 {
+			font-size: 25px;
+			text-align: left;
+			a {
+				color: #777;
+			}
+		}
+		form {
+			/* 로그인 */
+			.login-input {
+				position: relative;
+				padding: 25px 50px 7px 15px;
+				border: 3px solid #ccc;
+				cursor: pointer;
+				border-radius: 0 0 10px 10px;
+				&:first-child {
+					border-bottom: none;
+					border-radius: 10px 10px 0 0;
+				}
+				input {
+					width: 100%;
+					border: none;
+					outline: none;
+					font-size: 25px;
+				}
+				label {
+					position: absolute;
+					display: block;
+					top: 0;
+					left: 0;
+					height: 100%;
+					padding: 15px;
+					font-size: 35px;
+					color: #aaa;
+					pointer-events: none;
+					transition: all 0.5s;
+					&.placeholder {
+						width: 100%;
+						text-align: left;
+					}
+				}
+				.show-pwd {
+					position: absolute;
+					cursor: pointer;
+					top: 0;
+					right: 0;
+					font-size: 30px;
+					height: 100%;
+					padding-right: 10px;
+					color: #777;
+				}
+				&.focus {
+					cursor: initial;
+					input {
+						position: relative;
+					}
+					.placeholder {
+						width: auto;
+						height: 0;
+						padding: 5px 15px;
+						font-size: 20px;
+						color: #666;
+					}
+				}
+			}
+			/* 아이디비번찾기 */
+			.find-input {
+				font-size: 20px;
+				margin-bottom: 10px;
+				text-align: left;
+				&:last-child {
+					margin-bottom: 20px;
+				}
+				label {
+					display: inline-block;
+					width: 80px;
+					text-align: right;
+					padding: 0 5px;
+				}
+				input {
+					font-size: 18px;
+					font-family: "NotoSansKR";
+					width: 130px;
+					padding: 5px;
+				}
+				button {
+					border: 1px solid #aaa;
+					border-radius: 5px;
+					background-color: #36dd4c;
+					padding: 5px 6px;
+					margin-left: 5px;
+					color: #fff;
+					font-size: 20px;
+					&:hover {
+						background-color: #31ca45;
+					}
+				}
+			}
+			p {
+				margin-top: 5px;
+				text-align: left;
+				color: #f00;
+			}
+			.submit-wrap {
+				margin: 20px 0;
+				input[type="submit"] {
+					width: 200px;
+					height: 50px;
+					border: 1px solid #aaa;
+					border-radius: 12px;
+					font-size: 35px;
+					font-weight: bold;
+					background-color: rgb(174, 179, 169);
+					color: #fff;
+					cursor: pointer;
+					box-shadow: 0px 0px 5px #aaa;
+					&:hover {
+						background-color: rgb(155, 158, 153);
+						color: #eee;
+						font-size: 40px;
+						transition: all 0.3s;
+					}
+					&:active {
+						box-shadow: none;
+						transition: all 0s;
+						transform: translate(1px, 1px);
+						background-color: rgb(20, 196, 20);
+						border-color: #fff;
+					}
+				}
+			}
+			.join-input {
+				display: flex;
+				font-size: 23px;
+				text-align: left;
+				margin-bottom: 10px;
+				.join-label {
+					padding-top: 10px;
+					width: 30%;
+				}
+				.join-text {
+					width: 70%;
+					height: 100%;
+					> div {
+						input {
+							width: 70%;
+							padding: 7px 10px;
+							font-size: 20px;
+							border: 1px solid #aaa;
+							border-radius: 5px;
+							outline: none;
+						}
+						.search-btn {
+							width: 25%;
+							margin-left: 5px;
+							padding: 7px 10px;
+							border-radius: 5px;
+							color: #fff;
+							font-size: 20px;
+							font-weight: bold;
+							&.zonecode {
+								border: 2px solid #ad9090;
+								background: #ee6666;
+								&:hover {
+									background: #df6060;
+								}
+							}
+							&.phone {
+								border: 2px solid #83a77e;
+								background: #4fdb3d;
+								&:hover {
+									background: #4acc39;
+								}
+							}
+						}
+					}
+					p {
+						display: none;
+						margin-top: 5px;
+						font-size: 15px;
+					}
+					&.fail p,
+					&.success p {
+						display: block;
+					}
+					&.fail {
+						> div {
+							input {
+								border: 1px solid #f00;
+								color: #f00;
+							}
+						}
+					}
+					&.success {
+						> div {
+							input {
+								border: 1px solid #0f0;
+								border: 1px solid rgb(90, 161, 90);
+							}
+						}
+					}
+				}
+			}
+			.join-space {
+				height: 30px;
+			}
+		}
+		.find-wrap {
+			display: flex;
+			justify-content: space-around;
+			font-size: 20px;
+			padding: 0 0 0 0;
+			a {
+				&:hover {
+					text-decoration: underline;
+				}
+			}
+		}
+		.sns-login {
+			margin: 10px 0;
+			button {
+				width: 100%;
+				padding: 8px 10px;
+				border-radius: 5px;
+				font-size: 25px;
+				&.naver-login {
+					background-color: #03c75a;
+					color: white;
+					&:hover {
+						background-color: #04ac4f;
+					}
+				}
+				&.kakao-login {
+					background-color: #fee500;
+					color: #3c1e1e;
+					&:hover {
+						background-color: #ebd303;
+					}
+				}
+				svg {
+					margin-right: 10px;
+				}
+				box-shadow: 0px 0px 5px #aaa;
+				&:active {
+					box-shadow: none;
+					transform: translate(1px, 1px);
+				}
+			}
+		}
+	}
+	&#memberJoin {
+		.form-wrap {
+		}
+	}
 }
 main {
-  min-width: 900px;
-  position: relative;
+	min-width: 900px;
+	position: relative;
 }

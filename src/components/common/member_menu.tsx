@@ -4,8 +4,11 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { FiUser } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion"; // framer-motion을 import 합니다.
+import useAuth from "@/hooks/useAuth";
+import { button } from "framer-motion/client";
 
 export default function MemberMenu() {
+	const { accessToken } = useAuth();
 	const [isOpen, set_isOpen] = useState(false);
 
 	return (
@@ -23,7 +26,11 @@ export default function MemberMenu() {
 						<div className="popup-menu">
 							<ul>
 								<li>
-									<Link href="/member">로그인</Link>
+									{!accessToken ? (
+										<Link href="/member">로그인</Link>
+									) : (
+										<button>로그아웃</button>
+									)}
 								</li>
 								<li>
 									<Link href="/order-history">주문/배송내역</Link>

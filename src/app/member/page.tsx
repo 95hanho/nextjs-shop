@@ -6,24 +6,49 @@ import { FiEye, FiEyeOff } from "react-icons/fi"; // 눈 모양 아이콘을 imp
 import { SiNaver, SiKakaotalk } from "react-icons/si"; // 네이버와 카카오 아이콘을 import 합니다.
 import { FormEvent, LoginData } from "@/types/form";
 import { useRouter } from "next/navigation";
+import { authService } from "@/api";
+import useAuth from "@/hooks/useAuth";
 
 export default function Login() {
 	const router = useRouter();
+	const { loginToken } = useAuth();
 
 	const idRef = useRef<HTMLInputElement>(null);
 	const pwdRef = useRef<HTMLInputElement>(null);
 	const [idFocus, set_idFocus] = useState<boolean>(false);
 	const [pwdFocus, set_pwdFocus] = useState<boolean>(false);
 	const [loginData, set_loginData] = useState<LoginData>({
-		id: "",
-		password: "",
+		id: "hoseongs",
+		password: "aaaaaa1!",
 	});
 	const [showPassword, setShowPassword] = useState<boolean>(false);
+	const [alertMessage, set_alertMessage] = useState("");
 
 	const login_submit = (e: FormEvent) => {
-		e.preventDefault();
 		console.log("login_submit");
-		router.push("/");
+		e.preventDefault();
+		if (!loginData.id) {
+			set_alertMessage("아이디를 입력해주세요.");
+			idRef.current?.focus();
+			return;
+		}
+		if (!loginData.password) {
+			set_alertMessage("비밀번호를 입력해주세요.");
+			pwdRef.current?.focus();
+			return;
+		}
+		authService
+			.login(loginData)
+			.then(({ data }) => {
+				console.log(data);
+				alert("로그인!");
+				loginToken(data.access_token, data.refresh_token);
+				router.push("/");
+			})
+			.catch((err) => {
+				console.log(err);
+				set_alertMessage("아이디 또는 비밀번호가 일치하지 않습니다.");
+			});
 	};
 
 	return (
@@ -54,7 +79,10 @@ export default function Login() {
 								}
 							}}
 							value={loginData.id}
-							onChange={(e) => set_loginData({ ...loginData, id: e.target.value })}
+							onChange={(e) => {
+								set_loginData({ ...loginData, id: e.target.value });
+								set_alertMessage("");
+							}}
 						/>
 						<label className={`placeholder`}>아이디</label>
 					</div>
@@ -82,6 +110,7 @@ export default function Login() {
 							onChange={(e) => {
 								setShowPassword(false);
 								set_loginData({ ...loginData, password: e.target.value });
+								set_alertMessage("");
 							}}
 						/>
 						<label className={`placeholder`}>비밀번호</label>
@@ -95,14 +124,15 @@ export default function Login() {
 							</button>
 						)}
 					</div>
+					{alertMessage && <p>* {alertMessage}</p>}
 					<div className="submit-wrap">
 						<input type="submit" value={"로그인"} />
 					</div>
 				</form>
 				<div className="find-wrap">
 					<Link href={"/member/join"}>회원가입</Link>
-					<Link href={""}>아이디 찾기</Link>
-					<Link href={""}>비밀번호 찾기</Link>
+					<Link href={"/member/find/id"}>아이디 찾기</Link>
+					<Link href={"/member/find/password"}>비밀번호 찾기</Link>
 				</div>
 				<div className="sns-login">
 					<button className="naver-login">

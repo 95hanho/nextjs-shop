@@ -4,24 +4,35 @@ import { FiHeart, FiShoppingCart } from "react-icons/fi";
 import MemberMenu from "./Member_menu";
 import Nav from "./Nav";
 import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
+import useAuth from "@/hooks/useAuth";
+import { useEffect } from "react";
+import { isTokenExpired } from "@/utils/auth";
 
 export default function Header() {
-	const path = usePathname();
+	const { accessToken, tokenCheck } = useAuth();
+	const pathname = usePathname();
 
-	if (!path?.startsWith("/member")) {
+	useEffect(() => {
+		tokenCheck();
+	}, [pathname]);
+
+	if (!pathname?.startsWith("/member")) {
 		return (
 			<>
 				<header id="header">
-					<h1>NEXTJS-SHOP</h1>
+					<h1>
+						<Link href={"/"}>NEXTJS-SHOP</Link>
+					</h1>
 					<div className="header-wrap">
 						<div className="header-btn">
 							<MemberMenu />
-							<button>
+							<Link href={"/mypage/wish"}>
 								<FiHeart />
-							</button>
-							<button>
+							</Link>
+							<Link href={"/mypage/cart"}>
 								<FiShoppingCart />
-							</button>
+							</Link>
 						</div>
 					</div>
 				</header>

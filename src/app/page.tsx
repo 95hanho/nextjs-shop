@@ -29,7 +29,7 @@ const Image = styled.img`
 export default function Home() {
 	const images = Array.from({ length: 40 }, (_, index) => (
 		<ImageContainer key={index}>
-			<Image src={""} alt={`Image ${index + 1}`} />
+			<Image src={"#"} alt={`Image ${index + 1}`} />
 		</ImageContainer>
 	));
 
