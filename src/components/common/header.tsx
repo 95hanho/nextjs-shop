@@ -10,34 +10,34 @@ import { useEffect } from "react";
 import { isTokenExpired } from "@/utils/auth";
 
 export default function Header() {
-	const { accessToken, tokenCheck } = useAuth();
-	const pathname = usePathname();
+  const { accessToken, tokenCheck } = useAuth();
+  const pathname = usePathname();
 
-	useEffect(() => {
-		tokenCheck();
-	}, [pathname]);
+  useEffect(() => {
+    tokenCheck();
+  }, [pathname]);
 
-	if (!pathname?.startsWith("/member")) {
-		return (
-			<>
-				<header id="header">
-					<h1>
-						<Link href={"/"}>NEXTJS-SHOP</Link>
-					</h1>
-					<div className="header-wrap">
-						<div className="header-btn">
-							<MemberMenu />
-							<Link href={"/mypage/wish"}>
-								<FiHeart />
-							</Link>
-							<Link href={"/mypage/cart"}>
-								<FiShoppingCart />
-							</Link>
-						</div>
-					</div>
-				</header>
-				<Nav />
-			</>
-		);
-	}
+  if (!pathname?.startsWith("/member")) {
+    return (
+      <>
+        <header id="header">
+          <h1>
+            <Link href={"/"}>NEXTJS-SHOP</Link>
+          </h1>
+          <div className="header-wrap">
+            <div className="header-btn">
+              <MemberMenu />
+              <Link href={"/mypage/wish"}>
+                <FiHeart />
+              </Link>
+              <Link href={"/mypage/cart"}>
+                <FiShoppingCart />
+              </Link>
+            </div>
+          </div>
+        </header>
+        <Nav />
+      </>
+    );
+  }
 }
