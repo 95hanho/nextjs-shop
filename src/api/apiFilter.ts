@@ -1,6 +1,11 @@
 // 요청 Method별 빠른 처리하기 위한
 
-import instance from "./axiosInstance";
+import { backendInstance, nextApiInstance } from "./axiosInstance";
+
+const getInstance = (url: string) => {
+	if (url.startsWith("/api")) return nextApiInstance; // Next.js API
+	else return backendInstance; // Springboot API
+};
 
 // pathString 처리
 const pathString_filter = (url: string, json?: any) => {
@@ -19,18 +24,10 @@ const pathString_filter = (url: string, json?: any) => {
 
 // get
 export const get_normal = (url: string, json?: any, headers?: string) => {
+	const instance = getInstance(url);
 	[url, json] = pathString_filter(url, json);
 	url = url.replace(/ /gi, "%20");
-	let queryString = "";
-	if (json && Object.entries(json).length > 0) {
-		queryString += "?";
-		for (let key in json) {
-			if (queryString.indexOf("?") !== queryString.length - 1) {
-				queryString += "&";
-			}
-			queryString += `${key}=${json[key]}`;
-		}
-	}
+	const queryString = json ? `?${new URLSearchParams(json).toString()}` : "";
 	const headersObj: any = {};
 	if (headers) headersObj.headers = headers;
 	return instance.get(url + queryString, headersObj);
@@ -38,6 +35,7 @@ export const get_normal = (url: string, json?: any, headers?: string) => {
 
 // put urlFormData
 export const put_urlFormData = (url: string, params: any, headers?: string) => {
+	const instance = getInstance(url);
 	[url, params] = pathString_filter(url, params);
 	const url_form_data = new URLSearchParams(params);
 	const headersObj: any = {};
@@ -47,18 +45,10 @@ export const put_urlFormData = (url: string, params: any, headers?: string) => {
 
 // download
 export const get_download = (url: string, json?: any, headers?: string) => {
+	const instance = getInstance(url);
 	[url, json] = pathString_filter(url, json);
 	url = url.replace(/ /gi, "%20");
-	let queryString = "";
-	if (json && Object.entries(json).length > 0) {
-		queryString += "?";
-		for (let key in json) {
-			if (queryString.indexOf("?") !== queryString.length - 1) {
-				queryString += "&";
-			}
-			queryString += `${key}=${json[key]}`;
-		}
-	}
+	const queryString = json ? `?${new URLSearchParams(json).toString()}` : "";
 	const headersObj: any = { responseType: "blob" };
 	if (headers) headersObj.headers = headers;
 	return instance.get(url + queryString, headersObj);
@@ -66,6 +56,7 @@ export const get_download = (url: string, json?: any, headers?: string) => {
 
 // post body
 export const post_json = (url: string, params: any, headers?: string) => {
+	const instance = getInstance(url);
 	[url, params] = pathString_filter(url, params);
 	const headersObj: any = {};
 	if (headers) headersObj.headers = headers;
@@ -74,6 +65,7 @@ export const post_json = (url: string, params: any, headers?: string) => {
 
 // post formData
 export const post_formData = (url: string, params: any, headers?: string) => {
+	const instance = getInstance(url);
 	[url, params] = pathString_filter(url, params);
 	const formData = new FormData();
 	Object.entries(params).map((v: [string, any]) => {
@@ -92,6 +84,7 @@ export const post_formData = (url: string, params: any, headers?: string) => {
 
 // post urlFormData
 export const post_urlFormData = (url: string, params: any, headers?: string) => {
+	const instance = getInstance(url);
 	[url, params] = pathString_filter(url, params);
 	const url_form_data = new URLSearchParams(params);
 	const headersObj: any = {};
@@ -101,17 +94,9 @@ export const post_urlFormData = (url: string, params: any, headers?: string) => 
 
 // delete
 export const delete_normal = (url: string, json?: any) => {
+	const instance = getInstance(url);
 	[url, json] = pathString_filter(url, json);
 	url = url.replace(/ /gi, "%20");
-	let queryString = "";
-	if (json && Object.entries(json).length > 0) {
-		queryString += "?";
-		for (let key in json) {
-			if (queryString.indexOf("?") !== queryString.length - 1) {
-				queryString += "&";
-			}
-			queryString += `${key}=${json[key]}`;
-		}
-	}
+	const queryString = json ? `?${new URLSearchParams(json).toString()}` : "";
 	return instance.delete(url + queryString);
 };

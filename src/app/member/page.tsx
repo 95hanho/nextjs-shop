@@ -5,13 +5,10 @@ import { useRef, useState } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi"; // 눈 모양 아이콘을 import 합니다.
 import { SiNaver, SiKakaotalk } from "react-icons/si"; // 네이버와 카카오 아이콘을 import 합니다.
 import { FormEvent, LoginData } from "@/types/form";
-import { useRouter } from "next/navigation";
-import { authService } from "@/api";
-import useAuth from "@/hooks/useAuth";
+import useMember from "@/hooks/useMember";
 
 export default function Login() {
-	const router = useRouter();
-	const { loginToken } = useAuth();
+	const { login_fn } = useMember();
 
 	const idRef = useRef<HTMLInputElement>(null);
 	const pwdRef = useRef<HTMLInputElement>(null);
@@ -37,18 +34,11 @@ export default function Login() {
 			pwdRef.current?.focus();
 			return;
 		}
-		authService
-			.login(loginData)
-			.then(({ data }) => {
-				console.log(data);
-				alert("로그인!");
-				loginToken(data.access_token, data.refresh_token);
-				router.push("/");
-			})
-			.catch((err) => {
-				console.log(err);
+		login_fn.mutate(loginData, {
+			onError(err) {
 				set_alertMessage("아이디 또는 비밀번호가 일치하지 않습니다.");
-			});
+			},
+		});
 	};
 
 	return (

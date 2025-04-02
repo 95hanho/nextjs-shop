@@ -1,3 +1,8 @@
+/**
+ * 토큰이 만료됐는지
+ * @param token JWT 토큰
+ * @returns 토큰만료 true, 아니면 false
+ */
 export const isTokenExpired = (token: string): boolean => {
 	if (!token) return true; // 토큰이 없으면 만료된 것으로 간주
 

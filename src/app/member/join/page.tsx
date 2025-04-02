@@ -5,7 +5,8 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import JoinInput from "./JoinInput";
 import { authService } from "@/api";
-import { useRouter } from "next/navigation";
+import useMember from "@/hooks/useMember";
+import { isValidDateString } from "@/utils/ui";
 
 const init_joinForm: JoinForm = {
 	id: "hoseongs",
@@ -43,27 +44,9 @@ const joinFormRegexFailMent: { [key: string]: string } = {
 	phone: "휴대폰 번호 형식에 일치하지 않습니다.",
 	email: "이메일 형식에 일치하지 않습니다.",
 };
-// 유효한 날짜인지 확인
-const isValidDateString = (dateStr: string): boolean => {
-	if (dateStr.length != 8) return false;
-
-	const year = Number(dateStr.slice(0, 4));
-	const month = Number(dateStr.slice(4, 6));
-	const day = Number(dateStr.slice(6, 8));
-
-	console.log(year, month, day);
-
-	if (year < 1900 || new Date().getFullYear() < year) return false;
-	if (month < 1 || 12 < month) return false;
-	// 윤년인지
-	const isLeapYear = (year: number) => (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
-	const daysIsMonth = [31, isLeapYear(year) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-	if (day > daysIsMonth[month - 1]) return false;
-	return true;
-};
 
 export default function Member_join() {
-	const router = useRouter();
+	const { joinMember_fn } = useMember();
 
 	const [joinForm, set_joinForm] = useState(init_joinForm);
 	const [joinFailAlert, set_joinFailAlert] = useState(init_joinAlert);
@@ -142,6 +125,9 @@ export default function Member_join() {
 				if (joinSuccessAlert.phone) {
 					successMent = joinSuccessAlert.phone;
 				}
+				if (joinFailAlert.phone == "휴대폰 인증이 필요합니다.") {
+					failMent = joinFailAlert.phone;
+				}
 			}
 		}
 		set_joinForm((prev) => ({
@@ -188,16 +174,7 @@ export default function Member_join() {
 		}
 		if (alertOn) return;
 		// 회원가입 로직 추가
-		authService
-			.joinMember(joinForm)
-			.then(({ data }) => {
-				console.log(data);
-				alert("회원가입이 완료되었습니다.");
-				router.push("/member");
-			})
-			.catch((err) => {
-				console.log(err);
-			});
+		joinMember_fn.mutate(joinForm);
 	};
 
 	const addressPopup = () => {
@@ -322,6 +299,10 @@ export default function Member_join() {
 							txt: "인증",
 							fnc: () => {
 								set_phoneAuth(true);
+								set_joinFailAlert((prev) => ({
+									...prev,
+									phone: "",
+								}));
 								set_joinSuccessAlert((prev) => ({
 									...prev,
 									phone: "휴대폰 인증이 완료되었습니다.",

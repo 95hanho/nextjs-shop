@@ -4,7 +4,7 @@ import API_URL from "../endpoints";
 import { AxiosResponse } from "axios";
 
 export const authService_doc = {
-	login: async (obj: LoginData): Promise<AxiosResponse<any>> => await post_urlFormData(API_URL.MEMBER, obj),
+	login: async (obj: LoginData): Promise<AxiosResponse<any>> => post_urlFormData(API_URL.MEMBER, obj),
 	// --------------------------> Partial JoinForm에서 일부속성만 가능
 	idDuplcheck: async (obj: Partial<JoinForm>): Promise<AxiosResponse<any>> =>
 		await get_normal(API_URL.MEMBER_ID, obj),

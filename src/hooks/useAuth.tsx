@@ -4,7 +4,6 @@ import { isTokenExpired } from "@/utils/auth";
 import { cookies } from "@/utils/cookies";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { GiSverdIFjell } from "react-icons/gi";
 
 export default function useAuth() {
 	const [accessToken, set_accessToken] = useState<string | null>(null);
