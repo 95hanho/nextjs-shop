@@ -56,11 +56,11 @@ body {
   border-top: 1px solid #ccc;
 }
 #header .header-wrap .header-btn .member-menu ul > li a,
-#header .header-wrap .header-btn .member-menu ul > li button {
+#header .header-wrap .header-btn .member-menu ul > li div {
   font-size: 20px;
 }
 #header .header-wrap .header-btn .member-menu ul > li a:hover,
-#header .header-wrap .header-btn .member-menu ul > li button:hover {
+#header .header-wrap .header-btn .member-menu ul > li div:hover {
   text-decoration: underline;
 }
 

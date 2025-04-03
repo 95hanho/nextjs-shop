@@ -8,7 +8,7 @@ import useAuth from "@/hooks/useAuth";
 import { button } from "framer-motion/client";
 
 export default function MemberMenu() {
-	const { accessToken } = useAuth();
+	const { loginOn, logout } = useAuth();
 	const [isOpen, set_isOpen] = useState(false);
 
 	return (
@@ -26,17 +26,21 @@ export default function MemberMenu() {
 						<div className="popup-menu">
 							<ul>
 								<li>
-									{!accessToken ? (
+									{!loginOn ? (
 										<Link href="/member">로그인</Link>
 									) : (
-										<button>로그아웃</button>
+										<div onClick={logout}>로그아웃</div>
 									)}
 								</li>
 								<li>
-									<Link href="/order-history">주문/배송내역</Link>
+									<Link href="/order-history" prefetch>
+										주문/배송내역
+									</Link>
 								</li>
 								<li>
-									<Link href="/write-review">리뷰작성</Link>
+									<Link href="/write-review" prefetch>
+										리뷰작성
+									</Link>
 								</li>
 							</ul>
 						</div>

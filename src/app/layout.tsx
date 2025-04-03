@@ -4,8 +4,8 @@ import "@/styles/css/font.css";
 import "@/styles/css/reset.css";
 import "@/styles/css/style.css";
 import "@/css/add.css";
-import Header from "@/components/common/Header";
 import Providers from "@/lib/providers";
+import Header from "@/components/common/Header";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",

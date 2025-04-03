@@ -36,4 +36,12 @@ export const cookies = {
 	remove(name: string) {
 		document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 	},
+	/**
+	 * 쿠키가 존재하는지 확인
+	 * @param {string} name 쿠키 이름
+	 * @returns {boolean} 존재 여부
+	 */
+	has(name: string): boolean {
+		return document.cookie.split("; ").some((cookie) => cookie.startsWith(name + "="));
+	},
 };
