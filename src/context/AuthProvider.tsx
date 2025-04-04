@@ -23,8 +23,8 @@ export const authContext = createContext<AuthContextType | null>(null);
 
 export default function AuthProvider({ children }: AuthProviderProps) {
 	const router = useRouter();
-	const [loginOn, set_loginOn] = useState<boolean>(() => cookies.has("refreshToken"));
-	const [accessToken, set_accessToken] = useState<string | null>(() => localStorage.getItem("accessToken"));
+	const [loginOn, set_loginOn] = useState<boolean>(false);
+	const [accessToken, set_accessToken] = useState<string | null>(null);
 
 	useEffect(() => {
 		console.log(accessToken);
@@ -76,6 +76,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
 	useEffect(() => {
 		const aToken = localStorage.getItem("accessToken");
 		if (aToken) set_accessToken(aToken);
+		set_loginOn(cookies.has("refreshToken"));
 	}, []);
 
 	return (

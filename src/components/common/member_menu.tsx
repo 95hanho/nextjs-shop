@@ -1,15 +1,24 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { FiUser } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion"; // framer-motion을 import 합니다.
 import useAuth from "@/hooks/useAuth";
-import { button } from "framer-motion/client";
 
 export default function MemberMenu() {
 	const { loginOn, logout } = useAuth();
-	const [isOpen, set_isOpen] = useState(false);
+	const [isOpen, set_isOpen] = useState<boolean>(false);
+
+	const menuMouseleave = () => {
+		set_isOpen(false);
+	};
+
+	useEffect(() => {
+		if (isOpen) {
+			document.getElementById("header")?.addEventListener("mouseleave", menuMouseleave);
+		} else document.getElementById("header")?.removeEventListener("mouseleave", menuMouseleave);
+	}, [isOpen]);
 
 	return (
 		<button onClick={() => set_isOpen(!isOpen)}>

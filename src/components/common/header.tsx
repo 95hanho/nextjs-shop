@@ -15,6 +15,7 @@ export default function Header() {
 	const pathname = usePathname();
 
 	useEffect(() => {
+		console.log("페이지 바껴서 토큰체크 실행됨");
 		tokenCheck();
 	}, [pathname]);
 
