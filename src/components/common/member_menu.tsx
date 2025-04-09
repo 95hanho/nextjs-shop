@@ -48,7 +48,7 @@ export default function MemberMenu() {
 								</li>
 								<li>
 									<Link href="/write-review" prefetch>
-										리뷰작성
+										나의 쿠폰
 									</Link>
 								</li>
 							</ul>

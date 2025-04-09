@@ -36,6 +36,10 @@ body {
   cursor: pointer;
   font-size: 24px;
 }
+#header .header-wrap .header-btn > a svg,
+#header .header-wrap .header-btn > button svg {
+  display: inline;
+}
 #header .header-wrap .header-btn .member-menu {
   position: absolute;
   top: calc(100% + 10px);
@@ -382,7 +386,91 @@ body {
   box-shadow: none;
   transform: translate(1px, 1px);
 }
-main {
-  min-width: 900px;
+#main .product-wrap .product-slider {
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+}
+#main .product-wrap .product-slider .marquee-container {
+  overflow: hidden;
+  width: 100%;
+}
+#main .product-wrap .product-slider .marquee-container:hover .marquee-track {
+  animation-play-state: paused;
+}
+#main .product-wrap .product-slider .marquee-container.paused .marquee-track {
+  animation-play-state: paused !important;
+}
+#main .product-wrap .product-slider .marquee-container.paused .marquee-track.right {
+  animation-play-state: paused !important;
+}
+#main .product-wrap .product-slider .marquee-container .marquee-track {
+  display: flex;
+  width: -moz-max-content;
+  width: max-content;
+  animation: scrollLeft 30s linear infinite;
+}
+#main .product-wrap .product-slider .marquee-container .marquee-track.right {
+  animation: scrollRight 30s linear infinite;
+}
+@keyframes scrollLeft {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+@keyframes scrollRight {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+#main .product-wrap .product-slider .marquee-container .marquee-track .product-item {
+  flex: 0 0 auto;
+  margin-right: 20px;
+  height: 300px;
+}
+#main .product-wrap .product-slider .marquee-container .marquee-track .product-item img {
+  height: 100%;
+  width: auto;
+  -o-object-fit: contain;
+     object-fit: contain;
+  display: block;
+}
+#main .product-wrap .product-slider .marquee-toggle-btn {
+  margin-top: 10px;
+  padding: 6px 12px;
+  background-color: #444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#cart {
+  height: 2000px;
+}
+#cart .cart-wrap {
+  display: flex;
+  gap: 30px;
+  justify-content: center;
   position: relative;
+}
+#cart .cart-wrap .product-wrap {
+  width: 300px;
+  background-color: #f00;
+  height: 500px;
+}
+#cart .cart-wrap .price-wrap {
+  border: 1px solid #000;
+  width: 200px;
+}
+#cart .cart-wrap .price-wrap .price-outline {
+  background-color: #f0f;
+  position: sticky;
+  top: 50px;
 }

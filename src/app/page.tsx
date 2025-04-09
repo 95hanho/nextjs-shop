@@ -1,37 +1,24 @@
-"use client";
+import { mainService } from "@/api";
+import { ProductData } from "@/types/main";
 
-import styled from "@emotion/styled";
-import exampleImage from "@/images/1.jpg";
+import ProductSlider from "@/components/main/ProductSlider";
 
-const Main = styled.main`
-	display: grid;
-	grid-template-columns: repeat(auto-fill, 225px);
-	justify-content: center; /* 중앙 정렬 */
-	min-width: 900px;
-`;
+interface MainData {
+	msg: string;
+	productList: ProductData[];
+}
 
-const ImageContainer = styled.div`
-	width: 225px;
-	height: 225px;
-	position: relative;
-	background-color: #eee; /* 여백 색상 설정 */
-`;
+export default async function Home() {
+	const { data }: { data: MainData } = await mainService.getMain();
+	const productList = data.productList;
 
-const Image = styled.img`
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	object-fit: contain; /* 이미지가 정사각형 영역 내에 맞춰지고, 남는 공간은 여백으로 남음 */
-`;
-
-export default function Home() {
-	const images = Array.from({ length: 40 }, (_, index) => (
-		<ImageContainer key={index}>
-			<Image src={"#"} alt={`Image ${index + 1}`} />
-		</ImageContainer>
-	));
-
-	return <Main>{images}</Main>;
+	return (
+		<main id="main">
+			<div className="product-wrap">
+				<ProductSlider productList={productList} />
+				<ProductSlider productList={productList} right={true} />
+				<ProductSlider productList={productList} />
+			</div>
+		</main>
+	);
 }

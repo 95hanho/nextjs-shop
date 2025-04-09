@@ -34,6 +34,9 @@ body {
 				margin-left: 20px;
 				cursor: pointer;
 				font-size: 24px;
+				svg {
+					display: inline;
+				}
 			}
 			.member-menu {
 				position: absolute;
@@ -399,7 +402,100 @@ body {
 		}
 	}
 }
-main {
-	min-width: 900px;
-	position: relative;
+#main {
+	.product-wrap {
+		.product-slider {
+			user-select: none;
+			.marquee-container {
+				overflow: hidden;
+				width: 100%;
+
+				// 마우스 호버 시 일시정지
+				&:hover .marquee-track {
+					animation-play-state: paused;
+				}
+
+				// 상태 기반 일시정지
+				&.paused .marquee-track {
+					animation-play-state: paused !important;
+				}
+				&.paused .marquee-track.right {
+					animation-play-state: paused !important;
+				}
+
+				.marquee-track {
+					display: flex;
+					width: max-content;
+					animation: scrollLeft 30s linear infinite;
+
+					&.right {
+						animation: scrollRight 30s linear infinite;
+					}
+
+					@keyframes scrollLeft {
+						0% {
+							transform: translateX(0);
+						}
+						100% {
+							transform: translateX(-50%);
+						}
+					}
+					@keyframes scrollRight {
+						0% {
+							transform: translateX(-50%);
+						}
+						100% {
+							transform: translateX(0);
+						}
+					}
+
+					.product-item {
+						flex: 0 0 auto;
+						margin-right: 20px;
+						height: 300px;
+
+						img {
+							height: 100%;
+							width: auto;
+							object-fit: contain;
+							display: block;
+						}
+					}
+				}
+			}
+
+			.marquee-toggle-btn {
+				margin-top: 10px;
+				padding: 6px 12px;
+				background-color: #444;
+				color: white;
+				border: none;
+				border-radius: 6px;
+				cursor: pointer;
+			}
+		}
+	}
+}
+#cart {
+	height: 2000px;
+	.cart-wrap {
+		display: flex;
+		gap: 30px;
+		justify-content: center;
+		position: relative;
+		.product-wrap {
+			width: 300px;
+			background-color: #f00;
+			height: 500px;
+		}
+		.price-wrap {
+			border: 1px solid #000;
+			width: 200px;
+			.price-outline {
+				background-color: #f0f;
+				position: sticky;
+				top: 50px;
+			}
+		}
+	}
 }
