@@ -453,6 +453,7 @@ body {
 
 #cart {
   height: 2000px;
+  font-family: "NotoSansKR";
 }
 #cart .cart-wrap {
   display: flex;
@@ -465,12 +466,26 @@ body {
   background-color: #f00;
   height: 500px;
 }
-#cart .cart-wrap .price-wrap {
-  border: 1px solid #000;
-  width: 200px;
-}
 #cart .cart-wrap .price-wrap .price-outline {
-  background-color: #f0f;
   position: sticky;
   top: 50px;
+  padding: 15px;
+  border: 1px solid #000;
+  width: 350px;
+}
+#cart .cart-wrap .price-wrap .price-outline .title {
+  font-size: 18px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+#cart .cart-wrap .price-wrap .price-outline .price-line {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+  font-size: 15px;
+}
+#cart .cart-wrap .price-wrap .price-outline hr {
+  margin: 15px 0 20px 0;
 }

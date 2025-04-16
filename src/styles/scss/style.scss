@@ -478,6 +478,7 @@ body {
 }
 #cart {
 	height: 2000px;
+	font-family: "NotoSansKR";
 	.cart-wrap {
 		display: flex;
 		gap: 30px;
@@ -489,12 +490,28 @@ body {
 			height: 500px;
 		}
 		.price-wrap {
-			border: 1px solid #000;
-			width: 200px;
 			.price-outline {
-				background-color: #f0f;
 				position: sticky;
 				top: 50px;
+				padding: 15px;
+				border: 1px solid #000;
+				width: 350px;
+				.title {
+					font-size: 18px;
+					margin-bottom: 10px;
+					display: flex;
+					justify-content: space-between;
+					align-items: center;
+				}
+				.price-line {
+					display: flex;
+					justify-content: space-between;
+					margin-bottom: 5px;
+					font-size: 15px;
+				}
+				hr {
+					margin: 15px 0 20px 0;
+				}
 			}
 		}
 	}

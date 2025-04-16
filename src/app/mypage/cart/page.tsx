@@ -18,31 +18,41 @@ export default function Cart() {
 				<div className="price-wrap">
 					<div className="price-outline">
 						<div className="title">구매금액</div>
-						<div>
-							<div>상품 금액</div>
-							<div>185000</div>
+						<div className="price-line">
+							<div className="info-name">상품 금액</div>
+							<div className="price-num">185,000</div>
 						</div>
-						<div>
+						<div className="price-line">
 							<div>할인 금액</div>
-							<div>-39,960원</div>
+							<div className="text-blue-700">-39,960원</div>
 						</div>
-						<div>
+						<div className="price-line">
 							<div>배송비</div>
-							<div>무료배송</div>
+							<div className="text-blue-700">무료배송</div>
 						</div>
-						<div>
+						<div className="price-line font-bold mt-4">
 							<div>총 구매 금액</div>
-							<div>145,040</div>
+							<div>
+								<span className="align-baseline mr-2 text-red-500">22%</span>
+								<span className="align-baseline">145,040</span>
+							</div>
 						</div>
-						<div>
+						<div className="price-line">
 							<div>적립혜택 예상</div>
 							<div>최대 5,120</div>
 						</div>
 						<hr />
-						<div>
+						<div className="title">
 							<div>결제 혜택</div>
-							<div>더보기</div>
+							<div className="text-sm">
+								<a href="#" className="text-gray-600 underline">
+									더보기
+								</a>
+							</div>
 						</div>
+					</div>
+					<div>
+						<button>145,040원 구매하기 (1개)</button>
 					</div>
 				</div>
 			</div>
