@@ -60,6 +60,9 @@ export default function ProductSlider({
 					{[...productList, ...productList].map((product, idx) => (
 						<div className="product-item" key={idx}>
 							<img src={product.img_path} alt={`Product ${product.product_id}`} />
+							<a href={product.copyright_url} target="_blank" className="copyright">
+								{product.copyright}
+							</a>
 						</div>
 					))}
 				</div>

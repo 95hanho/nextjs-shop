@@ -430,6 +430,7 @@ body {
   }
 }
 #main .product-wrap .product-slider .marquee-container .marquee-track .product-item {
+  position: relative;
   flex: 0 0 auto;
   margin-right: 20px;
   height: 300px;
@@ -440,6 +441,17 @@ body {
   -o-object-fit: contain;
      object-fit: contain;
   display: block;
+}
+#main .product-wrap .product-slider .marquee-container .marquee-track .product-item .copyright {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  padding: 0 5px;
+  font-size: 12px;
+  color: #fff;
+}
+#main .product-wrap .product-slider .marquee-container .marquee-track .product-item .copyright:hover {
+  text-decoration: underline;
 }
 #main .product-wrap .product-slider .marquee-toggle-btn {
   margin-top: 10px;

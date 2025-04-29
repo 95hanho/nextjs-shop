@@ -5,6 +5,7 @@ export interface ProductData {
 	price: string;
 	img_path: string;
 	copyright: string;
+	copyright_url: string;
 	created_at: Date;
 	view_count: number;
 	wish_count: number;

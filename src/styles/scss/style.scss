@@ -450,15 +450,26 @@ body {
 					}
 
 					.product-item {
+						position: relative;
 						flex: 0 0 auto;
 						margin-right: 20px;
 						height: 300px;
-
 						img {
 							height: 100%;
 							width: auto;
 							object-fit: contain;
 							display: block;
+						}
+						.copyright {
+							position: absolute;
+							bottom: 0;
+							right: 0;
+							padding: 0 5px;
+							font-size: 12px;
+							color: #fff;
+							&:hover {
+								text-decoration: underline;
+							}
 						}
 					}
 				}
