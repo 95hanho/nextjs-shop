@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, FormEvent, JoinForm, JoinFormRefs } from "@/types/form";
+import { ChangeEvent, FormEvent, JoinForm, JoinFormAlert, JoinFormRefs } from "@/types/form";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import JoinInput from "../../../components/member/JoinInput";
@@ -13,19 +13,20 @@ const init_joinForm: JoinForm = {
 	password: "aaaaaa1!",
 	password_check: "aaaaaa1!",
 	name: "한호성",
-	zonecode: "서울 송파구 중대로 121",
-	address: "2층",
+	zonecode: "05718",
+	address: "서울 송파구 중대로 121",
+	address_detail:"2층",
 	birthday: "1995/08/14",
 	phone: "01085546674",
 	email: "ehfqntuqntu@naver.com",
 };
-const init_joinAlert: JoinForm = {
+const init_joinAlert: JoinFormAlert = {
 	id: "",
 	password: "",
 	password_check: "",
 	name: "",
-	zonecode: "",
 	address: "",
+	address_detail: "",
 	birthday: "",
 	phone: "",
 	email: "",
@@ -146,10 +147,12 @@ export default function Member_join() {
 	const join_submit = (e: FormEvent) => {
 		console.log("join_submit");
 		e.preventDefault();
-		const keys = Object.keys(joinForm);
+		// const keys = Object.keys(joinForm) as (keyof JoinForm)[];
 		let alertOn = "";
-		for (let i = 0; i < keys.length; i++) {
-			const key = keys[i];
+		const alertKeys = Object.keys(joinFailAlert) as (keyof JoinFormAlert)[];
+		for (const key of alertKeys) {
+		// for (let i = 0; i < keys.length; i++) {
+			// const key = keys[i];
 			const value = joinForm[key];
 			alertOn = joinFailAlert[key];
 			// 알람없을 때 처음 누를 때
@@ -181,7 +184,7 @@ export default function Member_join() {
 				const fullAddress = data.roadAddress || data.jibunAddress;
 				set_joinForm((prev) => ({
 					...prev,
-					zonecode: fullAddress,
+					address: fullAddress,
 				}));
 			},
 		}).open({
@@ -249,26 +252,26 @@ export default function Member_join() {
 						}}
 					/>
 					<JoinInput
-						name="zonecode"
+						name="address"
 						label="주소"
 						placeholder="주소를 입력해주세요."
-						value={joinForm.zonecode}
-						failMessage={joinFailAlert.zonecode}
+						value={joinForm.address}
+						failMessage={joinFailAlert.address}
 						readOnly
 						onClick={addressPopup}
 						onBlur={validate_joinForm}
 						searchBtn={{ txt: "검색", fnc: addressPopup }}
 					/>
 					<JoinInput
-						name="address"
+						name="address_detail"
 						label="상세주소"
 						placeholder="상세주소를 입력해주세요."
-						value={joinForm.address}
-						failMessage={joinFailAlert.address}
+						value={joinForm.address_detail}
+						failMessage={joinFailAlert.address_detail}
 						onChange={change_joinForm}
 						onBlur={validate_joinForm}
 						ref={(el) => {
-							joinFormRefs.current.address = el;
+							joinFormRefs.current.address_detail = el;
 						}}
 					/>
 					<JoinInput

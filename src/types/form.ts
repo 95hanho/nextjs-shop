@@ -11,11 +11,14 @@ export interface JoinForm extends LoginData {
 	name: string;
 	zonecode: string;
 	address: string;
+	address_detail: string;
 	birthday: string;
 	phone: string;
 	email: string;
-	[key: string]: string;
+	// [key: string]: string;
 }
+
+export type JoinFormAlert = Omit<JoinForm, 'zonecode'>
 
 /* ------------------------------------------------ */
 
@@ -24,8 +27,8 @@ export interface JoinFormRefs {
 	password: HTMLInputElement | null;
 	password_check: HTMLInputElement | null;
 	name: HTMLInputElement | null;
-	zonecode: HTMLInputElement | null;
 	address: HTMLInputElement | null;
+	address_detail: HTMLInputElement | null;
 	phone: HTMLInputElement | null;
 	email: HTMLInputElement | null;
 	birthday: HTMLInputElement | null;
@@ -37,8 +40,8 @@ export interface JoinFormFocus {
 	password: boolean;
 	password_check: boolean;
 	name: boolean;
-	zonecode: boolean;
 	address: boolean;
+	address_detail: HTMLInputElement | null;
 	phone1: boolean;
 	phone2: boolean;
 	phone3: boolean;
