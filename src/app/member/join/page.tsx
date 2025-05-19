@@ -9,7 +9,7 @@ import useMember from "@/hooks/services/useMember";
 import { isValidDateString } from "@/utils/ui";
 
 const init_joinForm: JoinForm = {
-	id: "hoseongs",
+	user_id: "hoseongs",
 	password: "aaaaaa1!",
 	password_check: "aaaaaa1!",
 	name: "한호성",
@@ -21,7 +21,7 @@ const init_joinForm: JoinForm = {
 	email: "ehfqntuqntu@naver.com",
 };
 const init_joinAlert: JoinFormAlert = {
-	id: "",
+	user_id: "",
 	password: "",
 	password_check: "",
 	name: "",
@@ -33,13 +33,13 @@ const init_joinAlert: JoinFormAlert = {
 };
 
 const joinFormRegex: { [key: string]: RegExp } = {
-	id: /^[a-zA-Z][a-zA-Z0-9_]{5,14}$/,
+	user_id: /^[a-zA-Z][a-zA-Z0-9_]{5,14}$/,
 	password: /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*])[a-zA-Z\d!@#$%^&*]{8,20}$/,
 	phone: /^(010|011|016|017|018|019)\d{3,4}\d{4}$/,
 	email: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
 };
 const joinFormRegexFailMent: { [key: string]: string } = {
-	id: "영문으로 시작하고 영문, 숫자, 언더스코어를 포함하는 6자이상 15자 이하 조합",
+	user_id: "영문으로 시작하고 영문, 숫자, 언더스코어를 포함하는 6자이상 15자 이하 조합",
 	password: "영문, 숫자, 특수문자 각각 1개이상 포함하는 8자이상 20자 이하 조합",
 	birthday: "(YYYYMMDD) 생년월일 형식에 맞지 않습니다.",
 	phone: "휴대폰 번호 형식에 일치하지 않습니다.",
@@ -53,6 +53,7 @@ export default function Member_join() {
 	const [joinFailAlert, set_joinFailAlert] = useState(init_joinAlert);
 	const [joinSuccessAlert, set_joinSuccessAlert] = useState(init_joinAlert);
 	const joinFormRefs = useRef<Partial<JoinFormRefs>>({});
+	const [idDuplCheck, set_idDuplCheck] = useState(false);
 	const [phoneAuth, set_phoneAuth] = useState(false);
 
 	const change_joinForm = (e: ChangeEvent) => {
@@ -93,12 +94,14 @@ export default function Member_join() {
 			}
 		}
 		if (!failMent) {
-			if (name == "id") {
+			if (name == "user_id") {
 				try {
-					await handleIdDuplcheck.mutateAsync(joinForm.id);
+					await handleIdDuplcheck.mutateAsync(joinForm.user_id);
 					successMent = "사용가능한 아이디입니다.";
+					set_idDuplCheck(true);
 				} catch {
 					failMent = "중복된 아이디가 존재합니다.";
+					set_idDuplCheck(false);
 				}
 			} else if (name == "password") {
 				if (joinForm.password_check && joinForm.password_check != value) {
@@ -155,10 +158,12 @@ export default function Member_join() {
 			// const key = keys[i];
 			const value = joinForm[key];
 			alertOn = joinFailAlert[key];
-			// 알람없을 때 처음 누를 때
+			// 알람없을 때 처음 누를 때	
 			if (!alertOn) {
 				if (!value) {
 					alertOn = "해당 내용을 입력해주세요.";
+				} else if (key == "user_id" && !idDuplCheck) {
+					alertOn = "아이디 중복확인을 해주세요.";
 				} else if (key == "phone" && !phoneAuth) {
 					alertOn = "휴대폰 인증이 필요합니다.";
 				}
@@ -175,6 +180,7 @@ export default function Member_join() {
 		}
 		if (alertOn) return;
 		// 회원가입 로직 추가
+		console.log(joinForm);
 		handleRegister.mutate(joinForm);
 	};
 
@@ -200,16 +206,16 @@ export default function Member_join() {
 				</h2>
 				<form onSubmit={join_submit}>
 					<JoinInput
-						name="id"
+						name="user_id"
 						label="아이디"
 						placeholder="아이디를 입력해주세요."
-						value={joinForm.id}
-						failMessage={joinFailAlert.id}
-						successMessage={joinSuccessAlert.id}
+						value={joinForm.user_id}
+						failMessage={joinFailAlert.user_id}
+						successMessage={joinSuccessAlert.user_id}
 						onChange={change_joinForm}
 						onBlur={validate_joinForm}
 						ref={(el) => {
-							joinFormRefs.current.id = el;
+							joinFormRefs.current.user_id = el;
 						}}
 					/>
 					<JoinInput

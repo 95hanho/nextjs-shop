@@ -10,12 +10,12 @@ import useMember from "@/hooks/services/useMember";
 export default function Login() {
 	const { handleLogin } = useMember();
 
-	const idRef = useRef<HTMLInputElement>(null);
+	const user_idRef = useRef<HTMLInputElement>(null);
 	const pwdRef = useRef<HTMLInputElement>(null);
-	const [idFocus, set_idFocus] = useState<boolean>(false);
+	const [user_idFocus, set_user_idFocus] = useState<boolean>(false);
 	const [pwdFocus, set_pwdFocus] = useState<boolean>(false);
 	const [loginData, set_loginData] = useState<LoginData>({
-		id: "hoseongs",
+		user_id: "hoseongs",
 		password: "aaaaaa1!",
 	});
 	const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -24,9 +24,9 @@ export default function Login() {
 	const login_submit = (e: FormEvent) => {
 		console.log("login_submit");
 		e.preventDefault();
-		if (!loginData.id) {
+		if (!loginData.user_id) {
 			set_alertMessage("아이디를 입력해주세요.");
-			idRef.current?.focus();
+			user_idRef.current?.focus();
 			return;
 		}
 		if (!loginData.password) {
@@ -42,8 +42,8 @@ export default function Login() {
 	};
 
 	useEffect(() => {
-		if (loginData.id) {
-			set_idFocus(true);
+		if (loginData.user_id) {
+			set_user_idFocus(true);
 		}
 		if (loginData.password) {
 			set_pwdFocus(true);
@@ -58,28 +58,28 @@ export default function Login() {
 				</h2>
 				<form action="" onSubmit={login_submit}>
 					<div
-						className={`login-input ${idFocus ? "focus" : ""}`}
+						className={`login-input ${user_idFocus ? "focus" : ""}`}
 						onMouseDown={(e) => {
-							if (!idFocus) {
+							if (!user_idFocus) {
 								e.preventDefault();
-								idRef.current?.focus();
+								user_idRef.current?.focus();
 							}
 						}}
 					>
 						<input
 							type="text"
-							ref={idRef}
+							ref={user_idRef}
 							onFocus={() => {
-								set_idFocus(true);
+								set_user_idFocus(true);
 							}}
 							onBlur={() => {
-								if (!loginData.id) {
-									set_idFocus(false);
+								if (!loginData.user_id) {
+									set_user_idFocus(false);
 								}
 							}}
-							value={loginData.id}
+							value={loginData.user_id}
 							onChange={(e) => {
-								set_loginData({ ...loginData, id: e.target.value });
+								set_loginData({ ...loginData, user_id: e.target.value });
 								set_alertMessage("");
 							}}
 						/>

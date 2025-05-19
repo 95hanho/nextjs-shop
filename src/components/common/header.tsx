@@ -9,8 +9,9 @@ import useAuth from "@/hooks/useAuth";
 import { useContext, useEffect } from "react";
 import { isTokenExpired } from "@/utils/auth";
 import { authContext } from "@/context/AuthProvider";
+import { Menu } from "@/types/main";
 
-export default function Header() {
+export default function Header({ menuList }: { menuList: Menu[] }) {
 	const { tokenCheck } = useAuth();
 	const pathname = usePathname();
 
@@ -38,7 +39,7 @@ export default function Header() {
 						</div>
 					</div>
 				</header>
-				<Nav />
+				<Nav menuList={menuList} />
 			</>
 		);
 	}

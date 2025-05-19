@@ -3,14 +3,14 @@ import { ProductData } from "@/types/main";
 
 import ProductSlider from "@/components/main/ProductSlider";
 
-interface MainData {
+interface MainSlideData {
 	msg: string;
 	productList: ProductData[];
 }
 
 export default async function Home() {
-	const { data }: { data: MainData } = await mainService.getMain();
-	const productList = data.productList;
+	const { data: products_data }: { data: MainSlideData } = await mainService.getMainSlideProducts();
+	const productList = products_data.productList;
 
 	return (
 		<main id="main">

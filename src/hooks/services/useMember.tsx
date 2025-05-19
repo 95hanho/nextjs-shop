@@ -16,6 +16,7 @@ export default function useMember() {
 		onMutate(a) {
 			console.log(a);
 		},
+
 		onSuccess({ data }) {
 			console.log(data);
 			alert("로그인!");
@@ -52,7 +53,7 @@ export default function useMember() {
 	});
 
 	const handleIdDuplcheck = useMutation({
-		mutationFn: (id: string) => authService.idDuplcheck({ id }),
+		mutationFn: (user_id: string) => authService.idDuplcheck({ user_id }),
 		// Mutation이 시작되기 직전에 특정 작업을 수행
 		onMutate(a) {
 			console.log(a);

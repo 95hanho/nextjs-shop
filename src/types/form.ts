@@ -2,7 +2,7 @@ export type FormEvent = React.FormEvent<HTMLFormElement>;
 export type ChangeEvent = React.ChangeEvent<HTMLInputElement>;
 
 export interface LoginData {
-	id: string;
+	user_id: string;
 	password: string;
 }
 
@@ -23,7 +23,7 @@ export type JoinFormAlert = Omit<JoinForm, 'zonecode'>
 /* ------------------------------------------------ */
 
 export interface JoinFormRefs {
-	id: HTMLInputElement | null;
+	user_id: HTMLInputElement | null;
 	password: HTMLInputElement | null;
 	password_check: HTMLInputElement | null;
 	name: HTMLInputElement | null;
@@ -36,7 +36,7 @@ export interface JoinFormRefs {
 }
 
 export interface JoinFormFocus {
-	id: boolean;
+	user_id: boolean;
 	password: boolean;
 	password_check: boolean;
 	name: boolean;

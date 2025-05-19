@@ -12,7 +12,7 @@ body {
   background-color: #f8f9fa;
   position: sticky; /* 버튼 컨테이너의 절대 위치를 위한 설정 */
   top: 0;
-  z-index: 1;
+  z-index: 100;
 }
 #header h1 a {
   font-size: 30px;
@@ -69,6 +69,9 @@ body {
 }
 
 #nav {
+  position: relative;
+}
+#nav .nav-wrap {
   height: 50px;
   display: flex;
   justify-content: space-between;
@@ -122,6 +125,42 @@ body {
   text-decoration: none;
 }
 #nav .nav-menu a:hover {
+  text-decoration: underline;
+}
+#nav .menu-wrap {
+  position: absolute;
+  background-color: #fff;
+  z-index: 1;
+  box-shadow: 3px 3px 7px #aaa;
+}
+#nav .menu-wrap .menu-list {
+  padding: 0 30px 0 40px;
+}
+#nav .menu-wrap .menu-list .menu-list-ul {
+  display: flex;
+}
+#nav .menu-wrap .menu-list .menu-list-ul:first-child {
+  font-size: 20px;
+}
+#nav .menu-wrap .menu-list .menu-list-ul .menu-list-li {
+  min-width: 100px;
+  margin-right: 10px;
+}
+#nav .menu-wrap .menu-list .menu-list-ul .menu-list-li div {
+  margin-bottom: 5px;
+}
+#nav .menu-wrap .menu-list .menu-list-ul .menu-list-li div:first-child {
+  font-size: 25px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+#nav .menu-wrap .menu-list .menu-list-ul .menu-list-li div:first-child a:hover {
+  text-decoration: underline;
+}
+#nav .menu-wrap .menu-list .menu-list-ul .menu-list-li .sub-menu-list a {
+  font-size: 18px;
+}
+#nav .menu-wrap .menu-list .menu-list-ul .menu-list-li .sub-menu-list a:hover {
   text-decoration: underline;
 }
 
