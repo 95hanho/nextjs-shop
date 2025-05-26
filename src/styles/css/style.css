@@ -1,6 +1,6 @@
 @charset "UTF-8";
 body {
-  background-color: #eee;
+  background-color: #ffffff;
 }
 
 #header {
@@ -425,6 +425,7 @@ body {
   box-shadow: none;
   transform: translate(1px, 1px);
 }
+/* 메인 */
 #main .product-wrap .product-slider {
   -webkit-user-select: none;
      -moz-user-select: none;
@@ -502,6 +503,281 @@ body {
   cursor: pointer;
 }
 
+/* 상품리스트 */
+main#productList .product-wrap {
+  max-width: 80%;
+  min-width: 700px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 15px; /* 카드 간 간격 */
+  justify-content: center; /* 가운데 정렬 */
+  padding: 20px;
+  margin: 0 auto;
+}
+main#productList .product-wrap .product-card {
+  width: 100%;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+}
+main#productList .product-wrap .product-card .product-card__image {
+  position: relative;
+  aspect-ratio: 1/1;
+  width: 100%;
+}
+main#productList .product-wrap .product-card .product-card__info {
+  padding: 10px;
+}
+main#productList .product-wrap .product-card .product-card__info .product-card__badge {
+  font-size: 15px;
+}
+main#productList .product-wrap .product-card .product-card__info .product-card__badge span {
+  padding-left: 3px;
+  font-size: 10px;
+  vertical-align: text-top;
+}
+main#productList .product-wrap .product-card .product-card__info .product-info__link .product-card__title {
+  font-size: 17px;
+  font-weight: 500;
+}
+main#productList .product-wrap .product-card .product-card__info .product-info__link .product-card__price {
+  font-size: 20px;
+}
+main#productList .product-wrap .product-card .product-card__info .product-info__link .product-card__price .product-card__discount {
+  color: #d35b15;
+}
+main#productList .product-wrap .product-card .product-card__info .product-info__link .product-card__price .product-card__price-value {
+  margin-left: 5px;
+}
+main#productList .product-wrap .product-card .product-card__info .product-info__link .product-card__coupon {
+  margin-bottom: 5px;
+}
+main#productList .product-wrap .product-card .product-card__info .product-info__link .product-card__coupon span {
+  background-color: #f2f2f2;
+  padding: 2.7px 6.8px;
+  font-size: 15px;
+}
+main#productList .product-wrap .product-card .product-card__info .product-card__review {
+  font-size: 15px;
+}
+main#productList .product-wrap .product-card .product-card__info .product-card__review svg {
+  margin-right: 3px;
+}
+main#productList .product-wrap .product-card .product-card__info .product-card__review .product-card__review-count {
+  margin-right: 5px;
+}
+/* 제품상세보기 */
+main#productDetail {
+  position: relative;
+  min-width: 900px;
+  max-width: 1200px;
+  margin: 0 auto;
+  /* 상품 사진 및 가격배송 정보 */
+  /* 업체등록 상품 상세 블로그 */
+  /* 상품정보 보기, 판매자 정보 */
+  /* 배송정보, 교환, 환불, A/S안내, 같은 카테고리 추천 */
+}
+main#productDetail section#product-visual-info {
+  display: flex;
+  padding: 30px 0;
+}
+main#productDetail section#product-visual-info .product-image-area {
+  position: relative;
+  width: 50%;
+}
+main#productDetail section#product-visual-info .product-text-info {
+  width: 50%;
+  border-top: 2px solid #000;
+  margin-left: 30px;
+  margin: 0 20px;
+  width: 45%;
+}
+main#productDetail section#product-visual-info .product-text-info .product-meta-info .product-title-wishlist {
+  display: flex;
+  justify-content: space-between;
+}
+main#productDetail section#product-visual-info .product-text-info .product-meta-info .product-title-wishlist .product-name {
+  font-size: 25px;
+  font-weight: bold;
+  padding: 20px 0;
+}
+main#productDetail section#product-visual-info .product-text-info .product-meta-info .product-title-wishlist .product-wishlist {
+  padding: 20px 0;
+  width: 80px;
+  text-align: center;
+  font-size: 25px;
+  border-left: 1px solid #e4e4e4;
+}
+main#productDetail section#product-visual-info .product-text-info .product-meta-info .product-review-section {
+  font-size: 20px;
+}
+main#productDetail section#product-visual-info .product-text-info .product-meta-info .product-price-info {
+  padding-top: 10px;
+}
+main#productDetail section#product-visual-info .product-text-info .product-meta-info .product-price-info .original-price {
+  font-size: 20px;
+  text-decoration: line-through;
+  color: #adadad;
+}
+main#productDetail section#product-visual-info .product-text-info .product-meta-info .product-price-info .first-purchase-label {
+  color: #f35b1f;
+  font-weight: bold;
+  font-size: 15px;
+}
+main#productDetail section#product-visual-info .product-text-info .product-meta-info .product-price-info .price-discount .price-box {
+  display: inline-block;
+  font-size: 30px;
+}
+main#productDetail section#product-visual-info .product-text-info .product-meta-info .product-price-info .price-discount .price-box b {
+  color: #f35b1f;
+  margin-right: 5px;
+}
+main#productDetail section#product-visual-info .product-text-info .product-meta-info .product-price-info .price-discount .tooltip-btn {
+  font-size: 20px;
+  color: #9f9f9f;
+  margin: 0 5px;
+}
+main#productDetail section#product-visual-info .product-text-info .product-meta-info .product-price-info .my-price {
+  padding: 11px 15px;
+  font-size: 25px;
+  font-weight: bold;
+  background-color: #f3f3f3;
+  display: flex;
+  justify-content: space-between;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+main#productDetail section#product-visual-info .product-text-info .product-meta-info .product-price-info .my-price > div b {
+  color: #f35b1f;
+  margin-right: 7px;
+}
+main#productDetail section#product-visual-info .product-text-info .product-meta-info .product-price-info .my-price button {
+  font-size: 20px;
+  color: #535353;
+}
+main#productDetail section#product-visual-info .product-text-info .product-additional-info {
+  border-top: 1px solid #e4e4e4;
+  padding: 20px 0;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: "NotoSansKR";
+}
+main#productDetail section#product-visual-info .product-text-info .product-additional-info > div {
+  padding: 5px 0;
+}
+main#productDetail section#product-visual-info .product-text-info .product-additional-info > div > b {
+  display: inline-block;
+  width: 120px;
+}
+main#productDetail section#product-visual-info .product-text-info .product-additional-info .product-mileage {
+  margin-bottom: 5px;
+}
+main#productDetail section#product-visual-info .product-text-info .product-additional-info .installment-info {
+  margin-bottom: 5px;
+}
+main#productDetail section#product-visual-info .product-text-info .product-additional-info .installment-info b {
+  margin-top: 5px;
+  vertical-align: top;
+  display: inline-block;
+  -ms-flex-negative: 0;
+  align-self: flex-start;
+}
+main#productDetail section#product-visual-info .product-text-info .product-additional-info .installment-info div {
+  display: inline-block;
+}
+main#productDetail section#product-visual-info .product-text-info .product-additional-info .installment-info div p {
+  vertical-align: text-top;
+}
+main#productDetail section#product-visual-info .product-text-info .product-additional-info .installment-info div > div button {
+  text-decoration: underline;
+  font-size: 16px;
+  vertical-align: text-top;
+}
+main#productDetail section#product-visual-info .product-text-info .product-additional-info .delivery-info {
+  margin-bottom: 5px;
+}
+main#productDetail section#product-visual-info .product-text-info .product-additional-info .delivery-info > b button {
+  margin-left: 5px;
+  font-size: 16px;
+}
+main#productDetail section#product-visual-info .product-text-info .product-additional-info .delivery-info span span {
+  color: #2656cf;
+  text-decoration: none;
+}
+main#productDetail section#product-visual-info .product-text-info .product-additional-info .delivery-fee-info b {
+  margin-top: 5px;
+  vertical-align: top;
+}
+main#productDetail section#product-visual-info .product-text-info .product-additional-info .delivery-fee-info div {
+  display: inline-block;
+}
+main#productDetail section#product-visual-info .product-text-info .product-additional-info .delivery-fee-info div p:first-child {
+  color: #2656cf;
+}
+main#productDetail section#product-visual-info .product-text-info .product-option-buy {
+  margin-top: 20px;
+}
+main#productDetail section#product-visual-info .product-text-info .product-option-buy .option-selector {
+  font-family: "notoSansKR";
+  position: relative;
+  margin-bottom: 20px;
+}
+main#productDetail section#product-visual-info .product-text-info .product-option-buy .option-selector .option-select-box {
+  position: relative;
+}
+main#productDetail section#product-visual-info .product-text-info .product-option-buy .option-selector .option-select-box input {
+  width: 100%;
+  border: 1px solid #ccc;
+  font-size: 13px;
+  padding: 8px 10px;
+  font-family: "notoSansKR";
+  vertical-align: baseline;
+  background-color: #fff;
+}
+main#productDetail section#product-visual-info .product-text-info .product-option-buy .option-selector .option-select-box span {
+  position: absolute;
+  right: 0;
+  width: 35px;
+  height: 100%;
+  font-size: 20px;
+  align-content: center;
+}
+main#productDetail section#product-visual-info .product-text-info .product-option-buy .option-selector .option-list {
+  display: none;
+  position: absolute;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-top: none;
+  z-index: 100;
+  background-color: #fff;
+}
+main#productDetail section#product-visual-info .product-text-info .product-option-buy .option-selector .option-list li {
+  padding: 8px 10px;
+  font-size: 13px;
+  cursor: pointer;
+}
+main#productDetail section#product-visual-info .product-text-info .product-option-buy .option-selector .option-list li:hover {
+  background-color: #f0f0f0;
+}
+main#productDetail section#product-visual-info .product-text-info .product-option-buy .action-buttons {
+  border: 1px solid #ccc;
+}
+main#productDetail section#product-visual-info .product-text-info .product-option-buy .action-buttons button {
+  padding: 10px 15px;
+  font-size: 20px;
+}
+main#productDetail section#product-visual-info .product-text-info .product-option-buy .action-buttons .btn-cart {
+  width: 50%;
+}
+main#productDetail section#product-visual-info .product-text-info .product-option-buy .action-buttons .btn-buy {
+  width: 50%;
+  background-color: #000;
+  color: #fff;
+}
+main#productDetail section#product-visual-info .product-text-info .product-option-buy .action-buttons .btn-buy:hover {
+  background-color: #eb5449;
+}
+/* 장바구니 */
 #cart {
   height: 2000px;
   font-family: "NotoSansKR";

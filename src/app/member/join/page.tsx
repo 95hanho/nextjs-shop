@@ -15,7 +15,7 @@ const init_joinForm: JoinForm = {
 	name: "한호성",
 	zonecode: "05718",
 	address: "서울 송파구 중대로 121",
-	address_detail:"2층",
+	address_detail: "2층",
 	birthday: "1995/08/14",
 	phone: "01085546674",
 	email: "ehfqntuqntu@naver.com",
@@ -116,12 +116,7 @@ export default function Member_join() {
 				if (!isValidDateString(numericValue)) {
 					failMent = joinFormRegexFailMent[name];
 				} else {
-					value =
-						numericValue.slice(0, 4) +
-						"/" +
-						numericValue.slice(4, 6) +
-						"/" +
-						numericValue.slice(6, 8);
+					value = numericValue.slice(0, 4) + "/" + numericValue.slice(4, 6) + "/" + numericValue.slice(6, 8);
 				}
 			} else if (name == "phone") {
 				if (joinSuccessAlert.phone) {
@@ -154,11 +149,11 @@ export default function Member_join() {
 		let alertOn = "";
 		const alertKeys = Object.keys(joinFailAlert) as (keyof JoinFormAlert)[];
 		for (const key of alertKeys) {
-		// for (let i = 0; i < keys.length; i++) {
+			// for (let i = 0; i < keys.length; i++) {
 			// const key = keys[i];
 			const value = joinForm[key];
 			alertOn = joinFailAlert[key];
-			// 알람없을 때 처음 누를 때	
+			// 알람없을 때 처음 누를 때
 			if (!alertOn) {
 				if (!value) {
 					alertOn = "해당 내용을 입력해주세요.";

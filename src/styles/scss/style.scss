@@ -1,5 +1,5 @@
 body {
-	background-color: #eee;
+	background-color: #ffffff;
 }
 #header {
 	height: 50px;
@@ -443,6 +443,7 @@ body {
 		}
 	}
 }
+/* 메인 */
 #main {
 	.product-wrap {
 		.product-slider {
@@ -528,6 +529,313 @@ body {
 		}
 	}
 }
+/* 상품리스트 */
+main#productList {
+	.product-wrap {
+		max-width: 80%;
+		min-width: 700px;
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+		gap: 15px; /* 카드 간 간격 */
+		justify-content: center; /* 가운데 정렬 */
+		padding: 20px;
+		margin: 0 auto;
+		.product-card {
+			width: 100%;
+			background: #fff;
+			border-radius: 8px;
+			overflow: hidden;
+			.product-card__image {
+				position: relative;
+				aspect-ratio: 1 / 1; // width와 height를 같게 설정
+				width: 100%;
+			}
+			.product-card__info {
+				padding: 10px;
+				.product-card__badge {
+					font-size: 15px;
+					span {
+						padding-left: 3px;
+						font-size: 10px;
+						vertical-align: text-top;
+					}
+				}
+				.product-info__link {
+					.product-card__title {
+						font-size: 17px;
+						font-weight: 500;
+					}
+					.product-card__price {
+						font-size: 20px;
+						.product-card__discount {
+							color: #d35b15;
+						}
+						.product-card__price-value {
+							margin-left: 5px;
+						}
+					}
+					.product-card__coupon {
+						margin-bottom: 5px;
+						span {
+							background-color: #f2f2f2;
+							padding: 2.7px 6.8px;
+							font-size: 15px;
+						}
+					}
+				}
+				.product-card__review {
+					font-size: 15px;
+					svg {
+						margin-right: 3px;
+					}
+					.product-card__review-count {
+						margin-right: 5px;
+					}
+					.product-card__rating {
+					}
+				}
+			}
+		}
+	}
+}
+/* 제품상세보기 */
+main#productDetail {
+	position: relative;
+	min-width: 900px;
+	max-width: 1200px;
+	margin: 0 auto;
+	/* 상품 사진 및 가격배송 정보 */
+	section#product-visual-info {
+		display: flex;
+		padding: 30px 0;
+		.product-image-area {
+			position: relative;
+			width: 50%;
+			img {
+			}
+		}
+		.product-text-info {
+			width: 50%;
+			border-top: 2px solid #000;
+			margin-left: 30px;
+			margin: 0 20px;
+			width: 45%;
+			.product-meta-info {
+				.product-title-wishlist {
+					display: flex;
+					justify-content: space-between;
+					.product-name {
+						font-size: 25px;
+						font-weight: bold;
+						padding: 20px 0;
+					}
+					.product-wishlist {
+						padding: 20px 0;
+						width: 80px;
+						text-align: center;
+						font-size: 25px;
+						border-left: 1px solid #e4e4e4;
+					}
+				}
+				.product-review-section {
+					font-size: 20px;
+				}
+				.product-price-info {
+					padding-top: 10px;
+					.original-price {
+						font-size: 20px;
+						text-decoration: line-through;
+						color: #adadad;
+					}
+					.first-purchase-label {
+						color: #f35b1f;
+						font-weight: bold;
+						font-size: 15px;
+					}
+					.price-discount {
+						.price-box {
+							display: inline-block;
+							font-size: 30px;
+							b {
+								color: #f35b1f;
+								margin-right: 5px;
+							}
+						}
+						.tooltip-btn {
+							font-size: 20px;
+							color: #9f9f9f;
+							margin: 0 5px;
+						}
+					}
+					.my-price {
+						padding: 11px 15px;
+						font-size: 25px;
+						font-weight: bold;
+						background-color: #f3f3f3;
+						display: flex;
+						justify-content: space-between;
+						border-radius: 5px;
+						margin-bottom: 10px;
+						> div {
+							b {
+								color: #f35b1f;
+								margin-right: 7px;
+							}
+						}
+						button {
+							font-size: 20px;
+							color: #535353;
+						}
+					}
+				}
+			}
+			.product-additional-info {
+				border-top: 1px solid #e4e4e4;
+				padding: 20px 0;
+				font-size: 13px;
+				font-weight: 500;
+				font-family: "NotoSansKR";
+				> div {
+					padding: 5px 0;
+					> b {
+						display: inline-block;
+						width: 120px;
+					}
+				}
+				.product-mileage {
+					margin-bottom: 5px;
+				}
+				.installment-info {
+					margin-bottom: 5px;
+					b {
+						margin-top: 5px;
+						vertical-align: top;
+						display: inline-block;
+						-ms-flex-negative: 0;
+						-webkit-align-self: flex-start;
+						-ms-flex-item-align: flex-start;
+						align-self: flex-start;
+					}
+					div {
+						display: inline-block;
+						p {
+							vertical-align: text-top;
+						}
+						> div {
+							button {
+								text-decoration: underline;
+								font-size: 16px;
+								vertical-align: text-top;
+							}
+						}
+					}
+				}
+				.delivery-info {
+					margin-bottom: 5px;
+					> b {
+						button {
+							margin-left: 5px;
+							font-size: 16px;
+						}
+					}
+					span {
+						span {
+							color: #2656cf;
+							text-decoration: none;
+						}
+					}
+				}
+				.delivery-fee-info {
+					b {
+						margin-top: 5px;
+						vertical-align: top;
+					}
+					div {
+						display: inline-block;
+						p {
+							&:first-child {
+								color: #2656cf;
+							}
+						}
+					}
+				}
+			}
+			.product-option-buy {
+				margin-top: 20px;
+				.option-selector {
+					font-family: "notoSansKR";
+					position: relative;
+					margin-bottom: 20px;
+					.option-select-box {
+						position: relative;
+						input {
+							width: 100%;
+							border: 1px solid #ccc;
+							font-size: 13px;
+							padding: 8px 10px;
+							font-family: "notoSansKR";
+							vertical-align: baseline;
+							background-color: #fff;
+						}
+						span {
+							position: absolute;
+							right: 0;
+							width: 35px;
+							height: 100%;
+							font-size: 20px;
+							align-content: center;
+						}
+					}
+					.option-list {
+						display: none;
+						position: absolute;
+						width: 100%;
+						border: 1px solid #ccc;
+						border-top: none;
+						z-index: 100;
+						background-color: #fff;
+						li {
+							padding: 8px 10px;
+							font-size: 13px;
+							cursor: pointer;
+							&:hover {
+								background-color: #f0f0f0;
+							}
+						}
+					}
+				}
+				.action-buttons {
+					border: 1px solid #ccc;
+					button {
+						padding: 10px 15px;
+						font-size: 20px;
+					}
+					.btn-cart {
+						width: 50%;
+					}
+					.btn-buy {
+						width: 50%;
+						background-color: #000;
+						color: #fff;
+						&:hover {
+							background-color: #eb5449;
+						}
+					}
+				}
+			}
+		}
+	}
+	/* 업체등록 상품 상세 블로그 */
+	section#product-description {
+	}
+	/* 상품정보 보기, 판매자 정보 */
+	section#product-info-section {
+	}
+	/* 배송정보, 교환, 환불, A/S안내, 같은 카테고리 추천 */
+	section#etc-info-section {
+	}
+}
+/* 장바구니 */
 #cart {
 	height: 2000px;
 	font-family: "NotoSansKR";
