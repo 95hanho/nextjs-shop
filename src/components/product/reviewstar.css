@@ -2,7 +2,7 @@
 .rate {
 	display: inline-block;
 	border: 0;
-	margin-right: 15px;
+	margin-right: 10px;
 }
 .rate > input {
 	display: none;
@@ -13,8 +13,8 @@
 }
 .rate > label:before {
 	display: inline-block;
-	font-size: 1rem;
-	padding: 0.3rem 0.2rem;
+	font-size: 0.9em;
+	padding: 0.3rem 0.1rem;
 	margin: 0;
 	cursor: pointer;
 	font-family: FontAwesome;

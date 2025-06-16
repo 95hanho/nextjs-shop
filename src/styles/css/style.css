@@ -572,10 +572,14 @@ main#productDetail {
   min-width: 900px;
   max-width: 1200px;
   margin: 0 auto;
+  padding: 0 30px;
   /* 상품 사진 및 가격배송 정보 */
   /* 업체등록 상품 상세 블로그 */
   /* 상품정보 보기, 판매자 정보 */
   /* 배송정보, 교환, 환불, A/S안내, 같은 카테고리 추천 */
+}
+main#productDetail * {
+  font-family: "notoSansKR";
 }
 main#productDetail section#product-visual-info {
   display: flex;
@@ -589,7 +593,6 @@ main#productDetail section#product-visual-info .product-text-info {
   width: 50%;
   border-top: 2px solid #000;
   margin-left: 30px;
-  margin: 0 20px;
   width: 45%;
 }
 main#productDetail section#product-visual-info .product-text-info .product-meta-info .product-title-wishlist {
@@ -597,7 +600,7 @@ main#productDetail section#product-visual-info .product-text-info .product-meta-
   justify-content: space-between;
 }
 main#productDetail section#product-visual-info .product-text-info .product-meta-info .product-title-wishlist .product-name {
-  font-size: 25px;
+  font-size: 20px;
   font-weight: bold;
   padding: 20px 0;
 }
@@ -609,24 +612,30 @@ main#productDetail section#product-visual-info .product-text-info .product-meta-
   border-left: 1px solid #e4e4e4;
 }
 main#productDetail section#product-visual-info .product-text-info .product-meta-info .product-review-section {
-  font-size: 20px;
+  display: flex;
+  font-size: 11px;
+}
+main#productDetail section#product-visual-info .product-text-info .product-meta-info .product-review-section a {
+  color: #494949;
+  text-decoration: underline;
 }
 main#productDetail section#product-visual-info .product-text-info .product-meta-info .product-price-info {
   padding-top: 10px;
 }
 main#productDetail section#product-visual-info .product-text-info .product-meta-info .product-price-info .original-price {
-  font-size: 20px;
+  font-size: 12px;
+  font-weight: 500;
   text-decoration: line-through;
   color: #adadad;
 }
 main#productDetail section#product-visual-info .product-text-info .product-meta-info .product-price-info .first-purchase-label {
   color: #f35b1f;
   font-weight: bold;
-  font-size: 15px;
+  font-size: 12px;
 }
 main#productDetail section#product-visual-info .product-text-info .product-meta-info .product-price-info .price-discount .price-box {
   display: inline-block;
-  font-size: 30px;
+  font-size: 19px;
 }
 main#productDetail section#product-visual-info .product-text-info .product-meta-info .product-price-info .price-discount .price-box b {
   color: #f35b1f;
@@ -638,8 +647,9 @@ main#productDetail section#product-visual-info .product-text-info .product-meta-
   margin: 0 5px;
 }
 main#productDetail section#product-visual-info .product-text-info .product-meta-info .product-price-info .my-price {
+  margin-top: 15px;
   padding: 11px 15px;
-  font-size: 25px;
+  font-size: 18px;
   font-weight: bold;
   background-color: #f3f3f3;
   display: flex;
@@ -651,16 +661,24 @@ main#productDetail section#product-visual-info .product-text-info .product-meta-
   color: #f35b1f;
   margin-right: 7px;
 }
+main#productDetail section#product-visual-info .product-text-info .product-meta-info .product-price-info .my-price > div b,
+main#productDetail section#product-visual-info .product-text-info .product-meta-info .product-price-info .my-price > div strong {
+  display: inline-block;
+  vertical-align: baseline;
+}
 main#productDetail section#product-visual-info .product-text-info .product-meta-info .product-price-info .my-price button {
-  font-size: 20px;
+  font-size: 13px;
   color: #535353;
+}
+main#productDetail section#product-visual-info .product-text-info .product-meta-info .product-price-info .my-price button svg {
+  font-size: 20px;
+  margin-left: 5px;
 }
 main#productDetail section#product-visual-info .product-text-info .product-additional-info {
   border-top: 1px solid #e4e4e4;
   padding: 20px 0;
   font-size: 13px;
   font-weight: 500;
-  font-family: "NotoSansKR";
 }
 main#productDetail section#product-visual-info .product-text-info .product-additional-info > div {
   padding: 5px 0;
@@ -718,21 +736,21 @@ main#productDetail section#product-visual-info .product-text-info .product-optio
   margin-top: 20px;
 }
 main#productDetail section#product-visual-info .product-text-info .product-option-buy .option-selector {
-  font-family: "notoSansKR";
   position: relative;
   margin-bottom: 20px;
 }
 main#productDetail section#product-visual-info .product-text-info .product-option-buy .option-selector .option-select-box {
   position: relative;
+  cursor: pointer;
 }
 main#productDetail section#product-visual-info .product-text-info .product-option-buy .option-selector .option-select-box input {
   width: 100%;
   border: 1px solid #ccc;
   font-size: 13px;
   padding: 8px 10px;
-  font-family: "notoSansKR";
   vertical-align: baseline;
   background-color: #fff;
+  cursor: pointer;
 }
 main#productDetail section#product-visual-info .product-text-info .product-option-buy .option-selector .option-select-box span {
   position: absolute;
@@ -740,10 +758,8 @@ main#productDetail section#product-visual-info .product-text-info .product-optio
   width: 35px;
   height: 100%;
   font-size: 20px;
-  align-content: center;
 }
 main#productDetail section#product-visual-info .product-text-info .product-option-buy .option-selector .option-list {
-  display: none;
   position: absolute;
   width: 100%;
   border: 1px solid #ccc;
@@ -764,7 +780,7 @@ main#productDetail section#product-visual-info .product-text-info .product-optio
 }
 main#productDetail section#product-visual-info .product-text-info .product-option-buy .action-buttons button {
   padding: 10px 15px;
-  font-size: 20px;
+  font-size: 18px;
 }
 main#productDetail section#product-visual-info .product-text-info .product-option-buy .action-buttons .btn-cart {
   width: 50%;
@@ -776,6 +792,274 @@ main#productDetail section#product-visual-info .product-text-info .product-optio
 }
 main#productDetail section#product-visual-info .product-text-info .product-option-buy .action-buttons .btn-buy:hover {
   background-color: #eb5449;
+}
+main#productDetail section#product-description .description-toggle {
+  border-bottom: 1px solid #e4e4e4;
+}
+main#productDetail section#product-description .description-toggle button {
+  position: relative;
+  width: 100%;
+  text-align: left;
+  padding: 10px 20px;
+}
+main#productDetail section#product-description .description-toggle button span {
+  display: inline-block;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 32.9px;
+  height: 100%;
+  font-size: 20px;
+  align-content: center;
+}
+main#productDetail section#product-description .description-toggle h3.product-number {
+  font-size: 14px;
+  padding: 10px 20px;
+}
+main#productDetail section#product-description .description-toggle h3.product-number strong {
+  font-weight: 600;
+}
+main#productDetail section#product-description .description-toggle h3.product-number span {
+  font-weight: 100;
+}
+main#productDetail section#product-description .advertisement-image {
+  background-color: #eee;
+  min-height: 150px;
+}
+main#productDetail section#product-description .product-blog {
+  margin-top: 30px;
+  padding: 0 80px;
+  font-size: 15px;
+  position: relative;
+  width: 100%;
+}
+main#productDetail section#product-description .product-blog .product-blog-wrap {
+  padding: 0 60px;
+}
+main#productDetail section#product-description .product-blog .product-blog-wrap .product-blog-images-wrap {
+  place-items: center;
+  margin: 20px 0;
+  width: 100%;
+}
+main#productDetail section#product-description .product-blog .product-blog-wrap .product-blog-images-wrap .product-blog-images {
+  position: relative;
+  width: 100%;
+  height: auto;
+}
+main#productDetail section#product-description .product-blog .description-more-btn {
+  border: 1px solid #000;
+  text-align: center;
+  padding: 10px;
+  position: relative;
+  box-sizing: border-box;
+}
+main#productDetail section#product-description .product-blog .description-more-btn button {
+  font-size: 15px;
+  font-weight: bold;
+}
+main#productDetail section#product-description .product-blog .description-more-btn::after {
+  position: absolute;
+  left: 0px;
+  right: 0px;
+  bottom: calc(100% + 1px);
+  height: 160px;
+  background: linear-gradient(rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 100%);
+  content: "";
+}
+main#productDetail section#product-info-section {
+  margin-top: 50px;
+  padding: 0 80px;
+}
+main#productDetail section#product-info-section .product-spec-table h2 {
+  font-size: 20px;
+  padding: 15px 0;
+}
+main#productDetail section#product-info-section .seller-info-section {
+  margin-top: 20px;
+}
+main#productDetail section#product-info-section .seller-info-section h2 {
+  font-size: 20px;
+  padding: 15px 0;
+}
+main#productDetail section#product-info-section table {
+  width: 100%;
+  border-collapse: collapse;
+  border-top: 4px solid #000;
+}
+main#productDetail section#product-info-section table tbody th,
+main#productDetail section#product-info-section table tbody td {
+  border: 1px solid #ccc;
+  padding: 20px 20px;
+  text-align: left;
+  font-size: 15px;
+}
+main#productDetail section#product-info-section table tbody tr th {
+  width: 25%;
+}
+main#productDetail section#product-info-section table tbody tr td {
+  width: 75%;
+}
+main#productDetail section#product-info-section .related-brand-products {
+  margin-top: 50px;
+}
+main#productDetail section#product-info-section .related-brand-products .brand-thumbnail {
+  position: relative;
+  height: 500px;
+}
+main#productDetail section#product-info-section .related-brand-products .brand-thumbnail img {
+  width: 100%;
+  height: 100%;
+}
+main#productDetail section#product-info-section .related-brand-products .brand-thumbnail .brand-like {
+  position: absolute;
+  left: 50px;
+  bottom: calc(50% - 30px);
+  color: #fff;
+}
+main#productDetail section#product-info-section .related-brand-products .brand-thumbnail .brand-like > div {
+  font-size: 30px;
+}
+main#productDetail section#product-info-section .related-brand-products .brand-thumbnail .brand-like p {
+  font-size: 15px;
+}
+main#productDetail section#product-info-section .related-brand-products .brand-thumbnail .brand-home-link {
+  position: absolute;
+  left: 50px;
+  bottom: calc(50% - 150px);
+  border: 1px solid #fff;
+  padding: 8px 20px;
+  color: #fff;
+}
+main#productDetail section#product-info-section .related-brand-products .brand-thumbnail .brand-home-link .brand-home-link-title {
+  font-size: 15px;
+}
+main#productDetail section#product-info-section .related-brand-products .brand-thumbnail .brand-home-link .brand-home-link-arrow {
+  margin-left: 50px;
+  font-size: 30px;
+}
+main#productDetail section#product-info-section .related-brand-products .brand-other-products {
+  margin-top: 20px;
+}
+main#productDetail section#product-info-section .related-brand-products .brand-other-products .product-slider {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+main#productDetail section#product-info-section .related-brand-products .brand-other-products .product-slider .slider-belt {
+  display: flex;
+  flex-wrap: wrap;
+}
+main#productDetail section#product-info-section .related-brand-products .brand-other-products .product-slider .slider-belt .slider-item {
+  position: relative;
+  width: 20%;
+}
+main#productDetail section#product-info-section .related-brand-products .brand-other-products .product-slider .slider-belt .slider-item a {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+main#productDetail section#product-info-section .related-brand-products .brand-other-products .product-slider .slider-belt .slider-item .image-box {
+  width: 100%;
+  aspect-ratio: 1/1;
+}
+main#productDetail section#product-info-section .related-brand-products .brand-other-products .product-slider .slider-belt .slider-item .image-box img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+main#productDetail section#product-info-section .related-brand-products .brand-other-products .product-slider .slider-belt .slider-item .image-box button {
+  position: absolute;
+  top: 5px;
+  right: 10px;
+  font-size: 20px;
+  color: #fff;
+}
+main#productDetail section#product-info-section .related-brand-products .brand-other-products .product-slider .slider-belt .slider-item p {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 12px;
+  padding: 5px 5px;
+}
+main#productDetail section#product-info-section .related-brand-products .brand-other-products .product-slider .slider-belt .slider-item h4 {
+  font-size: 14px;
+  padding: 0 5px;
+}
+main#productDetail section#product-info-section .related-brand-products .brand-other-products .product-slider .slider-belt .slider-item h4 b {
+  color: #f35b1f;
+  vertical-align: middle;
+}
+main#productDetail section#product-info-section .related-brand-products .brand-other-products .product-slider .slider-belt .slider-item h4 span {
+  margin-left: 5px;
+}
+main#productDetail section#product-info-section .related-brand-products .brand-other-products .product-slider .slider-pagination {
+  padding: 15px 0;
+  text-align: center;
+  font-size: 30px;
+  font-weight: 100;
+  color: #ccc;
+  font-style: italic;
+}
+main#productDetail section#product-info-section .related-brand-products .brand-other-products .product-slider .slider-pagination span {
+  padding: 0 20px;
+  vertical-align: baseline;
+  font-size: 40px;
+}
+main#productDetail section#product-info-section .related-brand-products .brand-other-products .product-slider .slider-pagination strong {
+  vertical-align: baseline;
+  color: #555;
+}
+main#productDetail section#etc-info-section {
+  margin-top: 70px;
+  padding: 0 80px;
+}
+main#productDetail section#etc-info-section .shipping-guide h2,
+main#productDetail section#etc-info-section .refund-guide h2 {
+  padding: 10px 0;
+  border-bottom: 4px solid;
+  font-size: 20px;
+}
+main#productDetail section#etc-info-section .shipping-guide p,
+main#productDetail section#etc-info-section .refund-guide p {
+  position: relative;
+  font-size: 15px;
+  padding: 1.8px 20px;
+  margin: 10px;
+}
+main#productDetail section#etc-info-section .shipping-guide p::before,
+main#productDetail section#etc-info-section .refund-guide p::before {
+  position: absolute;
+  top: 11px;
+  left: 0px;
+  width: 3px;
+  height: 3px;
+  border-radius: 100%;
+  background-color: rgb(48, 48, 51);
+  content: "";
+}
+main#productDetail section#etc-info-section .refund-guide {
+  margin-top: 50px;
+}
+main#productDetail section#etc-info-section .best-short-sleeve-section {
+  margin-top: 50px;
+}
+main#productDetail section#etc-info-section .best-short-sleeve-section h2 {
+  padding: 10px 0;
+  font-size: 20px;
+}
+main#productDetail section#etc-info-section .best-short-sleeve-section .rank-tabs {
+  padding: 5px 0 10px;
+}
+main#productDetail section#etc-info-section .best-short-sleeve-section .rank-tabs button {
+  padding: 5px 15px;
+  border: 1px solid #bbb;
+  border-radius: 30px;
+  margin-right: 5px;
+}
+main#productDetail section#etc-info-section .best-short-sleeve-section .rank-tabs button.on {
+  color: #fff;
+  background-color: #000;
+  border: none;
 }
 /* 장바구니 */
 #cart {

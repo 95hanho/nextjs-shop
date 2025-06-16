@@ -1,11 +1,13 @@
-import ReviewStar from "@/components/product/ReviewStar";
-import TestImage from "@/components/test/TestImage";
-import Link from "next/link";
 import { FaHeart } from "react-icons/fa";
-import { GoArrowRight, GoQuestion } from "react-icons/go";
+import { GoArrowRight } from "react-icons/go";
 import { IoIosArrowDown } from "react-icons/io";
 import { IoIosArrowUp } from "react-icons/io";
 import { RiArrowLeftSLine, RiArrowRightSLine } from "react-icons/ri";
+import ProductVisualInfo from "./ProductVisualInfo";
+import ProductDescription from "./ProductDescription";
+import TestImage from "@/components/test/TestImage";
+import ProductBlog from "./ProductBlog";
+import { FiHeart } from "react-icons/fi";
 
 export default function ProductDetail({
 	params: { product_id },
@@ -15,131 +17,20 @@ export default function ProductDetail({
 	};
 }) {
 	console.log(product_id);
+
 	return (
 		<main id="productDetail">
 			{/* 상품 사진 및 가격배송 정보 */}
-			<section id="product-visual-info">
-				<div className="product-image-area">
-					<TestImage />
-				</div>
-				<div className="product-text-info">
-					<div className="product-meta-info">
-						<div className="product-title-wishlist">
-							<div className="product-name">Crown Raive Graphic T-shirt VW5ME601_3color</div>
-							<div className="product-wishlist">
-								<FaHeart />
-							</div>
-						</div>
-						<div className="product-review-section">
-							<ReviewStar />
-							<Link href="">274개 리뷰보기</Link>
-						</div>
-						<div className="product-price-info">
-							<h6 className="original-price">58,000원</h6>
-							<p className="first-purchase-label">첫 구매가</p>
-							<div className="price-discount">
-								<div className="price-box">
-									<b>10%</b>
-									<strong>52,200원</strong>
-								</div>
-								<button className="tooltip-btn">
-									<GoQuestion />
-								</button>
-							</div>
-							<div className="my-price">
-								<div>
-									<b>10%</b>
-									<strong>52,200원</strong>
-								</div>
-								<button>
-									나의 구매 가능 가격
-									{true ? <IoIosArrowDown /> : <IoIosArrowUp />}
-								</button>
-							</div>
-						</div>
-					</div>
-					<div className="product-additional-info">
-						<div className="product-mileage">
-							<b>구매 적립금</b>
-							<span>최대 580 마일리지 적립 예정</span>
-						</div>
-						<div className="installment-info">
-							<b>무이자 할부</b>
-							<div>
-								<p>최대 7개월 무이자 할부 시 월 8,285원 결제</p>
-								<div>
-									<button>카드사별 할부 혜택 안내</button>
-								</div>
-							</div>
-						</div>
-						<div className="delivery-info">
-							<b>
-								배송정보
-								<button>
-									<GoQuestion />
-								</button>
-							</b>
-							<span>
-								예약 출고 <span>2025.05.30 이내 출고</span>
-							</span>
-						</div>
-						<div className="delivery-fee-info">
-							<b>배송비</b>
-							<div>
-								<p>2,500원</p>
-								<p>30,000원 이상 구매시 무료배송</p>
-								<p>제주/도서산간 3,000원 추가</p>
-							</div>
-						</div>
-					</div>
-					<div className="product-option-buy">
-						<div className="option-selector">
-							<div className="option-select-box">
-								<input type="text" value={"COLOR:SIZE"} readOnly />
-								<span>{true ? <IoIosArrowDown /> : <IoIosArrowUp />}</span>
-							</div>
-
-							<ul className="option-list">
-								<li>COLOR:SIZE</li>
-								<li>WHITE:0S</li>
-								<li>WHITE:01S</li>
-							</ul>
-						</div>
-						<div className="action-buttons">
-							<button className="btn-cart">장바구니 담기</button>
-							<button className="btn-buy">바로 구매하기</button>
-						</div>
-					</div>
-				</div>
-			</section>
+			<ProductVisualInfo />
 			{/* 업체등록 상품 상세 블로그 */}
 			<section id="product-description">
-				<article className="description-toggle">
-					<button>
-						<h2>상품정보</h2>
-						<span>{true ? <IoIosArrowDown /> : <IoIosArrowUp />}</span>
-					</button>
-					<h3 className="product-number">상품번호 : 3167608</h3>
-				</article>
+				<ProductDescription />
 				{/* 광고이미지 */}
 				<div className="advertisement-image">
-					<img src="" alt="" />
+					<img src="" alt="광고 이미지" />
 				</div>
 				{/* 등록된 상품정보이미지 */}
-				<article className="product-detail-images">
-					<h2>상품 설명</h2>
-					{[...Array(5)].map((_, i) => (
-						<div key={i}>
-							<img src="" alt="" />
-						</div>
-					))}
-				</article>
-				<div className="description-more-btn">
-					<button>
-						상품 설명 {true ? "더보기" : "닫기"}
-						<span>{true ? <IoIosArrowDown /> : <IoIosArrowUp />}</span>
-					</button>
-				</div>
+				<ProductBlog />
 			</section>
 			{/* 상품정보 보기, 판매자 정보 */}
 			<section id="product-info-section">
@@ -214,14 +105,22 @@ export default function ProductDetail({
 					</table>
 					<div className="related-brand-products">
 						<div className="brand-thumbnail">
-							<img src="" alt="" />
+							<img src={"https://ehfqntuqntu.cdn1.cafe24.com/main/4.jpg"} alt="123" />
+							<button className="brand-like">
+								<div>
+									<FiHeart />
+								</div>
+								<p>93474</p>
+							</button>
+							<a className="brand-home-link" href="">
+								<span className="brand-home-link-title">Brand Home</span>
+								<span className="brand-home-link-arrow">
+									<GoArrowRight />
+								</span>
+							</a>
 						</div>
-						<a className="brand-home-link" href="">
-							Brand Home
-							<GoArrowRight />
-						</a>
+
 						<div className="brand-other-products">
-							<h2>해당 브랜드 다른 옷</h2>
 							{/* 슬라이드 */}
 							<div className="product-slider">
 								{/* 슬라이드 벨트 */}
@@ -232,19 +131,27 @@ export default function ProductDetail({
 										<a href=""></a>
 										{/* 이미지 */}
 										<div className="image-box">
-											<img src="" alt="" />
+											<img src={"https://ehfqntuqntu.cdn1.cafe24.com/main/4.jpg"} alt="" />
 											<button>
-												<FaHeart />
+												{/* <FaHeart /> */}
+												<FiHeart />
 											</button>
 										</div>
 										<p>Waist String Wide Pants VW5ML470_3color</p>
 										<h4>
-											<b>10%</b>128,000
+											<b>10%</b>
+											<span>128,000</span>
 										</h4>
 									</div>
 								</div>
 								<div className="slider-pagination">
-									<RiArrowRightSLine /> 3 / 4 <RiArrowLeftSLine />
+									<span>
+										<RiArrowLeftSLine />
+									</span>{" "}
+									<strong>3</strong> / 4{" "}
+									<span>
+										<RiArrowRightSLine />
+									</span>
 								</div>
 							</div>
 						</div>
@@ -285,7 +192,7 @@ export default function ProductDetail({
 				<div className="best-short-sleeve-section">
 					<h2>반소매 티셔츠 BEST</h2>
 					<div className="rank-tabs">
-						<button>실시간</button>
+						<button className="on">실시간</button>
 						<button>일간</button>
 						<button>주간</button>
 						<button>월간</button>
@@ -298,7 +205,7 @@ export default function ProductDetail({
 							<div className="slider-item">
 								<a href=""></a>
 								<div className="image-box">
-									<img src="" alt="" />
+									<img src={"https://ehfqntuqntu.cdn1.cafe24.com/main/4.jpg"} alt="" />
 									<mark>1</mark>
 									<button>
 										<FaHeart />
