@@ -8,7 +8,7 @@ import Link from "next/link";
 import useAuth from "@/hooks/useAuth";
 import { useContext, useEffect } from "react";
 import { isTokenExpired } from "@/utils/auth";
-import { authContext } from "@/context/AuthProvider";
+import { authContext } from "@/context/authContext";
 import { Menu } from "@/types/main";
 
 export default function Header({ menuList }: { menuList: Menu[] }) {

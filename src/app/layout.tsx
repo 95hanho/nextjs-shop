@@ -6,9 +6,9 @@ import "@/styles/css/style.css";
 import "@/css/add.css";
 import "@/styles/css/globals.css";
 import Providers from "@/lib/providers";
-import Header from "@/components/common/Header";
 import { Menu } from "@/types/main";
 import { mainService } from "@/api";
+import Header from "@/components/common/header";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",

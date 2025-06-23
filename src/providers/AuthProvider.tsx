@@ -1,27 +1,14 @@
 "use client";
 
 import { authService } from "@/api";
+import { authContext } from "@/context/authContext";
 import { isTokenExpired } from "@/utils/auth";
 import { cookies } from "@/utils/cookies";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { createContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
-interface AuthProviderProps {
-	children: React.ReactNode;
-}
-
-interface AuthContextType {
-	loginOn: boolean;
-	accessToken: string | null;
-	loginToken: (aToken: string, rToken: string) => void;
-	logout: () => void;
-	tokenCheck: () => void;
-}
-
-export const authContext = createContext<AuthContextType | null>(null);
-
-export default function AuthProvider({ children }: AuthProviderProps) {
+export default function AuthProvider({ children }: { children: React.ReactNode }) {
 	const router = useRouter();
 	const [loginOn, set_loginOn] = useState<boolean>(false);
 	const [accessToken, set_accessToken] = useState<string | null>(null);
@@ -79,9 +66,5 @@ export default function AuthProvider({ children }: AuthProviderProps) {
 		set_loginOn(cookies.has("refreshToken"));
 	}, []);
 
-	return (
-		<authContext.Provider value={{ loginOn, accessToken, loginToken, logout, tokenCheck }}>
-			{children}
-		</authContext.Provider>
-	);
+	return <authContext.Provider value={{ loginOn, accessToken, loginToken, logout, tokenCheck }}>{children}</authContext.Provider>;
 }

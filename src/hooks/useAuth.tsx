@@ -1,6 +1,6 @@
 "use client";
 
-import { authContext } from "@/context/AuthProvider";
+import { authContext } from "@/context/authContext";
 import { useContext } from "react";
 
 export default function useAuth() {

@@ -1,7 +1,7 @@
 import { mainService } from "@/api";
 import { useQuery } from "@tanstack/react-query";
 
-export default function useMember() {
+export default function useCommon() {
 	const handleMenu = useQuery({
 		queryKey: ["menu"],
 		queryFn: () => {
