@@ -48,22 +48,25 @@ export default function Nav({ menuList }: { menuList: Menu[] }) {
 				<div className="menu-wrap">
 					<div className="menu-list">
 						<ul className="menu-list-ul">
-							{showMenuList.map((menu) => (
-								<li key={"menu" + menu.menu_top_id} className="menu-list-li">
-									<div>
-										<Link href={`/product/category/${menu.menu_top_id}/1`} onClick={clickMenuLink}>
-											{menu.menu_name}
-										</Link>
-									</div>
-									{menu.subMenus.map((subMenu) => (
-										<div key={"subMenu" + subMenu.menu_sub_id} className="sub-menu-list">
-											<Link href={`/product/category/${menu.menu_top_id}/${subMenu.menu_sub_id}`} onClick={clickMenuLink}>
-												{subMenu.menu_name}
+							{showMenuList.map((menu) => {
+								const overMenuCount = menu.subMenus.length > 10;
+								return (
+									<li key={"menu" + menu.menu_top_id} className={`menu-list-li${overMenuCount ? " over" : ""}`}>
+										<div>
+											<Link href={`/product/category/${menu.menu_top_id}/1`} onClick={clickMenuLink}>
+												{menu.menu_name}
 											</Link>
 										</div>
-									))}
-								</li>
-							))}
+										{menu.subMenus.map((subMenu) => (
+											<div key={"subMenu" + subMenu.menu_sub_id} className="sub-menu-list">
+												<Link href={`/product/category/${menu.menu_top_id}/${subMenu.menu_sub_id}`} onClick={clickMenuLink}>
+													{subMenu.menu_name}
+												</Link>
+											</div>
+										))}
+									</li>
+								);
+							})}
 						</ul>
 					</div>
 				</div>

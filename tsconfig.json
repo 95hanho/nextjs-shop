@@ -24,12 +24,6 @@
 			// "@/images/*": ["./src/assets/images/*"]
 		}
 	},
-	"include": [
-		"next-env.d.ts",
-		"**/*.ts",
-		"**/*.tsx",
-		".next/types/**/*.ts",
-		"src/hooks/AxiosInterceptor.jsx"
-	],
+	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/hooks/AxiosInterceptor.jsx"],
 	"exclude": ["node_modules"]
 }

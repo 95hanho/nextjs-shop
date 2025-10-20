@@ -107,6 +107,17 @@ img {
   -o-user-select: none;
   user-select: none; */
 }
+audio,
+canvas,
+embed,
+iframe,
+img,
+object,
+svg,
+video {
+	display: block;
+	vertical-align: middle;
+}
 .c_red {
 	color: red !important;
 }
@@ -178,4 +189,59 @@ img {
 }
 .f-right {
 	float: right;
+}
+/* on/off 버튼 */
+.onoff-btn-wrap {
+	padding: 0 10px;
+}
+.onoff-btn-wrap .onf_checkbox {
+	position: absolute;
+	/* hidden */
+	appearance: none;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+}
+.onoff-btn-wrap .switch_label {
+	position: relative;
+	cursor: pointer;
+	display: inline-block;
+	width: 58px;
+	height: 28px;
+	background: #fff;
+	border: 2px solid #daa;
+	border-radius: 20px;
+	transition: 0.2s;
+}
+.onoff-btn-wrap .switch_label:hover {
+	background: #efefef;
+}
+.onoff-btn-wrap .onf_btn {
+	position: absolute;
+	top: 2.5px;
+	left: 3px;
+	display: inline-block;
+	width: 20px;
+	height: 20px;
+	border-radius: 20px;
+	background: #daa;
+	transition: 0.2s;
+}
+.onoff-btn-wrap .onf_txt {
+	font-size: 18px;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	user-select: none;
+	margin-left: 10px;
+}
+.onoff-btn-wrap .onf_checkbox:checked + .switch_label {
+	background: rgb(128, 197, 128);
+	border: 2px solid rgb(133, 190, 133);
+}
+.onoff-btn-wrap .onf_checkbox:checked + .switch_label:hover {
+	background: rgb(103, 158, 103);
+}
+.onoff-btn-wrap .onf_checkbox:checked + .switch_label .onf_btn {
+	left: 34px;
+	background: #fff;
+	box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.1254901961);
 }

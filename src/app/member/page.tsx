@@ -51,7 +51,7 @@ export default function Login() {
 	}, []);
 
 	return (
-		<div id="login" className="member-wrapper">
+		<main id="login" className="member-wrapper">
 			<div className="form-wrap">
 				<h2>
 					<Link href={"/"}>NextJS-SHOP</Link>
@@ -114,11 +114,7 @@ export default function Login() {
 						/>
 						<label className={`placeholder`}>비밀번호</label>
 						{pwdFocus && loginData.password && (
-							<button
-								className="show-pwd"
-								type="button"
-								onClick={() => setShowPassword(!showPassword)}
-							>
+							<button className="show-pwd" type="button" onClick={() => setShowPassword(!showPassword)}>
 								{showPassword ? <FiEyeOff /> : <FiEye />}
 							</button>
 						)}
@@ -146,6 +142,6 @@ export default function Login() {
 					</button>
 				</div>
 			</div>
-		</div>
+		</main>
 	);
 }

@@ -194,7 +194,7 @@ export default function Member_join() {
 	};
 
 	return (
-		<div id="memberJoin" className="member-wrapper">
+		<main id="memberJoin" className="member-wrapper">
 			<div className="form-wrap join">
 				<h2>
 					<Link href={"/"}>NextJS-SHOP</Link>
@@ -334,6 +334,6 @@ export default function Member_join() {
 					</div>
 				</form>
 			</div>
-		</div>
+		</main>
 	);
 }

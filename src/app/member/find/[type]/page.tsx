@@ -18,7 +18,7 @@ export default function FindMember() {
 	}, []);
 
 	return (
-		<div id="login" className="member-wrapper">
+		<main id="login" className="member-wrapper">
 			<div className="form-wrap">
 				<h3>
 					<Link href={"/"}>NextJS-SHOP</Link>
@@ -52,6 +52,6 @@ export default function FindMember() {
 					<Link href={"/member/join"}>회원가입</Link>
 				</div>
 			</div>
-		</div>
+		</main>
 	);
 }

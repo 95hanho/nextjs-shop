@@ -35,20 +35,19 @@ export default function MemberMenu() {
 						<div className="popup-menu">
 							<ul>
 								<li>
-									{!loginOn ? (
-										<Link href="/member">로그인</Link>
-									) : (
-										<div onClick={logout}>로그아웃</div>
-									)}
+									<Link href="/mypage/info" prefetch>
+										내정보
+									</Link>
 								</li>
+								<li>{!loginOn ? <Link href="/member">로그인</Link> : <div onClick={logout}>로그아웃</div>}</li>
 								<li>
-									<Link href="/order-history" prefetch>
+									<Link href="/mypage/order-history" prefetch>
 										주문/배송내역
 									</Link>
 								</li>
 								<li>
-									<Link href="/write-review" prefetch>
-										나의 쿠폰
+									<Link href="/mypage/review" prefetch>
+										나의 리뷰
 									</Link>
 								</li>
 							</ul>
