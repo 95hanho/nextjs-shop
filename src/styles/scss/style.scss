@@ -1614,3 +1614,141 @@ main#productDetail {
 		}
 	}
 }
+/* 주문내역페이지 */
+#orderHistory.order-history {
+	background-color: #fafafa;
+	.order-history__wrap {
+		width: 600px;
+		margin: 0 auto;
+		.order-history__header {
+			padding: 0px 16px;
+			background-color: #f5f5f5;
+			border-bottom: 1px solid #e0e0e0;
+			.order-history__title {
+				padding: 10px 0 13px;
+			}
+			// 검색창
+			.order-history__search {
+				position: relative;
+				.order-history__search-input {
+					width: 100%;
+					background-color: #fff;
+					border: none;
+					font-size: 17px;
+					padding: 9px 14px;
+				}
+				.order-history__search-btn {
+					position: absolute;
+					right: 0;
+					top: 0;
+					height: 100%;
+					padding: 10px;
+					font-size: 18px;
+					color: #939393;
+				}
+			}
+			.order-history__nav {
+				margin-top: 12px;
+				.order-history__nav-list {
+					display: flex;
+					.order-history__nav-item {
+						position: relative;
+						margin: 0 10px;
+						padding-bottom: 7px;
+						> a {
+							color: #737373;
+						}
+						&.is-active {
+							> a {
+								color: #000;
+							}
+							&::after {
+								position: absolute;
+								content: "";
+								width: 100%;
+								border-bottom: 2px solid #000;
+								bottom: -1px;
+								left: 0;
+							}
+						}
+					}
+				}
+			}
+		}
+		.order-history__list {
+			background-color: #fff;
+			padding: 15px 18px;
+			.order-history__group {
+				.order-history__date {
+					display: flex;
+					justify-content: space-between;
+					padding: 5px 0;
+					font-size: 22px;
+					.order-history__detail-link {
+						text-decoration: underline;
+						color: #8f8f8f;
+						font-size: 12px;
+						align-content: center;
+						font-family: "NotoSansKR";
+					}
+				}
+				.order-history__items {
+					.order-history__item {
+						padding: 15px 0;
+						&:nth-child(n + 2) {
+							border-top: 1px solid #aaa;
+						}
+						.order-history__status {
+							padding: 5px 0;
+							color: #717171;
+							font-size: 16px;
+							letter-spacing: 2px;
+						}
+						.order-history__product {
+							display: flex;
+							padding: 5px 0;
+							.order-history__thumb {
+								position: relative;
+								width: 72px;
+								border-radius: 5px;
+								overflow: hidden;
+							}
+							.order-history__info {
+								margin-left: 12px;
+								padding: 3px 0px;
+								.order-history__brand {
+									letter-spacing: 1.8px;
+								}
+								.order-history__name {
+									padding-top: 3px;
+									font-size: 13px;
+								}
+								.order-history__option {
+									color: #939393;
+									padding-top: 4px;
+								}
+								.order-history__price {
+									font-size: 15px;
+									letter-spacing: 0.9px;
+								}
+							}
+						}
+						.order-history__buttons {
+							padding: 5px 0;
+							display: flex;
+							gap: 5px;
+							.order-history__btn {
+								width: 50%;
+								border: 1.5px solid #cdcccc;
+								border-radius: 5px;
+								padding: 5px 0;
+								font-size: 17px;
+								letter-spacing: 1px;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}

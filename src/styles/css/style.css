@@ -1463,3 +1463,135 @@ main#productDetail section#etc-info-section .best-short-sleeve-section .rank-tab
 #wish .wish__content .wish__list .wish__item .product__info .product__meta .meta__icon {
   margin-right: 3px;
 }
+
+/* 주문내역페이지 */
+#orderHistory.order-history {
+  background-color: #fafafa;
+}
+#orderHistory.order-history .order-history__wrap {
+  width: 600px;
+  margin: 0 auto;
+}
+#orderHistory.order-history .order-history__wrap .order-history__header {
+  padding: 0px 16px;
+  background-color: #f5f5f5;
+  border-bottom: 1px solid #e0e0e0;
+}
+#orderHistory.order-history .order-history__wrap .order-history__header .order-history__title {
+  padding: 10px 0 13px;
+}
+#orderHistory.order-history .order-history__wrap .order-history__header .order-history__search {
+  position: relative;
+}
+#orderHistory.order-history .order-history__wrap .order-history__header .order-history__search .order-history__search-input {
+  width: 100%;
+  background-color: #fff;
+  border: none;
+  font-size: 17px;
+  padding: 9px 14px;
+}
+#orderHistory.order-history .order-history__wrap .order-history__header .order-history__search .order-history__search-btn {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  padding: 10px;
+  font-size: 18px;
+  color: #939393;
+}
+#orderHistory.order-history .order-history__wrap .order-history__header .order-history__nav {
+  margin-top: 12px;
+}
+#orderHistory.order-history .order-history__wrap .order-history__header .order-history__nav .order-history__nav-list {
+  display: flex;
+}
+#orderHistory.order-history .order-history__wrap .order-history__header .order-history__nav .order-history__nav-list .order-history__nav-item {
+  position: relative;
+  margin: 0 10px;
+  padding-bottom: 7px;
+}
+#orderHistory.order-history .order-history__wrap .order-history__header .order-history__nav .order-history__nav-list .order-history__nav-item > a {
+  color: #737373;
+}
+#orderHistory.order-history .order-history__wrap .order-history__header .order-history__nav .order-history__nav-list .order-history__nav-item.is-active > a {
+  color: #000;
+}
+#orderHistory.order-history .order-history__wrap .order-history__header .order-history__nav .order-history__nav-list .order-history__nav-item.is-active::after {
+  position: absolute;
+  content: "";
+  width: 100%;
+  border-bottom: 2px solid #000;
+  bottom: -1px;
+  left: 0;
+}
+#orderHistory.order-history .order-history__wrap .order-history__list {
+  background-color: #fff;
+  padding: 15px 18px;
+}
+#orderHistory.order-history .order-history__wrap .order-history__list .order-history__group .order-history__date {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  font-size: 22px;
+}
+#orderHistory.order-history .order-history__wrap .order-history__list .order-history__group .order-history__date .order-history__detail-link {
+  text-decoration: underline;
+  color: #8f8f8f;
+  font-size: 12px;
+  align-content: center;
+  font-family: "NotoSansKR";
+}
+#orderHistory.order-history .order-history__wrap .order-history__list .order-history__group .order-history__items .order-history__item {
+  padding: 15px 0;
+}
+#orderHistory.order-history .order-history__wrap .order-history__list .order-history__group .order-history__items .order-history__item:nth-child(n+2) {
+  border-top: 1px solid #aaa;
+}
+#orderHistory.order-history .order-history__wrap .order-history__list .order-history__group .order-history__items .order-history__item .order-history__status {
+  padding: 5px 0;
+  color: #717171;
+  font-size: 16px;
+  letter-spacing: 2px;
+}
+#orderHistory.order-history .order-history__wrap .order-history__list .order-history__group .order-history__items .order-history__item .order-history__product {
+  display: flex;
+  padding: 5px 0;
+}
+#orderHistory.order-history .order-history__wrap .order-history__list .order-history__group .order-history__items .order-history__item .order-history__product .order-history__thumb {
+  position: relative;
+  width: 72px;
+  border-radius: 5px;
+  overflow: hidden;
+}
+#orderHistory.order-history .order-history__wrap .order-history__list .order-history__group .order-history__items .order-history__item .order-history__product .order-history__info {
+  margin-left: 12px;
+  padding: 3px 0px;
+}
+#orderHistory.order-history .order-history__wrap .order-history__list .order-history__group .order-history__items .order-history__item .order-history__product .order-history__info .order-history__brand {
+  letter-spacing: 1.8px;
+}
+#orderHistory.order-history .order-history__wrap .order-history__list .order-history__group .order-history__items .order-history__item .order-history__product .order-history__info .order-history__name {
+  padding-top: 3px;
+  font-size: 13px;
+}
+#orderHistory.order-history .order-history__wrap .order-history__list .order-history__group .order-history__items .order-history__item .order-history__product .order-history__info .order-history__option {
+  color: #939393;
+  padding-top: 4px;
+}
+#orderHistory.order-history .order-history__wrap .order-history__list .order-history__group .order-history__items .order-history__item .order-history__product .order-history__info .order-history__price {
+  font-size: 15px;
+  letter-spacing: 0.9px;
+}
+#orderHistory.order-history .order-history__wrap .order-history__list .order-history__group .order-history__items .order-history__item .order-history__buttons {
+  padding: 5px 0;
+  display: flex;
+  gap: 5px;
+}
+#orderHistory.order-history .order-history__wrap .order-history__list .order-history__group .order-history__items .order-history__item .order-history__buttons .order-history__btn {
+  width: 50%;
+  border: 1.5px solid #cdcccc;
+  border-radius: 5px;
+  padding: 5px 0;
+  font-size: 17px;
+  letter-spacing: 1px;
+}

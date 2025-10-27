@@ -45,11 +45,6 @@ export default function MemberMenu() {
 										주문/배송내역
 									</Link>
 								</li>
-								<li>
-									<Link href="/mypage/review" prefetch>
-										나의 리뷰
-									</Link>
-								</li>
 							</ul>
 						</div>
 					</motion.div>
