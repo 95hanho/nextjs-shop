@@ -1,39 +1,18 @@
 "use client";
 
 import { authService } from "@/api";
-import { JoinForm, LoginData } from "@/types/form";
+import { JoinForm } from "@/types/form";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import useAuth from "../useAuth";
+import { LoginRequest } from "@/types/auth";
 
-export default function useMember() {
+export default function useUser() {
 	const router = useRouter();
 	const { loginToken } = useAuth();
-
-	const handleLogin = useMutation({
-		mutationFn: (obj: LoginData) => authService.login(obj),
-		// Mutation이 시작되기 직전에 특정 작업을 수행
-		onMutate(a) {
-			console.log(a);
-		},
-
-		onSuccess({ data }) {
-			console.log(data);
-			alert("로그인!");
-			loginToken(data.access_token, data.refresh_token);
-			router.push("/");
-		},
-		onError(err) {
-			console.log(err);
-		},
-		// 결과에 관계 없이 무언가 실행됨
-		onSettled(data, err, params, context) {
-			// console.log(data, err, params, context);
-		},
-	});
-
+	//
 	const handleRegister = useMutation({
-		mutationFn: (joinForm: JoinForm) => authService.joinMember(joinForm),
+		mutationFn: (joinForm: JoinForm) => authService.joinUser(joinForm),
 		// Mutation이 시작되기 직전에 특정 작업을 수행
 		onMutate(a) {
 			console.log(a);
@@ -41,7 +20,7 @@ export default function useMember() {
 		onSuccess({ data }) {
 			console.log(data);
 			alert("회원가입이 완료되었습니다.");
-			router.push("/member");
+			router.push("/user");
 		},
 		onError(err) {
 			console.log(err);
@@ -53,7 +32,7 @@ export default function useMember() {
 	});
 
 	const handleIdDuplcheck = useMutation({
-		mutationFn: (user_id: string) => authService.idDuplcheck({ user_id }),
+		mutationFn: (userId: string) => authService.idDuplcheck({ userId }),
 		// Mutation이 시작되기 직전에 특정 작업을 수행
 		onMutate(a) {
 			console.log(a);

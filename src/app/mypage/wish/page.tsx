@@ -32,21 +32,21 @@ export default function Wish() {
 				{/* 상품 필터 on/off 버튼 */}
 				<div className="wish__filters">
 					<div className="onoff-btn-wrap">
-						<input type="checkbox" id="sale-switch" name="sale" className="onf_checkbox" />
-						<label htmlFor="sale-switch" className="switch_label">
-							<span className="onf_btn"></span>
+						<input type="checkbox" id="sale-switch" name="sale" className="onf-checkbox" />
+						<label htmlFor="sale-switch" className="switch-label">
+							<span className="onf-btn"></span>
 						</label>
-						<label htmlFor="sale-switch" className="onf_txt">
+						<label htmlFor="sale-switch" className="onf-txt">
 							세일중
 						</label>
 					</div>
 
 					<div className="onoff-btn-wrap">
-						<input type="checkbox" id="selling-switch" name="selling" className="onf_checkbox" />
-						<label htmlFor="selling-switch" className="switch_label">
-							<span className="onf_btn"></span>
+						<input type="checkbox" id="selling-switch" name="selling" className="onf-checkbox" />
+						<label htmlFor="selling-switch" className="switch-label">
+							<span className="onf-btn"></span>
 						</label>
-						<label htmlFor="selling-switch" className="onf_txt">
+						<label htmlFor="selling-switch" className="onf-txt">
 							판매 중 상품만 보기
 						</label>
 					</div>

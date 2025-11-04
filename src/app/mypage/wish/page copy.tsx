@@ -27,18 +27,18 @@ export default function Wish() {
 			<div className="like__content">
 				<div className="like__filters">
 					<div className="onoff-btn-wrap">
-						<input type="checkbox" id="sale-switch" name="sale" className="onf_checkbox" />
-						<label htmlFor="sale-switch" className="switch_label">
-							<span className="onf_btn"></span>
-							<span className="onf_txt c_red">세일중</span>
+						<input type="checkbox" id="sale-switch" name="sale" className="onf-checkbox" />
+						<label htmlFor="sale-switch" className="switch-label">
+							<span className="onf-btn"></span>
+							<span className="onf-txt c-red">세일중</span>
 						</label>
 					</div>
 
 					<div className="onoff-btn-wrap">
-						<input type="checkbox" id="selling-switch" name="selling" className="onf_checkbox" />
-						<label htmlFor="selling-switch" className="switch_label">
-							<span className="onf_btn"></span>
-							<span className="onf_txt c_red">판매 중 상품만 보기</span>
+						<input type="checkbox" id="selling-switch" name="selling" className="onf-checkbox" />
+						<label htmlFor="selling-switch" className="switch-label">
+							<span className="onf-btn"></span>
+							<span className="onf-txt c-red">판매 중 상품만 보기</span>
 						</label>
 					</div>
 				</div>

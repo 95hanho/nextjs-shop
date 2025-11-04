@@ -4,13 +4,13 @@ import { useState } from "react";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 
 export default function ProductDescription() {
-	const [openDescription, set_openDescription] = useState(false);
+	const [openDescription, setOpenDescription] = useState(false);
 
 	return (
 		<article className="description-toggle">
 			<button
 				onClick={() => {
-					set_openDescription(!openDescription);
+					setOpenDescription(!openDescription);
 				}}
 			>
 				<h2>상품정보</h2>

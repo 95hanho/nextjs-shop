@@ -6,7 +6,7 @@ import { FiUser } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion"; // framer-motion을 import 합니다.
 import useAuth from "@/hooks/useAuth";
 
-export default function MemberMenu() {
+export default function UserMenu() {
 	const { loginOn, logout } = useAuth();
 	const [isOpen, set_isOpen] = useState<boolean>(false);
 
@@ -26,7 +26,7 @@ export default function MemberMenu() {
 			<AnimatePresence>
 				{isOpen && (
 					<motion.div
-						className="member-menu"
+						className="user-menu"
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
 						exit={{ opacity: 0 }}
@@ -39,7 +39,7 @@ export default function MemberMenu() {
 										내정보
 									</Link>
 								</li>
-								<li>{!loginOn ? <Link href="/member">로그인</Link> : <div onClick={logout}>로그아웃</div>}</li>
+								<li>{!loginOn ? <Link href="/user">로그인</Link> : <div onClick={logout}>로그아웃</div>}</li>
 								<li>
 									<Link href="/mypage/order-history" prefetch>
 										주문/배송내역

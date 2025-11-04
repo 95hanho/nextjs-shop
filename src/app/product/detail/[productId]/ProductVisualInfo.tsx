@@ -10,7 +10,7 @@ import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 
 export default function ProductVisualInfo() {
 	const optionSelectorRef = useRef<HTMLDivElement>(null);
-	const [openOptionList, set_openOptionList] = useState<boolean>(false);
+	const [openOptionList, setOpenOptionList] = useState<boolean>(false);
 
 	useEffect(() => {
 		if (openOptionList) {
@@ -19,7 +19,7 @@ export default function ProductVisualInfo() {
 					optionSelectorRef.current &&
 					!optionSelectorRef.current.contains(e.target as Node) // <- 여기 수정
 				) {
-					set_openOptionList(false);
+					setOpenOptionList(false);
 				}
 			};
 
@@ -113,7 +113,7 @@ export default function ProductVisualInfo() {
 							<div
 								className="option-select-box"
 								onClick={() => {
-									set_openOptionList(!openOptionList);
+									setOpenOptionList(!openOptionList);
 								}}
 							>
 								<input type="text" value={"COLOR:SIZE"} readOnly />

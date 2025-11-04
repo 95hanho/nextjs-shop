@@ -2,19 +2,19 @@
 
 import { Menu } from "@/types/main";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 
 export default function Nav({ menuList }: { menuList: Menu[] }) {
-	const [activeGender, setActiveGender] = useState<string>("F");
 	const maleMenuList = menuList.filter((menu) => menu.gender === "M");
 	const femaleMenuList = menuList.filter((menu) => menu.gender === "F");
 
-	const showMenuList = activeGender === "M" ? maleMenuList : femaleMenuList;
+	const [activeGender, setActiveGender] = useState<string>("F");
+	const showMenuList = useMemo(() => (activeGender === "M" ? maleMenuList : femaleMenuList), [activeGender]);
 
 	// menu-wrap
-	const [showMenu, set_showMenu] = useState<boolean>(false);
+	const [showMenu, setShowMenu] = useState<boolean>(false);
 	const clickMenuLink = () => {
-		set_showMenu(false);
+		setShowMenu(false);
 	};
 
 	useEffect(() => {
@@ -22,9 +22,9 @@ export default function Nav({ menuList }: { menuList: Menu[] }) {
 	}, []);
 
 	return (
-		<nav id="nav" onMouseLeave={() => set_showMenu(false)}>
+		<nav id="nav" onMouseLeave={() => setShowMenu(false)}>
 			<div className="nav-wrap">
-				<div className="gender-container" onMouseEnter={() => set_showMenu(true)}>
+				<div className="gender-container" onMouseEnter={() => setShowMenu(true)}>
 					<button
 						className={`gender-btn ${activeGender === "M" ? "active" : ""}`}
 						onClick={() => {
@@ -49,18 +49,18 @@ export default function Nav({ menuList }: { menuList: Menu[] }) {
 					<div className="menu-list">
 						<ul className="menu-list-ul">
 							{showMenuList.map((menu) => {
-								const overMenuCount = menu.subMenus.length > 10;
+								const overMenuCount = menu.menuSubList.length > 10;
 								return (
-									<li key={"menu" + menu.menu_top_id} className={`menu-list-li${overMenuCount ? " over" : ""}`}>
+									<li key={"menu" + menu.menuTopId} className={`menu-list-li${overMenuCount ? " over" : ""}`}>
 										<div>
-											<Link href={`/product/category/${menu.menu_top_id}/1`} onClick={clickMenuLink}>
-												{menu.menu_name}
+											<Link href={`/product/category/${menu.menuTopId}/1`} onClick={clickMenuLink}>
+												{menu.menuName}
 											</Link>
 										</div>
-										{menu.subMenus.map((subMenu) => (
-											<div key={"subMenu" + subMenu.menu_sub_id} className="sub-menu-list">
-												<Link href={`/product/category/${menu.menu_top_id}/${subMenu.menu_sub_id}`} onClick={clickMenuLink}>
-													{subMenu.menu_name}
+										{menu.menuSubList.map((subMenu) => (
+											<div key={"subMenu" + subMenu.menuSubId} className="sub-menu-list">
+												<Link href={`/product/category/${menu.menuTopId}/${subMenu.menuSubId}`} onClick={clickMenuLink}>
+													{subMenu.menuName}
 												</Link>
 											</div>
 										))}

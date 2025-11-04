@@ -4,12 +4,7 @@ import { FaHeart } from "react-icons/fa";
 import { FaStar } from "react-icons/fa";
 import Link from "next/link";
 import TestImage from "@/components/test/TestImage";
-interface ProductListParams {
-	params: {
-		menu_sub_id: string;
-		menu_top_id: string;
-	};
-}
+import { ProductListParams } from "@/types/product";
 
 const Test = () => {
 	return (
@@ -54,8 +49,8 @@ const Test = () => {
 		</div>
 	);
 };
-export default function ProductList({ params: { menu_sub_id, menu_top_id } }: ProductListParams) {
-	console.log(menu_sub_id, menu_top_id);
+export default function ProductList({ params: { menuSubId, menuTopId } }: ProductListParams) {
+	console.log(menuSubId, menuTopId);
 	return (
 		<main id="productList">
 			<div className="product-wrap">

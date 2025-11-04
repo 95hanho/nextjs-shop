@@ -1,47 +1,51 @@
+import { BaseResponse } from "./common";
+
 export type FormEvent = React.FormEvent<HTMLFormElement>;
 export type ChangeEvent = React.ChangeEvent<HTMLInputElement>;
-
-export interface LoginData {
-	user_id: string;
+// 로그인 데이터
+export interface LoginForm {
+	userId: string;
 	password: string;
 }
-
-export interface JoinForm extends LoginData {
-	password_check: string;
+//
+export interface loginResponse extends BaseResponse {
+	accessToken: string;
+	refreshToken: string;
+}
+//
+export interface JoinForm extends LoginForm {
+	passwordCheck: string;
 	name: string;
 	zonecode: string;
 	address: string;
-	address_detail: string;
+	addressDetail: string;
 	birthday: string;
 	phone: string;
 	email: string;
 	// [key: string]: string;
 }
-
-export type JoinFormAlert = Omit<JoinForm, 'zonecode'>
-
+export type JoinFormAlert = Omit<JoinForm, "zonecode">;
 /* ------------------------------------------------ */
 
 export interface JoinFormRefs {
-	user_id: HTMLInputElement | null;
+	userId: HTMLInputElement | null;
 	password: HTMLInputElement | null;
-	password_check: HTMLInputElement | null;
+	passwordCheck: HTMLInputElement | null;
 	name: HTMLInputElement | null;
 	address: HTMLInputElement | null;
-	address_detail: HTMLInputElement | null;
+	addressDetail: HTMLInputElement | null;
 	phone: HTMLInputElement | null;
 	email: HTMLInputElement | null;
 	birthday: HTMLInputElement | null;
 	[key: string]: HTMLInputElement | null | undefined;
 }
-
 export interface JoinFormFocus {
-	user_id: boolean;
+	userId: boolean;
 	password: boolean;
-	password_check: boolean;
+	passwordCheck: boolean;
 	name: boolean;
 	address: boolean;
-	address_detail: HTMLInputElement | null;
+	addressDetail: HTMLInputElement | null;
 	phone1: boolean;
 	phone2: boolean;
 	phone3: boolean;
@@ -51,3 +55,4 @@ export interface JoinFormFocus {
 	email: boolean;
 	birthday: boolean;
 }
+/* ------------- */

@@ -1,15 +1,9 @@
 "use client";
 
+import { MainProduct } from "@/types/main";
 import { useRef, useState } from "react";
-import { ProductData } from "@/types/main";
 
-export default function ProductSlider({
-	productList,
-	right,
-}: {
-	productList: ProductData[];
-	right?: boolean;
-}) {
+export default function ProductSlider({ productList, right }: { productList: MainProduct[]; right?: boolean }) {
 	const [isPaused, setIsPaused] = useState(false);
 	const marqueeRef = useRef<HTMLDivElement>(null);
 
@@ -59,8 +53,8 @@ export default function ProductSlider({
 				<div className={`marquee-track ${right ? "right" : ""}`}>
 					{[...productList, ...productList].map((product, idx) => (
 						<div className="product-item" key={idx}>
-							<img src={product.img_path} alt={`Product ${product.product_id}`} />
-							<a href={product.copyright_url} target="_blank" className="copyright">
+							<img src={product.imgPath} alt={`Product ${product.productId}`} />
+							<a href={product.copyrightUrl} target="_blank" className="copyright">
 								{product.copyright}
 							</a>
 						</div>

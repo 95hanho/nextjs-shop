@@ -4,83 +4,83 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi"; // 눈 모양 아이콘을 import 합니다.
 import { SiNaver, SiKakaotalk } from "react-icons/si"; // 네이버와 카카오 아이콘을 import 합니다.
-import { FormEvent, LoginData } from "@/types/form";
-import useMember from "@/hooks/services/useMember";
+import useUser from "@/hooks/query/useUser";
+import { FormEvent, LoginForm } from "@/types/auth";
 
 export default function Login() {
-	const { handleLogin } = useMember();
+	const { handleLogin } = useUser();
 
-	const user_idRef = useRef<HTMLInputElement>(null);
+	const userIdRef = useRef<HTMLInputElement>(null);
 	const pwdRef = useRef<HTMLInputElement>(null);
-	const [user_idFocus, set_user_idFocus] = useState<boolean>(false);
-	const [pwdFocus, set_pwdFocus] = useState<boolean>(false);
-	const [loginData, set_loginData] = useState<LoginData>({
-		user_id: "hoseongs",
+	const [userIdFocus, setUserIdFocus] = useState<boolean>(false);
+	const [pwdFocus, setPwdFocus] = useState<boolean>(false);
+	const [loginForm, setLoginForm] = useState<LoginForm>({
+		userId: "hoseongs",
 		password: "aaaaaa1!",
 	});
 	const [showPassword, setShowPassword] = useState<boolean>(false);
-	const [alertMessage, set_alertMessage] = useState("");
+	const [alertMessage, setAlertMessage] = useState("");
 
-	const login_submit = (e: FormEvent) => {
-		console.log("login_submit");
+	const loginSubmit = (e: FormEvent) => {
+		console.log("loginSubmit");
 		e.preventDefault();
-		if (!loginData.user_id) {
-			set_alertMessage("아이디를 입력해주세요.");
-			user_idRef.current?.focus();
+		if (!loginForm.userId) {
+			setAlertMessage("아이디를 입력해주세요.");
+			userIdRef.current?.focus();
 			return;
 		}
-		if (!loginData.password) {
-			set_alertMessage("비밀번호를 입력해주세요.");
+		if (!loginForm.password) {
+			setAlertMessage("비밀번호를 입력해주세요.");
 			pwdRef.current?.focus();
 			return;
 		}
-		handleLogin.mutate(loginData, {
+		handleLogin.mutate(loginForm, {
 			onError(err) {
-				set_alertMessage("아이디 또는 비밀번호가 일치하지 않습니다.");
+				setAlertMessage("아이디 또는 비밀번호가 일치하지 않습니다.");
 			},
 		});
 	};
 
 	useEffect(() => {
-		if (loginData.user_id) {
-			set_user_idFocus(true);
+		if (loginForm.userId) {
+			setUserIdFocus(true);
 		}
-		if (loginData.password) {
-			set_pwdFocus(true);
+		if (loginForm.password) {
+			setPwdFocus(true);
 		}
 	}, []);
 
 	return (
-		<main id="login" className="member-wrapper">
+		<main id="login" className="user-wrapper">
 			<div className="form-wrap">
 				<h2>
 					<Link href={"/"}>NextJS-SHOP</Link>
 				</h2>
-				<form action="" onSubmit={login_submit}>
+				<form action="" onSubmit={loginSubmit}>
 					<div
-						className={`login-input ${user_idFocus ? "focus" : ""}`}
+						className={`login-input ${userIdFocus ? "focus" : ""}`}
 						onMouseDown={(e) => {
-							if (!user_idFocus) {
+							if (!userIdFocus) {
 								e.preventDefault();
-								user_idRef.current?.focus();
+								userIdRef.current?.focus();
 							}
 						}}
 					>
 						<input
 							type="text"
-							ref={user_idRef}
+							ref={userIdRef}
 							onFocus={() => {
-								set_user_idFocus(true);
+								setUserIdFocus(true);
 							}}
 							onBlur={() => {
-								if (!loginData.user_id) {
-									set_user_idFocus(false);
+								if (!loginForm.userId) {
+									setUserIdFocus(false);
 								}
 							}}
-							value={loginData.user_id}
+							value={loginForm.userId}
 							onChange={(e) => {
-								set_loginData({ ...loginData, user_id: e.target.value });
-								set_alertMessage("");
+								setLoginForm({ ...loginForm, userId: e.target.value });
+								setAlertMessage("");
 							}}
 						/>
 						<label className={`placeholder`}>아이디</label>
@@ -98,22 +98,22 @@ export default function Login() {
 							type={showPassword ? "text" : "password"}
 							ref={pwdRef}
 							onFocus={() => {
-								set_pwdFocus(true);
+								setPwdFocus(true);
 							}}
 							onBlur={() => {
-								if (!loginData.password) {
-									set_pwdFocus(false);
+								if (!loginForm.password) {
+									setPwdFocus(false);
 								}
 							}}
-							value={loginData.password}
+							value={loginForm.password}
 							onChange={(e) => {
 								setShowPassword(false);
-								set_loginData({ ...loginData, password: e.target.value });
-								set_alertMessage("");
+								setLoginForm({ ...loginForm, password: e.target.value });
+								setAlertMessage("");
 							}}
 						/>
 						<label className={`placeholder`}>비밀번호</label>
-						{pwdFocus && loginData.password && (
+						{pwdFocus && loginForm.password && (
 							<button className="show-pwd" type="button" onClick={() => setShowPassword(!showPassword)}>
 								{showPassword ? <FiEyeOff /> : <FiEye />}
 							</button>
@@ -125,9 +125,9 @@ export default function Login() {
 					</div>
 				</form>
 				<div className="find-wrap">
-					<Link href={"/member/join"}>회원가입</Link>
-					<Link href={"/member/find/id"}>아이디 찾기</Link>
-					<Link href={"/member/find/password"}>비밀번호 찾기</Link>
+					<Link href={"/user/join"}>회원가입</Link>
+					<Link href={"/user/find/id"}>아이디 찾기</Link>
+					<Link href={"/user/find/password"}>비밀번호 찾기</Link>
 				</div>
 				<div className="sns-login">
 					<button className="naver-login">

@@ -10,29 +10,29 @@ import { useEffect, useState } from "react";
 
 export default function AuthProvider({ children }: { children: React.ReactNode }) {
 	const router = useRouter();
-	const [loginOn, set_loginOn] = useState<boolean>(false);
-	const [accessToken, set_accessToken] = useState<string | null>(null);
+	const [loginOn, setLoginOn] = useState<boolean>(false);
+	const [accessToken, setAccessToken] = useState<string | null>(null);
 
 	useEffect(() => {
 		console.log(accessToken);
 	}, [accessToken]);
 
 	const loginToken = (aToken: string, rToken: string) => {
-		set_loginOn(true);
+		setLoginOn(true);
 		setTokens(aToken, rToken);
 	};
 
 	const setTokens = (aToken: string, rToken: string) => {
 		console.log("setTokens");
-		set_accessToken(aToken);
+		setAccessToken(aToken);
 		localStorage.setItem("accessToken", aToken);
 		cookies.set("refreshToken", rToken, 60 * 10);
 	};
 
 	const handleReToken = useMutation({
-		mutationFn: (refresh_token: string) => authService.reToken({ refresh_token }),
+		mutationFn: (refreshToken: string) => authService.reToken({ refreshToken }),
 		onSuccess({ data }) {
-			setTokens(data.access_token, data.refresh_token);
+			setTokens(data.accessToken, data.refreshToken);
 		},
 		onError(err) {
 			console.error(err);
@@ -54,16 +54,16 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
 
 	const logout = async () => {
 		console.log("로그아웃");
-		set_loginOn(false);
-		set_accessToken(null);
+		setLoginOn(false);
+		setAccessToken(null);
 		localStorage.removeItem("accessToken");
 		cookies.remove("refreshToken");
 	};
 
 	useEffect(() => {
 		const aToken = localStorage.getItem("accessToken");
-		if (aToken) set_accessToken(aToken);
-		set_loginOn(cookies.has("refreshToken"));
+		if (aToken) setAccessToken(aToken);
+		setLoginOn(cookies.has("refreshToken"));
 	}, []);
 
 	return <authContext.Provider value={{ loginOn, accessToken, loginToken, logout, tokenCheck }}>{children}</authContext.Provider>;

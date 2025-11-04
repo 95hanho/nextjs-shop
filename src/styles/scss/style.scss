@@ -39,7 +39,7 @@ body {
 					display: inline;
 				}
 			}
-			.member-menu {
+			.user-menu {
 				position: absolute;
 				top: calc(100% + 10px);
 				border: 1px solid #aaa;
@@ -142,6 +142,10 @@ body {
 				.menu-list-li {
 					min-width: 100px;
 					margin-right: 10px;
+					&:nth-child(n + 2) {
+						border-left: 1px solid #d1d1d1;
+						padding-left: 20px;
+					}
 					&.over {
 						width: 200px;
 						div {
@@ -177,7 +181,7 @@ body {
 	}
 }
 /* 로그인, 회원가입 */
-.member-wrapper {
+.user-wrapper {
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -452,7 +456,7 @@ body {
 			}
 		}
 	}
-	&#memberJoin {
+	&#userJoin {
 		.form-wrap {
 		}
 	}
@@ -1532,12 +1536,12 @@ main#productDetail {
 			display: flex;
 			padding: 12px 12px;
 			.onoff-btn-wrap {
-				.switch_label {
+				.switch-label {
 					height: 16px;
 					width: 31px;
 					background: rgb(204 204 204);
 					border-color: rgb(204 204 204);
-					.onf_btn {
+					.onf-btn {
 						width: 10px;
 						height: 10px;
 						top: 0.5px;
@@ -1545,12 +1549,12 @@ main#productDetail {
 						background-color: #fff;
 					}
 				}
-				.onf_checkbox:checked {
-					& + .switch_label {
+				.onf-checkbox:checked {
+					& + .switch-label {
 						background: #000;
 						border: 2px solid #000;
 					}
-					& + .switch_label .onf_btn {
+					& + .switch-label .onf-btn {
 						left: 12px;
 					}
 				}

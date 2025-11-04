@@ -1,1 +1,1 @@
-export default function product() {}
+export default function Product() {}

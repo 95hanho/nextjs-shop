@@ -1,15 +1,15 @@
-import { mainService } from "@/api";
-import { ProductData } from "@/types/main";
+import { MainProductResponse } from "@/types/main";
 
 import ProductSlider from "@/components/main/ProductSlider";
-
-interface MainSlideData {
-	msg: string;
-	productList: ProductData[];
-}
+import API_URL from "@/api/endpoints";
+import { getNormal } from "@/api/fetchFilter";
 
 export default async function Home() {
-	const { data: products_data }: { data: MainSlideData } = await mainService.getMainSlideProducts();
+	const res = await getNormal(API_URL.MAIN);
+	if (!res.ok) {
+		return null;
+	}
+	const products_data: MainProductResponse = await res.json();
 	const productList = products_data.productList;
 
 	return (

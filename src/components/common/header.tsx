@@ -1,17 +1,19 @@
 "use client";
 
 import { FiHeart, FiShoppingCart } from "react-icons/fi";
-import MemberMenu from "./Member_menu";
-import Nav from "./Nav";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import useAuth from "@/hooks/useAuth";
-import { useContext, useEffect } from "react";
-import { isTokenExpired } from "@/utils/auth";
-import { authContext } from "@/context/authContext";
+import { useEffect } from "react";
 import { Menu } from "@/types/main";
+import UserMenu from "./UserMenu";
+import Nav from "./Nav";
 
-export default function Header({ menuList }: { menuList: Menu[] }) {
+interface HeaderProps {
+	menuList: Menu[];
+}
+
+export default function Header({ menuList }: HeaderProps) {
 	const { tokenCheck } = useAuth();
 	const pathname = usePathname();
 
@@ -20,7 +22,7 @@ export default function Header({ menuList }: { menuList: Menu[] }) {
 		tokenCheck();
 	}, [pathname]);
 
-	if (!pathname?.startsWith("/member")) {
+	if (!pathname?.startsWith("/user")) {
 		return (
 			<>
 				<header id="header">
@@ -29,7 +31,7 @@ export default function Header({ menuList }: { menuList: Menu[] }) {
 					</h1>
 					<div className="header-wrap">
 						<div className="header-btn">
-							<MemberMenu />
+							<UserMenu />
 							<Link href={"/mypage/wish"} prefetch>
 								<FiHeart />
 							</Link>

@@ -118,46 +118,46 @@ video {
 	display: block;
 	vertical-align: middle;
 }
-.c_red {
+.c-red {
 	color: red !important;
 }
-.c_green {
+.c-green {
 	color: green !important;
 }
-.c_mediumseagreen {
+.c-mediumseagreen {
 	color: mediumseagreen !important;
 }
-.c_blue {
+.c-blue {
 	color: blue !important;
 }
-.c_black {
+.c-black {
 	color: #000 !important;
 }
-.c_gray {
+.c-gray {
 	color: gray !important;
 }
-.c_darkgray {
+.c-darkgray {
 	color: darkgray !important;
 }
-.c_yellow {
+.c-yellow {
 	color: yellow !important;
 }
-.c_white {
+.c-white {
 	color: #fff !important;
 }
-.c_warning {
+.c-warning {
 	color: #ffc041 !important;
 }
-.f_bold {
+.f-bold {
 	font-weight: bold !important;
 }
-.align_left {
+.align-left {
 	text-align: left !important;
 }
-.align_right {
+.align-right {
 	text-align: right !important;
 }
-.align_center {
+.align-center {
 	text-align: center !important;
 }
 .read-only {
@@ -167,7 +167,7 @@ video {
 .transparent {
 	opacity: 0.2;
 }
-.flex_center {
+.flex-center {
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -175,13 +175,13 @@ video {
 .inline-block {
 	display: inline-block;
 }
-.isLink_btn {
+.isLink-btn {
 	cursor: pointer;
 }
-.isLink_btn:hover {
+.isLink-btn:hover {
 	text-decoration: underline;
 }
-.text_readonly {
+.text-readonly {
 	background-color: navajowhite !important;
 }
 .f-left {
@@ -194,14 +194,14 @@ video {
 .onoff-btn-wrap {
 	padding: 0 10px;
 }
-.onoff-btn-wrap .onf_checkbox {
+.onoff-btn-wrap .onf-checkbox {
 	position: absolute;
 	/* hidden */
 	appearance: none;
 	-webkit-appearance: none;
 	-moz-appearance: none;
 }
-.onoff-btn-wrap .switch_label {
+.onoff-btn-wrap .switch-label {
 	position: relative;
 	cursor: pointer;
 	display: inline-block;
@@ -212,10 +212,10 @@ video {
 	border-radius: 20px;
 	transition: 0.2s;
 }
-.onoff-btn-wrap .switch_label:hover {
+.onoff-btn-wrap .switch-label:hover {
 	background: #efefef;
 }
-.onoff-btn-wrap .onf_btn {
+.onoff-btn-wrap .onf-btn {
 	position: absolute;
 	top: 2.5px;
 	left: 3px;
@@ -226,21 +226,21 @@ video {
 	background: #daa;
 	transition: 0.2s;
 }
-.onoff-btn-wrap .onf_txt {
+.onoff-btn-wrap .onf-txt {
 	font-size: 18px;
 	-webkit-user-select: none;
 	-moz-user-select: none;
 	user-select: none;
 	margin-left: 10px;
 }
-.onoff-btn-wrap .onf_checkbox:checked + .switch_label {
+.onoff-btn-wrap .onf-checkbox:checked + .switch-label {
 	background: rgb(128, 197, 128);
 	border: 2px solid rgb(133, 190, 133);
 }
-.onoff-btn-wrap .onf_checkbox:checked + .switch_label:hover {
+.onoff-btn-wrap .onf-checkbox:checked + .switch-label:hover {
 	background: rgb(103, 158, 103);
 }
-.onoff-btn-wrap .onf_checkbox:checked + .switch_label .onf_btn {
+.onoff-btn-wrap .onf-checkbox:checked + .switch-label .onf-btn {
 	left: 34px;
 	background: #fff;
 	box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.1254901961);

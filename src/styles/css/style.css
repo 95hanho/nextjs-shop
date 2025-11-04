@@ -41,7 +41,7 @@ body {
 #header .header-wrap .header-btn > button svg {
   display: inline;
 }
-#header .header-wrap .header-btn .member-menu {
+#header .header-wrap .header-btn .user-menu {
   position: absolute;
   top: calc(100% + 10px);
   border: 1px solid #aaa;
@@ -54,18 +54,18 @@ body {
   box-shadow: 2px 2px 2px #aaa;
   background-color: #fff;
 }
-#header .header-wrap .header-btn .member-menu ul > li {
+#header .header-wrap .header-btn .user-menu ul > li {
   padding: 5px 0;
 }
-#header .header-wrap .header-btn .member-menu ul > li:nth-child(n+2) {
+#header .header-wrap .header-btn .user-menu ul > li:nth-child(n+2) {
   border-top: 1px solid #ccc;
 }
-#header .header-wrap .header-btn .member-menu ul > li a,
-#header .header-wrap .header-btn .member-menu ul > li div {
+#header .header-wrap .header-btn .user-menu ul > li a,
+#header .header-wrap .header-btn .user-menu ul > li div {
   font-size: 20px;
 }
-#header .header-wrap .header-btn .member-menu ul > li a:hover,
-#header .header-wrap .header-btn .member-menu ul > li div:hover {
+#header .header-wrap .header-btn .user-menu ul > li a:hover,
+#header .header-wrap .header-btn .user-menu ul > li div:hover {
   text-decoration: underline;
 }
 
@@ -147,6 +147,10 @@ body {
   min-width: 100px;
   margin-right: 10px;
 }
+#nav .menu-wrap .menu-list .menu-list-ul .menu-list-li:nth-child(n+2) {
+  border-left: 1px solid #d1d1d1;
+  padding-left: 20px;
+}
 #nav .menu-wrap .menu-list .menu-list-ul .menu-list-li.over {
   width: 200px;
 }
@@ -176,14 +180,14 @@ body {
 }
 
 /* 로그인, 회원가입 */
-.member-wrapper {
+.user-wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
   padding: 50px 0;
 }
-.member-wrapper .form-wrap {
+.user-wrapper .form-wrap {
   width: 350px;
   background-color: #fff;
   border: 5px double #777;
@@ -193,42 +197,42 @@ body {
   box-shadow: 3px 3px 3px #aaa;
   padding: 20px;
 }
-.member-wrapper .form-wrap.join {
+.user-wrapper .form-wrap.join {
   width: 500px;
 }
-.member-wrapper .form-wrap h2 {
+.user-wrapper .form-wrap h2 {
   padding: 15px 0;
   font-size: 45px;
 }
-.member-wrapper .form-wrap h3 {
+.user-wrapper .form-wrap h3 {
   font-size: 25px;
   text-align: left;
 }
-.member-wrapper .form-wrap h3 a {
+.user-wrapper .form-wrap h3 a {
   color: #777;
 }
-.member-wrapper .form-wrap form {
+.user-wrapper .form-wrap form {
   /* 로그인 */
   /* 아이디비번찾기 */
 }
-.member-wrapper .form-wrap form .login-input {
+.user-wrapper .form-wrap form .login-input {
   position: relative;
   padding: 25px 50px 7px 15px;
   border: 3px solid #ccc;
   cursor: pointer;
   border-radius: 0 0 10px 10px;
 }
-.member-wrapper .form-wrap form .login-input:first-child {
+.user-wrapper .form-wrap form .login-input:first-child {
   border-bottom: none;
   border-radius: 10px 10px 0 0;
 }
-.member-wrapper .form-wrap form .login-input input {
+.user-wrapper .form-wrap form .login-input input {
   width: 100%;
   border: none;
   outline: none;
   font-size: 25px;
 }
-.member-wrapper .form-wrap form .login-input label {
+.user-wrapper .form-wrap form .login-input label {
   position: absolute;
   display: block;
   top: 0;
@@ -240,11 +244,11 @@ body {
   pointer-events: none;
   transition: all 0.5s;
 }
-.member-wrapper .form-wrap form .login-input label.placeholder {
+.user-wrapper .form-wrap form .login-input label.placeholder {
   width: 100%;
   text-align: left;
 }
-.member-wrapper .form-wrap form .login-input .show-pwd {
+.user-wrapper .form-wrap form .login-input .show-pwd {
   position: absolute;
   cursor: pointer;
   top: 0;
@@ -254,40 +258,40 @@ body {
   padding-right: 10px;
   color: #777;
 }
-.member-wrapper .form-wrap form .login-input.focus {
+.user-wrapper .form-wrap form .login-input.focus {
   cursor: initial;
 }
-.member-wrapper .form-wrap form .login-input.focus input {
+.user-wrapper .form-wrap form .login-input.focus input {
   position: relative;
 }
-.member-wrapper .form-wrap form .login-input.focus .placeholder {
+.user-wrapper .form-wrap form .login-input.focus .placeholder {
   width: auto;
   height: 0;
   padding: 5px 15px;
   font-size: 20px;
   color: #666;
 }
-.member-wrapper .form-wrap form .find-input {
+.user-wrapper .form-wrap form .find-input {
   font-size: 20px;
   margin-bottom: 10px;
   text-align: left;
 }
-.member-wrapper .form-wrap form .find-input:last-child {
+.user-wrapper .form-wrap form .find-input:last-child {
   margin-bottom: 20px;
 }
-.member-wrapper .form-wrap form .find-input label {
+.user-wrapper .form-wrap form .find-input label {
   display: inline-block;
   width: 80px;
   text-align: right;
   padding: 0 5px;
 }
-.member-wrapper .form-wrap form .find-input input {
+.user-wrapper .form-wrap form .find-input input {
   font-size: 18px;
   font-family: "NotoSansKR";
   width: 130px;
   padding: 5px;
 }
-.member-wrapper .form-wrap form .find-input button {
+.user-wrapper .form-wrap form .find-input button {
   border: 1px solid #aaa;
   border-radius: 5px;
   background-color: #36dd4c;
@@ -296,18 +300,18 @@ body {
   color: #fff;
   font-size: 20px;
 }
-.member-wrapper .form-wrap form .find-input button:hover {
+.user-wrapper .form-wrap form .find-input button:hover {
   background-color: #31ca45;
 }
-.member-wrapper .form-wrap form p {
+.user-wrapper .form-wrap form p {
   margin-top: 5px;
   text-align: left;
   color: #f00;
 }
-.member-wrapper .form-wrap form .submit-wrap {
+.user-wrapper .form-wrap form .submit-wrap {
   margin: 20px 0;
 }
-.member-wrapper .form-wrap form .submit-wrap input[type=submit] {
+.user-wrapper .form-wrap form .submit-wrap input[type=submit] {
   width: 200px;
   height: 50px;
   border: 1px solid #aaa;
@@ -319,34 +323,34 @@ body {
   cursor: pointer;
   box-shadow: 0px 0px 5px #aaa;
 }
-.member-wrapper .form-wrap form .submit-wrap input[type=submit]:hover {
+.user-wrapper .form-wrap form .submit-wrap input[type=submit]:hover {
   background-color: rgb(155, 158, 153);
   color: #eee;
   font-size: 40px;
   transition: all 0.3s;
 }
-.member-wrapper .form-wrap form .submit-wrap input[type=submit]:active {
+.user-wrapper .form-wrap form .submit-wrap input[type=submit]:active {
   box-shadow: none;
   transition: all 0s;
   transform: translate(1px, 1px);
   background-color: rgb(20, 196, 20);
   border-color: #fff;
 }
-.member-wrapper .form-wrap form .join-input {
+.user-wrapper .form-wrap form .join-input {
   display: flex;
   font-size: 23px;
   text-align: left;
   margin-bottom: 10px;
 }
-.member-wrapper .form-wrap form .join-input .join-label {
+.user-wrapper .form-wrap form .join-input .join-label {
   padding-top: 10px;
   width: 30%;
 }
-.member-wrapper .form-wrap form .join-input .join-text {
+.user-wrapper .form-wrap form .join-input .join-text {
   width: 70%;
   height: 100%;
 }
-.member-wrapper .form-wrap form .join-input .join-text > div input {
+.user-wrapper .form-wrap form .join-input .join-text > div input {
   width: 70%;
   padding: 7px 10px;
   font-size: 20px;
@@ -354,7 +358,7 @@ body {
   border-radius: 5px;
   outline: none;
 }
-.member-wrapper .form-wrap form .join-input .join-text > div .search-btn {
+.user-wrapper .form-wrap form .join-input .join-text > div .search-btn {
   width: 25%;
   margin-left: 5px;
   padding: 7px 10px;
@@ -363,52 +367,52 @@ body {
   font-size: 20px;
   font-weight: bold;
 }
-.member-wrapper .form-wrap form .join-input .join-text > div .search-btn.zonecode {
+.user-wrapper .form-wrap form .join-input .join-text > div .search-btn.zonecode {
   border: 2px solid #ad9090;
   background: #ee6666;
 }
-.member-wrapper .form-wrap form .join-input .join-text > div .search-btn.zonecode:hover {
+.user-wrapper .form-wrap form .join-input .join-text > div .search-btn.zonecode:hover {
   background: #df6060;
 }
-.member-wrapper .form-wrap form .join-input .join-text > div .search-btn.phone {
+.user-wrapper .form-wrap form .join-input .join-text > div .search-btn.phone {
   border: 2px solid #83a77e;
   background: #4fdb3d;
 }
-.member-wrapper .form-wrap form .join-input .join-text > div .search-btn.phone:hover {
+.user-wrapper .form-wrap form .join-input .join-text > div .search-btn.phone:hover {
   background: #4acc39;
 }
-.member-wrapper .form-wrap form .join-input .join-text p {
+.user-wrapper .form-wrap form .join-input .join-text p {
   display: none;
   margin-top: 5px;
   font-size: 15px;
 }
-.member-wrapper .form-wrap form .join-input .join-text.fail p, .member-wrapper .form-wrap form .join-input .join-text.success p {
+.user-wrapper .form-wrap form .join-input .join-text.fail p, .user-wrapper .form-wrap form .join-input .join-text.success p {
   display: block;
 }
-.member-wrapper .form-wrap form .join-input .join-text.fail > div input {
+.user-wrapper .form-wrap form .join-input .join-text.fail > div input {
   border: 1px solid #f00;
   color: #f00;
 }
-.member-wrapper .form-wrap form .join-input .join-text.success > div input {
+.user-wrapper .form-wrap form .join-input .join-text.success > div input {
   border: 1px solid #0f0;
   border: 1px solid rgb(90, 161, 90);
 }
-.member-wrapper .form-wrap form .join-space {
+.user-wrapper .form-wrap form .join-space {
   height: 30px;
 }
-.member-wrapper .form-wrap .find-wrap {
+.user-wrapper .form-wrap .find-wrap {
   display: flex;
   justify-content: space-around;
   font-size: 20px;
   padding: 0 0 0 0;
 }
-.member-wrapper .form-wrap .find-wrap a:hover {
+.user-wrapper .form-wrap .find-wrap a:hover {
   text-decoration: underline;
 }
-.member-wrapper .form-wrap .sns-login {
+.user-wrapper .form-wrap .sns-login {
   margin: 10px 0;
 }
-.member-wrapper .form-wrap .sns-login button {
+.user-wrapper .form-wrap .sns-login button {
   width: 100%;
   padding: 8px 10px;
   border-radius: 5px;
@@ -418,24 +422,24 @@ body {
   align-items: center;
   box-shadow: 0px 0px 5px #aaa;
 }
-.member-wrapper .form-wrap .sns-login button.naver-login {
+.user-wrapper .form-wrap .sns-login button.naver-login {
   background-color: #03c75a;
   color: white;
 }
-.member-wrapper .form-wrap .sns-login button.naver-login:hover {
+.user-wrapper .form-wrap .sns-login button.naver-login:hover {
   background-color: #04ac4f;
 }
-.member-wrapper .form-wrap .sns-login button.kakao-login {
+.user-wrapper .form-wrap .sns-login button.kakao-login {
   background-color: #fee500;
   color: #3c1e1e;
 }
-.member-wrapper .form-wrap .sns-login button.kakao-login:hover {
+.user-wrapper .form-wrap .sns-login button.kakao-login:hover {
   background-color: #ebd303;
 }
-.member-wrapper .form-wrap .sns-login button svg {
+.user-wrapper .form-wrap .sns-login button svg {
   margin-right: 10px;
 }
-.member-wrapper .form-wrap .sns-login button:active {
+.user-wrapper .form-wrap .sns-login button:active {
   box-shadow: none;
   transform: translate(1px, 1px);
 }
@@ -1396,24 +1400,24 @@ main#productDetail section#etc-info-section .best-short-sleeve-section .rank-tab
   display: flex;
   padding: 12px 12px;
 }
-#wish .wish__content .wish__filters .onoff-btn-wrap .switch_label {
+#wish .wish__content .wish__filters .onoff-btn-wrap .switch-label {
   height: 16px;
   width: 31px;
   background: rgb(204, 204, 204);
   border-color: rgb(204, 204, 204);
 }
-#wish .wish__content .wish__filters .onoff-btn-wrap .switch_label .onf_btn {
+#wish .wish__content .wish__filters .onoff-btn-wrap .switch-label .onf-btn {
   width: 10px;
   height: 10px;
   top: 0.5px;
   left: 2px;
   background-color: #fff;
 }
-#wish .wish__content .wish__filters .onoff-btn-wrap .onf_checkbox:checked + .switch_label {
+#wish .wish__content .wish__filters .onoff-btn-wrap .onf-checkbox:checked + .switch-label {
   background: #000;
   border: 2px solid #000;
 }
-#wish .wish__content .wish__filters .onoff-btn-wrap .onf_checkbox:checked + .switch_label .onf_btn {
+#wish .wish__content .wish__filters .onoff-btn-wrap .onf-checkbox:checked + .switch-label .onf-btn {
   left: 12px;
 }
 #wish .wish__content .wish__list {

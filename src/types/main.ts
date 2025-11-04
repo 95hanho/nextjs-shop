@@ -1,26 +1,34 @@
-export type ProductData = {
-	product_id: number;
+import { BaseResponse } from "./common";
+
+export type MainProduct = {
+	productId: number;
 	name: string;
-	brand: string;
+	// brand: string;
 	price: string;
-	img_path: string;
+	imgPath: string;
 	copyright: string;
-	copyright_url: string;
-	created_at: Date;
-	view_count: number;
-	wish_count: number;
-	sales_count: number;
+	copyrightUrl: string;
+	createdAt: Date;
+	viewCount: number;
+	wishCount: number;
+	// salesCount: number;
 };
 
+export interface MainProductResponse extends BaseResponse {
+	productList: MainProduct[];
+}
+// 서브메뉴
 export type SubMenu = {
-	menu_sub_id: number;
-	menu_name: string;
-	menu_top_id: number;
+	menuSubId: number;
+	menuName: string;
 };
-
+// 상단메뉴
 export type Menu = {
-	menu_top_id: string;
-	menu_name: string;
+	menuTopId: number;
+	menuName: string;
 	gender: string;
-	subMenus: SubMenu[];
+	menuSubList: SubMenu[];
 };
+export interface MenuResponse {
+	menuList: Menu[];
+}

@@ -10,13 +10,13 @@ import ProductBlog from "./ProductBlog";
 import { FiHeart } from "react-icons/fi";
 
 export default function ProductDetail({
-	params: { product_id },
+	params: { productId },
 }: {
 	params: {
-		product_id: string;
+		productId: string;
 	};
 }) {
-	console.log(product_id);
+	console.log(productId);
 
 	return (
 		<main id="productDetail">

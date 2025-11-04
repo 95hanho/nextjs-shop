@@ -5,9 +5,10 @@ import "@/styles/css/reset.css";
 import "@/styles/css/style.css";
 import "@/styles/css/globals.css";
 import Providers from "@/lib/providers";
-import { Menu } from "@/types/main";
-import { mainService } from "@/api";
-import Header from "@/components/common/header";
+import { MenuResponse } from "@/types/main";
+import API_URL from "@/api/endpoints";
+import Header from "@/components/common/Header";
+import { getNormal } from "@/api/fetchFilter";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -29,8 +30,9 @@ export default async function RootLayout({
 }: Readonly<{
 	children: React.ReactNode;
 }>) {
-	const { data: menus_data }: { data: { menu_list: Menu[] } } = await mainService.getMenus();
-	const menuList = [...menus_data.menu_list].sort((a, b) => Number(a.menu_top_id) - Number(b.menu_top_id));
+	const res = await getNormal(API_URL.MAIN_MENU);
+	const menusData: MenuResponse = await res.json();
+	const menuList = [...menusData.menuList].sort((a, b) => a.menuTopId - b.menuTopId);
 
 	return (
 		<html lang="ko">
