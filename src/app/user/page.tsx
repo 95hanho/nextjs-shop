@@ -5,10 +5,39 @@ import { useEffect, useRef, useState } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi"; // 눈 모양 아이콘을 import 합니다.
 import { SiNaver, SiKakaotalk } from "react-icons/si"; // 네이버와 카카오 아이콘을 import 합니다.
 import useUser from "@/hooks/query/useUser";
-import { FormEvent, LoginForm } from "@/types/auth";
+import { FormEvent, LoginForm, loginResponse } from "@/types/auth";
+import { useMutation } from "@tanstack/react-query";
+import { getBaseUrl } from "@/lib/getBaseUrl";
+import API_URL from "@/api/endpoints";
+import useAuth from "@/hooks/useAuth";
+import { useRouter } from "next/navigation";
+import { postUrlFormData } from "@/api/fetchFilter";
+import Error from "next/error";
 
 export default function Login() {
-	const { handleLogin } = useUser();
+	const router = useRouter();
+	const { loginToken } = useAuth();
+
+	const handleLogin = useMutation({
+		mutationFn: (obj: LoginForm) => postUrlFormData<loginResponse>(getBaseUrl() + API_URL.USER, obj),
+		// Mutation이 시작되기 직전에 특정 작업을 수행
+		onMutate(a) {
+			console.log(a);
+		},
+		onSuccess(data) {
+			console.log(data);
+			alert("로그인!");
+			// loginToken(data.accessToken, data.refreshToken);
+			// router.push("/");
+		},
+		onError(err) {
+			console.log(err);
+		},
+		// 결과에 관계 없이 무언가 실행됨
+		onSettled(data, err, params, context) {
+			// console.log(data, err, params, context);
+		},
+	});
 
 	const userIdRef = useRef<HTMLInputElement>(null);
 	const pwdRef = useRef<HTMLInputElement>(null);
