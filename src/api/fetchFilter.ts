@@ -82,13 +82,23 @@ async function http<T>(url: string, init?: RequestInit & { baseUrl?: string; tim
 					: typeof raw === "string"
 					? raw
 					: res.statusText) || "REQUEST_FAILED";
-			console.log("132123123", msg, res.status, raw);
-			const error = Object.assign(new Error(msg), { status: res.status, data: raw });
-			console.log(error);
-			throw error;
+			throw {
+				message: msg,
+				status: res.status,
+				data: raw,
+			} as const; // 타입 보장
 		}
 
 		return raw as T;
+	} catch (err: any) {
+		// 👇 네트워크 에러(오프라인, 타임아웃 등) 추가 처리
+		if (err.name === "AbortError") {
+			throw { message: "REQUEST_TIMEOUT", status: 0, data: null } as const;
+		}
+		if (err instanceof TypeError && err.message.includes("fetch")) {
+			throw { message: "NETWORK_ERROR", status: 0, data: null } as const;
+		}
+		throw err;
 	} finally {
 		timer.clear();
 	}

@@ -45,9 +45,16 @@ export default async function handler(request: NextApiRequest, response: NextApi
 			// return 응답.status(res.status).json({ msg: "로그인 실패", status: res.status });
 		}
 		return response.status(405).json({ msg: "Method not allowed" });
-	} catch (error) {
-		console.error("서버 통신 에러 :", error);
-		// return response.status(500).json({ msg: "서버 오류, 다시 시도해주세요." });
-		return response.status(500).json(error);
+	} catch (err: any) {
+		console.error("서버 통신 에러 :", {
+			message: err.message,
+			status: err.status,
+			data: err.data,
+		});
+
+		const status = Number.isInteger(err?.status) ? err.status : 500;
+		const payload = err?.data && typeof err.data === "object" ? err.data : { msg: err?.message || "SERVER_ERROR" };
+
+		return response.status(status).json(payload);
 	}
 }

@@ -31,7 +31,7 @@ export default function Login() {
 			// router.push("/");
 		},
 		onError(err) {
-			console.log(err);
+			console.log("login error :", err);
 		},
 		// 결과에 관계 없이 무언가 실행됨
 		onSettled(data, err, params, context) {
