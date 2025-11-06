@@ -71,7 +71,7 @@ export const getDownload = async (url: string, params?: Params, headers?: Header
 			const contentType = res.headers.get("Content-Type") || "";
 			if (contentType.includes("application/json")) {
 				const json = await res.json();
-				errorMessage = json?.msg || JSON.stringify(json);
+				errorMessage = json?.message || JSON.stringify(json);
 			} else {
 				errorMessage = await res.text();
 			}

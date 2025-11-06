@@ -13,12 +13,12 @@ export default async function handler(request: NextApiRequest, response: NextApi
 		// 메인 메뉴목록 가져오기
 		if (request.method === "GET") {
 			const data = await getNormal<MenuResponse>(getServerUrl() + API_URL.MAIN_MENU);
-			return response.status(200).json({ msg: "success", menuList: data.menuList });
+			return response.status(200).json({ message: "success", menuList: data.menuList });
 		}
 
-		return response.status(400).json({ msg: "잘 못 된 요청입니다." });
+		return response.status(400).json({ message: "잘 못 된 요청입니다." });
 	} catch (error) {
 		console.error("서버 통신 에러 :", error);
-		return response.status(500).json({ msg: "서버 오류, 다시 시도해주세요." });
+		return response.status(500).json({ message: "서버 오류, 다시 시도해주세요." });
 	}
 }

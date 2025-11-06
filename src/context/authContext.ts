@@ -3,7 +3,7 @@ import { createContext } from "react";
 interface AuthContextType {
 	loginOn: boolean;
 	accessToken: string | null;
-	loginToken: (aToken: string, rToken: string) => void;
+	// loginToken: (aToken: string, rToken: string) => void;
 	logout: () => void;
 	tokenCheck: () => void;
 }

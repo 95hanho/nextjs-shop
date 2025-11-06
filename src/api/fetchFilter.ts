@@ -76,14 +76,14 @@ async function http<T>(url: string, init?: RequestInit & { baseUrl?: string; tim
 			: await res.blob();
 
 		if (!res.ok) {
-			const msg =
+			const message =
 				(typeof raw === "object" && raw && ("msg" in raw || "message" in raw)
 					? (raw as any).msg ?? (raw as any).message
 					: typeof raw === "string"
 					? raw
 					: res.statusText) || "REQUEST_FAILED";
 			throw {
-				message: msg,
+				message,
 				status: res.status,
 				data: raw,
 			} as const; // 타입 보장

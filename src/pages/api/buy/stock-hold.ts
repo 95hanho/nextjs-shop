@@ -5,5 +5,5 @@ export default async function handler(request: NextApiRequest, response: NextApi
 	console.log(request.method);
 	console.log(request.query);
 
-	return response.status(200).json({ msg: "success" });
+	return response.status(200).json({ message: "success" });
 }
