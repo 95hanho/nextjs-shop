@@ -1,13 +1,15 @@
 "use client";
 
 import AuthProvider from "@/providers/AuthProvider";
+import { ApiError } from "@/types/common";
 import { MutationCache, QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactNode, useState } from "react";
 
 // 공통 에러 핸들러 (전역 모달/토스트 등)
-function handleGlobalMutationError(error: any) {
+function handleGlobalMutationError(error: ApiError) {
 	// 표준화된 서버 에러 바디 { msg, code }도 고려
-	const msg = error?.msg || error?.message || "";
+	console.log("error", error);
+	const msg = error?.msg || "";
 	switch (msg) {
 		case "NETWORK_ERROR":
 			console.log("네트워크 연결이 끊겼습니다.\n다시 시도해주세요.");
@@ -17,10 +19,10 @@ function handleGlobalMutationError(error: any) {
 			console.log("요청이 시간 초과되었습니다.\n잠시 후 다시 시도해주세요.");
 			//   openErrorModal("요청이 시간 초과되었습니다.\n잠시 후 다시 시도해주세요.");
 			return;
-		case "USER_NOT_FOUND":
-			console.log("아이디 또는 비밀번호가 일치하지 않습니다.");
-			//   openErrorModal("아이디 또는 비밀번호가 일치하지 않습니다.");
-			return;
+		// case "USER_NOT_FOUND":
+		// 	console.log("아이디 또는 비밀번호가 일치하지 않습니다.");
+		// 	//   openErrorModal("아이디 또는 비밀번호가 일치하지 않습니다.");
+		// 	return;
 		default:
 			console.log("서버 오류가 발생했습니다.\n잠시 후 다시 시도해주세요.");
 		//   openErrorModal("서버 오류가 발생했습니다.\n잠시 후 다시 시도해주세요.");

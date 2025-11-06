@@ -4,6 +4,7 @@ import { getServerUrl } from "@/lib/getBaseUrl";
 import { generateAccessToken, generateRefreshToken } from "@/lib/jwt";
 import { ACCESS_TOKEN_COOKIE_AGE, REFRESH_TOKEN_COOKIE_AGE } from "@/lib/tokenTime";
 import { loginResponse } from "@/types/auth";
+import { ApiError } from "@/types/common";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(request: NextApiRequest, response: NextApiResponse) {
@@ -18,8 +19,8 @@ export default async function handler(request: NextApiRequest, response: NextApi
 		// 로그인
 		if (request.method === "POST") {
 			const { userId, password } = request.body;
-			if (!userId) response.status(400).json({ msg: "아이디를 입력해주세요." });
-			if (!password) response.status(400).json({ msg: "비밀번호를 입력해주세요." });
+			if (!userId) return response.status(400).json({ msg: "아이디를 입력해주세요." });
+			if (!password) return response.status(400).json({ msg: "비밀번호를 입력해주세요." });
 
 			const data = await postUrlFormData<loginResponse>(getServerUrl() + API_URL.USER, { userId, password });
 			// if (res.status === 401) {
@@ -45,7 +46,7 @@ export default async function handler(request: NextApiRequest, response: NextApi
 			// return 응답.status(res.status).json({ msg: "로그인 실패", status: res.status });
 		}
 		return response.status(405).json({ msg: "Method not allowed" });
-	} catch (err: any) {
+	} catch (err: ApiError) {
 		console.error("서버 통신 에러 :", {
 			message: err.message,
 			status: err.status,
