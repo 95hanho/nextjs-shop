@@ -3,13 +3,13 @@ import { MainProductResponse } from "@/types/main";
 import ProductSlider from "@/components/main/ProductSlider";
 import API_URL from "@/api/endpoints";
 import { getNormal } from "@/api/fetchFilter";
+import { getBaseUrl } from "@/lib/getBaseUrl";
 
 export default async function Home() {
-	const res = await getNormal(API_URL.MAIN);
-	if (!res.ok) {
-		return null;
-	}
-	const products_data: MainProductResponse = await res.json();
+	const products_data = await getNormal<MainProductResponse>(getBaseUrl() + API_URL.MAIN);
+	// if (!res.ok) {
+	// 	return null;
+	// }
 	const productList = products_data.productList;
 
 	return (

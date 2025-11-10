@@ -6,9 +6,39 @@ import { FiEye, FiEyeOff } from "react-icons/fi"; // 눈 모양 아이콘을 imp
 import { SiNaver, SiKakaotalk } from "react-icons/si"; // 네이버와 카카오 아이콘을 import 합니다.
 import useUser from "@/hooks/query/useUser";
 import { FormEvent, LoginForm } from "@/types/auth";
+import { useMutation } from "@tanstack/react-query";
+import { getBaseUrl } from "@/lib/getBaseUrl";
+import API_URL from "@/api/endpoints";
+import useAuth from "@/hooks/useAuth";
+import { useRouter } from "next/navigation";
+import { postUrlFormData } from "@/api/fetchFilter";
+import Error from "next/error";
+import { BaseResponse } from "@/types/common";
 
 export default function Login() {
-	const { handleLogin } = useUser();
+	const router = useRouter();
+
+	const handleLogin = useMutation({
+		mutationFn: (obj: LoginForm) => postUrlFormData<BaseResponse>(getBaseUrl() + API_URL.USER, obj),
+		// Mutation이 시작되기 직전에 특정 작업을 수행
+		onMutate(a) {
+			console.log(a);
+		},
+		onSuccess(data) {
+			alert("로그인!");
+			router.push("/");
+		},
+		onError(err) {
+			if (err.message === "USER_NOT_FOUND") {
+				console.error(err.message);
+				setAlertMessage("아이디 또는 비밀번호가 일치하지 않습니다.");
+			}
+		},
+		// 결과에 관계 없이 무언가 실행됨
+		onSettled(data, err, params, context) {
+			// console.log(data, err, params, context);
+		},
+	});
 
 	const userIdRef = useRef<HTMLInputElement>(null);
 	const pwdRef = useRef<HTMLInputElement>(null);
@@ -34,11 +64,7 @@ export default function Login() {
 			pwdRef.current?.focus();
 			return;
 		}
-		handleLogin.mutate(loginForm, {
-			onError(err) {
-				setAlertMessage("아이디 또는 비밀번호가 일치하지 않습니다.");
-			},
-		});
+		handleLogin.mutate(loginForm);
 	};
 
 	useEffect(() => {

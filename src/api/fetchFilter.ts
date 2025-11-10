@@ -1,200 +1,215 @@
-// 요청 Method별 빠른 처리하기 위한
+// fetchFilters.ts
+type Primitive = string | number | boolean;
+type ParamValue = Primitive | Blob | File | FileList | Primitive[] | undefined;
 
-type ParamValue =
-	| string
-	| number
-	| boolean
-	| Blob
-	| File
-	| FileList
-	| (string | number | boolean | Blob | File)[] // 배열 지원
-	| undefined;
+export type Params = Record<string, ParamValue>;
+export type HeadersMap = Record<string, string>;
 
-type Params = Record<string, ParamValue>;
-type Headers = Record<string, string>;
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? ""; // BFF만 쓰면 ''로 둬도 OK
+const isServer = typeof window === "undefined";
 
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+// ---- 공통 유틸 ----
+const cloneParams = (params?: Params): Params | undefined => (params ? { ...params } : undefined);
 
-// pathString 처리
-const pathStringFilter = (url: string, params?: Params): [string, Params | undefined] => {
+// :id 같은 path param 치환 (원본 불변)
+const applyPathParams = (url: string, params?: Params): [string, Params | undefined] => {
 	if (!params) return [url, params];
-	url = url.replace(/:([^/]+)/g, (match: string, paramName: string) => {
-		if (params[paramName] !== undefined) {
-			const changeStr = params[paramName];
-			delete params[paramName];
-			return String(changeStr); // 문자열 치환이니까 string 변환 필요
+	const rest: Params = { ...params };
+	const newUrl = url.replace(/:([^/]+)/g, (_, name: string) => {
+		if (rest[name] !== undefined) {
+			const v = rest[name];
+			delete rest[name];
+			return String(Array.isArray(v) ? v[0] : v);
 		}
-		return match;
+		return _;
 	});
-	return [url, params];
+	return [newUrl, rest];
 };
-// 파라미터 처리
-const toUrlSearchParams = (params: Params): URLSearchParams => {
-	const searchParams = new URLSearchParams();
-	for (const key in params) {
+
+const toSearchParams = (params: Params): URLSearchParams => {
+	const search = new URLSearchParams();
+	for (const key of Object.keys(params)) {
 		const value = params[key];
 		if (value === undefined) continue;
-
 		if (Array.isArray(value)) {
-			for (const item of value) {
-				searchParams.append(key, String(item));
-			}
+			for (const item of value) search.append(key, String(item));
 		} else {
-			searchParams.append(key, String(value));
+			search.append(key, String(value));
 		}
 	}
-	return searchParams;
+	return search;
 };
 
-// get
-export const getNormal = (url: string, params?: Params, headers?: Headers) => {
-	[url, params] = pathStringFilter(url, params);
-	url = url.replace(/ /gi, "%20");
-	const queryString = params && Object.keys(params).length > 0 ? `?${toUrlSearchParams(params).toString()}` : "";
-	return fetch(baseUrl + url + queryString, {
-		headers,
-	});
+// Abort + timeout
+const withTimeout = (ms: number) => {
+	const ctrl = new AbortController();
+	const id = setTimeout(() => ctrl.abort(), ms);
+	return { signal: ctrl.signal, clear: () => clearTimeout(id) };
 };
 
-// download
-export const getDownload = async (url: string, params?: Params, headers?: Headers) => {
-	[url, params] = pathStringFilter(url, params);
-	url = url.replace(/ /gi, "%20");
-	const queryString = params && Object.keys(params).length > 0 ? `?${toUrlSearchParams(params).toString()}` : "";
+// 공통 fetch 래퍼: ok 체크 + JSON/텍스트/빈 응답 처리
+async function http<T>(url: string, init?: RequestInit & { baseUrl?: string; timeoutMs?: number }): Promise<T> {
+	const fullUrl = (init?.baseUrl ?? BASE_URL) + url;
+	const { timeoutMs = 20000, ...rest } = init ?? {};
+	const timer = withTimeout(timeoutMs);
 
-	const res = await fetch(baseUrl + url + queryString, {
-		headers,
-	});
-	if (!res.ok) {
-		let errorMessage = "파일 다운로드 실패";
-		try {
-			const contentType = res.headers.get("Content-Type") || "";
-			if (contentType.includes("application/json")) {
-				const json = await res.json();
-				errorMessage = json?.msg || JSON.stringify(json);
-			} else {
-				errorMessage = await res.text();
+	try {
+		const res = await fetch(fullUrl, {
+			credentials: "include", // 쿠키 인증 기본
+			cache: "no-store", // 개인화 API 기본
+			...rest,
+			signal: timer.signal,
+			headers: {
+				Accept: "application/json, text/plain, */*",
+				...(rest.headers ?? {}),
+			},
+		});
+
+		// 204 no content
+		if (res.status === 204) return undefined as unknown as T;
+
+		const ct = res.headers.get("content-type") ?? "";
+		const raw = ct.includes("application/json")
+			? await res.json().catch(async () => ({ _raw: await res.text() }))
+			: ct.startsWith("text/") || ct.includes("application/xml")
+			? await res.text()
+			: await res.blob();
+
+		if (!res.ok) {
+			const message =
+				(typeof raw === "object" && raw && ("msg" in raw || "message" in raw)
+					? (raw as any).msg ?? (raw as any).message
+					: typeof raw === "string"
+					? raw
+					: res.statusText) || "REQUEST_FAILED";
+			throw {
+				message,
+				status: res.status,
+				data: raw,
+			} as const; // 타입 보장
+		}
+
+		return raw as T;
+	} catch (err: any) {
+		// 타임아웃
+		if (err.name === "AbortError") {
+			if (isServer) {
+				// ✅ BFF에서 업스트림 타임아웃 → 504로 던짐
+				throw { message: "REQUEST_TIMEOUT", status: 504, data: null } as const;
 			}
-		} catch {
-			// 파싱 실패 시 기본 메시지 유지
+			// ✅ FE(브라우저) 네트워크 타임아웃 → 0 유지
+			throw { message: "REQUEST_TIMEOUT", status: 0, data: null } as const;
 		}
-		throw new Error(errorMessage);
-	}
 
-	const blob = await res.blob();
+		// 네트워크(오프라인/연결 실패 등)
+		if (err instanceof TypeError && err.message.includes("fetch")) {
+			if (isServer) {
+				// ✅ BFF에서 업스트림 연결 실패 → 502로 던짐
+				throw { message: "NETWORK_ERROR", status: 502, data: null } as const;
+			}
+			// ✅ FE(브라우저) 네트워크 실패 → 0 유지
+			throw { message: "NETWORK_ERROR", status: 0, data: null } as const;
+		}
+
+		throw err;
+	} finally {
+		timer.clear();
+	}
+}
+
+// ---- 메서드별 헬퍼 ----
+
+// GET (쿼리스트링)
+export function getNormal<T>(url: string, params?: Params, headers?: HeadersMap) {
+	const [u2, rest] = applyPathParams(url, cloneParams(params));
+	const qs = rest && Object.keys(rest).length > 0 ? `?${toSearchParams(rest).toString()}` : "";
+	// 공백 인코딩
+	const safeUrl = (u2 + qs).replace(/ /g, "%20");
+	return http<T>(safeUrl, { headers });
+}
+
+// 파일 다운로드 (Blob + 에러 파싱)
+export async function getDownload(url: string, params?: Params, headers?: HeadersMap) {
+	const [u2, rest] = applyPathParams(url, cloneParams(params));
+	const qs = rest && Object.keys(rest).length > 0 ? `?${toSearchParams(rest).toString()}` : "";
+	const blob = await http<Blob>((u2 + qs).replace(/ /g, "%20"), {
+		headers,
+	});
 	return blob;
-};
+}
 
-// post body
-export const postJson = (url: string, params: Params, headers?: Headers) => {
-	const [newUrl, newParams] = pathStringFilter(url, params);
-	url = newUrl;
-	params = newParams!;
-	return fetch(baseUrl + url, {
+// POST JSON
+export function postJson<T>(url: string, params: Params, headers?: HeadersMap) {
+	const [u2, body] = applyPathParams(url, cloneParams(params));
+	return http<T>(u2, {
 		method: "POST",
-		body: JSON.stringify(params),
-		headers: {
-			"Content-Type": "application/json",
-			...headers,
-		},
+		headers: { "Content-Type": "application/json", ...headers },
+		body: JSON.stringify(body ?? {}),
 	});
-};
+}
 
-// post formData
-export const postFormData = (url: string, params: Params, headers?: Headers) => {
-	const [newUrl, newParams] = pathStringFilter(url, params);
-	url = newUrl;
-	params = newParams!;
-
+// POST FormData (Content-Type 설정 X: 브라우저가 boundary 포함 설정)
+export function postFormData<T>(url: string, params: Params, headers?: HeadersMap) {
+	const [u2, body] = applyPathParams(url, cloneParams(params));
 	const formData = new FormData();
-	Object.entries(params).forEach(([key, value]) => {
-		if (Array.isArray(value) || value instanceof FileList) {
-			for (const v of value) {
-				formData.append(key, v instanceof Blob ? v : String(v)); // 파일(File, Blob)이면 그대로 넘겨야 함.
-			}
-		} else if (value !== undefined) {
-			formData.append(key, value instanceof Blob ? value : String(value)); // 파일(File, Blob)이면 그대로 넘겨야 함.
-		}
-	});
 
-	return fetch(baseUrl + url, {
+	if (body) {
+		Object.entries(body).forEach(([key, value]) => {
+			if (Array.isArray(value) || value instanceof FileList) {
+				for (const v of value) {
+					formData.append(key, v instanceof Blob ? v : String(v)); // 파일(File, Blob)이면 그대로 넘겨야 함.
+				}
+			} else if (value !== undefined) {
+				formData.append(key, value instanceof Blob ? value : String(value)); // 파일(File, Blob)이면 그대로 넘겨야 함.
+			}
+		});
+	}
+
+	return http<T>(u2, {
 		method: "POST",
-		headers,
+		headers, // Content-Type 넣지 마세요
 		body: formData,
 	});
-};
+}
 
-// post urlFormData
-export const postUrlFormData = (url: string, params: Params, headers?: Headers) => {
-	const [newUrl, newParams] = pathStringFilter(url, params);
-	url = newUrl;
-	params = newParams!;
-	const urlFormData = new URLSearchParams();
-
-	for (const key in params) {
-		const value = params[key];
-		if (value === undefined) continue;
-
-		if (Array.isArray(value)) {
-			for (const v of value) {
-				urlFormData.append(key, String(v));
-			}
-		} else if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
-			urlFormData.append(key, String(value));
-		} else {
-			console.warn(`URLSearchParams does not support key "${key}" with value type "${typeof value}"`);
-			// URLSearchParams doesn't support Blob/File/FileList
-		}
+// x-www-form-urlencoded (POST/PUT 공용 빌더)
+function urlEncodedBody(params?: Params) {
+	const sp = new URLSearchParams();
+	if (params) {
+		Object.entries(params).forEach(([k, v]) => {
+			if (v === undefined) return;
+			if (Array.isArray(v)) v.forEach((i) => sp.append(k, String(i)));
+			else if (typeof v === "string" || typeof v === "number" || typeof v === "boolean") sp.append(k, String(v));
+			// Blob/File은 지원 X
+		});
 	}
+	return sp.toString();
+}
 
-	return fetch(baseUrl + url, {
+export function postUrlFormData<T>(url: string, params: Params, headers?: HeadersMap) {
+	const [u2, body] = applyPathParams(url, cloneParams(params));
+	return http<T>(u2, {
 		method: "POST",
-		body: urlFormData.toString(),
-		headers: {
-			"Content-Type": "application/x-www-form-urlencoded",
-			...headers,
-		},
+		headers: { "Content-Type": "application/x-www-form-urlencoded", ...headers },
+		body: urlEncodedBody(body),
 	});
-};
+}
 
-// put urlFormData
-export const putUrlFormData = (url: string, params: Params, headers?: Headers) => {
-	const [newUrl, newParams] = pathStringFilter(url, params);
-	url = newUrl;
-	params = newParams!;
-	const urlFormData = new URLSearchParams();
-
-	for (const key in params) {
-		const value = params[key];
-		if (value === undefined) continue;
-
-		if (Array.isArray(value)) {
-			for (const v of value) {
-				urlFormData.append(key, String(v));
-			}
-		} else if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
-			urlFormData.append(key, String(value));
-		} else {
-			console.warn(`URLSearchParams does not support key "${key}" with value type "${typeof value}"`);
-			// URLSearchParams doesn't support Blob/File/FileList
-		}
-	}
-	return fetch(baseUrl + url, {
+export function putUrlFormData<T>(url: string, params: Params, headers?: HeadersMap) {
+	const [u2, body] = applyPathParams(url, cloneParams(params));
+	return http<T>(u2, {
 		method: "PUT",
-		body: urlFormData.toString(),
-		headers: {
-			"Content-Type": "application/x-www-form-urlencoded",
-			...headers,
-		},
+		headers: { "Content-Type": "application/x-www-form-urlencoded", ...headers },
+		body: urlEncodedBody(body),
 	});
-};
+}
 
-// delete
-export const deleteNormal = (url: string, params?: Params) => {
-	[url, params] = pathStringFilter(url, params);
-	url = url.replace(/ /gi, "%20");
-	const queryString = params && Object.keys(params).length > 0 ? `?${toUrlSearchParams(params).toString()}` : "";
-	return fetch(baseUrl + url + queryString, {
+// DELETE (쿼리스트링)
+export function deleteNormal<T>(url: string, params?: Params, headers?: HeadersMap) {
+	const [u2, rest] = applyPathParams(url, cloneParams(params));
+	const qs = rest && Object.keys(rest).length > 0 ? `?${toSearchParams(rest).toString()}` : "";
+	return http<T>((u2 + qs).replace(/ /g, "%20"), {
 		method: "DELETE",
+		headers,
 	});
-};
+}

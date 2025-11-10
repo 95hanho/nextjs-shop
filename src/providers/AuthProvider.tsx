@@ -14,13 +14,13 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
 	const [accessToken, setAccessToken] = useState<string | null>(null);
 
 	useEffect(() => {
-		console.log(accessToken);
+		// console.log(accessToken);
 	}, [accessToken]);
 
-	const loginToken = (aToken: string, rToken: string) => {
-		setLoginOn(true);
-		setTokens(aToken, rToken);
-	};
+	// const loginToken = (aToken: string, rToken: string) => {
+	// 	setLoginOn(true);
+	// 	setTokens(aToken, rToken);
+	// };
 
 	const setTokens = (aToken: string, rToken: string) => {
 		console.log("setTokens");
@@ -29,16 +29,17 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
 		cookies.set("refreshToken", rToken, 60 * 10);
 	};
 
-	const handleReToken = useMutation({
-		mutationFn: (refreshToken: string) => authService.reToken({ refreshToken }),
-		onSuccess({ data }) {
-			setTokens(data.accessToken, data.refreshToken);
-		},
-		onError(err) {
-			console.error(err);
-		},
-	});
+	// const handleReToken = useMutation({
+	// 	mutationFn: (refreshToken: string) => authService.reToken({ refreshToken }),
+	// 	onSuccess({ data }) {
+	// 		setTokens(data.accessToken, data.refreshToken);
+	// 	},
+	// 	onError(err) {
+	// 		console.error(err);
+	// 	},
+	// });
 
+	// 일단 쓰는거 보류 => middleware.ts로 처리할듯
 	const tokenCheck = () => {
 		if (!loginOn) return;
 		console.log("tokenCheck", accessToken);
@@ -46,7 +47,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
 		if (!rToken || (rToken && isTokenExpired(rToken)) || !accessToken) logout();
 		else if (accessToken && isTokenExpired(accessToken)) {
 			console.log("리토큰 실행");
-			handleReToken.mutate(rToken!);
+			// handleReToken.mutate(rToken!);
 		} else {
 			console.log("로그인토큰 유지");
 		}
@@ -66,5 +67,5 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
 		setLoginOn(cookies.has("refreshToken"));
 	}, []);
 
-	return <authContext.Provider value={{ loginOn, accessToken, loginToken, logout, tokenCheck }}>{children}</authContext.Provider>;
+	return <authContext.Provider value={{ loginOn, accessToken, /* loginToken, */ logout, tokenCheck }}>{children}</authContext.Provider>;
 }

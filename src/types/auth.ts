@@ -1,12 +1,18 @@
+import { JwtPayload } from "jsonwebtoken";
 import { BaseResponse } from "./common";
 
 export type FormEvent = React.FormEvent<HTMLFormElement>;
 export type ChangeEvent = React.ChangeEvent<HTMLInputElement>;
+
+export type Token = {
+	id?: string;
+} & JwtPayload;
+
 // 로그인 데이터
-export interface LoginForm {
+export type LoginForm = {
 	userId: string;
 	password: string;
-}
+};
 //
 export interface loginResponse extends BaseResponse {
 	accessToken: string;
