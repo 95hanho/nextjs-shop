@@ -1,33 +1,44 @@
 "use client";
 
-import { authService } from "@/api";
+import API_URL from "@/api/endpoints";
+import { postJson } from "@/api/fetchFilter";
 import { authContext } from "@/context/authContext";
-import { isTokenExpired } from "@/utils/auth";
-import { cookies } from "@/utils/cookies";
-import { useMutation } from "@tanstack/react-query";
+import { getBaseUrl } from "@/lib/getBaseUrl";
+import { UserInfo } from "@/types/auth";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+
+const initialUser = {
+	userId: "",
+	name: "",
+	zonecode: "",
+	address: "",
+	addressDetail: "",
+	birthday: "",
+	phone: "",
+	email: "",
+	createdAt: new Date(),
+	mileage: 0,
+	tall: 0,
+	weight: 0,
+	withdrawalStatus: false,
+};
 
 export default function AuthProvider({ children }: { children: React.ReactNode }) {
 	const router = useRouter();
 	const [loginOn, setLoginOn] = useState<boolean>(false);
-	const [accessToken, setAccessToken] = useState<string | null>(null);
+	const [user, setUser] = useState<UserInfo>(initialUser);
 
-	useEffect(() => {
-		// console.log(accessToken);
-	}, [accessToken]);
+	const logout = async () => {
+		console.log("로그아웃");
+		setLoginOn(false);
+		postJson(getBaseUrl(API_URL.USER_LOGOUT));
+	};
 
 	// const loginToken = (aToken: string, rToken: string) => {
 	// 	setLoginOn(true);
 	// 	setTokens(aToken, rToken);
 	// };
-
-	const setTokens = (aToken: string, rToken: string) => {
-		console.log("setTokens");
-		setAccessToken(aToken);
-		localStorage.setItem("accessToken", aToken);
-		cookies.set("refreshToken", rToken, 60 * 10);
-	};
 
 	// const handleReToken = useMutation({
 	// 	mutationFn: (refreshToken: string) => authService.reToken({ refreshToken }),
@@ -39,33 +50,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
 	// 	},
 	// });
 
-	// 일단 쓰는거 보류 => middleware.ts로 처리할듯
-	const tokenCheck = () => {
-		if (!loginOn) return;
-		console.log("tokenCheck", accessToken);
-		const rToken = cookies.get("refreshToken");
-		if (!rToken || (rToken && isTokenExpired(rToken)) || !accessToken) logout();
-		else if (accessToken && isTokenExpired(accessToken)) {
-			console.log("리토큰 실행");
-			// handleReToken.mutate(rToken!);
-		} else {
-			console.log("로그인토큰 유지");
-		}
-	};
+	useEffect(() => {}, []);
 
-	const logout = async () => {
-		console.log("로그아웃");
-		setLoginOn(false);
-		setAccessToken(null);
-		localStorage.removeItem("accessToken");
-		cookies.remove("refreshToken");
-	};
-
-	useEffect(() => {
-		const aToken = localStorage.getItem("accessToken");
-		if (aToken) setAccessToken(aToken);
-		setLoginOn(cookies.has("refreshToken"));
-	}, []);
-
-	return <authContext.Provider value={{ loginOn, accessToken, /* loginToken, */ logout, tokenCheck }}>{children}</authContext.Provider>;
+	return <authContext.Provider value={{ loginOn, logout, user, setUser }}>{children}</authContext.Provider>;
 }

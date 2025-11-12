@@ -9,17 +9,15 @@ import { FormEvent, LoginForm } from "@/types/auth";
 import { useMutation } from "@tanstack/react-query";
 import { getBaseUrl } from "@/lib/getBaseUrl";
 import API_URL from "@/api/endpoints";
-import useAuth from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
-import { postUrlFormData } from "@/api/fetchFilter";
-import Error from "next/error";
+import { postJson } from "@/api/fetchFilter";
 import { BaseResponse } from "@/types/common";
 
 export default function Login() {
 	const router = useRouter();
 
 	const handleLogin = useMutation({
-		mutationFn: (obj: LoginForm) => postUrlFormData<BaseResponse>(getBaseUrl() + API_URL.USER, obj),
+		mutationFn: (obj: LoginForm) => postJson<BaseResponse>(getBaseUrl(API_URL.USER), obj),
 		// Mutation이 시작되기 직전에 특정 작업을 수행
 		onMutate(a) {
 			console.log(a);

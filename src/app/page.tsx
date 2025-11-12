@@ -6,10 +6,13 @@ import { getNormal } from "@/api/fetchFilter";
 import { getBaseUrl } from "@/lib/getBaseUrl";
 
 export default async function Home() {
-	const products_data = await getNormal<MainProductResponse>(getBaseUrl() + API_URL.MAIN);
-	// if (!res.ok) {
-	// 	return null;
-	// }
+	console.log(getBaseUrl(API_URL.MAIN));
+	const products_data = await getNormal<MainProductResponse>(getBaseUrl(API_URL.MAIN));
+	// const products_data = await getNormal<MainProductResponse>("/api" + API_URL.MAIN);
+	if (!products_data) {
+		return null;
+	}
+	console.log(products_data);
 	const productList = products_data.productList;
 
 	return (

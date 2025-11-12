@@ -29,6 +29,6 @@ export type Menu = {
 	gender: string;
 	menuSubList: SubMenu[];
 };
-export interface MenuResponse {
+export interface MenuResponse extends BaseResponse {
 	menuList: Menu[];
 }

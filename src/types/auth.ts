@@ -5,22 +5,25 @@ export type FormEvent = React.FormEvent<HTMLFormElement>;
 export type ChangeEvent = React.ChangeEvent<HTMLInputElement>;
 
 export type Token = {
-	id?: string;
+	userId?: string;
 } & JwtPayload;
 
-// 로그인 데이터
+// 로그인폼 데이터
 export type LoginForm = {
 	userId: string;
 	password: string;
 };
-//
+// 로그인 응답
 export interface loginResponse extends BaseResponse {
 	accessToken: string;
 	refreshToken: string;
 }
-//
-export interface JoinForm extends LoginForm {
+// 회원가입폼 추가사항
+export type joinFormAdd = {
 	passwordCheck: string;
+};
+// 회원가입폼
+export interface JoinForm extends LoginForm, joinFormAdd {
 	name: string;
 	zonecode: string;
 	address: string;
@@ -30,7 +33,23 @@ export interface JoinForm extends LoginForm {
 	email: string;
 	// [key: string]: string;
 }
+// 회원정보 추가사항
+export type UserAdd = {
+	createdAt: Date;
+	mileage: number;
+	tall: number;
+	weight: number;
+	withdrawalStatus: boolean;
+};
+// 유저
+export type User = LoginForm & JoinForm & UserAdd;
+// 회원정보 응답
+export interface UserResponse extends BaseResponse {
+	user: User;
+}
+
 export type JoinFormAlert = Omit<JoinForm, "zonecode">;
+
 /* ------------------------------------------------ */
 
 export interface JoinFormRefs {
@@ -62,3 +81,19 @@ export interface JoinFormFocus {
 	birthday: boolean;
 }
 /* ------------- */
+
+export type UserInfo = {
+	userId: string;
+	name: string;
+	zonecode: string;
+	address: string;
+	addressDetail: string;
+	birthday: string;
+	phone: string;
+	email: string;
+	createdAt: Date;
+	mileage: number;
+	tall: number;
+	weight: number;
+	withdrawalStatus: boolean;
+};
