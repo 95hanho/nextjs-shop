@@ -1,3 +1,5 @@
+import { getBaseUrl } from "@/lib/getBaseUrl";
+
 // API 엔드포인트 목록 - API url 모음집
 const API_URL = {
 	// 관리자 ----------------------------------
@@ -7,8 +9,12 @@ const API_URL = {
 	// 인증 ----------------------------------
 	/** 로그인, 유저정보가져오기 */
 	USER: "/auth",
+	/** 로그아웃 */
+	USER_LOGOUT: "/auth/logout",
 	/** 아이디중복체크 */
 	USER_ID: "/auth/id",
+	/** 휴대폰 인증 */
+	USER_PHONE_AUTH: "/auth/phone",
 	/** 회원가입, 회원정보변경 */
 	USER_JOIN: "/auth/user",
 	/** 토큰재생성 */

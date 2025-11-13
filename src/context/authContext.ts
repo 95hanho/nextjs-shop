@@ -1,11 +1,11 @@
+import { UserInfo } from "@/types/auth";
 import { createContext } from "react";
 
 interface AuthContextType {
 	loginOn: boolean;
-	accessToken: string | null;
-	// loginToken: (aToken: string, rToken: string) => void;
 	logout: () => void;
-	tokenCheck: () => void;
+	user: UserInfo;
+	setUser: React.Dispatch<UserInfo>;
 }
 
 // 인증관련 컨텍스트

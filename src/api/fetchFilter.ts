@@ -139,7 +139,7 @@ export async function getDownload(url: string, params?: Params, headers?: Header
 }
 
 // POST JSON
-export function postJson<T>(url: string, params: Params, headers?: HeadersMap) {
+export function postJson<T>(url: string, params?: Params, headers?: HeadersMap) {
 	const [u2, body] = applyPathParams(url, cloneParams(params));
 	return http<T>(u2, {
 		method: "POST",
@@ -201,6 +201,16 @@ export function putUrlFormData<T>(url: string, params: Params, headers?: Headers
 		method: "PUT",
 		headers: { "Content-Type": "application/x-www-form-urlencoded", ...headers },
 		body: urlEncodedBody(body),
+	});
+}
+
+// PUT JSON
+export function putJson<T>(url: string, params: Params, headers?: HeadersMap) {
+	const [u2, body] = applyPathParams(url, cloneParams(params));
+	return http<T>(u2, {
+		method: "PUT",
+		headers: { "Content-Type": "application/json", ...headers },
+		body: JSON.stringify(body ?? {}),
 	});
 }
 

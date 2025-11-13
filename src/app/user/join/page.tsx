@@ -1,11 +1,17 @@
 "use client";
 
-import { ChangeEvent, FormEvent, JoinForm, JoinFormAlert, JoinFormRefs } from "@/types/form";
 import Link from "next/link";
 import { useRef, useState } from "react";
 import JoinInput from "../../../components/user/JoinInput";
 import useUser from "@/hooks/query/useUser";
 import { isValidDateString } from "@/utils/ui";
+import { useMutation } from "@tanstack/react-query";
+import { getNormal, postJson, postUrlFormData } from "@/api/fetchFilter";
+import { BaseResponse } from "@/types/common";
+import { getBaseUrl } from "@/lib/getBaseUrl";
+import API_URL from "@/api/endpoints";
+import { ChangeEvent, FormEvent, JoinForm, JoinFormAlert, JoinFormRefs } from "@/types/auth";
+import { useRouter } from "next/navigation";
 
 const initJoinForm: JoinForm = {
 	userId: "hoseongs",
@@ -46,14 +52,76 @@ const joinFormRegexFailMent: { [key: string]: string } = {
 };
 
 export default function UserJoin() {
-	const { handleRegister, handleIdDuplcheck } = useUser();
+	const router = useRouter();
 
-	const [joinForm, setJoinForm] = useState(initJoinForm);
-	const [joinFailAlert, setJoinFailAlert] = useState(initJoinAlert);
-	const [joinSuccessAlert, setJoinSuccessAlert] = useState(initJoinAlert);
+	// 회원가입 폼 데이터
+	const [joinForm, setJoinForm] = useState<JoinForm>(initJoinForm);
+	// 회원가입 실패 알람.
+	const [joinFailAlert, setJoinFailAlert] = useState<JoinFormAlert>(initJoinAlert);
+	// 회원가입 성공 알람.
+	const [joinSuccessAlert, setJoinSuccessAlert] = useState<JoinFormAlert>(initJoinAlert);
+	// 회원가입 input들 HTMLInputElement
 	const joinFormRefs = useRef<Partial<JoinFormRefs>>({});
-	const [idDuplCheck, setIdDuplCheck] = useState(false);
-	const [phoneAuth, setPhoneAuth] = useState(false);
+	// 아이디중복여부
+	const [idDuplCheck, setIdDuplCheck] = useState<boolean>(false);
+	// 휴대폰인증완료여부
+	const [phoneAuth, setPhoneAuth] = useState<boolean>(false);
+
+	// 아이디중복확인 mutate
+	const handleIdDuplcheck = useMutation({
+		mutationFn: (userId: string) => getNormal<BaseResponse>(getBaseUrl(API_URL.USER_ID), { userId }),
+		// Mutation이 시작되기 직전에 특정 작업을 수행
+		onMutate(a) {
+			console.log(a);
+		},
+		onSuccess(data) {
+			console.log(data);
+		},
+		onError(err) {
+			console.log(err);
+		},
+		// 결과에 관계 없이 무언가 실행됨
+		onSettled(a, b) {},
+	});
+	// 휴대폰 인증
+	const handlePhoneAuth = useMutation({
+		mutationFn: (phone: string) => postJson<BaseResponse>(getBaseUrl(API_URL.USER_PHONE_AUTH), { phone }),
+		onSuccess(data) {
+			setPhoneAuth(true);
+			setJoinFailAlert((prev) => ({
+				...prev,
+				phone: "",
+			}));
+			setJoinSuccessAlert((prev) => ({
+				...prev,
+				phone: "휴대폰 인증이 완료되었습니다.",
+			}));
+		},
+		onError(err) {
+			console.log(err);
+		},
+	});
+	// 회원가입
+	const handleRegister = useMutation({
+		mutationFn: (joinForm: JoinForm) => postJson<BaseResponse>(getBaseUrl(API_URL.USER_JOIN), { ...joinForm }),
+		// Mutation이 시작되기 직전에 특정 작업을 수행
+		onMutate(a) {
+			console.log(a);
+		},
+		onSuccess(data) {
+			console.log(data);
+			alert("회원가입이 완료되었습니다.");
+			router.push("/user");
+		},
+		onError(err) {
+			console.log(err);
+		},
+		// 결과에 관계 없이 무언가 실행됨
+		onSettled(a, b) {
+			console.log(a, b);
+		},
+	});
+
 	// joinForm set
 	const changeJoinForm = (e: ChangeEvent) => {
 		let { name, value } = e.target;
@@ -81,7 +149,6 @@ export default function UserJoin() {
 	};
 	// 유효성 확인 ex) 아이디 중복확인, 정규표현식 확인
 	const validateJoinForm = async (e: ChangeEvent) => {
-		console.log("validateJoinForm");
 		let { name, value } = e.target;
 		value = value.trim();
 		let failMent = "";
@@ -98,9 +165,11 @@ export default function UserJoin() {
 					await handleIdDuplcheck.mutateAsync(joinForm.userId);
 					successMent = "사용가능한 아이디입니다.";
 					setIdDuplCheck(true);
-				} catch {
-					failMent = "중복된 아이디가 존재합니다.";
-					setIdDuplCheck(false);
+				} catch (err: any) {
+					if (err.message === "ID_DUPLICATED") {
+						failMent = "중복된 아이디가 존재합니다.";
+						setIdDuplCheck(false);
+					}
 				}
 			} else if (name == "password") {
 				if (joinForm.passwordCheck && joinForm.passwordCheck != value) {
@@ -174,7 +243,6 @@ export default function UserJoin() {
 		}
 		if (alertOn) return;
 		// 회원가입 로직 추가
-		console.log(joinForm);
 		handleRegister.mutate(joinForm);
 	};
 
@@ -299,15 +367,7 @@ export default function UserJoin() {
 						searchBtn={{
 							txt: "인증",
 							fnc: () => {
-								setPhoneAuth(true);
-								setJoinFailAlert((prev) => ({
-									...prev,
-									phone: "",
-								}));
-								setJoinSuccessAlert((prev) => ({
-									...prev,
-									phone: "휴대폰 인증이 완료되었습니다.",
-								}));
+								handlePhoneAuth.mutate(joinForm.phone);
 							},
 						}}
 						onBlur={validateJoinForm}

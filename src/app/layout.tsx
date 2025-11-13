@@ -10,6 +10,7 @@ import API_URL from "@/api/endpoints";
 import Header from "@/components/common/Header";
 import { getNormal } from "@/api/fetchFilter";
 import { getBaseUrl } from "@/lib/getBaseUrl";
+import { getServerSession } from "@/lib/auth";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -31,7 +32,10 @@ export default async function RootLayout({
 }: Readonly<{
 	children: React.ReactNode;
 }>) {
-	const menusData = await getNormal<MenuResponse>(getBaseUrl() + API_URL.MAIN_MENU);
+	//
+	const user = getServerSession();
+	// 공통 메뉴 가져오기
+	const menusData = await getNormal<MenuResponse>(getBaseUrl(API_URL.MAIN_MENU));
 	const menuList = [...menusData.menuList].sort((a, b) => a.menuTopId - b.menuTopId);
 
 	return (
