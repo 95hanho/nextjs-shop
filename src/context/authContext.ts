@@ -4,7 +4,7 @@ import { createContext } from "react";
 interface AuthContextType {
 	loginOn: boolean;
 	logout: () => void;
-	user: UserInfo;
+	user: UserInfo | null;
 	setUser: React.Dispatch<UserInfo>;
 }
 

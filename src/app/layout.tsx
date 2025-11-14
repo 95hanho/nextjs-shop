@@ -11,6 +11,9 @@ import Header from "@/components/common/Header";
 import { getNormal } from "@/api/fetchFilter";
 import { getBaseUrl } from "@/lib/getBaseUrl";
 import { getServerSession } from "@/lib/auth";
+import { UserInfo } from "@/types/auth";
+import { redirect } from "next/navigation";
+import TokenCheck from "@/components/common/TokenCheck";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -33,7 +36,11 @@ export default async function RootLayout({
 	children: React.ReactNode;
 }>) {
 	//
-	const user = getServerSession();
+	const user: UserInfo | null = await getServerSession();
+	// 로그인이 무조건 필요한 페이지 layout.ts에서 이거 추가해주기
+	// if (!user) {
+	//   redirect("/login");
+	// }
 	// 공통 메뉴 가져오기
 	const menusData = await getNormal<MenuResponse>(getBaseUrl(API_URL.MAIN_MENU));
 	const menuList = [...menusData.menuList].sort((a, b) => a.menuTopId - b.menuTopId);
@@ -41,7 +48,7 @@ export default async function RootLayout({
 	return (
 		<html lang="ko">
 			<body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-				<Providers>
+				<Providers initialUser={user}>
 					<Header menuList={menuList} />
 					{children}
 				</Providers>

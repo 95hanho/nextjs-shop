@@ -7,10 +7,15 @@ import { BaseResponse } from "@/types/common";
 import { NextApiRequest, NextApiResponse } from "next";
 import { NextRequest, NextResponse } from "next/server";
 
+// 토큰 그냥 있는지 확인용
+export async function GET(nextRequest: NextRequest) {
+	const accessToken = nextRequest.cookies.get("accessToken") || "";
+	const refreshToken = nextRequest.cookies.get("refreshToken") || "";
+
+	return NextResponse.json({ message: "SUCCESS", accessToken, refreshToken }, { status: 200 });
+}
 // 토큰 재생성
 export async function POST(nextRequest: NextRequest) {
-	console.log("url :", nextRequest.url);
-
 	try {
 		// method별 요청처리
 		const { refreshToken } = await nextRequest.json();
@@ -25,7 +30,7 @@ export async function POST(nextRequest: NextRequest) {
 			"unknown";
 
 		const reTokenData = await putUrlFormData<BaseResponse & { userId: string }>(
-			getServerUrl(API_URL.USER_TOKEN),
+			getServerUrl(API_URL.AUTH_TOKEN),
 			{
 				beforeToken: refreshToken,
 				refreshToken: newRefreshToken,
@@ -38,7 +43,7 @@ export async function POST(nextRequest: NextRequest) {
 		console.log("reTokenData", reTokenData);
 
 		const accessToken = generateAccessToken({ userId: reTokenData.userId });
-		console.log("accessToken", accessToken, "refreshToken", refreshToken);
+		console.log("accessToken", accessToken.substring(0, 10), "refreshToken", refreshToken.substring(0, 10));
 
 		const response = NextResponse.json({ message: reTokenData.message }, { status: 200 });
 		response.headers.set(

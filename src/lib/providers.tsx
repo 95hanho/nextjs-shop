@@ -1,9 +1,15 @@
 "use client";
 
 import AuthProvider from "@/providers/AuthProvider";
+import { UserInfo } from "@/types/auth";
 import { ApiError } from "@/types/common";
 import { MutationCache, QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactNode, useState } from "react";
+
+interface ProvidersProps {
+	children: ReactNode;
+	initialUser: UserInfo | null;
+}
 
 // 공통 에러 핸들러 (전역 모달/토스트 등)
 function handleGlobalMutationError(error: any) {
@@ -28,8 +34,8 @@ function handleGlobalMutationError(error: any) {
 		// openErrorModal("서버 오류가 발생했습니다.\n잠시 후 다시 시도해주세요.");
 	}
 }
-
-export default function Providers({ children }: { children: ReactNode }) {
+//
+export default function Providers({ children, initialUser }: ProvidersProps) {
 	const [queryClient] = useState(
 		() =>
 			new QueryClient({
@@ -61,7 +67,7 @@ export default function Providers({ children }: { children: ReactNode }) {
 
 	return (
 		<QueryClientProvider client={queryClient}>
-			<AuthProvider>{children}</AuthProvider>
+			<AuthProvider initialUser={initialUser}>{children}</AuthProvider>
 		</QueryClientProvider>
 	);
 }

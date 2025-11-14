@@ -8,17 +8,17 @@ const API_URL = {
 
 	// 인증 ----------------------------------
 	/** 로그인, 유저정보가져오기 */
-	USER: "/auth",
+	AUTH: "/auth",
 	/** 로그아웃 */
-	USER_LOGOUT: "/auth/logout",
+	AUTH_LOGOUT: "/auth/logout",
 	/** 아이디중복체크 */
-	USER_ID: "/auth/id",
+	AUTH_ID: "/auth/id",
 	/** 휴대폰 인증 */
-	USER_PHONE_AUTH: "/auth/phone",
+	AUTH_PHONE_AUTH: "/auth/phone",
 	/** 회원가입, 회원정보변경 */
-	USER_JOIN: "/auth/user",
+	AUTH_JOIN: "/auth/user",
 	/** 토큰재생성 */
-	USER_TOKEN: "/auth/token",
+	AUTH_TOKEN: "/auth/token",
 
 	// 구매 ----------------------------------
 	/** 상품 확인 및 점유, 구매상품 점유 해제 */

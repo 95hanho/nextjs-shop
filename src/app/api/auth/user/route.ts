@@ -19,7 +19,7 @@ export async function POST(nextRequest: NextRequest) {
 		if (!phone) return NextResponse.json({ message: "핸드폰번호를 입력해주세요." }, { status: 400 });
 		if (!email) return NextResponse.json({ message: "이메일을 입력해주세요." }, { status: 400 });
 
-		const data = await postUrlFormData<BaseResponse>(getServerUrl(API_URL.USER_JOIN), {
+		const data = await postUrlFormData<BaseResponse>(getServerUrl(API_URL.AUTH_JOIN), {
 			userId,
 			password,
 			name,
@@ -59,7 +59,7 @@ export async function PUT(nextRequest: NextRequest) {
 		if (!phone) return NextResponse.json({ message: "핸드폰번호를 입력해주세요." }, { status: 400 });
 		if (!email) return NextResponse.json({ message: "이메일을 입력해주세요." }, { status: 400 });
 
-		const data = await putUrlFormData<BaseResponse>(getServerUrl(API_URL.USER_JOIN), {
+		const data = await putUrlFormData<BaseResponse>(getServerUrl(API_URL.AUTH_JOIN), {
 			userId,
 			zonecode,
 			address,

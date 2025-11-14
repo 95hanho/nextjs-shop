@@ -1,5 +1,7 @@
 import API_URL from "@/api/endpoints";
 import { getNormal, postUrlFormData } from "@/api/fetchFilter";
+import { withAuth } from "@/lib/auth";
+import { isProd } from "@/lib/env";
 import { getServerUrl } from "@/lib/getBaseUrl";
 import { generateAccessToken, generateRefreshToken, verifyToken } from "@/lib/jwt";
 import { ACCESS_TOKEN_COOKIE_AGE, REFRESH_TOKEN_COOKIE_AGE } from "@/lib/tokenTime";
@@ -8,16 +10,11 @@ import { BaseResponse } from "@/types/common";
 import { NextRequest, NextResponse } from "next/server";
 
 // 회원정보가져오기
-export async function GET(nextRequest: NextRequest) {
-	console.log("url :", nextRequest.url);
-
+// - 초기패이지로딩(로그인되어있을 때), 로그인, 로그아웃, 유저정보필요할 때, 유저정보수정(상태변화)
+// 할 때 바로 가져올 수 있게 useQuery 실행함.
+export const GET = withAuth(async ({ nextRequest, userId }) => {
 	try {
-		const accessToken = nextRequest.cookies.get("accessToken")?.value;
-		if (!accessToken) return NextResponse.json({ message: "인증 정보가 없습니다. 로그인 후 다시 시도해주세요." }, { status: 401 });
-		const token = verifyToken(accessToken);
-		const userId = token.userId;
-
-		const data = await getNormal<UserResponse>(getServerUrl(API_URL.USER), { userId });
+		const data = await getNormal<UserResponse>(getServerUrl(API_URL.AUTH), { userId });
 		return NextResponse.json({ message: data.message, user: data.user }, { status: 200 });
 	} catch (err: any) {
 		console.error("error :", {
@@ -31,7 +28,7 @@ export async function GET(nextRequest: NextRequest) {
 
 		return NextResponse.json(payload, { status });
 	}
-}
+});
 
 // 로그인
 export async function POST(nextRequest: NextRequest) {
@@ -41,7 +38,7 @@ export async function POST(nextRequest: NextRequest) {
 		if (!userId) return NextResponse.json({ message: "아이디를 입력해주세요." }, { status: 400 });
 		if (!password) return NextResponse.json({ message: "비밀번호를 입력해주세요." }, { status: 400 });
 
-		const loginValidateData = await postUrlFormData<BaseResponse>(getServerUrl(API_URL.USER), { userId, password });
+		const loginValidateData = await postUrlFormData<BaseResponse>(getServerUrl(API_URL.AUTH), { userId, password });
 		console.log("loginValidateData", loginValidateData);
 		/* 에러는 FE에서 처리 */
 		// if (res.status === 401) {
@@ -55,7 +52,7 @@ export async function POST(nextRequest: NextRequest) {
 		// ✅ HttpOnly 쿠키 설정
 		const accessToken = generateAccessToken({ userId });
 		const refreshToken = generateRefreshToken();
-		console.log("accessToken", accessToken, "refreshToken", refreshToken);
+		console.log("accessToken", accessToken.substring(0, 10), "refreshToken", refreshToken.substring(0, 10));
 
 		const xffHeader = nextRequest.headers.get("x-forwarded-for");
 		const ip =
@@ -66,7 +63,7 @@ export async function POST(nextRequest: NextRequest) {
 
 		// 토큰 저장하기 : refreshToken랑 정보랑 유저 agent, ip 정보 보내기
 		await postUrlFormData<BaseResponse>(
-			getServerUrl(API_URL.USER_TOKEN),
+			getServerUrl(API_URL.AUTH_TOKEN),
 			{ refreshToken, userId },
 			{
 				userAgent: nextRequest.headers.get("user-agent") || "",
@@ -78,8 +75,8 @@ export async function POST(nextRequest: NextRequest) {
 		response.headers.set(
 			"Set-Cookie",
 			[
-				`accessToken=${accessToken}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=${ACCESS_TOKEN_COOKIE_AGE}`,
-				`refreshToken=${refreshToken}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=${REFRESH_TOKEN_COOKIE_AGE}`,
+				`accessToken=${accessToken}; Path=/; HttpOnly; ${isProd ? "Secure; " : ""}SameSite=Strict; Max-Age=${ACCESS_TOKEN_COOKIE_AGE}`,
+				`refreshToken=${refreshToken}; Path=/; HttpOnly; ${isProd ? "Secure; " : ""}SameSite=Strict; Max-Age=${REFRESH_TOKEN_COOKIE_AGE}`,
 			].join(", ")
 		);
 		return response;

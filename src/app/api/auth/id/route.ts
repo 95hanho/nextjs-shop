@@ -9,7 +9,7 @@ export async function GET(nextRequest: NextRequest) {
 	try {
 		const userId = nextRequest.nextUrl.searchParams.get("userId");
 		if (!userId) return NextResponse.json({ message: "아이디를 입력해주세요." }, { status: 400 });
-		const data = await getNormal<BaseResponse>(getServerUrl(API_URL.USER_ID), { userId });
+		const data = await getNormal<BaseResponse>(getServerUrl(API_URL.AUTH_ID), { userId });
 		console.log("data", data);
 
 		return NextResponse.json({ message: data.message }, { status: 200 });
