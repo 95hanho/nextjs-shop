@@ -4,15 +4,14 @@ import ProductSlider from "@/components/main/ProductSlider";
 import API_URL from "@/api/endpoints";
 import { getNormal } from "@/api/fetchFilter";
 import { getBaseUrl } from "@/lib/getBaseUrl";
+import TokenCheck from "@/components/common/TokenCheck";
 
 export default async function Home() {
-	console.log(getBaseUrl(API_URL.MAIN));
 	const products_data = await getNormal<MainProductResponse>(getBaseUrl(API_URL.MAIN));
 	// const products_data = await getNormal<MainProductResponse>("/api" + API_URL.MAIN);
 	if (!products_data) {
 		return null;
 	}
-	console.log(products_data);
 	const productList = products_data.productList;
 
 	return (
@@ -22,6 +21,7 @@ export default async function Home() {
 				<ProductSlider productList={productList} right={true} />
 				<ProductSlider productList={productList} />
 			</div>
+			<TokenCheck />
 		</main>
 	);
 }

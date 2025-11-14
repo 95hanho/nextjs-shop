@@ -86,6 +86,7 @@ async function http<T>(url: string, init?: RequestInit & { baseUrl?: string; tim
 				message,
 				status: res.status,
 				data: raw,
+				url,
 			} as const; // 타입 보장
 		}
 
@@ -95,20 +96,20 @@ async function http<T>(url: string, init?: RequestInit & { baseUrl?: string; tim
 		if (err.name === "AbortError") {
 			if (isServer) {
 				// ✅ BFF에서 업스트림 타임아웃 → 504로 던짐
-				throw { message: "REQUEST_TIMEOUT", status: 504, data: null } as const;
+				throw { message: "REQUEST_TIMEOUT", status: 504, data: null, url } as const;
 			}
 			// ✅ FE(브라우저) 네트워크 타임아웃 → 0 유지
-			throw { message: "REQUEST_TIMEOUT", status: 0, data: null } as const;
+			throw { message: "REQUEST_TIMEOUT", status: 0, data: null, url } as const;
 		}
 
 		// 네트워크(오프라인/연결 실패 등)
 		if (err instanceof TypeError && err.message.includes("fetch")) {
 			if (isServer) {
 				// ✅ BFF에서 업스트림 연결 실패 → 502로 던짐
-				throw { message: "NETWORK_ERROR", status: 502, data: null } as const;
+				throw { message: "NETWORK_ERROR", status: 502, data: null, url } as const;
 			}
 			// ✅ FE(브라우저) 네트워크 실패 → 0 유지
-			throw { message: "NETWORK_ERROR", status: 0, data: null } as const;
+			throw { message: "NETWORK_ERROR", status: 0, data: null, url } as const;
 		}
 
 		throw err;

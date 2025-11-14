@@ -1,3 +1,4 @@
+import { isProd } from "@/lib/env";
 import { NextResponse } from "next/server";
 
 // 로그아웃
@@ -8,8 +9,8 @@ export async function POST() {
 		response.headers.set(
 			"Set-Cookie",
 			[
-				`accessToken=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Strict`,
-				`refreshToken=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Strict`,
+				`accessToken=; Path=/; Max-Age=0; HttpOnly; ${isProd ? "Secure; " : ""}SameSite=Strict`,
+				`refreshToken=; Path=/; Max-Age=0; HttpOnly; ${isProd ? "Secure; " : ""}SameSite=Strict`,
 			].join(", ")
 		);
 

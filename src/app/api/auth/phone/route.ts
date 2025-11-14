@@ -8,7 +8,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(nextRequest: NextRequest) {
 	try {
 		const { phone } = await nextRequest.json();
-		const data = await postUrlFormData<BaseResponse>(getServerUrl(API_URL.USER_PHONE_AUTH), { phone });
+		const data = await postUrlFormData<BaseResponse>(getServerUrl(API_URL.AUTH_PHONE_AUTH), { phone });
 		console.log("data", data);
 
 		return NextResponse.json({ message: data.message }, { status: 200 });

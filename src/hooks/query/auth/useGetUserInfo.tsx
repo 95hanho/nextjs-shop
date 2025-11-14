@@ -13,7 +13,7 @@ export function useGetUserInfo() {
 	return useQuery({
 		queryKey: ["me"],
 		queryFn: async () => {
-			const data = await getNormal<UserResponse>(getBaseUrl(API_URL.USER));
+			const data = await getNormal<UserResponse>(getBaseUrl(API_URL.AUTH));
 			setUser(data.user);
 			return data.user;
 		},

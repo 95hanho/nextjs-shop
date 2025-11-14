@@ -1,21 +1,14 @@
 import API_URL from "@/api/endpoints";
 import { getNormal } from "@/api/fetchFilter";
+import { withAuth } from "@/lib/auth";
 import { getServerUrl } from "@/lib/getBaseUrl";
 import { MainProductResponse } from "@/types/main";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 /*  */
-export async function GET(nextRequest: NextRequest) {
-	console.log("url :", nextRequest.url);
-	// query 접근 (App Router에서는 req.nextUrl.searchParams)
-	const search = Object.fromEntries(nextRequest.nextUrl.searchParams.entries());
-	if (Object.keys(search).length > 0) {
-		console.log("query:", search);
-	}
-
+export const GET = withAuth(async () => {
 	try {
-		// method별 요청처리
-		// 메인 메뉴목록 가져오기
+		// 메인 상품리스트 가져오기
 		const data = await getNormal<MainProductResponse>(getServerUrl(API_URL.MAIN));
 		// if (!res.ok) {
 		// 	// Spring 에러 그대로 전달하지 말고 요약해서 반환
@@ -36,4 +29,4 @@ export async function GET(nextRequest: NextRequest) {
 
 		return NextResponse.json(payload, { status });
 	}
-}
+});

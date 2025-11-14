@@ -1,12 +1,13 @@
 import API_URL from "@/api/endpoints";
 import { getNormal, postUrlFormData } from "@/api/fetchFilter";
+import { withAuth } from "@/lib/auth";
 import { getServerUrl } from "@/lib/getBaseUrl";
 import { BaseResponse } from "@/types/common";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 /*  */
 //
-export async function GET(nextRequest: NextRequest) {
+export const GET = withAuth(async ({ nextRequest, userId }) => {
 	console.log("url :", nextRequest.url);
 	// query 접근 (App Router에서는 req.nextUrl.searchParams)
 	const search = Object.fromEntries(nextRequest.nextUrl.searchParams.entries());
@@ -17,7 +18,7 @@ export async function GET(nextRequest: NextRequest) {
 	try {
 		const userId = nextRequest.nextUrl.searchParams.get("userId");
 		if (!userId) return NextResponse.json({ message: "아이디를 입력해주세요." }, { status: 400 });
-		const data = await getNormal<BaseResponse>(getServerUrl(API_URL.USER_ID), { userId });
+		const data = await getNormal<BaseResponse>(getServerUrl(API_URL.AUTH_ID), { userId });
 		console.log("data", data);
 
 		return NextResponse.json({ message: data.message }, { status: 200 });
@@ -33,8 +34,8 @@ export async function GET(nextRequest: NextRequest) {
 
 		return NextResponse.json(payload, { status });
 	}
-}
-export async function POST(nextRequest: NextRequest) {
+});
+export const POST = withAuth(async ({ nextRequest, userId }) => {
 	console.log("url :", nextRequest.url);
 	// query 접근 (App Router에서는 req.nextUrl.searchParams)
 	const search = Object.fromEntries(nextRequest.nextUrl.searchParams.entries());
@@ -51,7 +52,7 @@ export async function POST(nextRequest: NextRequest) {
 		const { userId, password } = await nextRequest.json();
 		if (!userId) return NextResponse.json({ message: "아이디를 입력해주세요." }, { status: 400 });
 		if (!password) return NextResponse.json({ message: "비밀번호를 입력해주세요." }, { status: 400 });
-		const data = await postUrlFormData<BaseResponse>(getServerUrl(API_URL.USER), { userId, password });
+		const data = await postUrlFormData<BaseResponse>(getServerUrl(API_URL.AUTH), { userId, password });
 		console.log("data", data);
 
 		return NextResponse.json({ message: data.message }, { status: 200 });
@@ -67,4 +68,4 @@ export async function POST(nextRequest: NextRequest) {
 
 		return NextResponse.json(payload, { status });
 	}
-}
+});

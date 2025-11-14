@@ -5,7 +5,7 @@ export type FormEvent = React.FormEvent<HTMLFormElement>;
 export type ChangeEvent = React.ChangeEvent<HTMLInputElement>;
 
 export type Token = {
-	userId?: string;
+	userId: string;
 } & JwtPayload;
 
 // 로그인폼 데이터

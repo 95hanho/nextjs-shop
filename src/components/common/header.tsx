@@ -8,13 +8,13 @@ import { useEffect } from "react";
 import { Menu } from "@/types/main";
 import UserMenu from "./UserMenu";
 import Nav from "./Nav";
+import { useGetUserInfo } from "@/hooks/query/auth/useGetUserInfo";
 
 interface HeaderProps {
 	menuList: Menu[];
 }
 
 export default function Header({ menuList }: HeaderProps) {
-	// const { tokenCheck } = useAuth();
 	const pathname = usePathname();
 
 	useEffect(() => {

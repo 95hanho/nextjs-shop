@@ -17,7 +17,7 @@ export default async function handler(nextRequest: NextApiRequest, nextResponse:
 		if (nextRequest.method === "GET") {
 			// const { userId } = nextRequest.query;
 			// if (!userId) return nextResponse.status(400).json({ message: "아이디를 입력해주세요." });
-			// const data = await getNormal<BaseResponse>(getServerUrl(API_URL.USER_ID), { userId });
+			// const data = await getNormal<BaseResponse>(getServerUrl(API_URL.AUTH_ID), { userId });
 			// console.log("data", data);
 			// return nextResponse.status(200).json({ message: data.message });
 		}
@@ -31,7 +31,7 @@ export default async function handler(nextRequest: NextApiRequest, nextResponse:
 			if (!mobileNumber) return nextResponse.status(400).json({ message: "휴대폰번호를 입력해주세요." });
 			if (!email) return nextResponse.status(400).json({ message: "이메일를 입력해주세요." });
 
-			const data = await postUrlFormData<BaseResponse>(getServerUrl(API_URL.USER), {
+			const data = await postUrlFormData<BaseResponse>(getServerUrl(API_URL.AUTH), {
 				sellerId,
 				password,
 				businessRegistrationNumber,

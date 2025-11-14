@@ -3,36 +3,29 @@
 import API_URL from "@/api/endpoints";
 import { postJson } from "@/api/fetchFilter";
 import { authContext } from "@/context/authContext";
+import useAuth from "@/hooks/useAuth";
 import { getBaseUrl } from "@/lib/getBaseUrl";
 import { UserInfo } from "@/types/auth";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-const initialUser = {
-	userId: "",
-	name: "",
-	zonecode: "",
-	address: "",
-	addressDetail: "",
-	birthday: "",
-	phone: "",
-	email: "",
-	createdAt: new Date(),
-	mileage: 0,
-	tall: 0,
-	weight: 0,
-	withdrawalStatus: false,
-};
+interface AuthProviderProps {
+	children: React.ReactNode;
+	initialUser: UserInfo | null;
+}
 
-export default function AuthProvider({ children }: { children: React.ReactNode }) {
+export default function AuthProvider({ children, initialUser }: AuthProviderProps) {
 	const router = useRouter();
+
 	const [loginOn, setLoginOn] = useState<boolean>(false);
-	const [user, setUser] = useState<UserInfo>(initialUser);
+	const [user, setUser] = useState<UserInfo | null>(initialUser);
 
 	const logout = async () => {
 		console.log("로그아웃");
 		setLoginOn(false);
-		postJson(getBaseUrl(API_URL.USER_LOGOUT));
+		setUser(null);
+		await postJson(getBaseUrl(API_URL.AUTH_LOGOUT));
+		location.reload();
 	};
 
 	// const loginToken = (aToken: string, rToken: string) => {
