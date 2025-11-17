@@ -1,7 +1,7 @@
 import API_URL from "@/api/endpoints";
 import { getNormal, postUrlFormData } from "@/api/fetchFilter";
 import { withAuth } from "@/lib/auth";
-import { getServerUrl } from "@/lib/getBaseUrl";
+import { getBackendUrl } from "@/lib/getBaseUrl";
 import { BaseResponse } from "@/types/common";
 import { NextResponse } from "next/server";
 
@@ -18,7 +18,7 @@ export const GET = withAuth(async ({ nextRequest, userId }) => {
 	try {
 		const userId = nextRequest.nextUrl.searchParams.get("userId");
 		if (!userId) return NextResponse.json({ message: "아이디를 입력해주세요." }, { status: 400 });
-		const data = await getNormal<BaseResponse>(getServerUrl(API_URL.AUTH_ID), { userId });
+		const data = await getNormal<BaseResponse>(getBackendUrl(API_URL.AUTH_ID), { userId });
 		console.log("data", data);
 
 		return NextResponse.json({ message: data.message }, { status: 200 });
@@ -52,7 +52,7 @@ export const POST = withAuth(async ({ nextRequest, userId }) => {
 		const { userId, password } = await nextRequest.json();
 		if (!userId) return NextResponse.json({ message: "아이디를 입력해주세요." }, { status: 400 });
 		if (!password) return NextResponse.json({ message: "비밀번호를 입력해주세요." }, { status: 400 });
-		const data = await postUrlFormData<BaseResponse>(getServerUrl(API_URL.AUTH), { userId, password });
+		const data = await postUrlFormData<BaseResponse>(getBackendUrl(API_URL.AUTH), { userId, password });
 		console.log("data", data);
 
 		return NextResponse.json({ message: data.message }, { status: 200 });

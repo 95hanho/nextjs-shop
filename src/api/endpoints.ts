@@ -1,5 +1,3 @@
-import { getBaseUrl } from "@/lib/getBaseUrl";
-
 // API 엔드포인트 목록 - API url 모음집
 const API_URL = {
 	// 관리자 ----------------------------------

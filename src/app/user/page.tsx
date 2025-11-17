@@ -7,7 +7,7 @@ import { SiNaver, SiKakaotalk } from "react-icons/si"; // 네이버와 카카오
 import useUser from "@/hooks/query/useUser";
 import { FormEvent, LoginForm } from "@/types/auth";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { getBaseUrl } from "@/lib/getBaseUrl";
+import { getApiUrl } from "@/lib/getBaseUrl";
 import API_URL from "@/api/endpoints";
 import { useRouter } from "next/navigation";
 import { postJson } from "@/api/fetchFilter";
@@ -18,7 +18,7 @@ export default function Login() {
 	const queryClient = useQueryClient();
 
 	const handleLogin = useMutation({
-		mutationFn: (obj: LoginForm) => postJson<BaseResponse>(getBaseUrl(API_URL.AUTH), obj),
+		mutationFn: (obj: LoginForm) => postJson<BaseResponse>(getApiUrl(API_URL.AUTH), obj),
 		// Mutation이 시작되기 직전에 특정 작업을 수행
 		onMutate(a) {
 			console.log(a);

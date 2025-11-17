@@ -1,6 +1,6 @@
 import API_URL from "@/api/endpoints";
 import { getNormal } from "@/api/fetchFilter";
-import { getServerUrl } from "@/lib/getBaseUrl";
+import { getBackendUrl } from "@/lib/getBaseUrl";
 import { MainProductResponse } from "@/types/main";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -17,7 +17,7 @@ export default async function handler(nextRequest: NextRequest) {
 		// method별 요청처리
 		// 메인 메뉴목록 가져오기
 		if (nextRequest.method === "GET") {
-			const data = await getNormal<MainProductResponse>(getServerUrl(API_URL.MAIN));
+			const data = await getNormal<MainProductResponse>(getBackendUrl(API_URL.MAIN));
 			// if (!res.ok) {
 			// 	// Spring 에러 그대로 전달하지 말고 요약해서 반환
 			// 	console.error("Spring auth error:", await res.text());

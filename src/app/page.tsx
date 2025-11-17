@@ -3,11 +3,13 @@ import { MainProductResponse } from "@/types/main";
 import ProductSlider from "@/components/main/ProductSlider";
 import API_URL from "@/api/endpoints";
 import { getNormal } from "@/api/fetchFilter";
-import { getBaseUrl } from "@/lib/getBaseUrl";
+import { getApiUrl } from "@/lib/getBaseUrl";
 import TokenCheck from "@/components/common/TokenCheck";
 
 export default async function Home() {
-	const products_data = await getNormal<MainProductResponse>(getBaseUrl(API_URL.MAIN));
+	return <h1>테스트중</h1>;
+
+	const products_data = await getNormal<MainProductResponse>(getApiUrl(API_URL.MAIN));
 	// const products_data = await getNormal<MainProductResponse>("/api" + API_URL.MAIN);
 	if (!products_data) {
 		return null;

@@ -1,6 +1,6 @@
 import API_URL from "@/api/endpoints";
 import { postUrlFormData } from "@/api/fetchFilter";
-import { getServerUrl } from "@/lib/getBaseUrl";
+import { getBackendUrl } from "@/lib/getBaseUrl";
 import { verifyToken } from "@/lib/jwt";
 import { BuyHoldRequest, BuyItem } from "@/types/buy";
 import { BaseResponse } from "@/types/common";
@@ -22,7 +22,7 @@ export async function POST(nextRequest: NextRequest) {
 		const userId = token.userId as string;
 
 		const payload: BuyHoldRequest = { userId, buyList };
-		const data = await postUrlFormData<BaseResponse>(getServerUrl(API_URL.BUY_HOLD), { ...payload });
+		const data = await postUrlFormData<BaseResponse>(getBackendUrl(API_URL.BUY_HOLD), { ...payload });
 		console.log("data", data);
 
 		return NextResponse.json({ message: data.message }, { status: 200 });

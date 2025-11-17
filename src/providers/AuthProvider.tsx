@@ -4,27 +4,26 @@ import API_URL from "@/api/endpoints";
 import { postJson } from "@/api/fetchFilter";
 import { authContext } from "@/context/authContext";
 import useAuth from "@/hooks/useAuth";
-import { getBaseUrl } from "@/lib/getBaseUrl";
+import { getApiUrl } from "@/lib/getBaseUrl";
 import { UserInfo } from "@/types/auth";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 interface AuthProviderProps {
 	children: React.ReactNode;
-	initialUser: UserInfo | null;
 }
 
-export default function AuthProvider({ children, initialUser }: AuthProviderProps) {
+export default function AuthProvider({ children }: AuthProviderProps) {
 	const router = useRouter();
 
 	const [loginOn, setLoginOn] = useState<boolean>(false);
-	const [user, setUser] = useState<UserInfo | null>(initialUser);
+	const [user, setUser] = useState<UserInfo | null>(null);
 
 	const logout = async () => {
 		console.log("로그아웃");
 		setLoginOn(false);
 		setUser(null);
-		await postJson(getBaseUrl(API_URL.AUTH_LOGOUT));
+		await postJson(getApiUrl(API_URL.AUTH_LOGOUT));
 		location.reload();
 	};
 

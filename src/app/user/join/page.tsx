@@ -8,7 +8,7 @@ import { isValidDateString } from "@/utils/ui";
 import { useMutation } from "@tanstack/react-query";
 import { getNormal, postJson, postUrlFormData } from "@/api/fetchFilter";
 import { BaseResponse } from "@/types/common";
-import { getBaseUrl } from "@/lib/getBaseUrl";
+import { getApiUrl } from "@/lib/getBaseUrl";
 import API_URL from "@/api/endpoints";
 import { ChangeEvent, FormEvent, JoinForm, JoinFormAlert, JoinFormRefs } from "@/types/auth";
 import { useRouter } from "next/navigation";
@@ -69,7 +69,7 @@ export default function UserJoin() {
 
 	// 아이디중복확인 mutate
 	const handleIdDuplcheck = useMutation({
-		mutationFn: (userId: string) => getNormal<BaseResponse>(getBaseUrl(API_URL.AUTH_ID), { userId }),
+		mutationFn: (userId: string) => getNormal<BaseResponse>(getApiUrl(API_URL.AUTH_ID), { userId }),
 		// Mutation이 시작되기 직전에 특정 작업을 수행
 		onMutate(a) {
 			console.log(a);
@@ -85,7 +85,7 @@ export default function UserJoin() {
 	});
 	// 휴대폰 인증
 	const handlePhoneAuth = useMutation({
-		mutationFn: (phone: string) => postJson<BaseResponse>(getBaseUrl(API_URL.AUTH_PHONE_AUTH), { phone }),
+		mutationFn: (phone: string) => postJson<BaseResponse>(getApiUrl(API_URL.AUTH_PHONE_AUTH), { phone }),
 		onSuccess(data) {
 			setPhoneAuth(true);
 			setJoinFailAlert((prev) => ({
@@ -103,7 +103,7 @@ export default function UserJoin() {
 	});
 	// 회원가입
 	const handleRegister = useMutation({
-		mutationFn: (joinForm: JoinForm) => postJson<BaseResponse>(getBaseUrl(API_URL.AUTH_JOIN), { ...joinForm }),
+		mutationFn: (joinForm: JoinForm) => postJson<BaseResponse>(getApiUrl(API_URL.AUTH_JOIN), { ...joinForm }),
 		// Mutation이 시작되기 직전에 특정 작업을 수행
 		onMutate(a) {
 			console.log(a);
