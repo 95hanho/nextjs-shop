@@ -2,7 +2,7 @@ import API_URL from "@/api/endpoints";
 import { getNormal, postUrlFormData } from "@/api/fetchFilter";
 import { withAuth } from "@/lib/auth";
 import { isProd } from "@/lib/env";
-import { getServerUrl } from "@/lib/getBaseUrl";
+import { getBackendUrl } from "@/lib/getBaseUrl";
 import { generateAccessToken, generateRefreshToken, verifyToken } from "@/lib/jwt";
 import { ACCESS_TOKEN_COOKIE_AGE, REFRESH_TOKEN_COOKIE_AGE } from "@/lib/tokenTime";
 import { LoginForm, UserResponse } from "@/types/auth";
@@ -14,7 +14,9 @@ import { NextRequest, NextResponse } from "next/server";
 // 할 때 바로 가져올 수 있게 useQuery 실행함.
 export const GET = withAuth(async ({ nextRequest, userId }) => {
 	try {
-		const data = await getNormal<UserResponse>(getServerUrl(API_URL.AUTH), { userId });
+		console.log("userId", userId);
+		if (!userId) return NextResponse.json({ message: "NO_LOGIN", user: null }, { status: 200 });
+		const data = await getNormal<UserResponse>(getBackendUrl(API_URL.AUTH), { userId });
 		return NextResponse.json({ message: data.message, user: data.user }, { status: 200 });
 	} catch (err: any) {
 		console.error("error :", {
@@ -38,7 +40,7 @@ export async function POST(nextRequest: NextRequest) {
 		if (!userId) return NextResponse.json({ message: "아이디를 입력해주세요." }, { status: 400 });
 		if (!password) return NextResponse.json({ message: "비밀번호를 입력해주세요." }, { status: 400 });
 
-		const loginValidateData = await postUrlFormData<BaseResponse>(getServerUrl(API_URL.AUTH), { userId, password });
+		const loginValidateData = await postUrlFormData<BaseResponse>(getBackendUrl(API_URL.AUTH), { userId, password });
 		console.log("loginValidateData", loginValidateData);
 		/* 에러는 FE에서 처리 */
 		// if (res.status === 401) {
@@ -52,7 +54,7 @@ export async function POST(nextRequest: NextRequest) {
 		// ✅ HttpOnly 쿠키 설정
 		const accessToken = generateAccessToken({ userId });
 		const refreshToken = generateRefreshToken();
-		console.log("accessToken", accessToken.substring(0, 10), "refreshToken", refreshToken.substring(0, 10));
+		console.log("accessToken", accessToken.slice(-10), "refreshToken", refreshToken.slice(-10));
 
 		const xffHeader = nextRequest.headers.get("x-forwarded-for");
 		const ip =
@@ -63,7 +65,7 @@ export async function POST(nextRequest: NextRequest) {
 
 		// 토큰 저장하기 : refreshToken랑 정보랑 유저 agent, ip 정보 보내기
 		await postUrlFormData<BaseResponse>(
-			getServerUrl(API_URL.AUTH_TOKEN),
+			getBackendUrl(API_URL.AUTH_TOKEN),
 			{ refreshToken, userId },
 			{
 				userAgent: nextRequest.headers.get("user-agent") || "",
@@ -72,13 +74,27 @@ export async function POST(nextRequest: NextRequest) {
 		);
 
 		const response = NextResponse.json({ message: "LOGIN_SUCCESS" }, { status: 200 });
-		response.headers.set(
-			"Set-Cookie",
-			[
-				`accessToken=${accessToken}; Path=/; HttpOnly; ${isProd ? "Secure; " : ""}SameSite=Strict; Max-Age=${ACCESS_TOKEN_COOKIE_AGE}`,
-				`refreshToken=${refreshToken}; Path=/; HttpOnly; ${isProd ? "Secure; " : ""}SameSite=Strict; Max-Age=${REFRESH_TOKEN_COOKIE_AGE}`,
-			].join(", ")
-		);
+		response.cookies.set("accessToken", accessToken, {
+			httpOnly: true,
+			secure: isProd,
+			sameSite: "strict",
+			path: "/",
+			maxAge: ACCESS_TOKEN_COOKIE_AGE,
+		});
+		response.cookies.set("refreshToken", refreshToken, {
+			httpOnly: true,
+			secure: isProd,
+			sameSite: "strict",
+			path: "/",
+			maxAge: REFRESH_TOKEN_COOKIE_AGE,
+		});
+		// response.headers.set(
+		// 	"Set-Cookie",
+		// 	[
+		// 		`accessToken=${accessToken}; Path=/; HttpOnly; ${isProd ? "Secure; " : ""}SameSite=Strict; Max-Age=${ACCESS_TOKEN_COOKIE_AGE}`,
+		// 		`refreshToken=${refreshToken}; Path=/; HttpOnly; ${isProd ? "Secure; " : ""}SameSite=Strict; Max-Age=${REFRESH_TOKEN_COOKIE_AGE}`,
+		// 	].join(", ")
+		// );
 		return response;
 	} catch (err: any) {
 		console.error("error :", {

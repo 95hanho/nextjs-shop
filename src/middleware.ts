@@ -14,7 +14,7 @@ import { cookies } from "next/headers";
 
 const handleAuthCheck = async (nextRequest: NextRequest, isApi: boolean) => {
 	// ------- 로그인 인증이 필요한 url
-	console.log("로그인 인증이 필요한 url");
+	console.log("로그인 인증이 필요한 url", nextRequest.url);
 
 	const rToken = nextRequest.headers.get("refreshToken") || nextRequest.cookies.get("refreshToken")?.value;
 	const aToken = nextRequest.headers.get("accessToken") || nextRequest.cookies.get("accessToken")?.value;
@@ -55,13 +55,24 @@ const handleAuthCheck = async (nextRequest: NextRequest, isApi: boolean) => {
 
 // middleware는 Edge Runtime에서 동작
 export async function middleware(nextRequest: NextRequest) {
+	const isApi = nextRequest.nextUrl.pathname.startsWith("/api");
 	// nextRequest.url : 쿼리 포함 path
 	// const pathname = nextRequest.nextUrl.pathname; // 쿼리제외 path
 	const searchParams = nextRequest.nextUrl.searchParams;
-	// const cookieStore = await cookies(); // middleware.ts나 route handler 밖의 util함수에서 가져올 때, 안되는거 같은데...
+	const cookieStore = await cookies(); // middleware.ts나 route handler 밖의 util함수에서 가져올 때, 안되는거 같은데...
 	// console.log("middleware", nextRequest.url, "---------------------------------------------------------------------------------------------------");
-	// console.log("middleware accessToken", nextRequest.cookies.get("accessToken")?.value.substring(0, 10));
-	// console.log("next/headers accessToken", (await cookieStore).get("accessToken")?.value.substring(0, 10));
+	if (isApi) {
+		// console.log(
+		// 	"middleware token -----",
+		// 	nextRequest.cookies.get("accessToken")?.value.slice(-10) || "a토큰없음",
+		// 	nextRequest.cookies.get("refreshToken")?.value.slice(-10) || "r토큰없음"
+		// );
+		// console.log(
+		// 	"cookies() token",
+		// 	cookieStore.get("accessToken")?.value.slice(-10) || "a토큰없음",
+		// 	cookieStore.get("refreshToken")?.value.slice(-10) || "r토큰없음"
+		// );
+	}
 
 	// 이미 로그아웃이면 아무것도 안함.
 	if (searchParams.get("logout") === "1") return NextResponse.next();
@@ -80,7 +91,6 @@ export async function middleware(nextRequest: NextRequest) {
 	const needsAuth = isAuthRequiredPath(nextRequest.nextUrl.pathname);
 	if (!needsAuth) return NextResponse.next();
 
-	const isApi = nextRequest.nextUrl.pathname.startsWith("/api");
 	// if (isApi) console.log("API요청 ====================>");
 	// else console.log("페이지이동 요청 ====================>");
 

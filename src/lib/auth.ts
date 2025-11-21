@@ -1,6 +1,6 @@
 import { getNormal, putUrlFormData } from "@/api/fetchFilter";
 import { cookies } from "next/headers";
-import { getBaseUrl, getServerUrl } from "./getBaseUrl";
+import { getApiUrl, getBackendUrl } from "./getBaseUrl";
 import API_URL from "@/api/endpoints";
 import { Token, UserResponse } from "@/types/auth";
 import { NextRequest, NextResponse } from "next/server";
@@ -12,12 +12,10 @@ import { ACCESS_TOKEN_COOKIE_AGE, REFRESH_TOKEN_COOKIE_AGE } from "./tokenTime";
 /** 처음페이지로드 시 accessToken있으면 유저 정보 가져옴 */
 export async function getServerSession() {
 	const accessToken = (await cookies()).get("accessToken")?.value;
-	const refreshToken = (await cookies()).get("refreshToken")?.value;
-	console.log("rootLayout accessToken", accessToken?.substring(0, 10));
 	if (!accessToken) return null;
-
-	const data = await getNormal<UserResponse>(getBaseUrl(API_URL.AUTH), undefined, {
-		Cookie: `accessToken=${accessToken}; refreshToken=${refreshToken}`,
+	console.log("서버->서버로 유저정보 요청!!");
+	const data = await getNormal<UserResponse>(getApiUrl(API_URL.AUTH), undefined, {
+		Cookie: `accessToken=${accessToken}`,
 	});
 
 	return data.user;
@@ -50,7 +48,7 @@ type AutoRefreshResult =
 const authFromTokens = async (nextRequest: NextRequest): Promise<AutoRefreshResult> => {
 	const accessToken = nextRequest.cookies.get("accessToken")?.value || nextRequest.headers.get("accessToken") || undefined;
 	const refreshToken = nextRequest.cookies.get("refreshToken")?.value || nextRequest.headers.get("refreshToken") || undefined;
-	console.log("authFromTokens -----------", accessToken?.substring(0, 3), refreshToken?.substring(0, 3));
+	console.log("authFromTokens -----------", accessToken?.slice(-10), refreshToken?.slice(-10));
 
 	// 1) accessToken 유효하면 그대로 통과
 	if (accessToken) {
@@ -91,7 +89,7 @@ const authFromTokens = async (nextRequest: NextRequest): Promise<AutoRefreshResu
 		"unknown";
 
 	const reTokenData = await putUrlFormData<BaseResponse & { userId: string }>(
-		getServerUrl(API_URL.AUTH_TOKEN),
+		getBackendUrl(API_URL.AUTH_TOKEN),
 		{
 			beforeToken: refreshToken,
 			refreshToken: newRefreshToken,
@@ -104,7 +102,7 @@ const authFromTokens = async (nextRequest: NextRequest): Promise<AutoRefreshResu
 	console.log("reTokenData", reTokenData);
 
 	const newAccessToken = generateAccessToken({ userId: reTokenData.userId });
-	console.log("newAccessToken", newRefreshToken.substring(0, 10), "newRefreshToken", newRefreshToken.substring(0, 10));
+	console.log("newAccessToken", newAccessToken.slice(-10), "newRefreshToken", newRefreshToken.slice(-10));
 
 	return {
 		ok: true,
@@ -113,11 +111,18 @@ const authFromTokens = async (nextRequest: NextRequest): Promise<AutoRefreshResu
 		newRefreshToken,
 	};
 };
-type HandlerWithAuth = (ctx: { nextRequest: NextRequest; userId?: string }) => Promise<NextResponse> | NextResponse;
+type HandlerWithAuth = (ctx: {
+	nextRequest: NextRequest;
+	userId?: string;
+	params?: { [key: string]: string }; // 🔹 여기에 params 추가
+}) => Promise<NextResponse> | NextResponse;
 
 export const withAuth =
 	(handler: HandlerWithAuth) =>
-	async (nextRequest: NextRequest): Promise<NextResponse> => {
+	async (
+		nextRequest: NextRequest,
+		context?: { params?: { [key: string]: string } } // 🔹 App Router의 context 받기
+	): Promise<NextResponse> => {
 		const auth = await authFromTokens(nextRequest);
 
 		if (!auth.ok) {
@@ -127,14 +132,14 @@ export const withAuth =
 				console.warn("토큰지워!!!!");
 				response.cookies.set("accessToken", "", {
 					httpOnly: true,
-					secure: true,
+					secure: isProd,
 					sameSite: "strict",
 					path: "/",
 					maxAge: 0,
 				});
 				response.cookies.set("refreshToken", "", {
 					httpOnly: true,
-					secure: true,
+					secure: isProd,
 					sameSite: "strict",
 					path: "/",
 					maxAge: 0,
@@ -144,8 +149,13 @@ export const withAuth =
 			return response;
 		}
 
-		// 비즈니스 핸들러 실행
-		const response = await handler(auth.userId ? { nextRequest, userId: auth.userId } : { nextRequest });
+		// 🔹 비즈니스 핸들러 실행할 때 params도 함께 넘겨주기
+		const baseCtx = {
+			nextRequest,
+			params: context?.params, // 없으면 undefined
+		};
+
+		const response = await handler(auth.userId ? { ...baseCtx, userId: auth.userId } : baseCtx);
 
 		// 토큰 재발급된 경우 쿠키 세팅
 		if (auth.newAccessToken && auth.newRefreshToken) {
@@ -163,6 +173,7 @@ export const withAuth =
 				path: "/",
 				maxAge: REFRESH_TOKEN_COOKIE_AGE,
 			});
+			console.log("토큰 다시 세팅 !!!! ---------------------", nextRequest.url);
 		}
 
 		return response;

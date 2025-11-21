@@ -25,6 +25,24 @@ const applyPathParams = (url: string, params?: Params): [string, Params | undefi
 	});
 	return [newUrl, rest];
 };
+// JSON body용 :id 치환 헬퍼
+const applyPathParamsFromBody = <T extends object | undefined>(url: string, body: T): [string, T] => {
+	if (!body) return [url, body];
+
+	// 얕은 복사 후, pathParam으로 쓴 키는 삭제
+	const rest: any = { ...(body as any) };
+
+	const newUrl = url.replace(/:([^/]+)/g, (_, name: string) => {
+		if (rest[name] !== undefined) {
+			const v = rest[name];
+			delete rest[name];
+			return String(Array.isArray(v) ? v[0] : v);
+		}
+		return _;
+	});
+
+	return [newUrl, rest];
+};
 
 const toSearchParams = (params: Params): URLSearchParams => {
 	const search = new URLSearchParams();
@@ -140,12 +158,13 @@ export async function getDownload(url: string, params?: Params, headers?: Header
 }
 
 // POST JSON
-export function postJson<T>(url: string, params?: Params, headers?: HeadersMap) {
-	const [u2, body] = applyPathParams(url, cloneParams(params));
-	return http<T>(u2, {
+export function postJson<TRes, TBody = unknown>(url: string, body?: TBody, headers?: HeadersMap) {
+	const [u2, restBody] = applyPathParamsFromBody(url, body as any);
+
+	return http<TRes>(u2, {
 		method: "POST",
-		headers: { "Content-Type": "application/json", ...headers },
-		body: JSON.stringify(body ?? {}),
+		headers: { "Content-Type": "application/json", ...(headers ?? {}) },
+		body: JSON.stringify(restBody ?? {}),
 	});
 }
 
@@ -206,12 +225,13 @@ export function putUrlFormData<T>(url: string, params: Params, headers?: Headers
 }
 
 // PUT JSON
-export function putJson<T>(url: string, params: Params, headers?: HeadersMap) {
-	const [u2, body] = applyPathParams(url, cloneParams(params));
-	return http<T>(u2, {
+export function putJson<TRes, TBody = unknown>(url: string, body?: TBody, headers?: HeadersMap) {
+	const [u2, restBody] = applyPathParamsFromBody(url, body as any);
+
+	return http<TRes>(u2, {
 		method: "PUT",
-		headers: { "Content-Type": "application/json", ...headers },
-		body: JSON.stringify(body ?? {}),
+		headers: { "Content-Type": "application/json", ...(headers ?? {}) },
+		body: JSON.stringify(restBody ?? {}),
 	});
 }
 

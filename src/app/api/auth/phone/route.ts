@@ -1,6 +1,6 @@
 import API_URL from "@/api/endpoints";
 import { postUrlFormData } from "@/api/fetchFilter";
-import { getServerUrl } from "@/lib/getBaseUrl";
+import { getBackendUrl } from "@/lib/getBaseUrl";
 import { BaseResponse } from "@/types/common";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -8,7 +8,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(nextRequest: NextRequest) {
 	try {
 		const { phone } = await nextRequest.json();
-		const data = await postUrlFormData<BaseResponse>(getServerUrl(API_URL.AUTH_PHONE_AUTH), { phone });
+		const data = await postUrlFormData<BaseResponse>(getBackendUrl(API_URL.AUTH_PHONE_AUTH), { phone });
 		console.log("data", data);
 
 		return NextResponse.json({ message: data.message }, { status: 200 });

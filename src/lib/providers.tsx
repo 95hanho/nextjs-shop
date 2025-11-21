@@ -8,7 +8,6 @@ import { ReactNode, useState } from "react";
 
 interface ProvidersProps {
 	children: ReactNode;
-	initialUser: UserInfo | null;
 }
 
 // 공통 에러 핸들러 (전역 모달/토스트 등)
@@ -35,7 +34,7 @@ function handleGlobalMutationError(error: any) {
 	}
 }
 //
-export default function Providers({ children, initialUser }: ProvidersProps) {
+export default function Providers({ children }: ProvidersProps) {
 	const [queryClient] = useState(
 		() =>
 			new QueryClient({
@@ -67,7 +66,7 @@ export default function Providers({ children, initialUser }: ProvidersProps) {
 
 	return (
 		<QueryClientProvider client={queryClient}>
-			<AuthProvider initialUser={initialUser}>{children}</AuthProvider>
+			<AuthProvider>{children}</AuthProvider>
 		</QueryClientProvider>
 	);
 }

@@ -4,7 +4,13 @@ import { FaHeart } from "react-icons/fa";
 import { FaStar } from "react-icons/fa";
 import Link from "next/link";
 import TestImage from "@/components/test/TestImage";
-import { ProductListParams } from "@/types/product";
+
+interface ProductListParams {
+	params: {
+		menuSubId: number;
+		menuTopId: number;
+	};
+}
 
 const Test = () => {
 	return (
