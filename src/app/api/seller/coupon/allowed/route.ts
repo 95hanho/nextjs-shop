@@ -3,23 +3,15 @@ import { getNormal, postUrlFormData } from "@/api/fetchFilter";
 import { withAuth } from "@/lib/auth";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { BaseResponse } from "@/types/common";
+import { GetSellerCouponAllowResponse, SetSellerCouponAllowRequest } from "@/types/seller";
 import { NextResponse } from "next/server";
 
-/*  */
-//
-export const GET = withAuth(async ({ nextRequest, userId, params }) => {
-	// query 접근 (App Router에서는 req.nextUrl.searchParams)
-	const search = Object.fromEntries(nextRequest.nextUrl.searchParams.entries());
-	if (Object.keys(search).length > 0) {
-		console.log("query:", search);
-	}
-
+// 판매자 해당 쿠폰 허용제품 조회
+export const GET = withAuth(async ({ nextRequest, userId }) => {
 	try {
-		const {} = params ?? {};
-
-		const userId = nextRequest.nextUrl.searchParams.get("userId");
-		if (!userId) return NextResponse.json({ message: "아이디를 입력해주세요." }, { status: 400 });
-		const data = await getNormal<BaseResponse>(getBackendUrl(API_URL.AUTH_ID), { userId });
+		const couponId = nextRequest.nextUrl.searchParams.get("couponId");
+		if (!couponId) return NextResponse.json({ message: "잘 못 된 요청입니다." }, { status: 400 });
+		const data = await getNormal<GetSellerCouponAllowResponse>(getBackendUrl(API_URL.SELLER_COUPON_ALLOWED), { userId });
 		console.log("data", data);
 
 		return NextResponse.json({ message: data.message }, { status: 200 });
@@ -36,19 +28,15 @@ export const GET = withAuth(async ({ nextRequest, userId, params }) => {
 		return NextResponse.json(payload, { status });
 	}
 });
-//
+// 판매자 해당 쿠폰 허용제품 변경
 export const POST = withAuth(async ({ nextRequest, userId, params }) => {
 	try {
-		const {} = params ?? {};
-		// formdata || application/x-www-form-urlencoded로 보내면 이렇게
-		// const formData = await nextRequest.formData();
-		// const userId = formData.get("userId");
-		// const password = formData.get("password");
 		// json으로 받으면
-		const { userId, password } = await nextRequest.json();
-		if (!userId) return NextResponse.json({ message: "아이디를 입력해주세요." }, { status: 400 });
-		if (!password) return NextResponse.json({ message: "비밀번호를 입력해주세요." }, { status: 400 });
-		const data = await postUrlFormData<BaseResponse>(getBackendUrl(API_URL.AUTH), { userId, password });
+		const { couponId, productIds } = await nextRequest.json();
+		if (!couponId || !productIds || productIds.length === 0) return NextResponse.json({ message: "잘 못 된 요청입니다." }, { status: 400 });
+
+		const payload: SetSellerCouponAllowRequest = { couponId, productIds };
+		const data = await postUrlFormData<BaseResponse>(getBackendUrl(API_URL.SELLER_COUPON_ALLOWED), { ...payload });
 		console.log("data", data);
 
 		return NextResponse.json({ message: data.message }, { status: 200 });

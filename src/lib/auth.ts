@@ -111,11 +111,18 @@ const authFromTokens = async (nextRequest: NextRequest): Promise<AutoRefreshResu
 		newRefreshToken,
 	};
 };
-type HandlerWithAuth = (ctx: { nextRequest: NextRequest; userId?: string }) => Promise<NextResponse> | NextResponse;
+type HandlerWithAuth = (ctx: {
+	nextRequest: NextRequest;
+	userId?: string;
+	params?: { [key: string]: string }; // 🔹 여기에 params 추가
+}) => Promise<NextResponse> | NextResponse;
 
 export const withAuth =
 	(handler: HandlerWithAuth) =>
-	async (nextRequest: NextRequest): Promise<NextResponse> => {
+	async (
+		nextRequest: NextRequest,
+		context?: { params?: { [key: string]: string } } // 🔹 App Router의 context 받기
+	): Promise<NextResponse> => {
 		const auth = await authFromTokens(nextRequest);
 
 		if (!auth.ok) {
@@ -142,8 +149,13 @@ export const withAuth =
 			return response;
 		}
 
-		// 비즈니스 핸들러 실행
-		const response = await handler(auth.userId ? { nextRequest, userId: auth.userId } : { nextRequest });
+		// 🔹 비즈니스 핸들러 실행할 때 params도 함께 넘겨주기
+		const baseCtx = {
+			nextRequest,
+			params: context?.params, // 없으면 undefined
+		};
+
+		const response = await handler(auth.userId ? { ...baseCtx, userId: auth.userId } : baseCtx);
 
 		// 토큰 재발급된 경우 쿠키 세팅
 		if (auth.newAccessToken && auth.newRefreshToken) {

@@ -1,3 +1,5 @@
+import { BaseResponse } from "./common";
+
 export interface BuyItem {
 	productDetailId: number;
 	addPrice: number; // 옵션 추가금 (0 이상)
@@ -7,4 +9,17 @@ export interface BuyItem {
 export interface BuyHoldRequest {
 	userId: string;
 	buyList: BuyItem[];
+}
+export interface BuyHoldResponse extends BaseResponse {
+	holds: {
+		productDetailId: number;
+		holdId: number;
+	}[];
+}
+export interface ExtendStockHoldRequest {
+	holdIds: number[];
+}
+export interface ExtendStockHoldResponse extends BaseResponse, ExtendStockHoldRequest {
+	requestedCount: number;
+	updatedCount: number;
 }
