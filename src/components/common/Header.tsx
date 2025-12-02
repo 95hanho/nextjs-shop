@@ -1,6 +1,6 @@
 "use client";
 
-import { FiHeart, FiShoppingCart } from "react-icons/fi";
+import { FiShoppingCart, FiStar } from "react-icons/fi";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import useAuth from "@/hooks/useAuth";
@@ -33,7 +33,7 @@ export default function Header({ menuList }: HeaderProps) {
 						<div className="header-btn">
 							<UserMenu />
 							<Link href={"/mypage/wish"} prefetch>
-								<FiHeart />
+								<FiStar />
 							</Link>
 							<Link href={"/mypage/cart"} prefetch>
 								<FiShoppingCart />

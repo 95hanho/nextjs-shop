@@ -1,3 +1,4 @@
+/* 회원가입 */
 "use client";
 
 import Link from "next/link";

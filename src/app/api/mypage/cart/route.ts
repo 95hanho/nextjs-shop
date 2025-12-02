@@ -7,9 +7,8 @@ import { GetCartResponse, UpdateCartRequest } from "@/types/mypage";
 import { NextResponse } from "next/server";
 
 // 장바구니 조회
-export const GET = withAuth(async ({ nextRequest }) => {
+export const GET = withAuth(async ({ nextRequest, userId }) => {
 	try {
-		const userId = nextRequest.nextUrl.searchParams.get("userId");
 		if (!userId) return NextResponse.json({ message: "잘 못 된 요청입니다." }, { status: 400 });
 		const data = await getNormal<GetCartResponse>(getBackendUrl(API_URL.MY_CART), { userId });
 		console.log("data", data);

@@ -1573,10 +1573,12 @@ main#productDetail {
 					position: relative;
 					aspect-ratio: 5 / 6;
 					.product__wish-btn {
+						display: block;
 						position: absolute;
+						font-size: 16px;
 						bottom: 7px;
 						right: 7px;
-						color: #f00;
+						color: #e79278;
 					}
 				}
 				.product__info {

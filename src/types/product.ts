@@ -6,6 +6,7 @@ export type Product = {
 	colorName: string;
 	price: number;
 	createdAt: string;
+	likeCount: number;
 	viewCount: number;
 	wishCount: number;
 };

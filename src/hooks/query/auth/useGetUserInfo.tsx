@@ -13,7 +13,6 @@ export function useGetUserInfo() {
 	return useQuery({
 		queryKey: ["me"],
 		queryFn: async () => {
-			console.log(12321);
 			const data = await getNormal<UserResponse>(getApiUrl(API_URL.AUTH));
 			const user = data.user ?? null; // undefined 방지
 			setUser(user);

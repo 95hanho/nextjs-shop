@@ -209,6 +209,7 @@ export type wishlistItem = {
 	productId: number;
 	name: string;
 	price: number;
+	likeCount: number;
 	viewCount: number;
 	wishCount: number;
 	productImageId: number;

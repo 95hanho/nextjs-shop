@@ -59,10 +59,10 @@ const API_URL = {
 	// 제품 ----------------------------------
 	/** 제품리스트 조회 */
 	PRODUCT: "/product",
-	/** 위시 등록 */
+	/** 좋아요/취소 */
+	PRODUCT_LIKE: "/product/like",
+	/** 위시 등록/해제 */
 	PRODUCT_WISH: "/product/wish",
-	/** 위시 등록해제 */
-	PRODUCT_WISH_CANCEL: "/product/wish/:wishId",
 	/** 장바구니 넣기 */
 	PRODUCT_CART: "/product/cart",
 	/** 제품상세보기 조회 */

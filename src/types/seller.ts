@@ -103,6 +103,7 @@ export type ProductViewCount = {
 	userName: string;
 	productId: number;
 	productName: string;
+	likeCount: number;
 	viewCount: number;
 	latestDate: string;
 };
