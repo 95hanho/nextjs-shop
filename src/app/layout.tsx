@@ -15,6 +15,7 @@ import { redirect } from "next/navigation";
 import TokenCheck from "@/components/common/TokenCheck";
 import Header from "@/components/common/Header";
 import { cookies } from "next/headers";
+import ModalRoot from "@/components/modal/ModalRoot";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -47,6 +48,7 @@ export default async function RootLayout({
 				<Providers>
 					<Header menuList={menuList} />
 					{children}
+					<ModalRoot />
 				</Providers>
 			</body>
 		</html>

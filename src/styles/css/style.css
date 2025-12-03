@@ -1601,3 +1601,83 @@ main#productDetail section#etc-info-section .best-short-sleeve-section .rank-tab
   font-size: 17px;
   letter-spacing: 1px;
 }
+
+/*  */
+/*  */
+/*  */
+/*  */
+/*  */
+/*  */
+/*  */
+/*  */
+/*  */
+/* 모달 */
+#modalRoot .modal-wrap {
+  background-color: #fff;
+  min-width: 300px;
+  max-width: calc(100vw - 100px);
+  padding: 11px 15px;
+  border-radius: 10px;
+}
+#modalRoot .modal-wrap .modal-header {
+  font-size: 17px;
+}
+#modalRoot .modal-wrap .modal-close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 19px;
+  padding: 10px;
+}
+#modalRoot .modal-wrap .modal-content {
+  font-family: NotoSansKR;
+  padding: 12px 0;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes popOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+#modalRoot .animate-fadeIn {
+  animation: fadeIn 0.4s ease-out;
+}
+#modalRoot .animate-fadeOut {
+  animation: fadeOut 0.4s ease-out;
+}
+#modalRoot .animate-popIn {
+  animation: popIn 0.4s ease-out;
+}
+#modalRoot .animate-popOut {
+  animation: popOut 0.4s ease-out;
+}

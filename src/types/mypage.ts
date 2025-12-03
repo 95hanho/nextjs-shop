@@ -198,8 +198,12 @@ export interface GetCartResponse extends BaseResponse {
 /*  */
 export interface UpdateCartRequest {
 	quantity: number;
-	selected: boolean;
 	cartId: number;
+}
+/*  */
+export interface UpdateCartSelectedRequest {
+	cartIdList: number[];
+	selected: boolean;
 }
 /*  */
 export type wishlistItem = {
