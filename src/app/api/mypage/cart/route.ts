@@ -27,7 +27,7 @@ export const GET = withAuth(async ({ nextRequest, userId }) => {
 		return NextResponse.json(payload, { status });
 	}
 });
-// 장바구니 제품 수량/선택여부 변경
+// 장바구니 제품 수량 변경
 export const POST = withAuth(async ({ nextRequest }) => {
 	try {
 		const { quantity, cartId }: UpdateCartRequest = await nextRequest.json();

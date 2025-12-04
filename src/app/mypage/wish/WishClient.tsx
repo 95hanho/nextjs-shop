@@ -22,7 +22,7 @@ export default function WishClient() {
 		queryFn: () => getNormal(getApiUrl(API_URL.MY_WISH)),
 		enabled: !!user?.userId,
 	});
-	// 위시
+	// 위시 선택변경
 	const handleProductWish = useMutation({
 		mutationFn: (productId: number) => postJson<BaseResponse>(getApiUrl(API_URL.PRODUCT_WISH), { userId: user?.userId, productId }),
 		// Mutation이 시작되기 직전에 특정 작업을 수행

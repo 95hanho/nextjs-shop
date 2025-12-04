@@ -183,6 +183,7 @@ export type CartItem = Cart & {
 	productId: number;
 	productName: string;
 	price: number;
+	wishId: number;
 	fileId: number;
 	fileName: string | null;
 	storeName: string | null;
