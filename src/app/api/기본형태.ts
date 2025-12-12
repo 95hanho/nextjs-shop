@@ -17,7 +17,7 @@ export const GET = withAuth(async ({ nextRequest, userId, params }) => {
 	try {
 		const {} = params ?? {};
 
-		const userId = nextRequest.nextUrl.searchParams.get("userId");
+		const productId = nextRequest.nextUrl.searchParams.get("productId");
 		if (!userId) return NextResponse.json({ message: "아이디를 입력해주세요." }, { status: 400 });
 		const data = await getNormal<BaseResponse>(getBackendUrl(API_URL.AUTH_ID), { userId });
 		console.log("data", data);

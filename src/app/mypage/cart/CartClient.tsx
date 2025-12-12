@@ -14,10 +14,12 @@ import CartWishButton from "./CartWishButton";
 import { BaseResponse } from "@/types/common";
 import React from "react";
 import LodingWrap from "@/components/common/LodingWrap";
+import { useModalStore } from "@/store/modalStore";
 
 export default function CartClient() {
 	const { user } = useAuth();
 	const queryClient = useQueryClient();
+	const openModal = useModalStore((state) => state.openModal);
 
 	// 장바구니 리스트 조회
 	// invalidateQueries(["cartList"])
@@ -72,6 +74,13 @@ export default function CartClient() {
 		onSettled(a, b) {},
 	});
 
+	/*  */
+	const openOptionChangeModal = (product: CartItem) => {
+		openModal("PRODUCTOPTION", {
+			product,
+		});
+	};
+
 	return (
 		<main id="cart" className="cart">
 			<div className="cart-frame">
@@ -124,7 +133,7 @@ export default function CartClient() {
 											<ul className="product-list">
 												{/* 상품 하나 */}
 												{productList.map((product, productIdx) => {
-													console.log("productId", product.productId);
+													// console.log("productId", product.productId);
 													let selectDisabled = product.stock < product.quantity;
 													let productAlert = "";
 													if (product.stock !== 0 && selectDisabled) {
@@ -141,7 +150,7 @@ export default function CartClient() {
 																	checked={product.selected}
 																	disabled={selectDisabled}
 																	onChange={async () => {
-																		console.log(112331);
+																		// console.log(112331);
 																		await handleChangeSelected.mutateAsync({
 																			cartIdList: [product.cartId],
 																			selected: !product.selected,
@@ -200,7 +209,9 @@ export default function CartClient() {
 																	</span>
 																</h5>
 																<div className="product-item__actions">
-																	<button className="btn btn--ghost">옵션 변경</button>
+																	<button className="btn btn--ghost" onClick={() => openOptionChangeModal(product)}>
+																		옵션 변경
+																	</button>
 																	<button className="btn btn--ghost">쿠폰 사용</button>
 																</div>
 															</div>

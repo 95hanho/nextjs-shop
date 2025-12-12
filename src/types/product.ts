@@ -10,6 +10,15 @@ export type Product = {
 	viewCount: number;
 	wishCount: number;
 };
+export type ProductDetail = {
+	productDetailId: number;
+	productId: number;
+	addPrice: number;
+	stock: number;
+	createdAt: string;
+	size: string;
+	salesCount: number;
+};
 
 /*  */
 export interface GetProductListRequest {

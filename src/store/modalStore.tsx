@@ -1,8 +1,6 @@
-import AlertModal from "@/components/modal/AlertModal";
-import { ReactNode } from "react";
 import { create } from "zustand";
 
-type ModalType = "ALERT" | "CONFIRM" | "CART" | null;
+type ModalType = "ALERT" | "CONFIRM" | "PRODUCTOPTION" | null;
 
 type ModalProps = Record<string, any>;
 

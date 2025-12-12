@@ -10,7 +10,7 @@ interface AlertModalProps {
 
 export default function AlertModal({ content, onClose }: AlertModalProps) {
 	return (
-		<div className="modal-wrap">
+		<div id="alertModal" className="modal-wrap">
 			<header className="modal-header">알림창</header>
 			<button className="modal-close" onClick={onClose}>
 				<BsXLg />

@@ -1,6 +1,7 @@
 import { BaseResponse } from "./common";
 import { FileInfo } from "./file";
 import { Menu } from "./main";
+import { ProductDetail } from "./product";
 // 쿠폰
 export type Coupon = {
 	couponId: number;
@@ -205,6 +206,10 @@ export interface UpdateCartRequest {
 export interface UpdateCartSelectedRequest {
 	cartIdList: number[];
 	selected: boolean;
+}
+/*  */
+export interface GetCartOptionProductDetailListResponse extends BaseResponse {
+	cartOptionProductDetailList: ProductDetail[];
 }
 /*  */
 export type wishlistItem = {

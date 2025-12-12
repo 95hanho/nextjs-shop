@@ -47,6 +47,8 @@ const API_URL = {
 	MY_CART: "/mypage/cart",
 	/** 장바구니 제품 삭제 */
 	MY_CART_DELETE: "/mypage/cart/:cartId",
+	/** 장바구니 제품 삭제 */
+	MY_CART_OPTION_PRODUCT_DETAIL: "/mypage/cart/option/product-detail",
 	/** 위시리스트 조회 */
 	MY_WISH: "/mypage/wish",
 	/** 위시리스트 삭제 */

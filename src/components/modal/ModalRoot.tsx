@@ -6,6 +6,8 @@ import { createPortal } from "react-dom";
 import { useModalStore } from "@/store/modalStore";
 import AlertModal from "./AlertModal";
 import ConfirmModal from "./ConfirmModal";
+import ProductOptionModal from "./ProductOptionModal";
+import { CartItem } from "@/types/mypage";
 
 export default function ModalRoot() {
 	const { modalType, modalProps, closeModal } = useModalStore();
@@ -19,6 +21,7 @@ export default function ModalRoot() {
 	// 새 모달 열릴 때는 isClosing 초기화
 	// body scroll lock
 	useEffect(() => {
+		console.log("modalType", modalType);
 		if (modalType) {
 			setIsClosing(false);
 			document.body.style.overflow = "hidden";
@@ -56,7 +59,11 @@ export default function ModalRoot() {
 		case "CONFIRM":
 			// childrenModal = <ConfirmModal {...modalProps} onClose={handleClose} />;
 			break;
-		// case "CART": ...
+		case "PRODUCTOPTION":
+			const { product } = modalProps as { product: CartItem };
+
+			childrenModal = <ProductOptionModal onClose={handleClose} product={product} />;
+			break;
 		default:
 			return null;
 	}
