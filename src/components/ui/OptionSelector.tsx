@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 
 interface OptionSelectorProps {
@@ -11,7 +11,7 @@ interface OptionSelectorProps {
 	changeOption?: (id: number) => void;
 }
 
-export default function OptionSelector({ optionSelectorName, initData, pickIdx, optionList, changeOption }: OptionSelectorProps) {
+export default function OptionSelector({ optionSelectorName, initData, pickIdx = 0, optionList, changeOption }: OptionSelectorProps) {
 	const optionSelectorRef = useRef<HTMLDivElement>(null);
 	const [openOptionList, setOpenOptionList] = useState<boolean>(false);
 
@@ -38,13 +38,13 @@ export default function OptionSelector({ optionSelectorName, initData, pickIdx, 
 			<div
 				className="option-select-box"
 				onClick={() => {
-					if (pickIdx) setOpenOptionList(!openOptionList);
+					if (optionList) setOpenOptionList(!openOptionList);
 				}}
 			>
-				<input type="text" value={pickIdx && optionList ? optionList[pickIdx].val : initData.val} readOnly />
+				<input type="text" value={optionList ? optionList[pickIdx].val : initData.val} readOnly />
 				<span>{openOptionList ? <IoIosArrowUp /> : <IoIosArrowDown />}</span>
 			</div>
-			{pickIdx && openOptionList && (
+			{openOptionList && (
 				<ul className="option-list">
 					{optionList &&
 						optionList.map((option, optionIdx) => {

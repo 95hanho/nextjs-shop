@@ -17,7 +17,7 @@ export const GET = withAuth(async ({ nextRequest }) => {
 		const productId = nextRequest.nextUrl.searchParams.get("productId");
 		if (!productId) return NextResponse.json({ message: "잘 못 된 요청입니다." }, { status: 400 });
 		const data = await getNormal<GetCartOptionProductDetailListResponse>(getBackendUrl(API_URL.MY_CART_OPTION_PRODUCT_DETAIL), { productId });
-		console.log("data", data);
+		// console.log("cartOptionProductDetailList", data);
 
 		return NextResponse.json({ ...data }, { status: 200 });
 	} catch (err: any) {

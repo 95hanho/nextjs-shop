@@ -12,14 +12,14 @@ import { money } from "@/lib/format";
 import ImageFill from "@/components/common/ImageFill";
 import CartWishButton from "./CartWishButton";
 import { BaseResponse } from "@/types/common";
-import React from "react";
+import React, { useEffect } from "react";
 import LodingWrap from "@/components/common/LodingWrap";
 import { useModalStore } from "@/store/modalStore";
 
 export default function CartClient() {
 	const { user } = useAuth();
 	const queryClient = useQueryClient();
-	const openModal = useModalStore((state) => state.openModal);
+	const { openModal, modalResult, clearModalResult } = useModalStore();
 
 	// 장바구니 리스트 조회
 	// invalidateQueries(["cartList"])
@@ -75,11 +75,30 @@ export default function CartClient() {
 	});
 
 	/*  */
+	// 옵션변경 모달 오픈
 	const openOptionChangeModal = (product: CartItem) => {
 		openModal("PRODUCTOPTION", {
 			product,
 		});
 	};
+
+	// 옵션변경 시 -------> 여기부터하기!!!!! -------> 여기부터하기!!!!!-------> 여기부터하기!!!!!-------> 여기부터하기!!!!!-------> 여기부터하기!!!!!
+	useEffect(() => {
+		if (!modalResult) return;
+
+		if (modalResult.action === "PRODUCTOPTION_CHANGED") {
+			const p = modalResult.payload as any;
+
+			// ✅ 여기서 장바구니 상태 갱신 / react-query invalidate / toast 등 처리
+			// await mutateOptionChange(p.nextProductDetailId) ...
+			// queryClient.invalidateQueries({ queryKey: ["cartList"] });
+
+			console.log("옵션 변경 결과:", p);
+		}
+
+		// ✅ 한 번 처리했으면 비워주기 (중복 처리 방지)
+		clearModalResult();
+	}, [modalResult, clearModalResult]);
 
 	return (
 		<main id="cart" className="cart">

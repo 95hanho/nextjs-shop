@@ -15,6 +15,7 @@ export function useGetUserInfo() {
 		queryFn: async () => {
 			const data = await getNormal<UserResponse>(getApiUrl(API_URL.AUTH));
 			const user = data.user ?? null; // undefined 방지
+			console.log("user", user);
 			setUser(user);
 			return user;
 		},
