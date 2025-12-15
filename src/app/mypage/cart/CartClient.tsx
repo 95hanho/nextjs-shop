@@ -16,6 +16,9 @@ import React, { useEffect, useMemo, useState } from "react";
 import LodingWrap from "@/components/common/LodingWrap";
 import { useModalStore } from "@/store/modal.store";
 import { ModalResultMap } from "@/store/modal.type";
+import Error from "next/error";
+
+type BrandGroupEntry = [sellerName: string, items: CartItem[]];
 
 export default function CartClient() {
 	const { user } = useAuth();
@@ -28,13 +31,13 @@ export default function CartClient() {
 		data: brandGroupList = [],
 		isLoading,
 		isFetching,
-	} = useQuery<[string, CartItem[]][]>({
+	} = useQuery<GetCartResponse, Error, BrandGroupEntry[]>({
 		queryKey: ["cartList", user?.userId],
-		queryFn: async () => {
-			const cartResponse: GetCartResponse = await getNormal(getApiUrl(API_URL.MY_CART));
+		queryFn: async () => await getNormal(getApiUrl(API_URL.MY_CART)),
+		select: (data) => {
 			const brandGroup: Record<string, CartItem[]> = {};
 
-			cartResponse.cartList.map((cart) => {
+			data.cartList.map((cart) => {
 				// 브랜드별 그룹을 묶기
 				if (!brandGroup[cart.sellerName]) brandGroup[cart.sellerName] = [];
 				brandGroup[cart.sellerName].push(cart);
