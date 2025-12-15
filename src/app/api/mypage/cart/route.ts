@@ -27,13 +27,13 @@ export const GET = withAuth(async ({ nextRequest, userId }) => {
 		return NextResponse.json(payload, { status });
 	}
 });
-// 장바구니 제품 수량 변경
+// 장바구니 제품 옵션/수량 변경
 export const POST = withAuth(async ({ nextRequest }) => {
 	try {
-		const { quantity, cartId }: UpdateCartRequest = await nextRequest.json();
+		const { cartId, productDetailId, quantity }: UpdateCartRequest = await nextRequest.json();
 		if (!cartId || !quantity) return NextResponse.json({ message: "잘 못 된 요청입니다." }, { status: 400 });
 
-		const payload: UpdateCartRequest = { quantity, cartId };
+		const payload: UpdateCartRequest = { cartId, productDetailId, quantity };
 		const data = await postUrlFormData<BaseResponse>(getBackendUrl(API_URL.MY_CART), { ...payload });
 		console.log("data", data);
 

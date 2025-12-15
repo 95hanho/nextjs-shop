@@ -1,20 +1,21 @@
 "use client";
 
-import { CartItem, GetCartResponse } from "@/types/mypage";
+import { CartItem, GetCartResponse, UpdateCartRequest, UpdateCartSelectedRequest } from "@/types/mypage";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import API_URL from "@/api/endpoints";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import useAuth from "@/hooks/useAuth";
 import { IoIosArrowDown, IoIosArrowUp, IoIosClose } from "react-icons/io";
 import { BsExclamationCircle } from "react-icons/bs";
-import { getNormal, postJson, putJson } from "@/api/fetchFilter";
+import { deleteNormal, getNormal, postJson, putJson } from "@/api/fetchFilter";
 import { money } from "@/lib/format";
 import ImageFill from "@/components/common/ImageFill";
 import CartWishButton from "./CartWishButton";
 import { BaseResponse } from "@/types/common";
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import LodingWrap from "@/components/common/LodingWrap";
-import { useModalStore } from "@/store/modalStore";
+import { useModalStore } from "@/store/modal.store";
+import { ModalResultMap } from "@/store/modal.type";
 
 export default function CartClient() {
 	const { user } = useAuth();
@@ -24,7 +25,7 @@ export default function CartClient() {
 	// 장바구니 리스트 조회
 	// invalidateQueries(["cartList"])
 	const {
-		data: brandGroupList,
+		data: brandGroupList = [],
 		isLoading,
 		isFetching,
 	} = useQuery<[string, CartItem[]][]>({
@@ -32,6 +33,7 @@ export default function CartClient() {
 		queryFn: async () => {
 			const cartResponse: GetCartResponse = await getNormal(getApiUrl(API_URL.MY_CART));
 			const brandGroup: Record<string, CartItem[]> = {};
+
 			cartResponse.cartList.map((cart) => {
 				// 브랜드별 그룹을 묶기
 				if (!brandGroup[cart.sellerName]) brandGroup[cart.sellerName] = [];
@@ -41,9 +43,10 @@ export default function CartClient() {
 		},
 		enabled: !!user?.userId,
 	});
-	// 장바구니 제품 수량 변경
-	const handleChangeQuantity = useMutation<BaseResponse, Error, { quantity: number; cartId: number }>({
-		mutationFn: ({ quantity, cartId }) => postJson<BaseResponse>(getApiUrl(API_URL.MY_CART), { quantity, cartId }),
+	// 장바구니 제품 옵션/수량 변경
+	const handleChangeQuantity = useMutation<BaseResponse, Error, UpdateCartRequest>({
+		mutationFn: ({ cartId, productDetailId, quantity }) =>
+			postJson<BaseResponse>(getApiUrl(API_URL.MY_CART), { cartId, productDetailId, quantity }),
 		// Mutation이 시작되기 직전에 특정 작업을 수행
 		onMutate(variables) {
 			console.log(variables);
@@ -58,7 +61,7 @@ export default function CartClient() {
 		onSettled(data, error, variables, context) {},
 	});
 	// 장바구니 선택여부 변경
-	const handleChangeSelected = useMutation<BaseResponse, Error, { cartIdList: number[]; selected: boolean }>({
+	const handleChangeSelected = useMutation<BaseResponse, Error, UpdateCartSelectedRequest>({
 		mutationFn: ({ cartIdList, selected }) => putJson<BaseResponse>(getApiUrl(API_URL.MY_CART), { cartIdList, selected }),
 		// Mutation이 시작되기 직전에 특정 작업을 수행
 		onMutate(a) {
@@ -73,29 +76,75 @@ export default function CartClient() {
 		// 결과에 관계 없이 무언가 실행됨
 		onSettled(a, b) {},
 	});
+	// 장바구니 제품 삭제
+	const handleCartProductDelete = useMutation<BaseResponse, Error, { cartId: number }>({
+		mutationFn: ({ cartId }) => deleteNormal<BaseResponse>(getApiUrl(API_URL.MY_CART_DELETE), { cartId }),
+		// Mutation이 시작되기 직전에 특정 작업을 수행
+		onMutate(a) {
+			console.log(a);
+		},
+		onSuccess(data) {
+			console.log(data);
+		},
+		onError(err) {
+			console.log(err);
+		},
+		// 결과에 관계 없이 무언가 실행됨
+		onSettled(a, b) {},
+	});
+	/* ----------------------------------- */
+	const { allSelected, anySelected, totalCount, selectedCount } = useMemo(() => {
+		const items = brandGroupList.flatMap(([, carts]) => carts);
+		const total = items.length;
+		const selected = items.filter((c) => c.selected).length;
 
-	/*  */
+		return {
+			totalCount: total, // UI에 “3/5 선택” 표시 가능
+			selectedCount: selected, // UI에 “3/5 선택” 표시 가능
+			allSelected: total > 0 && selected === total, // 전체 체크박스 checked에 사용
+			anySelected: selected > 0, // “하나라도 선택” (예: 삭제 버튼 활성화)
+		};
+	}, [brandGroupList]);
+	/* ----------------------------------- */
 	// 옵션변경 모달 오픈
 	const openOptionChangeModal = (product: CartItem) => {
 		openModal("PRODUCTOPTION", {
 			product,
 		});
 	};
-	// 옵션변경 시
-	// -------> 여기부터하기!!!!! -------> 여기부터하기!!!!!-------> 여기부터하기!!!!!-------> 여기부터하기!!!!!-------> 여기부터하기!!!!!
+	// 장바구니 제품삭제 모달 오픈
+	const [deletingCartId, setDeletingCartId] = useState<number>(0);
+	const cartDeleteModalOpen = () => {
+		openModal("CONFIRM", {
+			content: "해당 제품을 장바구니에서 삭제하시겠습니까?",
+		});
+	};
+	// 모달 닫힌 후 처리
 	useEffect(() => {
 		if (!modalResult) return;
-
+		// 옵션변경
 		if (modalResult.action === "PRODUCTOPTION_CHANGED") {
-			const p = modalResult.payload as any;
+			const p = modalResult.payload as ModalResultMap["PRODUCTOPTION_CHANGED"];
 
 			// ✅ 여기서 장바구니 상태 갱신 / react-query invalidate / toast 등 처리
 			// await mutateOptionChange(p.nextProductDetailId) ...
 			// queryClient.invalidateQueries({ queryKey: ["cartList"] });
 
 			console.log("옵션 변경 결과:", p);
+			const changeCartOption = async () => {
+				await handleChangeQuantity.mutateAsync({ cartId: p.cartId, productDetailId: p.productDetailId, quantity: p.quantity });
+				queryClient.invalidateQueries({ queryKey: ["cartList"] });
+			};
+			changeCartOption();
 		}
-
+		// 장바구니 제품삭제
+		if (modalResult.action === "CONFIRM_OK") {
+			const deleteCart = async () => {
+				await handleCartProductDelete.mutateAsync({ cartId: deletingCartId });
+				queryClient.invalidateQueries({ queryKey: ["cartList"] });
+			};
+			deleteCart();
+		}
 		// ✅ 한 번 처리했으면 비워주기 (중복 처리 방지)
 		clearModalResult();
 	}, [modalResult, clearModalResult]);
@@ -235,7 +284,12 @@ export default function CartClient() {
 																</div>
 															</div>
 															<div className="product-item__delete">
-																<button>
+																<button
+																	onClick={() => {
+																		setDeletingCartId(product.cartId);
+																		cartDeleteModalOpen();
+																	}}
+																>
 																	<IoIosClose />
 																</button>
 															</div>

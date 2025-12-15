@@ -1649,6 +1649,9 @@ main#productDetail section#etc-info-section .best-short-sleeve-section .rank-tab
   font-family: NotoSansKR;
   padding: 17px 15px;
 }
+#modalRoot .modal-wrap .modal-content .modal-confirm__content {
+  margin-bottom: 27px;
+}
 #modalRoot .modal-wrap .modal-content .option-block {
   font-size: 12px;
 }

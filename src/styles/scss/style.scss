@@ -1799,6 +1799,10 @@ main#productDetail {
 		.modal-content {
 			font-family: NotoSansKR;
 			padding: 17px 15px;
+			// 컨펌 내용
+			.modal-confirm__content {
+				margin-bottom: 27px;
+			}
 			// 옵션 드롭다운 + 리스트
 			.option-block {
 				font-size: 12px;

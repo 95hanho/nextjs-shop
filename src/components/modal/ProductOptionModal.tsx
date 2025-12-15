@@ -11,7 +11,7 @@ import { useQuery } from "@tanstack/react-query";
 import API_URL from "@/api/endpoints";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { getNormal } from "@/api/fetchFilter";
-import { useModalStore } from "@/store/modalStore";
+import { useModalStore } from "@/store/modal.store";
 
 interface ProductOptionModalProps {
 	onClose: () => void;
@@ -21,7 +21,6 @@ interface ProductOptionModalProps {
 export default function ProductOptionModal({ onClose, product }: ProductOptionModalProps) {
 	if (!product) return null;
 	const { resolveModal } = useModalStore();
-	console.log("product", product);
 	// 제품상세옵션 리스트
 	// invalidateQueries(["cartOptionProductDetailList"])
 	const {
@@ -33,9 +32,6 @@ export default function ProductOptionModal({ onClose, product }: ProductOptionMo
 		queryFn: () => getNormal(getApiUrl(API_URL.MY_CART_OPTION_PRODUCT_DETAIL), { productId: product.productId }),
 		enabled: !!product?.productId,
 	});
-
-	/*  */
-	console.log("optionResponse", optionResponse);
 
 	// ✅ 선택된 옵션(productDetailId) 관리
 	const [pickId, setPickId] = useState<number>(product.productDetailId);
@@ -162,6 +158,7 @@ export default function ProductOptionModal({ onClose, product }: ProductOptionMo
 								action: "PRODUCTOPTION_CHANGED",
 								payload: {
 									cartId: product.cartId,
+									originProductDetailId: product.productDetailId,
 									productDetailId: pickId,
 									quantity: productCount,
 								},

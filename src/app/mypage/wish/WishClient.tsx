@@ -11,6 +11,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import { FaHeart, FaStar } from "react-icons/fa";
 import WishButton from "./WishButton";
+import ImageFill from "@/components/common/ImageFill";
 
 export default function WishClient() {
 	const { user } = useAuth();
@@ -97,12 +98,7 @@ export default function WishClient() {
 							<div className="wish__item" key={"wishItem-" + wishItem.wishId}>
 								{/* 이미지 */}
 								<div className="product__thumb">
-									<Image
-										src={wishItem.filePath || process.env.NEXT_PUBLIC_BASIC_IMAGE}
-										alt="사진없음"
-										fill
-										className="product__img"
-									/>
+									<ImageFill src={wishItem.filePath} fill={true} className="product__img" />
 									<WishButton
 										clickFnc={() => {
 											handleProductWish.mutate(wishItem.productId);

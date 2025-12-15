@@ -3,16 +3,18 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 // 예시용 모달 컴포넌트들
-import { useModalStore } from "@/store/modalStore";
+import { useModalStore } from "@/store/modal.store";
 import AlertModal from "./AlertModal";
 import ConfirmModal from "./ConfirmModal";
 import ProductOptionModal from "./ProductOptionModal";
 import { CartItem } from "@/types/mypage";
+import { ModalPropsMap } from "@/store/modal.type";
 
 export default function ModalRoot() {
 	const { modalType, modalProps, closeModal } = useModalStore();
 	const [mounted, setMounted] = useState(false);
 	const [isClosing, setIsClosing] = useState(false);
+	const [isOpen, setIsOpen] = useState(true);
 
 	// Next SSR 때문에 portal은 클라이언트에서만
 	useEffect(() => {
@@ -23,6 +25,7 @@ export default function ModalRoot() {
 	useEffect(() => {
 		console.log("modalType", modalType);
 		if (modalType) {
+			setIsOpen(true);
 			setIsClosing(false);
 			document.body.style.overflow = "hidden";
 		} else {
@@ -44,6 +47,7 @@ export default function ModalRoot() {
 	const handleClose = () => {
 		setIsClosing(true);
 		setTimeout(() => {
+			setIsOpen(false);
 			closeModal();
 		}, 400); // 애니메이션 시간과 맞추기
 	};
@@ -51,14 +55,16 @@ export default function ModalRoot() {
 	let childrenModal: React.ReactNode = null;
 
 	switch (modalType) {
-		case "ALERT":
-			const { content } = modalProps as { content: string }; // 여기서 보장
-
-			childrenModal = <AlertModal content={content} onClose={handleClose} />;
+		case "ALERT": {
+			const props = modalProps as ModalPropsMap["ALERT"]; // 여기서 타입 보장
+			childrenModal = <AlertModal {...props} onClose={handleClose} />;
 			break;
-		case "CONFIRM":
-			// childrenModal = <ConfirmModal {...modalProps} onClose={handleClose} />;
+		}
+		case "CONFIRM": {
+			const props = modalProps as ModalPropsMap["CONFIRM"];
+			childrenModal = <ConfirmModal {...props} onClose={handleClose} />;
 			break;
+		}
 		case "PRODUCTOPTION":
 			const { product } = modalProps as { product: CartItem };
 
@@ -67,6 +73,8 @@ export default function ModalRoot() {
 		default:
 			return null;
 	}
+
+	if (!isOpen) return null;
 
 	// createPortal(요소, document.body) : DOM 구조는 여기지만, 실제 출력은 body 바로 아래에 그려라
 	return createPortal(
@@ -81,7 +89,7 @@ export default function ModalRoot() {
 		>
 			<div
 				className={`
-          relative z-[1001] 
+          relative z-[1001]
           ${isClosing ? "animate-popOut" : "animate-popIn"}
         `}
 				onClick={(e) => e.stopPropagation()}
@@ -95,7 +103,7 @@ export default function ModalRoot() {
 /* 
 "use client";
 
-import { useModalStore } from "@/stores/modalStore";
+import { useModalStore } from "@/store/modal.store";
 
 export function DeleteButton({ id }: { id: number }) {
   const openModal = useModalStore((state) => state.openModal);

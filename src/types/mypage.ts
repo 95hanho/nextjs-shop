@@ -199,8 +199,9 @@ export interface GetCartResponse extends BaseResponse {
 }
 /*  */
 export interface UpdateCartRequest {
-	quantity: number;
 	cartId: number;
+	productDetailId: number;
+	quantity: number;
 }
 /*  */
 export interface UpdateCartSelectedRequest {
