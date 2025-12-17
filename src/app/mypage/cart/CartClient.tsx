@@ -80,8 +80,8 @@ export default function CartClient() {
 		onSettled(a, b) {},
 	});
 	// 장바구니 제품 삭제
-	const handleCartProductDelete = useMutation<BaseResponse, Error, { cartId: number }>({
-		mutationFn: ({ cartId }) => deleteNormal<BaseResponse>(getApiUrl(API_URL.MY_CART_DELETE), { cartId }),
+	const handleCartProductDelete = useMutation<BaseResponse, Error, { cartIdList: number[] }>({
+		mutationFn: ({ cartIdList }) => deleteNormal<BaseResponse>(getApiUrl(API_URL.MY_CART), { cartIdList }),
 		// Mutation이 시작되기 직전에 특정 작업을 수행
 		onMutate(a) {
 			console.log(a);
@@ -96,16 +96,19 @@ export default function CartClient() {
 		onSettled(a, b) {},
 	});
 	/* ----------------------------------- */
-	const { allSelected, anySelected, totalCount, selectedCount } = useMemo(() => {
+	const { allSelected, anySelected, totalCount, selectedCount, unselectedCartIdList, selectedCartIdList } = useMemo(() => {
 		const items = brandGroupList.flatMap(([, carts]) => carts);
 		const total = items.length;
 		const selected = items.filter((c) => c.selected).length;
+		const allSelected = total > 0 && selected === total;
 
 		return {
 			totalCount: total, // UI에 “3/5 선택” 표시 가능
 			selectedCount: selected, // UI에 “3/5 선택” 표시 가능
-			allSelected: total > 0 && selected === total, // 전체 체크박스 checked에 사용
+			allSelected, // 전체 체크박스 checked에 사용
 			anySelected: selected > 0, // “하나라도 선택” (예: 삭제 버튼 활성화)
+			unselectedCartIdList: items.filter((c) => (allSelected ? true : !c.selected)).map((c) => c.cartId), // 전체 선택 변경을 위한 cartId들
+			selectedCartIdList: items.filter((c) => c.selected).map((c) => c.cartId),
 		};
 	}, [brandGroupList]);
 	/* ----------------------------------- */
@@ -116,10 +119,10 @@ export default function CartClient() {
 		});
 	};
 	// 장바구니 제품삭제 모달 오픈
-	const [deletingCartId, setDeletingCartId] = useState<number>(0);
-	const cartDeleteModalOpen = () => {
+	const [deletingCartIdList, setDeletingCartIdList] = useState<number[]>([]);
+	const cartDeleteModalOpen = (content: string) => {
 		openModal("CONFIRM", {
-			content: "해당 제품을 장바구니에서 삭제하시겠습니까?",
+			content,
 		});
 	};
 	// 모달 닫힌 후 처리
@@ -143,7 +146,7 @@ export default function CartClient() {
 		// 장바구니 제품삭제
 		if (modalResult.action === "CONFIRM_OK") {
 			const deleteCart = async () => {
-				await handleCartProductDelete.mutateAsync({ cartId: deletingCartId });
+				await handleCartProductDelete.mutateAsync({ cartIdList: deletingCartIdList });
 				queryClient.invalidateQueries({ queryKey: ["cartList"] });
 			};
 			deleteCart();
@@ -166,10 +169,27 @@ export default function CartClient() {
 							{/* 상단 툴바 */}
 							<div className="product-toolbar">
 								<label className="product-toolbar__select" htmlFor="selectAll">
-									<input id="selectAll" type="checkbox" className="checkbox checkbox--lg" />
+									<input
+										id="selectAll"
+										type="checkbox"
+										className="checkbox checkbox--lg"
+										checked={allSelected}
+										onChange={async () => {
+											await handleChangeSelected.mutateAsync({ cartIdList: unselectedCartIdList, selected: !allSelected });
+											queryClient.invalidateQueries({ queryKey: ["cartList"] });
+										}}
+									/>
 									<span>전체 선택</span>
 								</label>
-								<button className="btn btn--text" data-action="removeSelected">
+								<button
+									className="btn btn--text"
+									data-action="removeSelected"
+									disabled={!anySelected}
+									onClick={() => {
+										setDeletingCartIdList([...selectedCartIdList]);
+										cartDeleteModalOpen(`선택된 ${selectedCount}개 제품을 장바구니에서 삭제하시겠습니까?`);
+									}}
+								>
 									선택 삭제
 								</button>
 							</div>
@@ -180,6 +200,9 @@ export default function CartClient() {
 							{brandGroupList?.map((brandGroup, brandGroupIdx) => {
 								const brandName = brandGroup[0];
 								const productList = brandGroup[1];
+								const brnadSelectedCount = productList.filter((v) => v.selected).length;
+								const brandAllchecked = brnadSelectedCount === productList.length;
+								const brandAllCartIdList = productList.filter((v) => (brandAllchecked ? true : !v.selected)).map((v) => v.cartId);
 
 								return (
 									<React.Fragment key={"cartBrand-" + brandName}>
@@ -188,7 +211,19 @@ export default function CartClient() {
 											<h2 className="brand-group__header">
 												<span className="brand-group-left">
 													<span className="brand-group__check">
-														<input id="group-denmade" type="checkbox" className="checkbox" />
+														<input
+															id="group-denmade"
+															type="checkbox"
+															className="checkbox"
+															checked={brandAllchecked}
+															onChange={async () => {
+																await handleChangeSelected.mutateAsync({
+																	cartIdList: brandAllCartIdList,
+																	selected: !brandAllchecked,
+																});
+																queryClient.invalidateQueries({ queryKey: ["cartList"] });
+															}}
+														/>
 													</span>
 													<label className="brand-group__title" id="brand-denmade" htmlFor="group-denmade">
 														{brandName}
@@ -289,8 +324,8 @@ export default function CartClient() {
 															<div className="product-item__delete">
 																<button
 																	onClick={() => {
-																		setDeletingCartId(product.cartId);
-																		cartDeleteModalOpen();
+																		setDeletingCartIdList([product.cartId]);
+																		cartDeleteModalOpen("해당 제품을 장바구니에서 삭제하시겠습니까?");
 																	}}
 																>
 																	<IoIosClose />
@@ -404,7 +439,7 @@ export default function CartClient() {
 							</ul>
 						</div>
 						<div className="summary-card__cta">
-							<button className="btn btn--primary btn--xl">145,040원 구매하기 (1개)</button>
+							<button className="btn btn--primary btn--xl">145,040원 구매하기 ({selectedCount}개)</button>
 						</div>
 					</aside>
 				</div>
