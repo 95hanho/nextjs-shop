@@ -318,106 +318,7 @@ body {
 				text-align: left;
 				color: #f00;
 			}
-			.submit-wrap {
-				margin: 20px 0;
-				input[type="submit"] {
-					width: 200px;
-					height: 50px;
-					border: 1px solid #aaa;
-					border-radius: 12px;
-					font-size: 35px;
-					font-weight: bold;
-					background-color: rgb(174, 179, 169);
-					color: #fff;
-					cursor: pointer;
-					box-shadow: 0px 0px 5px #aaa;
-					&:hover {
-						background-color: rgb(155, 158, 153);
-						color: #eee;
-						font-size: 40px;
-						transition: all 0.3s;
-					}
-					&:active {
-						box-shadow: none;
-						transition: all 0s;
-						transform: translate(1px, 1px);
-						background-color: rgb(20, 196, 20);
-						border-color: #fff;
-					}
-				}
-			}
-			.join-input {
-				display: flex;
-				font-size: 23px;
-				text-align: left;
-				margin-bottom: 10px;
-				.join-label {
-					padding-top: 10px;
-					width: 30%;
-				}
-				.join-text {
-					width: 70%;
-					height: 100%;
-					> div {
-						input {
-							width: 70%;
-							padding: 7px 10px;
-							font-size: 20px;
-							border: 1px solid #aaa;
-							border-radius: 5px;
-							outline: none;
-						}
-						.search-btn {
-							width: 25%;
-							margin-left: 5px;
-							padding: 7px 10px;
-							border-radius: 5px;
-							color: #fff;
-							font-size: 20px;
-							font-weight: bold;
-							&.zonecode {
-								border: 2px solid #ad9090;
-								background: #ee6666;
-								&:hover {
-									background: #df6060;
-								}
-							}
-							&.phone {
-								border: 2px solid #83a77e;
-								background: #4fdb3d;
-								&:hover {
-									background: #4acc39;
-								}
-							}
-						}
-					}
-					p {
-						display: none;
-						margin-top: 5px;
-						font-size: 15px;
-					}
-					&.fail p,
-					&.success p {
-						display: block;
-					}
-					&.fail {
-						> div {
-							input {
-								border: 1px solid #f00;
-								color: #f00;
-							}
-						}
-					}
-					&.success {
-						> div {
-							input {
-								border: 1px solid #0f0;
-								border: 1px solid rgb(90, 161, 90);
-							}
-						}
-					}
-				}
-			}
+
 			.join-space {
 				height: 30px;
 			}
@@ -468,11 +369,132 @@ body {
 			}
 		}
 	}
-	&#userJoin {
-		.form-wrap {
+}
+/* input 입력 div */
+.join-input {
+	display: flex;
+	font-size: 23px;
+	text-align: left;
+	margin-bottom: 10px;
+	.join-label {
+		padding-top: 10px;
+		width: 30%;
+	}
+	.join-text {
+		width: 70%;
+		height: 100%;
+		> div {
+			input {
+				width: 70%;
+				padding: 7px 10px;
+				font-size: 20px;
+				border: 1px solid #aaa;
+				border-radius: 5px;
+				outline: none;
+			}
+			.search-btn {
+				width: 25%;
+				margin-left: 5px;
+				padding: 7px 10px;
+				border-radius: 5px;
+				color: #fff;
+				font-size: 20px;
+				font-weight: bold;
+				&.zonecode {
+					border: 2px solid #ad9090;
+					background: #ee6666;
+					&:hover {
+						background: #df6060;
+					}
+				}
+				&.phone {
+					border: 2px solid #83a77e;
+					background: #4fdb3d;
+					&:hover {
+						background: #4acc39;
+					}
+				}
+			}
+			//
+			&.info-val {
+			}
+		}
+		p {
+			display: none;
+			margin-top: 5px;
+			font-size: 15px;
+		}
+		&.fail p,
+		&.success p {
+			display: block;
+		}
+		&.fail {
+			> div {
+				input {
+					border: 1px solid #f00;
+					color: #f00;
+				}
+			}
+		}
+		&.success {
+			> div {
+				input {
+					border: 1px solid #0f0;
+					border: 1px solid rgb(90, 161, 90);
+				}
+			}
+		}
+	}
+	&.mark {
+		.join-label {
+			padding-top: 0;
+		}
+		.join-text {
+			width: 100%;
 		}
 	}
 }
+/* 입력 버튼  */
+.submit-wrap {
+	margin: 20px 0;
+	input[type="submit"] {
+		width: 200px;
+		height: 50px;
+		border: 1px solid #aaa;
+		border-radius: 12px;
+		font-size: 35px;
+		font-weight: bold;
+		background-color: rgb(174, 179, 169);
+		color: #fff;
+		cursor: pointer;
+		box-shadow: 0px 0px 5px #aaa;
+		&:hover {
+			background-color: rgb(155, 158, 153);
+			color: #eee;
+			font-size: 40px;
+			transition: all 0.3s;
+		}
+		&:active {
+			box-shadow: none;
+			transition: all 0s;
+			transform: translate(1px, 1px);
+			background-color: rgb(20, 196, 20);
+			border-color: #fff;
+		}
+	}
+	&.info {
+		input[type="submit"] {
+			background-color: rgb(61 203 119);
+			&:hover {
+				background-color: rgb(55, 184, 109);
+			}
+			&:active {
+				background-color: rgb(20, 196, 20);
+			}
+		}
+	}
+}
+
 /* 메인 */
 #main {
 	.product-wrap {
@@ -1487,6 +1509,42 @@ main#productDetail {
 						border-radius: 5px;
 					}
 				}
+			}
+		}
+	}
+}
+/* 내정보 보기 */
+.user-info {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	min-height: calc(100vh - 100px);
+	.form-wrap {
+		width: 350px;
+		background-color: #fff;
+		border: 5px double #000000;
+		border-radius: 25px;
+		text-align: center;
+		overflow: hidden;
+		box-shadow: 3px 3px 3px #aaa;
+		padding: 20px;
+		h2 {
+			margin-bottom: 18px;
+		}
+	}
+}
+/* 비밀번호 변경 */
+#passwordChangePage.user-wrapper {
+	.form-wrap {
+		h2 {
+			font-size: 40px;
+		}
+		.join-input {
+			.join-label {
+				width: 35%;
+			}
+			.join-text > div input {
+				width: 100%;
 			}
 		}
 	}

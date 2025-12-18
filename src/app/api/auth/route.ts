@@ -66,8 +66,9 @@ export async function POST(nextRequest: NextRequest) {
 		// 토큰 저장하기 : refreshToken랑 정보랑 유저 agent, ip 정보 보내기
 		await postUrlFormData<BaseResponse>(
 			getBackendUrl(API_URL.AUTH_TOKEN),
-			{ refreshToken, userId },
+			{ refreshToken },
 			{
+				Authorization: `Bearer ${accessToken}`,
 				userAgent: nextRequest.headers.get("user-agent") || "",
 				["x-forwarded-for"]: ip,
 			}

@@ -16,20 +16,21 @@ interface HeaderProps {
 
 export default function Header({ menuList }: HeaderProps) {
 	const pathname = usePathname();
+	const { user } = useAuth();
 
 	useEffect(() => {
 		// console.log("페이지 바껴서 토큰체크 실행됨");
 		// tokenCheck();
 	}, [pathname]);
 
-	if (!pathname?.startsWith("/user")) {
-		return (
-			<>
-				<header id="header">
-					<h1>
-						<Link href={"/"}>NEXTJS-SHOP</Link>
-					</h1>
-					<div className="header-wrap">
+	return (
+		<>
+			<header id="header">
+				<h1>
+					<Link href={"/"}>NEXTJS-SHOP</Link>
+				</h1>
+				<div className="header-wrap">
+					{user && (
 						<div className="header-btn">
 							<UserMenu />
 							<Link href={"/mypage/wish"} prefetch>
@@ -39,10 +40,10 @@ export default function Header({ menuList }: HeaderProps) {
 								<FiShoppingCart />
 							</Link>
 						</div>
-					</div>
-				</header>
-				<Nav menuList={menuList} />
-			</>
-		);
-	}
+					)}
+				</div>
+			</header>
+			{!pathname?.startsWith("/user") && <Nav menuList={menuList} />}
+		</>
+	);
 }
