@@ -152,6 +152,7 @@ export default function UserJoin() {
 	const validateJoinForm = async (e: ChangeEvent) => {
 		let { name, value } = e.target;
 		value = value.trim();
+		if (!value) return;
 		let failMent = "";
 		let successMent = "";
 		const addMentObj: { [key: string]: string } = {};

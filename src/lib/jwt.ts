@@ -2,14 +2,15 @@ import jwt from "jsonwebtoken";
 import { jwtVerify } from "jose";
 import { ACCESS_TOKEN_EXPIRES_IN, REFRESH_TOKEN_EXPIRES_IN } from "./tokenTime";
 import { Token } from "@/types/auth";
+import type { StringValue } from "ms";
 
 const NEXT_PUBLIC_JWT_SECRET = process.env.NEXT_PUBLIC_JWT_SECRET || "your-secret"; // 환경변수에 설정하세요
 const secret = new TextEncoder().encode(process.env.NEXT_PUBLIC_JWT_SECRET);
 
 // accessToken 생성
-export function generateAccessToken(payload: { userId: string }) {
-	return jwt.sign({ type: "access", ...payload }, NEXT_PUBLIC_JWT_SECRET, {
-		expiresIn: ACCESS_TOKEN_EXPIRES_IN,
+export function generateAccessToken(payload: { userId: string }, expiresIn?: StringValue) {
+	return jwt.sign({ type: "access", userId: payload.userId }, NEXT_PUBLIC_JWT_SECRET, {
+		expiresIn: expiresIn || ACCESS_TOKEN_EXPIRES_IN,
 		algorithm: "HS256",
 	});
 }

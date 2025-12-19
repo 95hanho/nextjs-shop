@@ -30,17 +30,15 @@ export default function Header({ menuList }: HeaderProps) {
 					<Link href={"/"}>NEXTJS-SHOP</Link>
 				</h1>
 				<div className="header-wrap">
-					{user && (
-						<div className="header-btn">
-							<UserMenu />
-							<Link href={"/mypage/wish"} prefetch>
-								<FiStar />
-							</Link>
-							<Link href={"/mypage/cart"} prefetch>
-								<FiShoppingCart />
-							</Link>
-						</div>
-					)}
+					<div className="header-btn">
+						<UserMenu />
+						<Link href={"/mypage/wish"} prefetch>
+							<FiStar />
+						</Link>
+						<Link href={"/mypage/cart"} prefetch>
+							<FiShoppingCart />
+						</Link>
+					</div>
 				</div>
 			</header>
 			{!pathname?.startsWith("/user") && <Nav menuList={menuList} />}

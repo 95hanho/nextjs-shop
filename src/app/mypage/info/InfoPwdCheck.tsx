@@ -3,9 +3,11 @@
 import JoinInput from "@/components/user/JoinInput";
 import useAuth from "@/hooks/useAuth";
 import { ChangeEvent } from "@/types/auth";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function InfoPwdCheck() {
+	const router = useRouter();
 	const { user } = useAuth();
 
 	const [password, setPassword] = useState<string>("");
@@ -29,15 +31,23 @@ export default function InfoPwdCheck() {
 					</div>
 				</div>
 			</div>
-			<JoinInput
-				name="password"
-				label="비밀번호"
-				placeholder="비밀번호를 입력해주세요."
-				type="password"
-				value={password}
-				failMessage={failAlert}
-				onChange={changePassword}
-			/>
+			<div className="join-input mark">
+				<div className="join-label">
+					<label>비밀번호</label>
+				</div>
+				<div className={`join-text`}>
+					<div className="info-val">
+						<button
+							className="btn"
+							onClick={() => {
+								router.push("/user/password");
+							}}
+						>
+							비밀번호 변경
+						</button>
+					</div>
+				</div>
+			</div>
 		</div>
 	);
 }

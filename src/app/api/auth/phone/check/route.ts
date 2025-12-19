@@ -1,19 +1,31 @@
 import API_URL from "@/api/endpoints";
 import { postUrlFormData } from "@/api/fetchFilter";
 import { getBackendUrl } from "@/lib/getBaseUrl";
-import { generateAccessToken } from "@/lib/jwt";
+import { verifyToken } from "@/lib/jwt";
 import { BaseResponse } from "@/types/common";
 import { NextRequest, NextResponse } from "next/server";
 
-// 휴대폰 인증
+// 휴대폰 인증 확인
 export async function POST(nextRequest: NextRequest) {
 	try {
-		const { userId, phone } = await nextRequest.json();
-		if (!userId || !phone) return NextResponse.json({ message: "잘 못 된 요청입니다." }, { status: 400 });
+		const { userId, phoneAuthToken, authNumber } = await nextRequest.json();
 
-		const phoneAuthToken = generateAccessToken({ userId }, "3m");
+		try {
+			const tokenData = verifyToken(phoneAuthToken);
+			if (tokenData.userId !== userId) {
+				throw new Error("NOT_EQUAL_ID");
+			}
+		} catch (err) {
+			return NextResponse.json(
+				{
+					status: 401,
+					message: "PHONEAUTH_TOKEN_UNAUTHORIZED",
+				},
+				{ status: 401 }
+			);
+		}
 
-		const data = await postUrlFormData<BaseResponse>(getBackendUrl(API_URL.AUTH_PHONE_AUTH), { phone, phoneAuthToken });
+		const data = await postUrlFormData<BaseResponse>(getBackendUrl(API_URL.AUTH_PHONE_AUTH_CHECK), { authNumber, phoneAuthToken });
 
 		return NextResponse.json({ message: data.message, phoneAuthToken }, { status: 200 });
 	} catch (err: any) {

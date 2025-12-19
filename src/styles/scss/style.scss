@@ -197,7 +197,7 @@ body {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	min-height: 100vh;
+	min-height: calc(100vh - 50px);
 	padding: 50px 0;
 	.form-wrap {
 		width: 350px;
@@ -417,6 +417,15 @@ body {
 			}
 			//
 			&.info-val {
+				.btn {
+					border: 1px solid #adadad;
+					border-radius: 12px;
+					font-size: 20px;
+					padding: 4px 12px;
+					font-weight: bold;
+					background-color: rgb(94 191 221);
+					color: #fff;
+				}
 			}
 		}
 		p {
@@ -1536,6 +1545,8 @@ main#productDetail {
 /* 비밀번호 변경 */
 #passwordChangePage.user-wrapper {
 	.form-wrap {
+		width: 400px;
+		padding: 20px 30px;
 		h2 {
 			font-size: 40px;
 		}
