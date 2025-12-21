@@ -400,11 +400,11 @@ body {
   font-size: 20px;
   font-weight: bold;
 }
-.join-input .join-text > div .search-btn.zonecode {
+.join-input .join-text > div .search-btn.address {
   border: 2px solid #ad9090;
   background: #ee6666;
 }
-.join-input .join-text > div .search-btn.zonecode:hover {
+.join-input .join-text > div .search-btn.address:hover {
   background: #df6060;
 }
 .join-input .join-text > div .search-btn.phone {
@@ -413,6 +413,13 @@ body {
 }
 .join-input .join-text > div .search-btn.phone:hover {
   background: #4acc39;
+}
+.join-input .join-text > div .search-btn.phoneAuth {
+  border: 2px solid #d7d7d7;
+  background: #3a7add;
+}
+.join-input .join-text > div .search-btn.phoneAuth:hover {
+  background: #2d72dd;
 }
 .join-input .join-text > div.info-val .btn {
   border: 1px solid #adadad;

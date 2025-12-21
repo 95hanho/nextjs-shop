@@ -14,6 +14,9 @@ interface FormInputProps {
 	readOnly?: boolean;
 	onClick?: () => void;
 	searchBtn?: { txt: string; fnc: () => void };
+	inputMode?: React.HTMLAttributes<HTMLInputElement>["inputMode"];
+	pattern?: string;
+	maxLength?: number;
 }
 
 const JoinInput = forwardRef<HTMLInputElement, FormInputProps>((props, ref) => {
@@ -30,6 +33,9 @@ const JoinInput = forwardRef<HTMLInputElement, FormInputProps>((props, ref) => {
 		readOnly = false,
 		onClick,
 		searchBtn,
+		inputMode,
+		pattern,
+		maxLength,
 	}: FormInputProps = props;
 
 	return (
@@ -49,6 +55,9 @@ const JoinInput = forwardRef<HTMLInputElement, FormInputProps>((props, ref) => {
 						readOnly={readOnly}
 						onClick={onClick}
 						ref={ref}
+						inputMode={inputMode}
+						pattern={pattern}
+						maxLength={maxLength}
 					/>
 					{searchBtn && (
 						<button type="button" className={`search-btn ${name}`} onClick={searchBtn.fnc}>

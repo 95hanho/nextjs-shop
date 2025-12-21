@@ -27,7 +27,7 @@ export async function POST(nextRequest: NextRequest) {
 
 		const data = await postUrlFormData<BaseResponse>(getBackendUrl(API_URL.AUTH_PHONE_AUTH_CHECK), { authNumber, phoneAuthToken });
 
-		return NextResponse.json({ message: data.message, phoneAuthToken }, { status: 200 });
+		return NextResponse.json({ message: data.message }, { status: 200 });
 	} catch (err: any) {
 		console.error("error :", {
 			message: err.message,

@@ -15,9 +15,9 @@ export function generateAccessToken(payload: { userId: string }, expiresIn?: Str
 	});
 }
 // refreshToken 생성
-export function generateRefreshToken() {
+export function generateRefreshToken(expiresIn?: StringValue) {
 	return jwt.sign({ type: "refresh" }, NEXT_PUBLIC_JWT_SECRET, {
-		expiresIn: REFRESH_TOKEN_EXPIRES_IN,
+		expiresIn: expiresIn || REFRESH_TOKEN_EXPIRES_IN,
 		algorithm: "HS256",
 	});
 }

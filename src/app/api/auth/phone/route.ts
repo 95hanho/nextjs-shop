@@ -1,7 +1,7 @@
 import API_URL from "@/api/endpoints";
 import { postUrlFormData } from "@/api/fetchFilter";
 import { getBackendUrl } from "@/lib/getBaseUrl";
-import { generateAccessToken } from "@/lib/jwt";
+import { generateAccessToken, generateRefreshToken } from "@/lib/jwt";
 import { BaseResponse } from "@/types/common";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -9,9 +9,11 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(nextRequest: NextRequest) {
 	try {
 		const { userId, phone } = await nextRequest.json();
-		if (!userId || !phone) return NextResponse.json({ message: "잘 못 된 요청입니다." }, { status: 400 });
+		if (!phone) return NextResponse.json({ message: "잘 못 된 요청입니다." }, { status: 400 });
 
-		const phoneAuthToken = generateAccessToken({ userId }, "3m");
+		let phoneAuthToken;
+		if (userId) phoneAuthToken = generateAccessToken({ userId }, "3m");
+		else phoneAuthToken = generateRefreshToken("3m");
 
 		const data = await postUrlFormData<BaseResponse>(getBackendUrl(API_URL.AUTH_PHONE_AUTH), { phone, phoneAuthToken });
 

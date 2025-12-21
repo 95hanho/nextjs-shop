@@ -24,6 +24,7 @@ const initJoinForm: JoinForm = {
 	addressDetail: "2층",
 	birthday: "1995/08/14",
 	phone: "01085546674",
+	phoneAuth: "",
 	email: "ehfqntuqntu@naver.com",
 };
 const initJoinAlert: JoinFormAlert = {
@@ -35,6 +36,7 @@ const initJoinAlert: JoinFormAlert = {
 	addressDetail: "",
 	birthday: "",
 	phone: "",
+	phoneAuth: "",
 	email: "",
 };
 
@@ -65,6 +67,10 @@ export default function UserJoin() {
 	const joinFormRefs = useRef<Partial<JoinFormRefs>>({});
 	// 아이디중복여부
 	const [idDuplCheck, setIdDuplCheck] = useState<boolean>(false);
+	// 인증번호 화면 띄울지
+	const [authNumberView, setAuthNumberView] = useState<boolean>(false);
+	// 인증번호 토큰
+	const [phoneAuthToken, setPhoneAuthToken] = useState<string | null>(null);
 	// 휴대폰인증완료여부
 	const [phoneAuth, setPhoneAuth] = useState<boolean>(false);
 
@@ -86,20 +92,45 @@ export default function UserJoin() {
 	});
 	// 휴대폰 인증
 	const handlePhoneAuth = useMutation({
-		mutationFn: (phone: string) => postJson<BaseResponse>(getApiUrl(API_URL.AUTH_PHONE_AUTH), { phone }),
+		mutationFn: () => postJson<BaseResponse & { phoneAuthToken: string }>(getApiUrl(API_URL.AUTH_PHONE_AUTH), { phone: joinForm.phone }),
 		onSuccess(data) {
-			setPhoneAuth(true);
+			setAuthNumberView(true);
+			setPhoneAuthToken(data.phoneAuthToken);
 			setJoinFailAlert((prev) => ({
 				...prev,
 				phone: "",
 			}));
 			setJoinSuccessAlert((prev) => ({
 				...prev,
-				phone: "휴대폰 인증이 완료되었습니다.",
+				phoneAuth: "인증 번호가 발송되었습니다. 제한시간 3분",
 			}));
 		},
 		onError(err) {
 			console.log(err);
+		},
+	});
+	// 휴대폰 인증 확인
+	const handlePhoneAuthComplete = useMutation({
+		mutationFn: () => postJson<BaseResponse>(getApiUrl(API_URL.AUTH_PHONE_AUTH_CHECK), { phone: joinForm.phone, phoneAuthToken: phoneAuthToken }),
+		onSuccess(data) {
+			setPhoneAuth(true);
+			setJoinFailAlert((prev) => ({
+				...prev,
+				phoneAuth: "",
+			}));
+			setJoinSuccessAlert((prev) => ({
+				...prev,
+				phoneAuth: "휴대폰 인증이 완료되었습니다.",
+			}));
+		},
+		onError(err) {
+			if (err.message === "PHONEAUTH_TOKEN_UNAUTHORIZED") {
+				setJoinFailAlert((prev) => ({
+					...prev,
+					phone: "인증시간이 만료되었습니다.",
+				}));
+				setAuthNumberView(false);
+			}
 		},
 	});
 	// 회원가입
@@ -125,7 +156,12 @@ export default function UserJoin() {
 
 	// joinForm set
 	const changeJoinForm = (e: ChangeEvent) => {
-		let { name, value } = e.target;
+		let { name, value } = e.target as {
+			name: keyof JoinForm;
+			value: string;
+		};
+		let nextValue: string | number = value;
+
 		if (name == "passwordCheck") {
 			let ment = "";
 			if (joinForm.password && joinForm.password != value) {
@@ -136,16 +172,19 @@ export default function UserJoin() {
 				[name]: ment,
 			}));
 		}
-		if (name == "phone") {
+		if (name === "phone") {
 			setPhoneAuth(false);
 			setJoinSuccessAlert((prev) => ({
 				...prev,
 				[name]: "",
 			}));
 		}
+		if (name === "phoneAuth") {
+			nextValue = value.replace(/[^0-9]/g, "").slice(0, 6); // 예: 6자리 인증번호
+		}
 		setJoinForm((prev) => ({
 			...prev,
-			[name]: value,
+			[name]: nextValue as JoinForm[typeof name],
 		}));
 	};
 	// 유효성 확인 ex) 아이디 중복확인, 정규표현식 확인
@@ -369,7 +408,7 @@ export default function UserJoin() {
 						searchBtn={{
 							txt: "인증",
 							fnc: () => {
-								handlePhoneAuth.mutate(joinForm.phone);
+								handlePhoneAuth.mutate();
 							},
 						}}
 						onBlur={validateJoinForm}
@@ -377,6 +416,31 @@ export default function UserJoin() {
 							joinFormRefs.current.phone = el;
 						}}
 					/>
+					{authNumberView && (
+						<JoinInput
+							name="phoneAuth"
+							label="인증번호"
+							placeholder="인증번호를 입력해주세요."
+							value={joinForm.phoneAuth}
+							failMessage={joinFailAlert.phoneAuth}
+							successMessage={joinSuccessAlert.phoneAuth}
+							onChange={changeJoinForm}
+							searchBtn={{
+								txt: "완료",
+								fnc: () => {
+									handlePhoneAuthComplete.mutate();
+								},
+							}}
+							onBlur={validateJoinForm}
+							ref={(el) => {
+								joinFormRefs.current.phone = el;
+							}}
+							inputMode="numeric"
+							pattern="[0-9]*"
+							maxLength={6}
+						/>
+					)}
+
 					<JoinInput
 						name="email"
 						label="이메일"

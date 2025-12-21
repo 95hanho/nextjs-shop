@@ -30,6 +30,7 @@ export interface JoinForm extends LoginForm, joinFormAdd {
 	addressDetail: string;
 	birthday: string;
 	phone: string;
+	phoneAuth: string;
 	email: string;
 	// [key: string]: string;
 }
