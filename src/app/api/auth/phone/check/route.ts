@@ -27,9 +27,27 @@ export async function POST(nextRequest: NextRequest) {
 			);
 		}
 
-		const data = await postUrlFormData<BaseResponse>(getBackendUrl(API_URL.AUTH_PHONE_AUTH_CHECK), { authNumber, phoneAuthToken });
+		const data = await postUrlFormData<BaseResponse & { userId?: string }>(getBackendUrl(API_URL.AUTH_PHONE_AUTH_CHECK), {
+			authNumber,
+			phoneAuthToken,
+		});
 
-		return NextResponse.json({ message: data.message }, { status: 200 });
+		const response: BaseResponse & { userId?: string } = { message: data.message };
+		// 아이디찾기 용 아이디
+		if (data.userId) response.userId = data.userId;
+		// 비밀번호 찾기 페이지로 가기위한 쿠키저장.
+		if (response.message === "PWDFIND_SUCCESS") {
+			// pwdResetToken
+			// response.cookies.set("accessToken", accessToken, {
+			// 	httpOnly: true,
+			// 	secure: isProd,
+			// 	sameSite: "strict",
+			// 	path: "/",
+			// 	maxAge: ACCESS_TOKEN_COOKIE_AGE,
+			// });
+		}
+
+		return NextResponse.json(response, { status: 200 });
 	} catch (err: any) {
 		console.error("error :", {
 			message: err.message,

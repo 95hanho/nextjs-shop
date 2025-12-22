@@ -83,17 +83,18 @@ export default function FindUserClient() {
 	// 휴대폰 인증확인
 	const handlePhoneAuthComplete = useMutation({
 		mutationFn: () =>
-			postJson<BaseResponse>(getApiUrl(API_URL.AUTH_PHONE_AUTH_CHECK), {
+			postJson<BaseResponse & { userId: string }>(getApiUrl(API_URL.AUTH_PHONE_AUTH_CHECK), {
 				userId: findUserForm.userId,
 				phoneAuthToken,
 				authNumber: findUserForm.phoneAuth,
 			}),
 		onSuccess(data) {
 			if (findType === "id") {
+				setFindId(data.userId);
+				setPhoneAuthComplete(true);
 			} else if (findType === "password") {
+				// 비밀번호 변경페이지로
 			}
-			setPhoneAuthComplete(true);
-			setAuthNumberView(false);
 		},
 		onError(err) {
 			console.log(err);
@@ -128,6 +129,9 @@ export default function FindUserClient() {
 	const [phoneAuthToken, setPhoneAuthToken] = useState<string | null>(null);
 	// 인증번호 인증완료
 	const [phoneAuthComplete, setPhoneAuthComplete] = useState<boolean>(false);
+	// 찾은 아이디
+	const [findId, setFindId] = useState<string>("");
+
 	// 비번변경 폼 변경
 	const changeFindUserForm = (e: ChangeEvent) => {
 		let { name, value } = e.target as {
@@ -325,7 +329,7 @@ export default function FindUserClient() {
 								<div className="find-result__id-info">
 									<p className="find-result__id-text">
 										<span>아이디 : </span>
-										<span className="find-result__id-value">hosung6674</span>
+										<span className="find-result__id-value">{findId}</span>
 									</p>
 								</div>
 								<div className="find-result__actions">
