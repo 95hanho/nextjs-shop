@@ -61,6 +61,7 @@ export interface JoinFormRefs {
 	address: HTMLInputElement | null;
 	addressDetail: HTMLInputElement | null;
 	phone: HTMLInputElement | null;
+	phoneAuth: HTMLInputElement | null;
 	email: HTMLInputElement | null;
 	birthday: HTMLInputElement | null;
 	[key: string]: HTMLInputElement | null | undefined;
@@ -98,3 +99,9 @@ export type UserInfo = {
 	weight: number;
 	withdrawalStatus: boolean;
 };
+/* --------------------------------------- */
+export interface PhoneAuthRequest {
+	phone: string;
+	phoneAuthToken: string;
+	userId?: string;
+}

@@ -192,7 +192,7 @@ body {
 		}
 	}
 }
-/* 로그인, 회원가입 */
+/* 로그인, 회원가입, 아이디,비번찾기 */
 .user-wrapper {
 	display: flex;
 	justify-content: center;
@@ -365,6 +365,46 @@ body {
 				&:active {
 					box-shadow: none;
 					transform: translate(1px, 1px);
+				}
+			}
+		}
+		// 아이디비번 찾기
+		.find-result {
+			.find-result__id {
+				.find-result__id-info {
+					.find-result__id-text {
+						font-size: 18px;
+						.find-result__id-value {
+							font-weight: bold;
+						}
+					}
+				}
+				.find-result__actions {
+					margin-top: 25px;
+					display: flex;
+					gap: 10px;
+					.find-result__btn {
+						border-radius: 5px;
+						width: 50%;
+						padding: 5px 10px;
+						font-size: 20px;
+						color: #fff;
+						font-weight: bold;
+					}
+					.find-result__btn--login {
+						border: 2px solid #9dc198;
+						background: #4fdb3d;
+						&:hover {
+							background: #4acc39;
+						}
+					}
+					.find-result__btn--password {
+						border: 2px solid #d7d7d7;
+						background: #3a7add;
+						&:hover {
+							background: #2d72dd;
+						}
+					}
 				}
 			}
 		}

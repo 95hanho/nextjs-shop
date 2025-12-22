@@ -2,6 +2,7 @@ import API_URL from "@/api/endpoints";
 import { postUrlFormData } from "@/api/fetchFilter";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { generateAccessToken, generateRefreshToken } from "@/lib/jwt";
+import { PhoneAuthRequest } from "@/types/auth";
 import { BaseResponse } from "@/types/common";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -15,7 +16,10 @@ export async function POST(nextRequest: NextRequest) {
 		if (userId) phoneAuthToken = generateAccessToken({ userId }, "3m");
 		else phoneAuthToken = generateRefreshToken("3m");
 
-		const data = await postUrlFormData<BaseResponse>(getBackendUrl(API_URL.AUTH_PHONE_AUTH), { phone, phoneAuthToken });
+		const payload: PhoneAuthRequest = { phone, phoneAuthToken };
+		if (userId) payload.userId = userId;
+
+		const data = await postUrlFormData<BaseResponse>(getBackendUrl(API_URL.AUTH_PHONE_AUTH), { ...payload });
 
 		return NextResponse.json({ message: data.message, phoneAuthToken }, { status: 200 });
 	} catch (err: any) {

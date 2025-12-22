@@ -192,7 +192,7 @@ body {
   text-decoration: underline;
 }
 
-/* 로그인, 회원가입 */
+/* 로그인, 회원가입, 아이디,비번찾기 */
 .user-wrapper {
   display: flex;
   justify-content: center;
@@ -366,6 +366,39 @@ body {
 .user-wrapper .form-wrap .sns-login button:active {
   box-shadow: none;
   transform: translate(1px, 1px);
+}
+.user-wrapper .form-wrap .find-result .find-result__id .find-result__id-info .find-result__id-text {
+  font-size: 18px;
+}
+.user-wrapper .form-wrap .find-result .find-result__id .find-result__id-info .find-result__id-text .find-result__id-value {
+  font-weight: bold;
+}
+.user-wrapper .form-wrap .find-result .find-result__id .find-result__actions {
+  margin-top: 25px;
+  display: flex;
+  gap: 10px;
+}
+.user-wrapper .form-wrap .find-result .find-result__id .find-result__actions .find-result__btn {
+  border-radius: 5px;
+  width: 50%;
+  padding: 5px 10px;
+  font-size: 20px;
+  color: #fff;
+  font-weight: bold;
+}
+.user-wrapper .form-wrap .find-result .find-result__id .find-result__actions .find-result__btn--login {
+  border: 2px solid #9dc198;
+  background: #4fdb3d;
+}
+.user-wrapper .form-wrap .find-result .find-result__id .find-result__actions .find-result__btn--login:hover {
+  background: #4acc39;
+}
+.user-wrapper .form-wrap .find-result .find-result__id .find-result__actions .find-result__btn--password {
+  border: 2px solid #d7d7d7;
+  background: #3a7add;
+}
+.user-wrapper .form-wrap .find-result .find-result__id .find-result__actions .find-result__btn--password:hover {
+  background: #2d72dd;
 }
 
 /* input 입력 div */

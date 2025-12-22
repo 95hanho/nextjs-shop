@@ -10,9 +10,11 @@ export async function POST(nextRequest: NextRequest) {
 	try {
 		const { userId, phoneAuthToken, authNumber } = await nextRequest.json();
 
+		if (!phoneAuthToken || !authNumber) return NextResponse.json({ message: "잘 못 된 요청입니다." }, { status: 400 });
+
 		try {
 			const tokenData = verifyToken(phoneAuthToken);
-			if (tokenData.userId !== userId) {
+			if (userId && tokenData.userId !== userId) {
 				throw new Error("NOT_EQUAL_ID");
 			}
 		} catch (err) {
