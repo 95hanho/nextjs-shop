@@ -36,7 +36,7 @@ const phoneRegex: RegExp = /^(010|011|016|017|018|019)\d{3,4}\d{4}$/;
 const phoneRegexFailMent: string = "휴대폰 번호 형식에 일치하지 않습니다.";
 
 export default function FindUserClient() {
-	const router = useRouter();
+	const { push } = useRouter();
 	const params = useParams<{ type?: FindType }>(); // `type`이 있을 수도 있고 없을 수도 있음
 	const findType = params.type;
 
@@ -44,7 +44,7 @@ export default function FindUserClient() {
 
 	useEffect(() => {
 		if (!findType || !["id", "password"].includes(findType)) {
-			router.push("/user");
+			push("/user");
 		}
 	}, []);
 
@@ -94,6 +94,7 @@ export default function FindUserClient() {
 				setPhoneAuthComplete(true);
 			} else if (findType === "password") {
 				// 비밀번호 변경페이지로
+				push("/user/password");
 			}
 		},
 		onError(err) {
@@ -164,10 +165,8 @@ export default function FindUserClient() {
 			value: string;
 		};
 		value = value.trim();
-		if (!value) return;
 		let failMent = "";
 		let successMent = "";
-		const addMentObj: { [key: string]: string } = {};
 		if (name === "phone") {
 			if (value && !phoneRegex.test(value)) {
 				failMent = phoneRegexFailMent;
@@ -184,7 +183,6 @@ export default function FindUserClient() {
 		setFindUserFailAlert((prev) => ({
 			...prev,
 			[name]: failMent,
-			...addMentObj,
 		}));
 		setFindUserSuccessAlert((prev) => ({
 			...prev,

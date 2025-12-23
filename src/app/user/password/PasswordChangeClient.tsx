@@ -2,11 +2,13 @@
 "use client";
 
 import API_URL from "@/api/endpoints";
-import { getNormal } from "@/api/fetchFilter";
+import { getNormal, putJson } from "@/api/fetchFilter";
 import JoinInput from "@/components/user/JoinInput";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { useModalStore } from "@/store/modal.store";
 import { ChangeEvent, FormEvent } from "@/types/auth";
+import { BaseResponse } from "@/types/common";
+import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
@@ -23,6 +25,12 @@ type PasswordChangeFormRefs = {
 };
 
 const initPasswordChangeForm: PasswordChangeForm = {
+	curPassword: "aaaaaa1!",
+	newPassword: "",
+	newPasswordCheck: "",
+};
+
+const initPasswordChangeAlert: PasswordChangeForm = {
 	curPassword: "",
 	newPassword: "",
 	newPasswordCheck: "",
@@ -42,26 +50,53 @@ export default function PasswordChangeClient({ mode }: PasswordChangeClientProps
 
 	/* --------- */
 
-	/* --------- */
+	// 비밀번호 변경
+	const handlePasswordChange = useMutation({
+		mutationFn: () =>
+			putJson<BaseResponse>(getApiUrl(API_URL.AUTH_PASSWORD), {
+				...pwdChangeForm,
+			}),
+		onSuccess(data) {
+			openModal("ALERT", {
+				content: `비밀번호가 변경되었습니다.`,
+			});
+			if (mode === "LOGGED_IN") router.replace("/mypage/info");
+			if (mode === "RESET") router.replace("/user");
+		},
+		onError(err) {
+			console.log(err);
+			if (err.message === "PWDRESET_UNAUTHORIZED") {
+				openModal("ALERT", {
+					content: `인증이 만료되었습니다.${mode === "RESET" ? "다시 비밀번호 찾기 인증을 진행해주세요." : ""}`,
+				});
+				if (mode === "LOGGED_IN") router.replace("/mypage/info");
+				if (mode === "RESET") router.replace("/user/find/password");
+			}
+		},
+	});
 
+	/* --------- */
+	// 페이지 오픈 시 토큰 확인
 	useEffect(() => {
 		if (!mode || !router) return;
-		getNormal(getApiUrl(mode === "LOGGED_IN" ? API_URL.AUTH_TOKEN : API_URL.AUTH_TOKEN_PASSWORD))
+		getNormal(getApiUrl(mode === "LOGGED_IN" ? API_URL.AUTH_TOKEN_CHECK : API_URL.AUTH_TOKEN_CHECK_PASSWORD))
 			.then((res) => {
 				console.log(res);
 			})
 			.catch((err) => {
-				if ((err.message = "REFRESH_UNAUTHORIZED")) {
+				console.log(err);
+				if (err.message === "REFRESH_UNAUTHORIZED") {
 					openModal("ALERT", {
 						content: "로그인이 만료되었습니다. 다시 로그인 해주세요.",
 					});
-					// router.replace("/user?next=/mypage/info");
+					router.replace("/user?next=/mypage/info");
 				}
-				if ((err.message = "PWDRESET_UNAUTHORIZED")) {
+				if (err.message === "PWDRESET_UNAUTHORIZED") {
 					openModal("ALERT", {
-						content: "인증이 만료되었습니다. 다시 비밀번호 찾기 인증을 진행해주세요.",
+						content: `인증이 만료되었습니다.${mode === "RESET" ? "다시 비밀번호 찾기 인증을 진행해주세요." : ""}`,
 					});
-					// router.replace("/user/find/password");
+					if (mode === "LOGGED_IN") router.replace("/mypage/info");
+					if (mode === "RESET") router.replace("/user/find/password");
 				}
 			});
 	}, [mode, router]);
@@ -71,14 +106,18 @@ export default function PasswordChangeClient({ mode }: PasswordChangeClientProps
 	// 비번변경 폼 데이터
 	const [pwdChangeForm, setPwdChangeForm] = useState<PasswordChangeForm>(initPasswordChangeForm);
 	// 비번변경 실패 알람.
-	const [pwdChangeFailAlert, setPwdChangeFailAlert] = useState<PasswordChangeForm>(initPasswordChangeForm);
+	const [pwdChangeFailAlert, setPwdChangeFailAlert] = useState<PasswordChangeForm>(initPasswordChangeAlert);
 	// 비번변경 성공 알람.
-	const [pwdChangeSuccessAlert, setPwdChangeSuccessAlert] = useState<PasswordChangeForm>(initPasswordChangeForm);
+	const [pwdChangeSuccessAlert, setPwdChangeSuccessAlert] = useState<PasswordChangeForm>(initPasswordChangeAlert);
 	// 비번변경 input들 HTMLInputElement
 	const pwdChangeFormRefs = useRef<Partial<PasswordChangeFormRefs>>({});
 	// 비번변경 폼 변경
 	const changePwdChangeForm = (e: ChangeEvent) => {
-		let { name, value } = e.target;
+		let { name, value } = e.target as {
+			name: keyof PasswordChangeForm;
+			value: string;
+		};
+
 		if (name == "newPasswordCheck") {
 			let ment = "";
 			if (pwdChangeForm.newPassword && pwdChangeForm.newPasswordCheck != value) {
@@ -96,16 +135,18 @@ export default function PasswordChangeClient({ mode }: PasswordChangeClientProps
 	};
 	// 유효성 확인 ex) 아이디 중복확인, 정규표현식 확인
 	const validatePwdChangeForm = async (e: ChangeEvent) => {
-		let { name, value } = e.target;
+		let { name, value } = e.target as {
+			name: keyof PasswordChangeForm;
+			value: string;
+		};
 		value = value.trim();
-		if (!value) return;
 		let failMent = "";
 		let successMent = "";
-		const addMentObj: { [key: string]: string } = {};
-		if (name === "newPassword") {
-			if (value && !passwordRegex.test(value)) {
-				failMent = passwordRegexFailMent;
-			}
+		const addFailMentObj: Partial<Record<keyof PasswordChangeForm, string>> = {};
+		if (name === "newPassword" && value && !passwordRegex.test(value)) {
+			failMent = passwordRegexFailMent;
+		} else if ((name === "curPassword" || name === "newPassword") && value && value === pwdChangeForm.curPassword) {
+			addFailMentObj["newPassword"] = "현재비밀번호와 같습니다.";
 		}
 		setPwdChangeForm((prev) => ({
 			...prev,
@@ -114,7 +155,7 @@ export default function PasswordChangeClient({ mode }: PasswordChangeClientProps
 		setPwdChangeFailAlert((prev) => ({
 			...prev,
 			[name]: failMent,
-			...addMentObj,
+			...addFailMentObj,
 		}));
 		setPwdChangeSuccessAlert((prev) => ({
 			...prev,
@@ -122,7 +163,7 @@ export default function PasswordChangeClient({ mode }: PasswordChangeClientProps
 		}));
 	};
 	// 비밀번호변경 실행
-	const passwordChangeSubmit = (e: FormEvent) => {
+	const pwdChangeSubmit = (e: FormEvent) => {
 		e.preventDefault();
 		let alertOn = "";
 		const alertKeys = Object.keys(pwdChangeFailAlert) as (keyof PasswordChangeForm)[];
@@ -147,13 +188,14 @@ export default function PasswordChangeClient({ mode }: PasswordChangeClientProps
 		}
 		if (alertOn) return;
 		//
+		handlePasswordChange.mutate();
 	};
 
 	return (
 		<main id="passwordChangePage" className="user-wrapper">
 			<div className="form-wrap">
 				<h2>비밀번호 변경</h2>
-				<form onSubmit={passwordChangeSubmit}>
+				<form onSubmit={pwdChangeSubmit}>
 					{mode === "LOGGED_IN" && (
 						<JoinInput
 							name="curPassword"

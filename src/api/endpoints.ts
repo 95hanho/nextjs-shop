@@ -17,10 +17,14 @@ const API_URL = {
 	AUTH_PHONE_AUTH_CHECK: "/auth/phone/check",
 	/** 회원가입, 회원정보변경 */
 	AUTH_JOIN: "/auth/user",
-	/** nextjs: r토큰확인, spring:로그인 토큰 저장, 로그인 토큰 수정(재저장) */
-	AUTH_TOKEN: "/auth/token-check",
+	/** spring:로그인 토큰 저장, 로그인 토큰 수정(재저장) */
+	AUTH_TOKEN: "/auth/token",
+	/** nextjs: r토큰확인 */
+	AUTH_TOKEN_CHECK: "/auth/token-check",
 	/** 패스워드 리셋토큰 확인 */
-	AUTH_TOKEN_PASSWORD: "/auth/token-check/password",
+	AUTH_TOKEN_CHECK_PASSWORD: "/auth/token-check/password",
+	/** 비밀번호 변경 토큰 생성, 비밀번호 변경 */
+	AUTH_PASSWORD: "/auth/password",
 
 	// 구매 ----------------------------------
 	/** 상품 확인 및 점유, 구매상품 점유 해제 */

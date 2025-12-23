@@ -1,25 +1,65 @@
+import API_URL from "@/api/endpoints";
+import { postUrlFormData } from "@/api/fetchFilter";
 import { withAuth } from "@/lib/auth";
-import { NextResponse } from "next/server";
+import { isProd } from "@/lib/env";
+import { getBackendUrl } from "@/lib/getBaseUrl";
+import { generatePwdResetToken, verifyPwdResetToken } from "@/lib/jwt";
+import { PWD_CHANGE_COOKIE_AGE } from "@/lib/tokenTime";
+import { BaseResponse } from "@/types/common";
+import { NextRequest, NextResponse } from "next/server";
+
+// 비밀번호 변경 토큰 생성
+export const POST = withAuth(async ({ userId, params }) => {
+	try {
+		const response = NextResponse.json({ message: "MAKE_PWDRESET_TOKEN" }, { status: 200 });
+		const pwdResetToken = generatePwdResetToken({ userId });
+		response.cookies.set("pwdResetToken", pwdResetToken, {
+			httpOnly: true,
+			secure: isProd,
+			sameSite: "strict",
+			path: "/",
+			maxAge: PWD_CHANGE_COOKIE_AGE,
+		});
+		return response;
+	} catch (err: any) {
+		console.error("error :", {
+			message: err.message,
+			status: err.status,
+			data: err.data,
+		});
+
+		const status = Number.isInteger(err?.status) ? err.status : 500;
+		const payload = err?.data && typeof err.data === "object" ? err.data : { message: err?.message || "SERVER_ERROR" };
+
+		return NextResponse.json(payload, { status });
+	}
+});
 
 // 비밀번호 변경
-export const POST = withAuth(async ({ nextRequest, userId, params }) => {
+export const PUT = async (nextRequest: NextRequest) => {
 	try {
-		const {} = params ?? {};
-		// formdata || application/x-www-form-urlencoded로 보내면 이렇게
-		// const formData = await nextRequest.formData();
-		// const userId = formData.get("userId");
-		// const password = formData.get("password");
-		// json으로 받으면
-		const { userId, password } = await nextRequest.json();
-		if (!userId) return NextResponse.json({ message: "아이디를 입력해주세요." }, { status: 400 });
-		if (!password) return NextResponse.json({ message: "비밀번호를 입력해주세요." }, { status: 400 });
-		const data = await postUrlFormData<BaseResponse>(
-			getBackendUrl(API_URL.AUTH),
-			{ userId, password },
-			{
-				["X-Password-Reset-Token"]: "",
-			}
-		);
+		let pwdResetToken;
+		try {
+			pwdResetToken = nextRequest.cookies.get("pwdResetToken")?.value || nextRequest.headers.get("pwdResetToken") || undefined;
+			if (!pwdResetToken) throw new Error("NO_PWDRESET_TOKEN");
+			verifyPwdResetToken(pwdResetToken);
+		} catch (err) {
+			return NextResponse.json(
+				{
+					status: 401,
+					message: "PWDRESET_UNAUTHORIZED",
+				},
+				{ status: 401 }
+			);
+		}
+
+		const { curPassword, newPassword } = await nextRequest.json();
+		if (!newPassword) return NextResponse.json({ message: "잘 못 된 요청입니다." }, { status: 400 });
+
+		const payload: { curPassword?: string; newPassword: string; pwdResetToken: string } = { newPassword, pwdResetToken };
+		if (curPassword) payload.curPassword = curPassword;
+
+		const data = await postUrlFormData<BaseResponse>(getBackendUrl(API_URL.AUTH_PASSWORD), payload);
 		console.log("data", data);
 
 		return NextResponse.json({ message: data.message }, { status: 200 });
@@ -35,4 +75,4 @@ export const POST = withAuth(async ({ nextRequest, userId, params }) => {
 
 		return NextResponse.json(payload, { status });
 	}
-});
+};

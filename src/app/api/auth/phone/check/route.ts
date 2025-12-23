@@ -1,7 +1,9 @@
 import API_URL from "@/api/endpoints";
 import { postUrlFormData } from "@/api/fetchFilter";
+import { isProd } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
-import { verifyToken } from "@/lib/jwt";
+import { generateAccessToken, generatePwdResetToken, verifyPhoneAuthToken, verifyToken } from "@/lib/jwt";
+import { PWD_CHANGE_COOKIE_AGE } from "@/lib/tokenTime";
 import { BaseResponse } from "@/types/common";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -10,10 +12,10 @@ export async function POST(nextRequest: NextRequest) {
 	try {
 		const { userId, phoneAuthToken, authNumber } = await nextRequest.json();
 
-		if (!phoneAuthToken || !authNumber) return NextResponse.json({ message: "잘 못 된 요청입니다." }, { status: 400 });
+		if (!phoneAuthToken || !authNumber) return NextResponse.json({ message: "잘 못 된 요청입니z다." }, { status: 400 });
 
 		try {
-			const tokenData = verifyToken(phoneAuthToken);
+			const tokenData = verifyPhoneAuthToken(phoneAuthToken);
 			if (userId && tokenData.userId !== userId) {
 				throw new Error("NOT_EQUAL_ID");
 			}
@@ -32,22 +34,26 @@ export async function POST(nextRequest: NextRequest) {
 			phoneAuthToken,
 		});
 
-		const response: BaseResponse & { userId?: string } = { message: data.message };
+		const responseJson: BaseResponse & { userId?: string } = { message: data.message };
+		const response = NextResponse.json(responseJson, { status: 200 });
 		// 아이디찾기 용 아이디
-		if (data.userId) response.userId = data.userId;
-		// 비밀번호 찾기 페이지로 가기위한 쿠키저장.
-		if (response.message === "PWDFIND_SUCCESS") {
-			// pwdResetToken
-			// response.cookies.set("accessToken", accessToken, {
-			// 	httpOnly: true,
-			// 	secure: isProd,
-			// 	sameSite: "strict",
-			// 	path: "/",
-			// 	maxAge: ACCESS_TOKEN_COOKIE_AGE,
-			// });
+		if (responseJson.message === "IDFIND_SUCCESS" && data.userId) {
+			responseJson.userId = data.userId;
+			return response;
 		}
-
-		return NextResponse.json(response, { status: 200 });
+		// 비밀번호 찾기 페이지로 가기위한 쿠키저장.
+		else if (responseJson.message === "PWDFIND_SUCCESS" && data.userId) {
+			const pwdResetToken = generatePwdResetToken({ userId: data.userId });
+			response.cookies.set("pwdResetToken", pwdResetToken, {
+				httpOnly: true,
+				secure: isProd,
+				sameSite: "strict",
+				path: "/",
+				maxAge: PWD_CHANGE_COOKIE_AGE,
+			});
+			return response;
+		}
+		throw new Error("SERVER_ERROR");
 	} catch (err: any) {
 		console.error("error :", {
 			message: err.message,
