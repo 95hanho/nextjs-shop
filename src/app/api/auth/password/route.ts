@@ -3,13 +3,13 @@ import { postUrlFormData } from "@/api/fetchFilter";
 import { withAuth } from "@/lib/auth";
 import { isProd } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
-import { generatePwdResetToken, verifyPwdResetToken } from "@/lib/jwt";
+import { generatePwdResetToken, verifyPhoneAuthCompleteToken, verifyPwdResetToken, verifyToken } from "@/lib/jwt";
 import { PWD_CHANGE_COOKIE_AGE } from "@/lib/tokenTime";
 import { BaseResponse } from "@/types/common";
 import { NextRequest, NextResponse } from "next/server";
 
 // 비밀번호 변경 토큰 생성
-export const POST = withAuth(async ({ userId, params }) => {
+export const POST = withAuth(async ({ userId }) => {
 	try {
 		const response = NextResponse.json({ message: "MAKE_PWDRESET_TOKEN" }, { status: 200 });
 		const pwdResetToken = generatePwdResetToken({ userId });
@@ -20,6 +20,15 @@ export const POST = withAuth(async ({ userId, params }) => {
 			path: "/",
 			maxAge: PWD_CHANGE_COOKIE_AGE,
 		});
+		// 토큰삭제
+		response.cookies.set("phoneAuthCompleteToken", "", {
+			httpOnly: true,
+			secure: isProd,
+			sameSite: "strict",
+			path: "/",
+			maxAge: 0,
+		});
+
 		return response;
 	} catch (err: any) {
 		console.error("error :", {
@@ -41,8 +50,22 @@ export const PUT = async (nextRequest: NextRequest) => {
 		let pwdResetToken;
 		try {
 			pwdResetToken = nextRequest.cookies.get("pwdResetToken")?.value || nextRequest.headers.get("pwdResetToken") || undefined;
-			if (!pwdResetToken) throw new Error("NO_PWDRESET_TOKEN");
+			if (!pwdResetToken?.trim()) throw new Error("NO_PWDRESET_TOKEN");
 			verifyPwdResetToken(pwdResetToken);
+			//
+			const phoneAuthCompleteToken =
+				nextRequest.cookies.get("phoneAuthCompleteToken")?.value || nextRequest.headers.get("phoneAuthCompleteToken") || undefined;
+			const refreshToken = nextRequest.cookies.get("refreshToken")?.value || nextRequest.headers.get("refreshToken") || undefined;
+			// 비밀번호 찾기에서
+			if (phoneAuthCompleteToken?.trim()) {
+				verifyPhoneAuthCompleteToken(phoneAuthCompleteToken);
+			}
+			// 마이페이지에서
+			else if (refreshToken?.trim()) {
+				verifyToken(refreshToken);
+			}
+			// 실패
+			else throw new Error("NO_TOKEN");
 		} catch (err) {
 			return NextResponse.json(
 				{
@@ -61,6 +84,16 @@ export const PUT = async (nextRequest: NextRequest) => {
 
 		const data = await postUrlFormData<BaseResponse>(getBackendUrl(API_URL.AUTH_PASSWORD), payload);
 		console.log("data", data);
+
+		// 사용한 토큰 제거
+		const response = NextResponse.json({ message: data.message }, { status: 200 });
+		response.cookies.set("phoneAuthCompleteToken", "", {
+			httpOnly: true,
+			secure: isProd,
+			sameSite: "strict",
+			path: "/",
+			maxAge: 0,
+		});
 
 		return NextResponse.json({ message: data.message }, { status: 200 });
 	} catch (err: any) {

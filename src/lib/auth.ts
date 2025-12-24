@@ -51,7 +51,7 @@ const authFromTokens = async (nextRequest: NextRequest): Promise<AutoRefreshResu
 	console.log("authFromTokens -----------", accessToken?.slice(-10), refreshToken?.slice(-10));
 
 	// 1) accessToken 유효하면 그대로 통과
-	if (accessToken) {
+	if (accessToken?.trim()) {
 		try {
 			const token: Token = verifyToken(accessToken);
 			return { ok: true, userId: token.userId };
@@ -62,7 +62,7 @@ const authFromTokens = async (nextRequest: NextRequest): Promise<AutoRefreshResu
 	}
 
 	// 2) refreshToken도 없으면 완전 로그아웃 상태
-	if (!refreshToken) {
+	if (!refreshToken?.trim()) {
 		return {
 			ok: true,
 		};

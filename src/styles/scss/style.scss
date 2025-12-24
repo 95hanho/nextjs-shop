@@ -470,8 +470,20 @@ body {
 					font-size: 20px;
 					padding: 4px 12px;
 					font-weight: bold;
-					background-color: rgb(94 191 221);
+					background-color: rgb(174, 179, 169);
 					color: #fff;
+					&:hover {
+						background-color: rgb(155, 158, 153);
+						color: #eee;
+						transition: all 0.3s;
+					}
+					&:active {
+						box-shadow: none;
+						transition: all 0s;
+						transform: translate(1px, 1px);
+						background-color: rgb(20, 196, 20);
+						border-color: #fff;
+					}
 				}
 			}
 		}
@@ -504,9 +516,6 @@ body {
 	&.mark {
 		.join-label {
 			padding-top: 0;
-		}
-		.join-text {
-			width: 100%;
 		}
 	}
 }

@@ -2,8 +2,9 @@ import API_URL from "@/api/endpoints";
 import { postUrlFormData } from "@/api/fetchFilter";
 import { isProd } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
-import { generateAccessToken, generatePwdResetToken, verifyPhoneAuthToken, verifyToken } from "@/lib/jwt";
-import { PWD_CHANGE_COOKIE_AGE } from "@/lib/tokenTime";
+import { generatePhoneAuthCompleteToken, generatePwdResetToken, verifyPhoneAuthToken } from "@/lib/jwt";
+import { PHONE_AUTH_COMPLETE_COOKIE_AGE, PWD_CHANGE_COOKIE_AGE } from "@/lib/tokenTime";
+import { PhoneAuthCheckRequest } from "@/types/auth";
 import { BaseResponse } from "@/types/common";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -12,7 +13,7 @@ export async function POST(nextRequest: NextRequest) {
 	try {
 		const { userId, phoneAuthToken, authNumber } = await nextRequest.json();
 
-		if (!phoneAuthToken || !authNumber) return NextResponse.json({ message: "잘 못 된 요청입니z다." }, { status: 400 });
+		if (!phoneAuthToken?.trim() || !authNumber) return NextResponse.json({ message: "잘 못 된 요청입니다." }, { status: 400 });
 
 		try {
 			const tokenData = verifyPhoneAuthToken(phoneAuthToken);
@@ -29,15 +30,39 @@ export async function POST(nextRequest: NextRequest) {
 			);
 		}
 
-		const data = await postUrlFormData<BaseResponse & { userId?: string }>(getBackendUrl(API_URL.AUTH_PHONE_AUTH_CHECK), {
+		const payload: PhoneAuthCheckRequest = {
 			authNumber,
 			phoneAuthToken,
-		});
+		};
+		if (userId) payload.userId = userId;
+
+		const data = await postUrlFormData<BaseResponse & { userId?: string }>(getBackendUrl(API_URL.AUTH_PHONE_AUTH_CHECK), { ...payload });
 
 		const responseJson: BaseResponse & { userId?: string } = { message: data.message };
 		const response = NextResponse.json(responseJson, { status: 200 });
+		// 사용한 토큰 제거
+		response.cookies.set("phoneAuthToken", "", {
+			httpOnly: true,
+			secure: isProd,
+			sameSite: "strict",
+			path: "/",
+			maxAge: 0,
+		});
+
+		// 회원가입
+		if (responseJson.message === "PHONEAUTH_VALIDATE") {
+			const phoneAuthCompleteToken = generatePhoneAuthCompleteToken();
+			response.cookies.set("phoneAuthCompleteToken", phoneAuthCompleteToken, {
+				httpOnly: true,
+				secure: isProd,
+				sameSite: "strict",
+				path: "/",
+				maxAge: PHONE_AUTH_COMPLETE_COOKIE_AGE,
+			});
+			return response;
+		}
 		// 아이디찾기 용 아이디
-		if (responseJson.message === "IDFIND_SUCCESS" && data.userId) {
+		else if (responseJson.message === "IDFIND_SUCCESS" && data.userId) {
 			responseJson.userId = data.userId;
 			return response;
 		}
@@ -50,6 +75,14 @@ export async function POST(nextRequest: NextRequest) {
 				sameSite: "strict",
 				path: "/",
 				maxAge: PWD_CHANGE_COOKIE_AGE,
+			});
+			const phoneAuthCompleteToken = generatePhoneAuthCompleteToken();
+			response.cookies.set("phoneAuthCompleteToken", phoneAuthCompleteToken, {
+				httpOnly: true,
+				secure: isProd,
+				sameSite: "strict",
+				path: "/",
+				maxAge: PHONE_AUTH_COMPLETE_COOKIE_AGE,
 			});
 			return response;
 		}

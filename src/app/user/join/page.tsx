@@ -140,7 +140,7 @@ export default function UserJoin() {
 		},
 		onError(err) {
 			console.log(err);
-			if (err.message === "PHONEAUTH_TOKEN_UNAUTHORIZED") {
+			if (["VERIFICATION_EXPIRED", "PHONEAUTH_TOKEN_UNAUTHORIZED"].includes(err.message)) {
 				setJoinFailAlert((prev) => ({
 					...prev,
 					phone: "인증시간이 만료되었습니다.",
@@ -169,6 +169,17 @@ export default function UserJoin() {
 		},
 		onError(err) {
 			console.log(err);
+			if (err.message === "PHONEAUTH_COMPLETE_UNAUTHORIZED") {
+				setPhoneAuthComplete(false);
+				setJoinSuccessAlert((prev) => ({
+					...prev,
+					phone: "",
+				}));
+				setJoinFailAlert((prev) => ({
+					...prev,
+					phone: "인증시간이 만료되었습니다. 다시 인증해주세요.",
+				}));
+			}
 		},
 		// 결과에 관계 없이 무언가 실행됨
 		onSettled(a, b) {
@@ -204,6 +215,10 @@ export default function UserJoin() {
 		}
 		if (name === "phoneAuth") {
 			nextValue = value.replace(/[^0-9]/g, "").slice(0, 6); // 예: 6자리 인증번호
+			setJoinFailAlert((prev) => ({
+				...prev,
+				phone: "",
+			}));
 		}
 		setJoinForm((prev) => ({
 			...prev,
@@ -219,7 +234,7 @@ export default function UserJoin() {
 		value = value.trim();
 		let failMent = "";
 		let successMent = "";
-		const addMentObj: { [key: string]: string } = {};
+		const addFailMentObj: { [key: string]: string } = {};
 		if (joinFormRegex[name]) {
 			if (!joinFormRegex[name].test(value)) {
 				failMent = joinFormRegexFailMent[name];
@@ -242,8 +257,8 @@ export default function UserJoin() {
 				}
 			} else if (name == "password") {
 				if (joinForm.passwordCheck && joinForm.passwordCheck != value) {
-					addMentObj.passwordCheck = "비밀번호와 일치하지 않습니다.";
-				} else addMentObj.passwordCheck = "";
+					addFailMentObj.passwordCheck = "비밀번호와 일치하지 않습니다.";
+				} else addFailMentObj.passwordCheck = "";
 			} else if (name == "passwordCheck") {
 				if (joinForm.password && joinForm.password != value) {
 					failMent = "비밀번호와 일치하지 않습니다.";
@@ -275,7 +290,7 @@ export default function UserJoin() {
 		setJoinFailAlert((prev) => ({
 			...prev,
 			[name]: failMent,
-			...addMentObj,
+			...addFailMentObj,
 		}));
 		setJoinSuccessAlert((prev) => ({
 			...prev,
@@ -343,9 +358,15 @@ export default function UserJoin() {
 			joinFormRefs.current.phone?.focus();
 			return;
 		}
-		if (joinFailAlert.phone) {
-			joinFormRefs.current.phone?.focus();
-			return;
+		if (joinFormRegex.phone) {
+			if (!joinFormRegex.phone.test(joinForm.phone)) {
+				setJoinFailAlert((prev) => ({
+					...prev,
+					phone: joinFormRegexFailMent.phone,
+				}));
+				joinFormRefs.current.phone?.focus();
+				return;
+			}
 		}
 		handlePhoneAuth.mutate();
 	};

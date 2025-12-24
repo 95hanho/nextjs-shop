@@ -1,8 +1,11 @@
 import API_URL from "@/api/endpoints";
 import { postUrlFormData, putUrlFormData } from "@/api/fetchFilter";
+import { isProd } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
+import { verifyPhoneAuthCompleteToken } from "@/lib/jwt";
 import { JoinForm } from "@/types/auth";
 import { BaseResponse } from "@/types/common";
+import { verify } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 
 // 회원가입
@@ -19,6 +22,24 @@ export async function POST(nextRequest: NextRequest) {
 		if (!phone) return NextResponse.json({ message: "핸드폰번호를 입력해주세요." }, { status: 400 });
 		if (!email) return NextResponse.json({ message: "이메일을 입력해주세요." }, { status: 400 });
 
+		// 휴대폰인증완료토큰 검사
+		try {
+			const phoneAuthCompleteToken =
+				nextRequest.cookies.get("phoneAuthCompleteToken")?.value || nextRequest.headers.get("phoneAuthCompleteToken") || undefined;
+			if (!phoneAuthCompleteToken?.trim()) {
+				throw new Error("NOT_EXIST_TOKEN");
+			}
+			verifyPhoneAuthCompleteToken(phoneAuthCompleteToken);
+		} catch {
+			return NextResponse.json(
+				{
+					status: 401,
+					message: "PHONEAUTH_COMPLETE_UNAUTHORIZED",
+				},
+				{ status: 401 }
+			);
+		}
+
 		const data = await postUrlFormData<BaseResponse>(getBackendUrl(API_URL.AUTH_JOIN), {
 			userId,
 			password,
@@ -32,7 +53,16 @@ export async function POST(nextRequest: NextRequest) {
 		});
 		console.log("data", data);
 
-		return NextResponse.json({ message: data.message }, { status: 200 });
+		const response = NextResponse.json({ message: data.message }, { status: 200 });
+		// 사용한 토큰 제거
+		response.cookies.set("phoneAuthCompleteToken", "", {
+			httpOnly: true,
+			secure: isProd,
+			sameSite: "strict",
+			path: "/",
+			maxAge: 0,
+		});
+		return response;
 	} catch (err: any) {
 		console.error("error :", {
 			message: err.message,

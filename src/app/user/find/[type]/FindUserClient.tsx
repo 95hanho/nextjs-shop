@@ -99,7 +99,7 @@ export default function FindUserClient() {
 		},
 		onError(err) {
 			console.log(err);
-			if (err.message === "PHONEAUTH_TOKEN_UNAUTHORIZED") {
+			if (["VERIFICATION_EXPIRED", "PHONEAUTH_TOKEN_UNAUTHORIZED"].includes(err.message)) {
 				setFindUserFailAlert((prev) => ({
 					...prev,
 					phone: "인증시간이 만료되었습니다.",

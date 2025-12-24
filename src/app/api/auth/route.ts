@@ -3,7 +3,7 @@ import { getNormal, postUrlFormData } from "@/api/fetchFilter";
 import { withAuth } from "@/lib/auth";
 import { isProd } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
-import { generateAccessToken, generateRefreshToken, verifyToken } from "@/lib/jwt";
+import { generateAccessToken, generateRefreshToken } from "@/lib/jwt";
 import { ACCESS_TOKEN_COOKIE_AGE, REFRESH_TOKEN_COOKIE_AGE } from "@/lib/tokenTime";
 import { LoginForm, UserResponse } from "@/types/auth";
 import { BaseResponse } from "@/types/common";

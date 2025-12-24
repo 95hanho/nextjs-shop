@@ -5,6 +5,7 @@ export type FormEvent = React.FormEvent<HTMLFormElement>;
 export type ChangeEvent = React.ChangeEvent<HTMLInputElement>;
 
 export type Token = {
+	type: "access" | "refresh" | "phoneAuth" | "phoneAuthComplete" | "pwdReset";
 	userId: string;
 } & JwtPayload;
 
@@ -102,6 +103,12 @@ export type UserInfo = {
 /* --------------------------------------- */
 export interface PhoneAuthRequest {
 	phone: string;
+	phoneAuthToken: string;
+	userId?: string;
+}
+/*  */
+export interface PhoneAuthCheckRequest {
+	authNumber: string;
 	phoneAuthToken: string;
 	userId?: string;
 }

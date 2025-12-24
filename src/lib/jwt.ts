@@ -7,6 +7,7 @@ import type { StringValue } from "ms";
 const NEXT_PUBLIC_JWT_SECRET = process.env.NEXT_PUBLIC_JWT_SECRET || "your-secret"; // 환경변수에 설정하세요
 const secret = new TextEncoder().encode(process.env.NEXT_PUBLIC_JWT_SECRET);
 const NEXT_PUBLIC_PHONE_AUTH = process.env.NEXT_PUBLIC_PHONE_AUTH || "your-secret";
+const NEXT_PUBLIC_PHONE_AUTH_COMPLETE = process.env.NEXT_PUBLIC_PHONE_AUTH_COMPLETE || "your-secret";
 const NEXT_PUBLIC_PWD_CHANGE = process.env.NEXT_PUBLIC_PWD_CHANGE || "your-secret";
 
 // accessToken 생성
@@ -25,7 +26,11 @@ export function generateRefreshToken(expiresIn?: StringValue) {
 }
 // 일반 page/api 상에서의 토큰 복호화
 export function verifyToken(token: string): Token {
-	return jwt.verify(token, NEXT_PUBLIC_JWT_SECRET, { algorithms: ["HS256"] }) as Token; // 실패 시 오류 발생
+	const payload = jwt.verify(token, NEXT_PUBLIC_JWT_SECRET, { algorithms: ["HS256"] }) as Token; // 실패 시 오류 발생
+	const isAccess = payload.userId && payload.type === "access";
+	const isRefresh = !payload.userId && payload.type === "refresh";
+	if (!isAccess && !isRefresh) throw new Error("INVALID_TOKEN_TYPE");
+	return payload;
 }
 
 // middleware는 Edge Runtime에서 동작 => nodejs환경 jsonwebtoken이 작동안함.
@@ -33,6 +38,9 @@ export function verifyToken(token: string): Token {
 export async function middleware_verifyToken(token: string): Promise<Token> {
 	try {
 		const { payload } = await jwtVerify(token, secret, { algorithms: ["HS256"] });
+		const isAccess = payload.userId && payload.type === "access";
+		const isRefresh = !payload.userId && payload.type === "refresh";
+		if (!isAccess && !isRefresh) throw new Error("INVALID_TOKEN_TYPE");
 		return payload as Token;
 	} catch (err) {
 		console.error("Token verify failed", err);
@@ -50,7 +58,23 @@ export function generatePhoneAuthToken(addPayload: { userId?: string } = {}) {
 }
 // 휴대폰인증 토큰 복호화
 export function verifyPhoneAuthToken(token: string): Token {
-	return jwt.verify(token, NEXT_PUBLIC_PHONE_AUTH, { algorithms: ["HS256"] }) as Token; // 실패 시 오류 발생
+	const payload = jwt.verify(token, NEXT_PUBLIC_PHONE_AUTH, { algorithms: ["HS256"] }) as Token; // 실패 시 오류 발생
+	if (payload.type !== "phoneAuth") throw new Error("INVALID_TOKEN_TYPE");
+	return payload;
+}
+// 휴대폰인증성공 토큰 생성
+export function generatePhoneAuthCompleteToken(addPayload: { userId?: string } = {}) {
+	const payload = { type: "phoneAuthComplete", ...addPayload };
+	return jwt.sign(payload, NEXT_PUBLIC_PHONE_AUTH_COMPLETE, {
+		expiresIn: PHONE_AUTH_EXPIRES_IN,
+		algorithm: "HS256",
+	});
+}
+// 휴대폰인증성공 토큰 복호화
+export function verifyPhoneAuthCompleteToken(token: string): Token {
+	const payload = jwt.verify(token, NEXT_PUBLIC_PHONE_AUTH_COMPLETE, { algorithms: ["HS256"] }) as Token; // 실패 시 오류 발생
+	if (payload.type !== "phoneAuthComplete") throw new Error("INVALID_TOKEN_TYPE");
+	return payload;
 }
 // 비밀번호 변경토큰 생성
 export function generatePwdResetToken(payload: { userId: string }) {
@@ -61,5 +85,9 @@ export function generatePwdResetToken(payload: { userId: string }) {
 }
 // 비밀번호 변경토큰 복호화
 export function verifyPwdResetToken(token: string): Token {
-	return jwt.verify(token, NEXT_PUBLIC_PWD_CHANGE, { algorithms: ["HS256"] }) as Token; // 실패 시 오류 발생
+	const payload = jwt.verify(token, NEXT_PUBLIC_PWD_CHANGE, {
+		algorithms: ["HS256"],
+	}) as Token;
+	if (payload.type !== "pwdReset") throw new Error("INVALID_TOKEN_TYPE");
+	return payload;
 }

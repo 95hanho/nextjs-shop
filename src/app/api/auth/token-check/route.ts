@@ -8,7 +8,7 @@ export const GET = async (nextRequest: NextRequest) => {
 
 	try {
 		// ✅ 토큰이 아예 없는 경우도 인증 실패로 처리
-		if (!pwdResetToken) {
+		if (!pwdResetToken?.trim()) {
 			throw new Error("NO_PWDRESET_TOKEN");
 		}
 		verifyPwdResetToken(pwdResetToken);
@@ -24,7 +24,7 @@ export const GET = async (nextRequest: NextRequest) => {
 
 	try {
 		// ✅ 토큰이 아예 없는 경우도 인증 실패로 처리
-		if (!refreshToken) {
+		if (!refreshToken?.trim()) {
 			throw new Error("NO_REFRESH_TOKEN");
 		}
 		verifyToken(refreshToken);

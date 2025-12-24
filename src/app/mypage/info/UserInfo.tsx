@@ -33,35 +33,91 @@ export default function UserInfo() {
 	};
 
 	if (!user) return null;
-
 	return (
 		<div id="infoPwdCheck" className="form-wrap">
-			<h2>내 정보</h2>
-			<div className="join-input mark">
-				<div className="join-label">
-					<label>아이디</label>
-				</div>
-				<div className={`join-text`}>
-					<div className="info-val">
-						<span>{user?.userId}</span>
+			<div>
+				<h2>내 정보</h2>
+				<div className="join-input mark">
+					<div className="join-label">
+						<label>아이디</label>
+					</div>
+					<div className={`join-text`}>
+						<div className="info-val">
+							<span>{user.userId}</span>
+						</div>
 					</div>
 				</div>
-			</div>
-			<div className="join-input mark">
-				<div className="join-label">
-					<label>비밀번호</label>
-				</div>
-				<div className={`join-text`}>
-					<div className="info-val">
-						<button
-							className="btn"
-							onClick={() => {
-								handlePhoneAuth.mutate();
-							}}
-						>
-							비밀번호 변경
-						</button>
+				<div className="join-input mark">
+					<div className="join-label">
+						<label>비밀번호</label>
 					</div>
+					<div className={`join-text`}>
+						<div className="info-val">
+							<button
+								className="btn"
+								onClick={() => {
+									handlePhoneAuth.mutate();
+								}}
+							>
+								비밀번호 변경
+							</button>
+						</div>
+					</div>
+				</div>
+				<div className="join-input mark">
+					<div className="join-label">
+						<label>이름</label>
+					</div>
+					<div className={`join-text`}>
+						<div className="info-val">
+							<span>{user.name}</span>
+						</div>
+					</div>
+				</div>
+				<div className="join-input mark">
+					<div className="join-label">
+						<label>배송지관리</label>
+					</div>
+					<div className={`join-text`}>
+						<div className="info-val">
+							<button className="btn" onClick={() => {}}>
+								수정하기
+							</button>
+						</div>
+					</div>
+				</div>
+				<div className="join-input mark">
+					<div className="join-label">
+						<label>생년월일</label>
+					</div>
+					<div className={`join-text`}>
+						<div className="info-val">
+							<span>{user.birthday}</span>
+						</div>
+					</div>
+				</div>
+				<div className="join-input mark">
+					<div className="join-label">
+						<label>휴대폰</label>
+					</div>
+					<div className={`join-text`}>
+						<div className="info-val">
+							<span>{user.phone}</span>
+						</div>
+					</div>
+				</div>
+				<div className="join-input mark">
+					<div className="join-label">
+						<label>이메일</label>
+					</div>
+					<div className={`join-text`}>
+						<div className="info-val">
+							<span>{user.email}</span>
+						</div>
+					</div>
+				</div>
+				<div className="submit-wrap info">
+					<input type="submit" className="" value={"정보수정하기"} />
 				</div>
 			</div>
 		</div>

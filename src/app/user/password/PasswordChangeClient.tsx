@@ -25,7 +25,7 @@ type PasswordChangeFormRefs = {
 };
 
 const initPasswordChangeForm: PasswordChangeForm = {
-	curPassword: "aaaaaa1!",
+	curPassword: "",
 	newPassword: "",
 	newPasswordCheck: "",
 };
@@ -71,6 +71,22 @@ export default function PasswordChangeClient({ mode }: PasswordChangeClientProps
 				});
 				if (mode === "LOGGED_IN") router.replace("/mypage/info");
 				if (mode === "RESET") router.replace("/user/find/password");
+			}
+			if (err.message === "CURRENT_PASSWORD_MISMATCH") {
+				openModal("ALERT", {
+					content: `현재 비밀번호가 일치하지 않습니다.`,
+				});
+				pwdChangeFormRefs.current.curPassword?.focus();
+			}
+			if (err.message === "CURRENT_PASSWORD_EQUAL") {
+				openModal("ALERT", {
+					content: `기존 비밀번호와 다른 비밀번호를 입력해주세요.`,
+				});
+				setPwdChangeForm((prev) => ({
+					...prev,
+					newPasswordCheck: "",
+				}));
+				pwdChangeFormRefs.current.newPassword?.focus();
 			}
 		},
 	});
@@ -145,8 +161,10 @@ export default function PasswordChangeClient({ mode }: PasswordChangeClientProps
 		const addFailMentObj: Partial<Record<keyof PasswordChangeForm, string>> = {};
 		if (name === "newPassword" && value && !passwordRegex.test(value)) {
 			failMent = passwordRegexFailMent;
-		} else if ((name === "curPassword" || name === "newPassword") && value && value === pwdChangeForm.curPassword) {
+		} else if (["curPassword", "newPassword"].includes(name) && value && pwdChangeForm.curPassword === pwdChangeForm.newPassword) {
 			addFailMentObj["newPassword"] = "현재비밀번호와 같습니다.";
+		} else if (["newPassword", "newPasswordCheck"].includes(name) && value && pwdChangeForm.newPassword !== pwdChangeForm.newPasswordCheck) {
+			addFailMentObj["newPasswordCheck"] = "새로운 비밀번호와 일치하지 않습니다.";
 		}
 		setPwdChangeForm((prev) => ({
 			...prev,
@@ -164,9 +182,10 @@ export default function PasswordChangeClient({ mode }: PasswordChangeClientProps
 	};
 	// 비밀번호변경 실행
 	const pwdChangeSubmit = (e: FormEvent) => {
+		console.log("pwdChangeSubmit");
 		e.preventDefault();
 		let alertOn = "";
-		const alertKeys = Object.keys(pwdChangeFailAlert) as (keyof PasswordChangeForm)[];
+		const alertKeys = Object.keys(pwdChangeFailAlert).filter((v) => v !== "curPassword") as (keyof PasswordChangeForm)[];
 		for (const key of alertKeys) {
 			const value = pwdChangeForm[key];
 			alertOn = pwdChangeFailAlert[key];
@@ -188,6 +207,7 @@ export default function PasswordChangeClient({ mode }: PasswordChangeClientProps
 		}
 		if (alertOn) return;
 		//
+		console.log("pwdChangeSubmi2222t");
 		handlePasswordChange.mutate();
 	};
 

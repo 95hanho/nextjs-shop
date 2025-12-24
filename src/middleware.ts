@@ -19,7 +19,7 @@ const handleAuthCheck = async (nextRequest: NextRequest, isApi: boolean) => {
 	const rToken = nextRequest.headers.get("refreshToken") || nextRequest.cookies.get("refreshToken")?.value;
 	const aToken = nextRequest.headers.get("accessToken") || nextRequest.cookies.get("accessToken")?.value;
 	// const rToken = nextRequest.cookies.get("refreshToken");
-	if (!rToken) {
+	if (!rToken?.trim()) {
 		console.error("no rToken ===> 로그아웃 쿼리 추가하여서 리다이렉트");
 		// 로그아웃 쿼리 추가하여서 리다이렉트
 		const logoutUrl = addLogoutQuery(nextRequest.url);
@@ -36,7 +36,7 @@ const handleAuthCheck = async (nextRequest: NextRequest, isApi: boolean) => {
 	console.log("rToken", rToken);
 	// 여긴 "로그인 필요 + refreshToken은 있음" 상태
 	// aToken 유효하면 그냥 next, 유효하지 않으면? → 여기서는 지나가게 두고, 실제 리프레시는 API 쪽 helper에서
-	if (aToken) {
+	if (aToken?.trim()) {
 		try {
 			console.log("aToken", aToken);
 			await middleware_verifyToken(aToken); // 복호화 성공(토큰유효)하면 그대로 진행

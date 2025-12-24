@@ -1,4 +1,4 @@
-import { verifyToken } from "@/lib/jwt";
+import { verifyPwdResetToken } from "@/lib/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
 // 패스워드 리셋토큰 확인
@@ -7,10 +7,10 @@ export const GET = async (nextRequest: NextRequest) => {
 
 	try {
 		// ✅ 토큰이 아예 없는 경우도 인증 실패로 처리
-		if (!pwdResetToken) {
+		if (!pwdResetToken?.trim()) {
 			throw new Error("NO_PWDRESET_TOKEN");
 		}
-		verifyToken(pwdResetToken);
+		verifyPwdResetToken(pwdResetToken);
 		// ✅ 성공 응답
 		return NextResponse.json(
 			{
