@@ -1,15 +1,16 @@
 import API_URL from "@/api/endpoints";
 import { postUrlFormData, putUrlFormData } from "@/api/fetchFilter";
+import { withAuth } from "@/lib/auth";
 import { isProd } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { verifyPhoneAuthCompleteToken } from "@/lib/jwt";
-import { JoinForm } from "@/types/auth";
+import { JoinForm, UserUpdateResponse } from "@/types/auth";
 import { BaseResponse } from "@/types/common";
 import { verify } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 
 // 회원가입
-export async function POST(nextRequest: NextRequest) {
+export const POST = async (nextRequest: NextRequest) => {
 	try {
 		const { userId, password, name, zonecode, address, addressDetail, birthday, phone, email }: JoinForm = await nextRequest.json();
 		if (!userId) return NextResponse.json({ message: "아이디를 입력해주세요." }, { status: 400 });
@@ -75,32 +76,24 @@ export async function POST(nextRequest: NextRequest) {
 
 		return NextResponse.json(payload, { status });
 	}
-}
+};
 
 // 회원정보변경
-export async function PUT(nextRequest: NextRequest) {
+export const PUT = withAuth(async ({ nextRequest, userId }) => {
 	try {
-		const { userId, zonecode, address, addressDetail, birthday, phone, email }: JoinForm = await nextRequest.json();
-		if (!userId) return NextResponse.json({ message: "아이디를 입력해주세요." }, { status: 400 });
-		if (!zonecode) return NextResponse.json({ message: "우편번호를 입력해주세요." }, { status: 400 });
-		if (!address) return NextResponse.json({ message: "주소를 입력해주세요." }, { status: 400 });
-		if (!addressDetail) return NextResponse.json({ message: "상세주소를 입력해주세요." }, { status: 400 });
-		if (!birthday) return NextResponse.json({ message: "생년월일을 입력해주세요." }, { status: 400 });
+		const { phone, email }: JoinForm = await nextRequest.json();
 		if (!phone) return NextResponse.json({ message: "핸드폰번호를 입력해주세요." }, { status: 400 });
 		if (!email) return NextResponse.json({ message: "이메일을 입력해주세요." }, { status: 400 });
 
 		const data = await putUrlFormData<BaseResponse>(getBackendUrl(API_URL.AUTH_JOIN), {
 			userId,
-			zonecode,
-			address,
-			addressDetail,
-			birthday,
 			phone,
 			email,
 		});
 		console.log("data", data);
+		const payload: UserUpdateResponse = { message: data.message, email, phone };
 
-		return NextResponse.json({ message: data.message }, { status: 200 });
+		return NextResponse.json(payload, { status: 200 });
 	} catch (err: any) {
 		console.error("error :", {
 			message: err.message,
@@ -113,4 +106,4 @@ export async function PUT(nextRequest: NextRequest) {
 
 		return NextResponse.json(payload, { status });
 	}
-}
+});

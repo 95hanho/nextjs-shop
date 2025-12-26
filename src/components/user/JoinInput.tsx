@@ -1,4 +1,4 @@
-import { ChangeEvent } from "@/types/form";
+import { ChangeEvent } from "@/types/auth";
 import { forwardRef } from "react";
 
 interface FormInputProps {

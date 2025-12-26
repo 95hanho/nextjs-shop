@@ -2,41 +2,32 @@
 
 import API_URL from "@/api/endpoints";
 import { postJson } from "@/api/fetchFilter";
-import JoinInput from "@/components/user/JoinInput";
 import useAuth from "@/hooks/useAuth";
 import { getApiUrl } from "@/lib/getBaseUrl";
-import { ChangeEvent } from "@/types/auth";
 import { BaseResponse } from "@/types/common";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 
-export default function UserInfo() {
-	const router = useRouter();
+export default function UserInfoClient() {
 	const { user } = useAuth();
+	const { push } = useRouter();
 
 	// 비밀변경 토큰 생성 후 비밀변경 페이지로
 	const handlePhoneAuth = useMutation({
 		mutationFn: () => postJson<BaseResponse>(getApiUrl(API_URL.AUTH_PASSWORD), {}),
 		onSuccess(data) {
-			router.push("/user/password");
+			push("/user/password");
 		},
 		onError(err) {
 			console.log(err);
 		},
 	});
 
-	const [password, setPassword] = useState<string>("");
-	const [failAlert, setFailAlert] = useState<string>("");
-	const changePassword = (e: ChangeEvent) => {
-		setPassword(e.target.value);
-	};
-
 	if (!user) return null;
 	return (
-		<div id="infoPwdCheck" className="form-wrap">
-			<div>
-				<h2>내 정보</h2>
+		<main id="userInfo" className="user-info">
+			<div className="form-wrap">
+				<h2>내 정보 수정</h2>
 				<div className="join-input mark">
 					<div className="join-label">
 						<label>아이디</label>
@@ -80,7 +71,12 @@ export default function UserInfo() {
 					</div>
 					<div className={`join-text`}>
 						<div className="info-val">
-							<button className="btn" onClick={() => {}}>
+							<button
+								className="btn"
+								onClick={() => {
+									push("/mypage/address");
+								}}
+							>
 								수정하기
 							</button>
 						</div>
@@ -117,9 +113,16 @@ export default function UserInfo() {
 					</div>
 				</div>
 				<div className="submit-wrap info">
-					<input type="submit" className="" value={"정보수정하기"} />
+					<input
+						type="submit"
+						className=""
+						value={"정보수정하기"}
+						onClick={() => {
+							push("/mypage/update");
+						}}
+					/>
 				</div>
 			</div>
-		</div>
+		</main>
 	);
 }

@@ -112,3 +112,9 @@ export interface PhoneAuthCheckRequest {
 	phoneAuthToken: string;
 	userId?: string;
 }
+/*  */
+export interface UserUpdateResponse {
+	message: string;
+	email: string;
+	phone: string;
+}

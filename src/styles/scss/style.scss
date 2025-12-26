@@ -1586,6 +1586,9 @@ main#productDetail {
 	min-height: calc(100vh - 100px);
 	.form-wrap {
 		width: 350px;
+		&.update {
+			width: 500px;
+		}
 		background-color: #fff;
 		border: 5px double #000000;
 		border-radius: 25px;

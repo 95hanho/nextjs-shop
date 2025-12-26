@@ -1,11 +1,11 @@
 import { UserInfo } from "@/types/auth";
-import { createContext } from "react";
+import { createContext, Dispatch, SetStateAction } from "react";
 
 interface AuthContextType {
 	loginOn: boolean;
 	logout: () => void;
 	user: UserInfo | null;
-	setUser: React.Dispatch<UserInfo>;
+	setUser: Dispatch<SetStateAction<UserInfo | null>>;
 }
 
 // 인증관련 컨텍스트

@@ -1465,6 +1465,9 @@ main#productDetail section#etc-info-section .best-short-sleeve-section .rank-tab
   box-shadow: 3px 3px 3px #aaa;
   padding: 20px;
 }
+.user-info .form-wrap.update {
+  width: 500px;
+}
 .user-info .form-wrap h2 {
   margin-bottom: 18px;
   font-size: 30px;
