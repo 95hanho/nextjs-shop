@@ -1454,6 +1454,7 @@ main#productDetail section#etc-info-section .best-short-sleeve-section .rank-tab
   justify-content: center;
   align-items: center;
   min-height: calc(100vh - 100px);
+  /* 배송지 관리 */
 }
 .user-info .form-wrap {
   width: 350px;
@@ -1463,7 +1464,7 @@ main#productDetail section#etc-info-section .best-short-sleeve-section .rank-tab
   text-align: center;
   overflow: hidden;
   box-shadow: 3px 3px 3px #aaa;
-  padding: 20px;
+  padding: 20px 15px 20px 20px;
 }
 .user-info .form-wrap.update {
   width: 500px;
@@ -1471,6 +1472,82 @@ main#productDetail section#etc-info-section .best-short-sleeve-section .rank-tab
 .user-info .form-wrap h2 {
   margin-bottom: 18px;
   font-size: 30px;
+}
+.user-info.delivery-address .form-wrap .address-container .page-title {
+  margin-bottom: 10px;
+}
+.user-info.delivery-address .form-wrap .address-container .address-list {
+  text-align: left;
+  max-height: calc(100vh - 353px);
+  overflow: auto;
+  padding-right: 5px;
+}
+.user-info.delivery-address .form-wrap .address-container .address-list .address-item {
+  padding: 2px 20px 5px 20px;
+  border: 1px solid #c9c9c9;
+  background: #fffdf0;
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+.user-info.delivery-address .form-wrap .address-container .address-list .address-item .address-header {
+  padding: 7px 0px 2px;
+}
+.user-info.delivery-address .form-wrap .address-container .address-list .address-item .address-header .address-name {
+  display: inline-block;
+  font-size: 26px;
+  width: 30%;
+  padding-left: 10px;
+}
+.user-info.delivery-address .form-wrap .address-container .address-list .address-item .address-header .address-phone {
+  font-size: 18px;
+  font-weight: 400;
+  display: inline-block;
+  width: 70%;
+  padding-left: 8px;
+}
+.user-info.delivery-address .form-wrap .address-container .address-list .address-item .address-body {
+  padding-left: 13px;
+  font-size: 18px;
+  word-break: auto-phrase;
+  /* 공통 주소 라인 */
+  /* 배송 메모 */
+}
+.user-info.delivery-address .form-wrap .address-container .address-list .address-item .address-body .address-row .address-label {
+  display: inline-block;
+  width: 30%;
+}
+.user-info.delivery-address .form-wrap .address-container .address-list .address-item .address-body .address-row .address-value {
+  display: inline-block;
+  width: 70%;
+}
+.user-info.delivery-address .form-wrap .address-container .address-list .address-item .address-body .address-memo {
+  display: flex;
+}
+.user-info.delivery-address .form-wrap .address-container .address-list .address-item .address-body .address-memo .address-label {
+  width: 30%;
+}
+.user-info.delivery-address .form-wrap .address-container .address-list .address-item .address-body .address-memo .memo-content {
+  width: 70%;
+}
+.user-info.delivery-address .form-wrap .address-container .address-list .address-item .address-body .address-memo .memo-content .memo-text {
+  font-family: NanumPenScript;
+}
+.user-info.delivery-address .form-wrap .address-container .address-list .address-item .address-actions {
+  text-align: right;
+}
+.user-info.delivery-address .form-wrap .address-container .address-list .address-item .address-actions .btn-edit {
+  font-size: 19px;
+  margin-right: 8px;
+}
+.user-info.delivery-address .form-wrap .address-container .address-list .address-item .address-actions .btn-delete {
+  font-size: 19px;
+}
+.user-info.delivery-address .form-wrap .address-container .address-add .btn-add {
+  font-size: 20px;
+  width: 100%;
+  border-radius: 0 0 5px 5px;
+  padding: 1px 0;
+  background: #ffd484;
 }
 
 /* 비밀번호 변경 */
@@ -1881,60 +1958,4 @@ main#productDetail section#etc-info-section .best-short-sleeve-section .rank-tab
 }
 #modalRoot .animate-popOut {
   animation: popOut 0.4s ease-out;
-}
-
-/* 드롭다운 + 리스트 */
-.option-selector {
-  font-family: "NotoSansKR";
-  position: relative;
-  -webkit-user-select: none;
-     -moz-user-select: none;
-          user-select: none;
-}
-.option-selector .option-select-box {
-  position: relative;
-  cursor: pointer;
-}
-.option-selector .option-select-box input {
-  font-family: "NotoSansKR";
-  width: 100%;
-  border: 1px solid #ccc;
-  font-size: 1em;
-  padding: 0.8em 1.1em;
-  vertical-align: baseline;
-  background-color: #fff;
-  cursor: pointer;
-}
-.option-selector .option-select-box span {
-  position: absolute;
-  right: 2%;
-  /* width: 35px; */
-  height: 100%;
-  font-size: 1.5em;
-  align-content: center;
-}
-.option-selector .option-list {
-  position: absolute;
-  width: 100%;
-  border: 1px solid #ccc;
-  border-top: none;
-  z-index: 100;
-  background-color: #fff;
-}
-.option-selector .option-list li {
-  padding: 8px 10px;
-  font-size: 1em;
-  cursor: pointer;
-}
-.option-selector .option-list li.on {
-  background-color: #f0f0f0;
-}
-.option-selector .option-list li:hover {
-  background-color: #e6e6e6;
-}
-.option-selector .option-list li h5 {
-  font-family: "NotoSansKR";
-  font-size: 1em;
-  color: #979797;
-  font-weight: 400;
 }

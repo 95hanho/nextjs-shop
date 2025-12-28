@@ -1595,13 +1595,106 @@ main#productDetail {
 		text-align: center;
 		overflow: hidden;
 		box-shadow: 3px 3px 3px #aaa;
-		padding: 20px;
+		padding: 20px 15px 20px 20px;
 		h2 {
 			margin-bottom: 18px;
 			font-size: 30px;
 		}
 	}
+	/* 배송지 관리 */
+	&.delivery-address {
+		.form-wrap {
+			.address-container {
+				.page-title {
+					margin-bottom: 10px;
+				}
+				.address-list {
+					text-align: left;
+					max-height: calc(100vh - 353px);
+					overflow: auto;
+					padding-right: 5px;
+					.address-item {
+						padding: 2px 20px 5px 20px;
+						border: 1px solid #c9c9c9;
+						background: #fffdf0;
+						border-radius: 6px;
+						margin-bottom: 8px;
+						.address-header {
+							padding: 7px 0px 2px;
+							.address-name {
+								display: inline-block;
+								font-size: 26px;
+								width: 30%;
+								padding-left: 10px;
+							}
+							.address-phone {
+								font-size: 18px;
+								font-weight: 400;
+								display: inline-block;
+								width: 70%;
+								padding-left: 8px;
+							}
+						}
+						.address-body {
+							padding-left: 13px;
+							font-size: 18px;
+							word-break: auto-phrase;
+							/* 공통 주소 라인 */
+							.address-row {
+								.address-label {
+									display: inline-block;
+									width: 30%;
+								}
+								.address-value {
+									display: inline-block;
+									width: 70%;
+								}
+							}
+							/* 배송 메모 */
+							.address-memo {
+								display: flex;
+								.address-label {
+									width: 30%;
+								}
+
+								.memo-content {
+									width: 70%;
+									.memo-selector {
+									}
+
+									.memo-text {
+										font-family: NanumPenScript;
+									}
+								}
+							}
+						}
+
+						.address-actions {
+							text-align: right;
+							.btn-edit {
+								font-size: 19px;
+								margin-right: 8px;
+							}
+							.btn-delete {
+								font-size: 19px;
+							}
+						}
+					}
+				}
+				.address-add {
+					.btn-add {
+						font-size: 20px;
+						width: 100%;
+						border-radius: 0 0 5px 5px;
+						padding: 1px 0;
+						background: #ffd484;
+					}
+				}
+			}
+		}
+	}
 }
+
 /* 비밀번호 변경 */
 #passwordChangePage.user-wrapper {
 	.form-wrap {
@@ -2049,58 +2142,5 @@ main#productDetail {
 	}
 	.animate-popOut {
 		animation: popOut 0.4s ease-out;
-	}
-}
-/* 드롭다운 + 리스트 */
-.option-selector {
-	font-family: "NotoSansKR";
-	position: relative;
-	user-select: none;
-	.option-select-box {
-		position: relative;
-		cursor: pointer;
-		input {
-			font-family: "NotoSansKR";
-			width: 100%;
-			border: 1px solid #ccc;
-			font-size: 1em;
-			padding: 0.8em 1.1em;
-			vertical-align: baseline;
-			background-color: #fff;
-			cursor: pointer;
-		}
-		span {
-			position: absolute;
-			right: 2%;
-			/* width: 35px; */
-			height: 100%;
-			font-size: 1.5em;
-			align-content: center;
-		}
-	}
-	.option-list {
-		position: absolute;
-		width: 100%;
-		border: 1px solid #ccc;
-		border-top: none;
-		z-index: 100;
-		background-color: #fff;
-		li {
-			padding: 8px 10px;
-			font-size: 1em;
-			cursor: pointer;
-			&.on {
-				background-color: #f0f0f0;
-			}
-			&:hover {
-				background-color: #e6e6e6;
-			}
-			h5 {
-				font-family: "NotoSansKR";
-				font-size: 1em;
-				color: #979797;
-				font-weight: 400;
-			}
-		}
 	}
 }

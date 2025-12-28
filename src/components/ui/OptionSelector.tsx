@@ -1,5 +1,6 @@
 "use client";
 
+import "./optionSelector.css";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 

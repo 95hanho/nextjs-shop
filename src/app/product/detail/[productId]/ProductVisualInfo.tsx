@@ -91,6 +91,10 @@ export default function ProductVisualInfo() {
 						<OptionSelector
 							optionSelectorName="productVisualOption"
 							pickIdx={0}
+							initData={{
+								id: 1,
+								val: "COLOR:SIZE",
+							}}
 							optionList={[
 								{
 									id: 1,
