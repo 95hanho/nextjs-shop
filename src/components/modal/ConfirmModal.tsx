@@ -1,4 +1,5 @@
 import { useModalStore } from "@/store/modal.store";
+import { ModalResultMap } from "@/store/modal.type";
 import { BsXLg } from "react-icons/bs";
 
 interface ConfirmModalProps {
@@ -7,10 +8,11 @@ interface ConfirmModalProps {
 	content: string;
 	cancelText?: string;
 	okText?: string;
-	cancelResult?: boolean;
+	okResult?: string;
+	cancelResult?: string;
 }
 
-export default function ConfirmModal({ onClose, title, content, cancelText, okText, cancelResult }: ConfirmModalProps) {
+export default function ConfirmModal({ onClose, title, content, cancelText, okText, okResult, cancelResult }: ConfirmModalProps) {
 	const { resolveModal } = useModalStore();
 	return (
 		<div id="confirmModal" className="modal-wrap">
@@ -29,7 +31,9 @@ export default function ConfirmModal({ onClose, title, content, cancelText, okTe
 							if (cancelResult) {
 								resolveModal({
 									action: "CONFIRM_CANCEL",
-									payload: undefined,
+									payload: {
+										result: cancelResult,
+									},
 								});
 							} else onClose();
 						}}
@@ -39,9 +43,15 @@ export default function ConfirmModal({ onClose, title, content, cancelText, okTe
 					<button
 						className={`option-actions__submit`}
 						onClick={() => {
+							let payload: ModalResultMap["CONFIRM_OK"] = undefined;
+							if (okResult) {
+								payload = {
+									result: okResult,
+								};
+							}
 							resolveModal({
 								action: "CONFIRM_OK",
-								payload: undefined,
+								payload,
 							});
 						}}
 					>

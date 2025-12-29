@@ -7,8 +7,9 @@ import { useModalStore } from "@/store/modal.store";
 import AlertModal from "./AlertModal";
 import ConfirmModal from "./ConfirmModal";
 import ProductOptionModal from "./ProductOptionModal";
-import { CartItem } from "@/types/mypage";
+import { CartItem, UserAddressListItem } from "@/types/mypage";
 import { ModalPropsMap } from "@/store/modal.type";
+import AddressUpdateModal from "./AddressUpdateModal";
 
 export default function ModalRoot() {
 	const { modalType, modalProps, closeModal } = useModalStore();
@@ -69,6 +70,11 @@ export default function ModalRoot() {
 			const { product } = modalProps as { product: CartItem };
 
 			childrenModal = <ProductOptionModal onClose={handleClose} product={product} />;
+			break;
+		case "ADDRESSUPDATE":
+			const { address } = modalProps as { address: UserAddressListItem };
+
+			childrenModal = <AddressUpdateModal onClose={handleClose} address={address} />;
 			break;
 		default:
 			return null;

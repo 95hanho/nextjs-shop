@@ -1,3 +1,4 @@
+import "./joinInput.css";
 import { ChangeEvent } from "@/types/auth";
 import { forwardRef } from "react";
 

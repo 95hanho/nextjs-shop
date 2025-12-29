@@ -26,7 +26,7 @@ body {
   background-color: #f8f9fa;
   position: sticky; /* 버튼 컨테이너의 절대 위치를 위한 설정 */
   top: 0;
-  z-index: 100;
+  z-index: 1000;
 }
 #header h1 a {
   font-size: 30px;
@@ -401,100 +401,6 @@ body {
   background: #2d72dd;
 }
 
-/* input 입력 div */
-.join-input {
-  display: flex;
-  font-size: 23px;
-  text-align: left;
-  margin-bottom: 10px;
-}
-.join-input .join-label {
-  padding-top: 10px;
-  width: 30%;
-}
-.join-input .join-text {
-  width: 70%;
-  height: 100%;
-}
-.join-input .join-text > div input {
-  width: 70%;
-  padding: 7px 10px;
-  font-size: 20px;
-  border: 1px solid #aaa;
-  border-radius: 5px;
-  outline: none;
-}
-.join-input .join-text > div .search-btn {
-  width: 25%;
-  margin-left: 5px;
-  padding: 7px 10px;
-  border-radius: 5px;
-  color: #fff;
-  font-size: 20px;
-  font-weight: bold;
-}
-.join-input .join-text > div .search-btn.address {
-  border: 2px solid #ad9090;
-  background: #ee6666;
-}
-.join-input .join-text > div .search-btn.address:hover {
-  background: #df6060;
-}
-.join-input .join-text > div .search-btn.phone {
-  border: 2px solid #83a77e;
-  background: #4fdb3d;
-}
-.join-input .join-text > div .search-btn.phone:hover {
-  background: #4acc39;
-}
-.join-input .join-text > div .search-btn.phoneAuth {
-  border: 2px solid #d7d7d7;
-  background: #3a7add;
-}
-.join-input .join-text > div .search-btn.phoneAuth:hover {
-  background: #2d72dd;
-}
-.join-input .join-text > div.info-val .btn {
-  border: 1px solid #9d9d9d;
-  border-radius: 12px;
-  font-size: 20px;
-  padding: 4px 12px;
-  font-weight: bold;
-  background-color: rgb(174, 179, 169);
-  color: #fff;
-}
-.join-input .join-text > div.info-val .btn:hover {
-  background-color: rgb(155, 158, 153);
-  color: #eee;
-  transition: all 0.3s;
-}
-.join-input .join-text > div.info-val .btn:active {
-  box-shadow: none;
-  transition: all 0s;
-  transform: translate(1px, 1px);
-  background-color: rgb(20, 196, 20);
-  border-color: #fff;
-}
-.join-input .join-text p {
-  display: none;
-  margin-top: 5px;
-  font-size: 15px;
-}
-.join-input .join-text.fail p, .join-input .join-text.success p {
-  display: block;
-}
-.join-input .join-text.fail > div input {
-  border: 1px solid #f00;
-  color: #f00;
-}
-.join-input .join-text.success > div input {
-  border: 1px solid #0f0;
-  border: 1px solid rgb(90, 161, 90);
-}
-.join-input.mark .join-label {
-  padding-top: 0;
-}
-
 /* 입력 버튼  */
 .submit-wrap {
   margin: 20px 0;
@@ -676,19 +582,20 @@ main#productList .product-wrap .product-card .product-card__info .product-card__
   margin-right: 5px;
 }
 /* 제품상세보기 */
+main#productDetail * {
+  font-family: "notoSansKR";
+}
+
 main#productDetail {
   position: relative;
   min-width: 900px;
   max-width: 1200px;
-  margin: 0 auto;
   padding: 0 30px;
+  margin: 0 auto;
   /* 상품 사진 및 가격배송 정보 */
   /* 업체등록 상품 상세 블로그 */
   /* 상품정보 보기, 판매자 정보 */
   /* 배송정보, 교환, 환불, A/S안내, 같은 카테고리 추천 */
-}
-main#productDetail * {
-  font-family: "notoSansKR";
 }
 main#productDetail section#product-visual-info {
   display: flex;
@@ -1490,6 +1397,7 @@ main#productDetail section#etc-info-section .best-short-sleeve-section .rank-tab
   margin-bottom: 8px;
 }
 .user-info.delivery-address .form-wrap .address-container .address-list .address-item .address-header {
+  position: relative;
   padding: 7px 0px 2px;
 }
 .user-info.delivery-address .form-wrap .address-container .address-list .address-item .address-header .address-name {
@@ -1504,6 +1412,16 @@ main#productDetail section#etc-info-section .best-short-sleeve-section .rank-tab
   display: inline-block;
   width: 70%;
   padding-left: 8px;
+}
+.user-info.delivery-address .form-wrap .address-container .address-list .address-item .address-header .default-mark {
+  position: absolute;
+  right: -12px;
+  padding: 2px 9px 3px;
+  font-size: 12px;
+  background-color: #5f85e7;
+  border-radius: 5px;
+  color: #fff;
+  font-family: NotoSansKR;
 }
 .user-info.delivery-address .form-wrap .address-container .address-list .address-item .address-body {
   padding-left: 13px;
@@ -1533,14 +1451,14 @@ main#productDetail section#etc-info-section .best-short-sleeve-section .rank-tab
   font-family: NanumPenScript;
 }
 .user-info.delivery-address .form-wrap .address-container .address-list .address-item .address-actions {
+  margin-top: 5px;
   text-align: right;
 }
-.user-info.delivery-address .form-wrap .address-container .address-list .address-item .address-actions .btn-edit {
+.user-info.delivery-address .form-wrap .address-container .address-list .address-item .address-actions button {
   font-size: 19px;
-  margin-right: 8px;
 }
-.user-info.delivery-address .form-wrap .address-container .address-list .address-item .address-actions .btn-delete {
-  font-size: 19px;
+.user-info.delivery-address .form-wrap .address-container .address-list .address-item .address-actions button:nth-last-child(n+2) {
+  margin-right: 8px;
 }
 .user-info.delivery-address .form-wrap .address-container .address-add .btn-add {
   font-size: 20px;

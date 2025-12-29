@@ -1,7 +1,7 @@
-import { CartItem } from "@/types/mypage";
+import { CartItem, UserAddressListItem } from "@/types/mypage";
 
 // modal타입
-export type ModalType = "ALERT" | "CONFIRM" | "PRODUCTOPTION" | null;
+export type ModalType = "ALERT" | "CONFIRM" | "PRODUCTOPTION" | "ADDRESSUPDATE" | null;
 
 /** modalType별로 요구하는 modalProps를 정확히 매핑 */
 export type ModalPropsMap = {
@@ -13,11 +13,15 @@ export type ModalPropsMap = {
 		content: string;
 		title?: string;
 		okText?: string;
+		okResult?: string;
 		cancelText?: string;
-		cancelResult?: boolean;
+		cancelResult?: string;
 	};
 	PRODUCTOPTION: {
 		product: CartItem;
+	};
+	ADDRESSUPDATE: {
+		address: UserAddressListItem;
 	};
 };
 
@@ -30,9 +34,19 @@ export type ModalResultMap = {
 		productDetailId: number;
 		quantity: number;
 	};
+	//
+	ADDRESS_UPDATE: UserAddressListItem;
 	/*  */
-	CONFIRM_OK: undefined;
-	CONFIRM_CANCEL: undefined;
+	CONFIRM_OK:
+		| undefined
+		| {
+				result: string;
+		  };
+	CONFIRM_CANCEL:
+		| undefined
+		| {
+				result: string;
+		  };
 	ALERT_OK: undefined;
 	CLOSE: undefined;
 };

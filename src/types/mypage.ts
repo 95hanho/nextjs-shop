@@ -237,7 +237,7 @@ export type UserAddressListItem = UserAddress & {
 	usedateAt: null;
 	userId: null;
 	deleted: false;
-	default: true;
+	defaultAddress: boolean;
 };
 export interface GetUserAddressListResponse extends BaseResponse {
 	userAddressList: UserAddressListItem[];
@@ -251,6 +251,6 @@ export interface setUserAddressRequest {
 	address: string;
 	addressDetail: string;
 	memo: string;
-	isDefault?: boolean;
+	defaultAddress?: boolean;
 	default?: boolean;
 }
