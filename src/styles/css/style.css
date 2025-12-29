@@ -209,6 +209,7 @@ body {
   overflow: hidden;
   box-shadow: 3px 3px 3px #aaa;
   padding: 20px;
+  font-size: 18px;
 }
 .user-wrapper .form-wrap.join {
   width: 500px;
@@ -1380,6 +1381,9 @@ main#productDetail section#etc-info-section .best-short-sleeve-section .rank-tab
   margin-bottom: 18px;
   font-size: 30px;
 }
+.user-info.delivery-address .form-wrap {
+  width: 430px;
+}
 .user-info.delivery-address .form-wrap .address-container .page-title {
   margin-bottom: 10px;
 }
@@ -1828,6 +1832,16 @@ main#productDetail section#etc-info-section .best-short-sleeve-section .rank-tab
   background-color: #e9e9e9;
   color: #b1b1b1;
   cursor: not-allowed;
+}
+#modalRoot .modal-wrap .modal-content.address {
+  width: 344px;
+}
+#modalRoot .modal-wrap .modal-content.address .address-input {
+  font-size: 14px;
+}
+#modalRoot .modal-wrap .modal-content.address .address-memo {
+  margin-top: 10px;
+  font-size: 14px;
 }
 @keyframes fadeIn {
   from {

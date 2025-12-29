@@ -208,6 +208,7 @@ body {
 		overflow: hidden;
 		box-shadow: 3px 3px 3px #aaa;
 		padding: 20px;
+		font-size: 18px;
 		&.join {
 			width: 500px;
 		}
@@ -1496,6 +1497,7 @@ main#productDetail {
 	/* 배송지 관리 */
 	&.delivery-address {
 		.form-wrap {
+			width: 430px;
 			.address-container {
 				.page-title {
 					margin-bottom: 10px;
@@ -1996,6 +1998,21 @@ main#productDetail {
 						color: #b1b1b1;
 						cursor: not-allowed;
 					}
+				}
+			}
+			// 주소 변경
+			&.address {
+				width: 344px;
+				.address-input {
+					font-size: 14px;
+				}
+				.join-input {
+					.join-label {
+					}
+				}
+				.address-memo {
+					margin-top: 10px;
+					font-size: 14px;
 				}
 			}
 		}

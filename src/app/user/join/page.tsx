@@ -341,6 +341,7 @@ export default function UserJoin() {
 				const fullAddress = data.roadAddress || data.jibunAddress;
 				setJoinForm((prev) => ({
 					...prev,
+					zonecode: data.zonecode,
 					address: fullAddress,
 				}));
 			},
