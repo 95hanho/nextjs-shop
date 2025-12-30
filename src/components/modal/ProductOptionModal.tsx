@@ -104,7 +104,7 @@ export default function ProductOptionModal({ onClose, product }: ProductOptionMo
 				}}
 				pickIdx={pickIdx}
 				optionList={optionList}
-				changeOption={(id) => {
+				changeOption={(_, id) => {
 					setPickId(id);
 				}}
 				// 필요하면 fetching 표시용 prop 추가해서 skeleton/disabled 처리 가능

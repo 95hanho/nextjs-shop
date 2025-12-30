@@ -106,26 +106,3 @@ export default function ModalRoot() {
 		document.body
 	);
 }
-/* 
-"use client";
-
-import { useModalStore } from "@/store/modal.store";
-
-export function DeleteButton({ id }: { id: number }) {
-  const openModal = useModalStore((state) => state.openModal);
-
-  return (
-    <button
-      onClick={() =>
-        openModal("CONFIRM", {
-          title: "상품을 삭제하시겠습니까?",
-          description: "삭제 후에는 복구할 수 없습니다.",
-          targetId: id,
-        })
-      }
-    >
-      삭제
-    </button>
-  );
-}
-*/

@@ -2002,15 +2002,30 @@ main#productDetail {
 			}
 			// 주소 변경
 			&.address {
-				width: 344px;
+				width: 430px;
 				.address-input {
 					font-size: 14px;
 				}
-				.join-input {
-					.join-label {
+				.option-block {
+					.option-memo {
+						.title {
+							font-size: 16px;
+							width: 30%;
+							display: inline-block;
+						}
+						.memo-option {
+							font-size: 12px;
+							position: relative;
+							display: inline-block;
+							width: 70%;
+							.option-selector .option-select-box input {
+								border: 1px solid #aaa;
+								border-radius: 5px;
+							}
+						}
 					}
 				}
-				.address-memo {
+				.address-write {
 					margin-top: 10px;
 					font-size: 14px;
 				}

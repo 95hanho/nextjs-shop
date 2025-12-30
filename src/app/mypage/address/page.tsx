@@ -22,15 +22,9 @@ export default function myAddressPage() {
 	const { data: userAddressData, isLoading } = useQuery<GetUserAddressListResponse, Error, GetUserAddressListResponse>({
 		queryKey: ["userAddressList", user?.userId],
 		queryFn: () => getNormal(getApiUrl(API_URL.MY_ADDRESS)),
-		select(data) {
-			return {
-				...data,
-				userAddressList: [...data.userAddressList].sort((a, b) => Number(b.defaultAddress) - Number(a.defaultAddress)),
-			};
-		},
 		enabled: !!user?.userId,
 	});
-	// 유저 배송지 추가/수정
+	// 유저 배송지 추가/수정 -> 여기서는 기본주소 변경
 	const handleAddressChange = useMutation({
 		mutationFn: () =>
 			postJson<BaseResponse>(getApiUrl(API_URL.MY_ADDRESS), {
@@ -83,6 +77,10 @@ export default function myAddressPage() {
 				deleting();
 			}
 		}
+		if (modalResult?.action === "ADDRESS_UPDATE") {
+			const payload = modalResult.payload as UserAddressListItem;
+			console.log(payload);
+		}
 		clearModalResult();
 	}, [modalResult]);
 
@@ -98,20 +96,22 @@ export default function myAddressPage() {
 							<li key={"userAddress" + userAddress.addressId} className="address-item">
 								<h3 className="address-header">
 									<span className="address-name">{userAddress.addressName}</span>
-									<span className="address-phone">{userAddress.addressPhone}</span>
 									{userAddress.defaultAddress && <span className="default-mark">기본배송지</span>}
 								</h3>
 
 								<div className="address-body">
 									{/* 공통 주소 정보 */}
 									<div className="address-row">
-										<span className="address-label">우편번호</span>
-										<span className="address-value">{userAddress.zonecode}</span>
+										<span className="address-label">수령인정보</span>
+										<span className="address-value">
+											{userAddress.recipientName} / {userAddress.addressPhone}
+										</span>
 									</div>
-
 									<div className="address-row">
 										<span className="address-label">주소</span>
-										<span className="address-value">{userAddress.address}</span>
+										<span className="address-value">
+											({userAddress.zonecode}) {userAddress.address}
+										</span>
 									</div>
 
 									<div className="address-row">

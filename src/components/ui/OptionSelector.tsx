@@ -9,7 +9,7 @@ interface OptionSelectorProps {
 	initData: { id: number; val: string };
 	pickIdx?: number;
 	optionList?: { id: number; val: string; description?: string }[];
-	changeOption?: (id: number) => void;
+	changeOption?: (pickIdx: number, id: number) => void;
 }
 
 export default function OptionSelector({ optionSelectorName, initData, pickIdx = 0, optionList, changeOption }: OptionSelectorProps) {
@@ -54,7 +54,7 @@ export default function OptionSelector({ optionSelectorName, initData, pickIdx =
 									key={optionSelectorName + "-optionItem" + optionIdx}
 									className={`${pickIdx === optionIdx ? "on" : ""}`}
 									onClick={() => {
-										if (changeOption) changeOption(option.id);
+										if (changeOption) changeOption(optionIdx, option.id);
 										setOpenOptionList(false);
 									}}
 								>

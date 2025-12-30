@@ -109,7 +109,7 @@ export default function ProductVisualInfo() {
 									val: "WHITE:01S",
 								},
 							]}
-							changeOption={(id) => {}}
+							changeOption={(idx, id) => {}}
 						/>
 						<div className="action-buttons">
 							<button className="btn-cart">장바구니 담기</button>

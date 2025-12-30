@@ -1834,12 +1834,27 @@ main#productDetail section#etc-info-section .best-short-sleeve-section .rank-tab
   cursor: not-allowed;
 }
 #modalRoot .modal-wrap .modal-content.address {
-  width: 344px;
+  width: 430px;
 }
 #modalRoot .modal-wrap .modal-content.address .address-input {
   font-size: 14px;
 }
-#modalRoot .modal-wrap .modal-content.address .address-memo {
+#modalRoot .modal-wrap .modal-content.address .option-block .option-memo .title {
+  font-size: 16px;
+  width: 30%;
+  display: inline-block;
+}
+#modalRoot .modal-wrap .modal-content.address .option-block .option-memo .memo-option {
+  font-size: 12px;
+  position: relative;
+  display: inline-block;
+  width: 70%;
+}
+#modalRoot .modal-wrap .modal-content.address .option-block .option-memo .memo-option .option-selector .option-select-box input {
+  border: 1px solid #aaa;
+  border-radius: 5px;
+}
+#modalRoot .modal-wrap .modal-content.address .address-write {
   margin-top: 10px;
   font-size: 14px;
 }

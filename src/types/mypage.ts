@@ -60,6 +60,7 @@ export type UserCoupon = {
 export type UserAddress = {
 	addressId: number;
 	addressName: string;
+	recipientName: string;
 	addressPhone: string;
 	zonecode: string;
 	address: string;
