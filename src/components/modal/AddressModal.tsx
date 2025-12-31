@@ -7,14 +7,13 @@ import { UserAddressListItem } from "@/types/mypage";
 import { useModalStore } from "@/store/modal.store";
 import JoinInput from "../user/JoinInput";
 import { ChangeEvent, FormEvent } from "@/types/auth";
-import { useMutation } from "@tanstack/react-query";
-import { postJson } from "@/api/fetchFilter";
 
-interface AddressUpdateModalProps {
+interface AddressModalProps {
 	onClose: () => void;
-	address: UserAddressListItem;
+	address?: UserAddressListItem;
 }
-type UpdateAddress = {
+
+type AddressFormAlert = {
 	addressName: string;
 	recipientName: string;
 	addressPhone: string;
@@ -22,7 +21,10 @@ type UpdateAddress = {
 	addressDetail: string;
 	memo: string;
 };
-type UpdateAddressFormRefs = {
+export type AddressForm = AddressFormAlert & {
+	zonecode: string;
+};
+type AddressFormFormRefs = {
 	addressName: HTMLInputElement | null;
 	recipientName: HTMLInputElement | null;
 	addressPhone: HTMLInputElement | null;
@@ -31,7 +33,15 @@ type UpdateAddressFormRefs = {
 	memo: HTMLInputElement | null;
 };
 
-const initUpdatedAddressAlert = {
+const memoOptionList = [
+	{ id: 1, val: "문 앞에 놓아주세요" },
+	{ id: 2, val: "경비실에 맡겨주세요" },
+	{ id: 3, val: "부재 시 전화 주세요" },
+	{ id: 4, val: "배송 전 연락 바랍니다" },
+	{ id: 5, val: "직접 입력" },
+];
+
+const initAddressFormAlert = {
 	addressName: "",
 	recipientName: "",
 	addressPhone: "",
@@ -39,82 +49,78 @@ const initUpdatedAddressAlert = {
 	addressDetail: "",
 	memo: "",
 };
+const initAddressForm = {
+	...initAddressFormAlert,
+	zonecode: "",
+	memo: "문 앞에 놓아주세요",
+};
 
-const updatedAddressFormRegex: { [key: string]: RegExp } = {
+const addressFormRegex: { [key: string]: RegExp } = {
 	addressPhone: /^(010|011|016|017|018|019)\d{3,4}\d{4}$/,
 };
-const updatedAddressFormRegexFailMent: { [key: string]: string } = {
+const addressFormRegexFailMent: { [key: string]: string } = {
 	addressPhone: "휴대폰 번호 형식에 일치하지 않습니다.",
 };
 
-export default function AddressUpdateModal({ onClose, address }: AddressUpdateModalProps) {
+export default function AddressModal({ onClose, address }: AddressModalProps) {
 	const { resolveModal } = useModalStore();
 
-	const [updatedAddress, setUpdatedAddress] = useState<UserAddressListItem>(address);
-	const changeUpdatedAddress = (e: ChangeEvent) => {
+	const [addressForm, setAddressForm] = useState<AddressForm>(initAddressForm);
+	const changeAddressForm = (e: ChangeEvent) => {
 		let { name, value } = e.target as {
-			name: keyof UserAddressListItem;
+			name: keyof AddressForm;
 			value: string;
 		};
-		setUpdatedAddressFailAlert(() => ({
-			...initUpdatedAddressAlert,
+		setAddressFormFailAlert(() => ({
+			...initAddressFormAlert,
 		}));
-		setUpdatedAddress((prev) => ({
+		setAddressForm((prev) => ({
 			...prev,
 			[name]: value,
 		}));
 	};
-	const [updatedAddressFailAlert, setUpdatedAddressFailAlert] = useState(initUpdatedAddressAlert);
-	const updatedAddressFormRefs = useRef<Partial<UpdateAddressFormRefs>>({});
+	const [addressFormFailAlert, setAddressFormFailAlert] = useState<AddressFormAlert>(initAddressFormAlert);
+	const addressFormRefs = useRef<Partial<AddressFormFormRefs>>({});
 	const [memoPickidx, setMemoPickidx] = useState(0);
-	const [memoOptionInit, setMemoOptionInit] = useState({
-		id: 1,
-		val: "문 앞에 놓아주세요",
-	});
-	const memoOptionList = [
-		{ id: 1, val: "문 앞에 놓아주세요" },
-		{ id: 2, val: "경비실에 맡겨주세요" },
-		{ id: 3, val: "부재 시 전화 주세요" },
-		{ id: 4, val: "배송 전 연락 바랍니다" },
-		{ id: 5, val: "직접 입력" },
-	];
+	const [memoOptionInit, setMemoOptionInit] = useState(memoOptionList[0]);
+
 	// 유효성 확인 ex) 정규표현식 확인
-	const validateUpdatedAddressForm = async (e: ChangeEvent) => {
+	const validateAddressForm = async (e: ChangeEvent) => {
 		let { name, value } = e.target as {
-			name: keyof UserAddressListItem;
+			name: keyof AddressForm;
 			value: string;
 		};
 		value = value.trim();
 		let failMent = "";
 		let successMent = "";
-		if (updatedAddressFormRegex[name] && value) {
-			if (!updatedAddressFormRegex[name].test(value)) {
-				failMent = updatedAddressFormRegexFailMent[name];
+		if (addressFormRegex[name] && value) {
+			if (!addressFormRegex[name].test(value)) {
+				failMent = addressFormRegexFailMent[name];
 			}
 		}
 		if (failMent) {
-			setUpdatedAddressFailAlert((prev) => ({
+			setAddressFormFailAlert((prev) => ({
 				...prev,
 				[name]: failMent,
 			}));
 		}
-		setUpdatedAddress((prev) => ({
+		setAddressForm((prev) => ({
 			...prev,
 			[name]: value,
 		}));
 	};
-	const addressUpdateSubmit = (e: FormEvent) => {
-		console.log("addressUpdateSubmit");
+	const addressSetSubmit = (e: FormEvent) => {
+		console.log("addressSetSubmit");
 		e.preventDefault();
 
 		let alertOn = "";
-		const alertKeys = Object.keys(initUpdatedAddressAlert) as (keyof UpdateAddress)[];
+		const alertKeys = Object.keys(initAddressFormAlert) as (keyof AddressFormAlert)[];
 
 		for (const key of alertKeys) {
 			// for (let i = 0; i < keys.length; i++) {
 			// const key = keys[i];
-			const value = updatedAddress[key];
-			alertOn = updatedAddressFailAlert[key];
+			const value = addressForm[key];
+			alertOn = addressFormFailAlert[key];
 			// 알람없을 때 처음 누를 때
 			if (!alertOn) {
 				if (!value) {
@@ -123,21 +129,19 @@ export default function AddressUpdateModal({ onClose, address }: AddressUpdateMo
 			}
 			// 알람있을 때 또 눌렀으면
 			if (alertOn) {
-				setUpdatedAddressFailAlert((prev) => ({
+				setAddressFormFailAlert((prev) => ({
 					...prev,
 					[key]: alertOn,
 				}));
-				updatedAddressFormRefs.current[key]?.focus();
+				addressFormRefs.current[key]?.focus();
 				break;
 			}
 		}
 		console.log(alertOn);
 		if (alertOn) return;
-		console.log("ADDRESS_UPDATE - SUCCESS");
-		return;
 		resolveModal({
-			action: "ADDRESS_UPDATE",
-			payload: updatedAddress,
+			action: "ADDRESS_SET",
+			payload: addressForm,
 		});
 	};
 	/* -------------------- */
@@ -147,10 +151,10 @@ export default function AddressUpdateModal({ onClose, address }: AddressUpdateMo
 			oncomplete: (data) => {
 				if (!data) return;
 				const fullAddress = data.roadAddress || data.jibunAddress;
-				setUpdatedAddress((prev) => {
-					const updated = prev as UserAddressListItem;
+				setAddressForm((prev) => {
+					const address = prev as AddressForm;
 					return {
-						...updated,
+						...address,
 						zonecode: data.zonecode,
 						address: fullAddress,
 					};
@@ -164,9 +168,16 @@ export default function AddressUpdateModal({ onClose, address }: AddressUpdateMo
 	// 처음 들어올 때
 	useEffect(() => {
 		if (address) {
-			setUpdatedAddress({
-				...address,
-			});
+			setAddressForm((prev) => ({
+				...prev,
+				addressName: address.addressName,
+				recipientName: address.recipientName,
+				addressPhone: address.addressPhone,
+				zonecode: address.zonecode,
+				address: address.address,
+				addressDetail: address.addressDetail,
+				memo: address.memo,
+			}));
 			const findIndex = memoOptionList.slice(0, 4).findIndex((v) => v.val === address.memo);
 			if (findIndex === -1) {
 				setMemoPickidx(4);
@@ -178,39 +189,39 @@ export default function AddressUpdateModal({ onClose, address }: AddressUpdateMo
 		}
 	}, [address]);
 
-	if (!updatedAddress) return null;
+	if (!addressForm) return null;
 	return (
-		<div id="addressUpdateModal" className="modal-wrap">
-			<header className="modal-header">배송지 수정</header>
+		<div id="addressModal" className="modal-wrap">
+			<header className="modal-header">{!address ? "배송지 추가" : "배송지 수정"}</header>
 			<button className="modal-close" onClick={onClose}>
 				<BsXLg />
 			</button>
 			{/*  */}
 			<div className="modal-content address">
-				<form onSubmit={addressUpdateSubmit}>
+				<form onSubmit={addressSetSubmit}>
 					<div className="address-input">
 						<JoinInput
 							name="addressName"
 							label="배송지 이름"
 							placeholder="배송지 이름을 입력해주세요."
-							value={updatedAddress.addressName}
-							onChange={changeUpdatedAddress}
-							onBlur={validateUpdatedAddressForm}
-							failMessage={updatedAddressFailAlert.addressName}
+							value={addressForm.addressName}
+							onChange={changeAddressForm}
+							onBlur={validateAddressForm}
+							failMessage={addressFormFailAlert.addressName}
 							ref={(el) => {
-								updatedAddressFormRefs.current.addressName = el;
+								addressFormRefs.current.addressName = el;
 							}}
 						/>
 						<JoinInput
 							name="recipientName"
 							label="수령인"
 							placeholder="수령인을 입력해주세요."
-							value={updatedAddress.recipientName}
-							onChange={changeUpdatedAddress}
-							onBlur={validateUpdatedAddressForm}
-							failMessage={updatedAddressFailAlert.recipientName}
+							value={addressForm.recipientName}
+							onChange={changeAddressForm}
+							onBlur={validateAddressForm}
+							failMessage={addressFormFailAlert.recipientName}
 							ref={(el) => {
-								updatedAddressFormRefs.current.recipientName = el;
+								addressFormRefs.current.recipientName = el;
 							}}
 						/>
 						<JoinInput
@@ -218,23 +229,23 @@ export default function AddressUpdateModal({ onClose, address }: AddressUpdateMo
 							name="addressPhone"
 							label="수령인 전화번호"
 							placeholder="전화번호를 입력해주세요."
-							value={updatedAddress.addressPhone}
-							onChange={changeUpdatedAddress}
-							onBlur={validateUpdatedAddressForm}
-							failMessage={updatedAddressFailAlert.addressPhone}
+							value={addressForm.addressPhone}
+							onChange={changeAddressForm}
+							onBlur={validateAddressForm}
+							failMessage={addressFormFailAlert.addressPhone}
 							inputMode="numeric"
 							pattern="[0-9]*"
 							maxLength={11}
 							ref={(el) => {
-								updatedAddressFormRefs.current.addressPhone = el;
+								addressFormRefs.current.addressPhone = el;
 							}}
 						/>
 						<JoinInput
 							name="address"
 							label="주소"
 							placeholder="주소를 입력해주세요."
-							value={updatedAddress.address}
-							failMessage={updatedAddressFailAlert.address}
+							value={addressForm.address}
+							failMessage={addressFormFailAlert.address}
 							readOnly
 							onClick={addressPopup}
 							searchBtn={{ txt: "검색", fnc: addressPopup }}
@@ -243,12 +254,12 @@ export default function AddressUpdateModal({ onClose, address }: AddressUpdateMo
 							name="addressDetail"
 							label="상세주소"
 							placeholder="상세주소를 입력해주세요."
-							value={updatedAddress.addressDetail}
-							failMessage={updatedAddressFailAlert.addressDetail}
-							onChange={changeUpdatedAddress}
-							onBlur={validateUpdatedAddressForm}
+							value={addressForm.addressDetail}
+							failMessage={addressFormFailAlert.addressDetail}
+							onChange={changeAddressForm}
+							onBlur={validateAddressForm}
 							ref={(el) => {
-								updatedAddressFormRefs.current.addressDetail = el;
+								addressFormRefs.current.addressDetail = el;
 							}}
 						/>
 					</div>
@@ -267,9 +278,13 @@ export default function AddressUpdateModal({ onClose, address }: AddressUpdateMo
 										let memo;
 										if (id < 5) memo = memoOptionList[idx].val;
 										else memo = "";
-										setUpdatedAddress((prev) => ({
+										setAddressForm((prev) => ({
 											...prev,
 											memo,
+										}));
+										setAddressFormFailAlert((prev) => ({
+											...prev,
+											memo: "",
 										}));
 									}}
 								/>
@@ -281,12 +296,12 @@ export default function AddressUpdateModal({ onClose, address }: AddressUpdateMo
 									name="memo"
 									label="직접입력"
 									placeholder="메모를 입력해주세요."
-									value={updatedAddress.memo}
-									failMessage={updatedAddressFailAlert.memo}
-									onChange={changeUpdatedAddress}
-									onBlur={validateUpdatedAddressForm}
+									value={addressForm.memo}
+									failMessage={addressFormFailAlert.memo}
+									onChange={changeAddressForm}
+									onBlur={validateAddressForm}
 									ref={(el) => {
-										updatedAddressFormRefs.current.memo = el;
+										addressFormRefs.current.memo = el;
 									}}
 								/>
 							)}
@@ -298,7 +313,7 @@ export default function AddressUpdateModal({ onClose, address }: AddressUpdateMo
 							취소
 						</button>
 						<button type="submit" className={`option-actions__submit`}>
-							변경하기
+							{!address ? "완료" : "변경하기"}
 						</button>
 					</div>
 				</form>

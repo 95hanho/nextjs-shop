@@ -31,14 +31,33 @@ export const GET = withAuth(async ({ accessToken }) => {
 // 유저배송지 추가/수정
 export const POST = withAuth(async ({ nextRequest, accessToken }) => {
 	try {
-		const { addressId, addressName, addressPhone, zonecode, address, addressDetail, memo, defaultAddress }: setUserAddressRequest =
+		const { addressId, addressName, recipientName, addressPhone, zonecode, address, addressDetail, memo, defaultAddress }: setUserAddressRequest =
 			await nextRequest.json();
-		console.log("addressId", addressId);
-		if (!addressName || !addressPhone || !zonecode || !address || !addressDetail || defaultAddress === undefined)
+		console.log(
+			"addressId",
+			addressId,
+			"addressName",
+			addressName,
+			"recipientName",
+			recipientName,
+			"addressPhone",
+			addressPhone,
+			"zonecode",
+			zonecode,
+			"address",
+			address,
+			"addressDetail",
+			addressDetail,
+			"memo",
+			memo,
+			"defaultAddress",
+			defaultAddress
+		);
+		if (!addressName || !recipientName || !addressPhone || !zonecode || !address || !addressDetail)
 			return NextResponse.json({ message: "잘 못 된 요청입니다." }, { status: 400 });
 		// if (!memo) return NextResponse.json({ message: "비밀번호를 입력해주세요." }, { status: 400 });
 
-		const payload: setUserAddressRequest = { addressName, addressPhone, zonecode, address, addressDetail, memo, defaultAddress };
+		const payload: setUserAddressRequest = { addressName, addressPhone, recipientName, zonecode, address, addressDetail, memo, defaultAddress };
 		if (addressId) payload.addressId = addressId;
 		console.log(payload);
 		const data = await postUrlFormData<BaseResponse>(

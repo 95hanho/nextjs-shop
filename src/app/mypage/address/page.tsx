@@ -2,6 +2,7 @@
 
 import API_URL from "@/api/endpoints";
 import { deleteNormal, getNormal, postJson } from "@/api/fetchFilter";
+import { AddressForm } from "@/components/modal/AddressModal";
 import OptionSelector from "@/components/ui/OptionSelector";
 import useAuth from "@/hooks/useAuth";
 import { getApiUrl } from "@/lib/getBaseUrl";
@@ -77,9 +78,18 @@ export default function myAddressPage() {
 				deleting();
 			}
 		}
-		if (modalResult?.action === "ADDRESS_UPDATE") {
-			const payload = modalResult.payload as UserAddressListItem;
+		if (modalResult?.action === "ADDRESS_SET") {
+			const payload = modalResult.payload as AddressForm;
 			console.log(payload);
+			const addressUpdating = async () => {
+				setChangeAddress((prev) => {
+					const address = prev as UserAddressListItem;
+					return { ...address, ...payload };
+				});
+				await handleAddressChange.mutateAsync();
+				queryClient.invalidateQueries({ queryKey: ["userAddressList"] });
+			};
+			addressUpdating();
 		}
 		clearModalResult();
 	}, [modalResult]);
@@ -149,8 +159,12 @@ export default function myAddressPage() {
 									<button
 										className="btn-edit"
 										onClick={() => {
-											openModal("ADDRESSUPDATE", {
+											setChangeAddress((prev) => {
+												return { ...userAddress };
+											});
+											openModal("ADDRESSSET", {
 												address: userAddress,
+												disableOverlayClose: true,
 											});
 										}}
 									>
@@ -176,7 +190,18 @@ export default function myAddressPage() {
 					</ul>
 
 					<div className="address-add">
-						<button className="btn-add">추가 +</button>
+						<button
+							className="btn-add"
+							onClick={() => {
+								setChangeAddress(null);
+								openModal("ADDRESSSET", {
+									address: undefined,
+									disableOverlayClose: true,
+								});
+							}}
+						>
+							추가 +
+						</button>
 					</div>
 				</div>
 			</div>

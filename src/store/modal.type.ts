@@ -1,15 +1,20 @@
+import { AddressForm } from "@/components/modal/AddressModal";
 import { CartItem, UserAddressListItem } from "@/types/mypage";
 
 // modal타입
-export type ModalType = "ALERT" | "CONFIRM" | "PRODUCTOPTION" | "ADDRESSUPDATE" | null;
-
+export type ModalType = "ALERT" | "CONFIRM" | "PRODUCTOPTION" | "ADDRESSSET" | null;
+type ModalCommon = {
+	disableOverlayClose?: boolean;
+	disableEscClose?: boolean;
+};
+// modal이 열릴 떄 요구되는 옵션
 /** modalType별로 요구하는 modalProps를 정확히 매핑 */
 export type ModalPropsMap = {
-	ALERT: {
+	ALERT: ModalCommon & {
 		content: string;
 		title?: string;
 	};
-	CONFIRM: {
+	CONFIRM: ModalCommon & {
 		content: string;
 		title?: string;
 		okText?: string;
@@ -17,11 +22,11 @@ export type ModalPropsMap = {
 		cancelText?: string;
 		cancelResult?: string;
 	};
-	PRODUCTOPTION: {
+	PRODUCTOPTION: ModalCommon & {
 		product: CartItem;
 	};
-	ADDRESSUPDATE: {
-		address: UserAddressListItem;
+	ADDRESSSET: ModalCommon & {
+		address?: UserAddressListItem;
 	};
 };
 
@@ -35,7 +40,7 @@ export type ModalResultMap = {
 		quantity: number;
 	};
 	//
-	ADDRESS_UPDATE: UserAddressListItem;
+	ADDRESS_SET: AddressForm;
 	/*  */
 	CONFIRM_OK:
 		| undefined

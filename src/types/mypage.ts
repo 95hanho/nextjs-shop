@@ -58,7 +58,7 @@ export type UserCoupon = {
 };
 // 유저 주소
 export type UserAddress = {
-	addressId: number;
+	addressId?: number;
 	addressName: string;
 	recipientName: string;
 	addressPhone: string;
@@ -247,6 +247,7 @@ export interface GetUserAddressListResponse extends BaseResponse {
 export interface setUserAddressRequest {
 	addressId?: number;
 	addressName: string;
+	recipientName: string;
 	addressPhone: string;
 	zonecode: string;
 	address: string;
@@ -255,3 +256,12 @@ export interface setUserAddressRequest {
 	defaultAddress?: boolean;
 	default?: boolean;
 }
+/*  */
+export type InputAddress = {
+	addressName: string;
+	recipientName: string;
+	addressPhone: string;
+	address: string;
+	addressDetail: string;
+	memo: string;
+};

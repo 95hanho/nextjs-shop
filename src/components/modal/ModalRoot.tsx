@@ -9,13 +9,22 @@ import ConfirmModal from "./ConfirmModal";
 import ProductOptionModal from "./ProductOptionModal";
 import { CartItem, UserAddressListItem } from "@/types/mypage";
 import { ModalPropsMap } from "@/store/modal.type";
-import AddressUpdateModal from "./AddressUpdateModal";
+import AddressModal from "./AddressModal";
+
+type ModalCommon = {
+	disableOverlayClose?: boolean;
+	disableEscClose?: boolean;
+};
 
 export default function ModalRoot() {
 	const { modalType, modalProps, closeModal } = useModalStore();
 	const [mounted, setMounted] = useState(false);
 	const [isClosing, setIsClosing] = useState(false);
 	const [isOpen, setIsOpen] = useState(true);
+
+	const common = (modalProps ?? {}) as ModalCommon;
+	const overlayCloseAllowed = !common.disableOverlayClose;
+	const escCloseAllowed = !common.disableEscClose;
 
 	// Next SSR 때문에 portal은 클라이언트에서만
 	useEffect(() => {
@@ -37,7 +46,10 @@ export default function ModalRoot() {
 	// ESC 눌러서 닫기
 	useEffect(() => {
 		const handleKey = (e: KeyboardEvent) => {
-			if (e.key === "Escape") handleClose();
+			if (e.key === "Escape") {
+				if (!escCloseAllowed) return;
+				handleClose();
+			}
 		};
 		window.addEventListener("keydown", handleKey);
 		return () => window.removeEventListener("keydown", handleKey);
@@ -45,13 +57,13 @@ export default function ModalRoot() {
 
 	if (!mounted || !modalType) return null;
 
-	const handleClose = () => {
+	function handleClose() {
 		setIsClosing(true);
 		setTimeout(() => {
 			setIsOpen(false);
 			closeModal();
 		}, 400); // 애니메이션 시간과 맞추기
-	};
+	}
 
 	let childrenModal: React.ReactNode = null;
 
@@ -71,10 +83,10 @@ export default function ModalRoot() {
 
 			childrenModal = <ProductOptionModal onClose={handleClose} product={product} />;
 			break;
-		case "ADDRESSUPDATE":
+		case "ADDRESSSET":
 			const { address } = modalProps as { address: UserAddressListItem };
 
-			childrenModal = <AddressUpdateModal onClose={handleClose} address={address} />;
+			childrenModal = <AddressModal onClose={handleClose} address={address} />;
 			break;
 		default:
 			return null;
@@ -91,7 +103,10 @@ export default function ModalRoot() {
         bg-black/50
         ${isClosing ? "animate-fadeOut" : "animate-fadeIn"}
       `}
-			onClick={handleClose}
+			onClick={() => {
+				if (!overlayCloseAllowed) return;
+				handleClose();
+			}}
 		>
 			<div
 				className={`
