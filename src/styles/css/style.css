@@ -908,15 +908,27 @@ main#productDetail section#product-info-section .related-brand-products .brand-t
   left: 50px;
   bottom: calc(50% - 150px);
   border: 1px solid #fff;
-  padding: 8px 20px;
+  font-weight: 600;
+  padding: 8px 14px 8px 20px;
+  background-color: #fff;
+  color: #000;
+  font-weight: 600;
+  border-radius: 5px;
+}
+main#productDetail section#product-info-section .related-brand-products .brand-thumbnail .brand-home-link .clear {
+  background-color: transparent;
   color: #fff;
 }
 main#productDetail section#product-info-section .related-brand-products .brand-thumbnail .brand-home-link .brand-home-link-title {
   font-size: 15px;
 }
 main#productDetail section#product-info-section .related-brand-products .brand-thumbnail .brand-home-link .brand-home-link-arrow {
-  margin-left: 50px;
-  font-size: 30px;
+  font-size: 17px;
+  margin-left: 5px;
+  display: inline-flex;
+}
+main#productDetail section#product-info-section .related-brand-products .brand-thumbnail .brand-home-link .brand-home-link-arrow svg {
+  display: inline;
 }
 main#productDetail section#product-info-section .related-brand-products .brand-other-products {
   margin-top: 20px;
@@ -1041,6 +1053,10 @@ main#productDetail section#etc-info-section .best-short-sleeve-section .rank-tab
   color: #fff;
   background-color: #000;
   border: none;
+}
+main#productDetail section#etc-info-section .best-short-sleeve-section .rank-slider .slider-belt .slider-item .image-box {
+  width: 100%;
+  aspect-ratio: 1/1;
 }
 /* 장바구니 */
 #cart {

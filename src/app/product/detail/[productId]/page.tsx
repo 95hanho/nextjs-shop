@@ -8,6 +8,8 @@ import ProductDescription from "./ProductDescription";
 import TestImage from "@/components/test/TestImage";
 import ProductBlog from "./ProductBlog";
 import { FiHeart } from "react-icons/fi";
+import ImageFill from "@/components/common/ImageFill";
+import { BsChevronRight } from "react-icons/bs";
 
 export default function ProductDetail({
 	params: { productId },
@@ -105,7 +107,7 @@ export default function ProductDetail({
 					</table>
 					<div className="related-brand-products">
 						<div className="brand-thumbnail">
-							<img src={"https://ehfqntuqntu.cdn1.cafe24.com/main/4.jpg"} alt="123" />
+							<ImageFill />
 							<button className="brand-like">
 								<div>
 									<FiHeart />
@@ -115,7 +117,7 @@ export default function ProductDetail({
 							<a className="brand-home-link" href="">
 								<span className="brand-home-link-title">Brand Home</span>
 								<span className="brand-home-link-arrow">
-									<GoArrowRight />
+									<BsChevronRight />
 								</span>
 							</a>
 						</div>
@@ -131,7 +133,7 @@ export default function ProductDetail({
 										<a href=""></a>
 										{/* 이미지 */}
 										<div className="image-box">
-											<img src={"https://ehfqntuqntu.cdn1.cafe24.com/main/4.jpg"} alt="" />
+											<ImageFill />
 											<button>
 												{/* <FaHeart /> */}
 												<FiHeart />
@@ -206,6 +208,7 @@ export default function ProductDetail({
 								<a href=""></a>
 								<div className="image-box">
 									<img src={"https://ehfqntuqntu.cdn1.cafe24.com/main/4.jpg"} alt="" />
+									{/* <ImageFill /> */}
 									<mark>1</mark>
 									<button>
 										<FaHeart />
