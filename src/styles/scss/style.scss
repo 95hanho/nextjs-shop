@@ -2,18 +2,6 @@ body {
 	background-color: #ffffff;
 	min-width: 800px;
 }
-.loding-wrap {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	background-color: rgba(0, 0, 0, 0.1);
-	z-index: 100;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-}
 #header {
 	height: 50px;
 	display: flex;
@@ -873,9 +861,23 @@ main#productDetail {
 				padding: 10px;
 				position: relative;
 				box-sizing: border-box;
-				button {
-					font-size: 15px;
-					font-weight: bold;
+				font-size: 15px;
+				font-weight: bold;
+				width: 100%;
+				> div {
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					span {
+						height: 100%;
+						display: inline-block;
+					}
+					.more-icon {
+						margin-left: 5px;
+						svg {
+							display: inline;
+						}
+					}
 				}
 				&::after {
 					position: absolute;
@@ -1497,7 +1499,12 @@ main#productDetail {
 	/* 배송지 관리 */
 	&.delivery-address {
 		.form-wrap {
+			position: relative;
 			width: 430px;
+			min-height: 300px;
+			.loding-wrap {
+				background-color: #fff;
+			}
 			.address-container {
 				.page-title {
 					margin-bottom: 10px;

@@ -4,19 +4,6 @@ body {
   min-width: 800px;
 }
 
-.loding-wrap {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.1);
-  z-index: 100;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 #header {
   height: 50px;
   display: flex;
@@ -833,10 +820,24 @@ main#productDetail section#product-description .product-blog .description-more-b
   padding: 10px;
   position: relative;
   box-sizing: border-box;
-}
-main#productDetail section#product-description .product-blog .description-more-btn button {
   font-size: 15px;
   font-weight: bold;
+  width: 100%;
+}
+main#productDetail section#product-description .product-blog .description-more-btn > div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+main#productDetail section#product-description .product-blog .description-more-btn > div span {
+  height: 100%;
+  display: inline-block;
+}
+main#productDetail section#product-description .product-blog .description-more-btn > div .more-icon {
+  margin-left: 5px;
+}
+main#productDetail section#product-description .product-blog .description-more-btn > div .more-icon svg {
+  display: inline;
 }
 main#productDetail section#product-description .product-blog .description-more-btn::after {
   position: absolute;
@@ -1382,7 +1383,12 @@ main#productDetail section#etc-info-section .best-short-sleeve-section .rank-tab
   font-size: 30px;
 }
 .user-info.delivery-address .form-wrap {
+  position: relative;
   width: 430px;
+  min-height: 300px;
+}
+.user-info.delivery-address .form-wrap .loding-wrap {
+  background-color: #fff;
 }
 .user-info.delivery-address .form-wrap .address-container .page-title {
   margin-bottom: 10px;

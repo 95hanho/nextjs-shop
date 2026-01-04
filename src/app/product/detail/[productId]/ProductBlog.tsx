@@ -17,12 +17,12 @@ export default function ProductBlog() {
 				))}
 			</div>
 
-			<div className="description-more-btn">
-				<button>
-					상품 설명 {true ? "더보기" : "닫기"}
-					<span>{true ? <IoIosArrowDown /> : <IoIosArrowUp />}</span>
-				</button>
-			</div>
+			<button className="description-more-btn">
+				<div>
+					<span>상품 설명 {true ? "더보기" : "닫기"}</span>
+					<span className="more-icon">{true ? <IoIosArrowDown /> : <IoIosArrowUp />}</span>
+				</div>
+			</button>
 		</article>
 	);
 }

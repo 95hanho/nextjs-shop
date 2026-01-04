@@ -2,6 +2,7 @@
 
 import API_URL from "@/api/endpoints";
 import { deleteNormal, getNormal, postJson } from "@/api/fetchFilter";
+import LodingWrap from "@/components/common/LodingWrap";
 import { AddressForm } from "@/components/modal/AddressModal";
 import OptionSelector from "@/components/ui/OptionSelector";
 import useAuth from "@/hooks/useAuth";
@@ -94,116 +95,120 @@ export default function myAddressPage() {
 		clearModalResult();
 	}, [modalResult]);
 
-	if (isLoading && !userAddressList.length) return null;
+	// if (isLoading && !userAddressList.length) return null;
 	return (
 		<main id="myAddress" className="user-info delivery-address">
 			<div className="form-wrap">
-				<div className="address-container">
-					<h2 className="page-title">배송지 관리</h2>
+				{isLoading || !userAddressList.length ? (
+					<LodingWrap />
+				) : (
+					<div className="address-container">
+						<h2 className="page-title">배송지 관리</h2>
 
-					<ul className="address-list">
-						{userAddressList.map((userAddress) => (
-							<li key={"userAddress" + userAddress.addressId} className="address-item">
-								<h3 className="address-header">
-									<span className="address-name">{userAddress.addressName}</span>
-									{userAddress.defaultAddress && <span className="default-mark">기본배송지</span>}
-								</h3>
+						<ul className="address-list">
+							{userAddressList.map((userAddress) => (
+								<li key={"userAddress" + userAddress.addressId} className="address-item">
+									<h3 className="address-header">
+										<span className="address-name">{userAddress.addressName}</span>
+										{userAddress.defaultAddress && <span className="default-mark">기본배송지</span>}
+									</h3>
 
-								<div className="address-body">
-									{/* 공통 주소 정보 */}
-									<div className="address-row">
-										<span className="address-label">수령인정보</span>
-										<span className="address-value">
-											{userAddress.recipientName} / {userAddress.addressPhone}
-										</span>
-									</div>
-									<div className="address-row">
-										<span className="address-label">주소</span>
-										<span className="address-value">
-											({userAddress.zonecode}) {userAddress.address}
-										</span>
-									</div>
+									<div className="address-body">
+										{/* 공통 주소 정보 */}
+										<div className="address-row">
+											<span className="address-label">수령인정보</span>
+											<span className="address-value">
+												{userAddress.recipientName} / {userAddress.addressPhone}
+											</span>
+										</div>
+										<div className="address-row">
+											<span className="address-label">주소</span>
+											<span className="address-value">
+												({userAddress.zonecode}) {userAddress.address}
+											</span>
+										</div>
 
-									<div className="address-row">
-										<span className="address-label">상세주소</span>
-										<span className="address-value">{userAddress.addressDetail}</span>
-									</div>
+										<div className="address-row">
+											<span className="address-label">상세주소</span>
+											<span className="address-value">{userAddress.addressDetail}</span>
+										</div>
 
-									{/* 배송 메모 */}
-									<div className="address-memo">
-										<div className="address-label">메모</div>
+										{/* 배송 메모 */}
+										<div className="address-memo">
+											<div className="address-label">메모</div>
 
-										<div className="memo-content">
-											<p className="memo-text">{userAddress.memo}</p>
+											<div className="memo-content">
+												<p className="memo-text">{userAddress.memo}</p>
+											</div>
 										</div>
 									</div>
-								</div>
 
-								<div className="address-actions">
-									{!userAddress.defaultAddress && (
+									<div className="address-actions">
+										{!userAddress.defaultAddress && (
+											<button
+												onClick={() => {
+													setChangeAddress({
+														...userAddress,
+														defaultAddress: true,
+													});
+													openModal("CONFIRM", {
+														content: "기본배송지를 변경하시겠습니까??",
+														okResult: "ADDRESS_DEFAULT_CHANGE",
+													});
+												}}
+											>
+												기본배송지로
+											</button>
+										)}
 										<button
+											className="btn-edit"
 											onClick={() => {
-												setChangeAddress({
-													...userAddress,
-													defaultAddress: true,
+												setChangeAddress((prev) => {
+													return { ...userAddress };
 												});
-												openModal("CONFIRM", {
-													content: "기본배송지를 변경하시겠습니까??",
-													okResult: "ADDRESS_DEFAULT_CHANGE",
+												openModal("ADDRESSSET", {
+													address: userAddress,
+													disableOverlayClose: true,
 												});
 											}}
 										>
-											기본배송지로
+											수정
 										</button>
-									)}
-									<button
-										className="btn-edit"
-										onClick={() => {
-											setChangeAddress((prev) => {
-												return { ...userAddress };
-											});
-											openModal("ADDRESSSET", {
-												address: userAddress,
-												disableOverlayClose: true,
-											});
-										}}
-									>
-										수정
-									</button>
-									<button
-										className="btn-delete"
-										onClick={() => {
-											setChangeAddress({
-												...userAddress,
-											});
-											openModal("CONFIRM", {
-												content: `'${userAddress.addressName}' 배송지를 삭제하시겠습니까?`,
-												okResult: "ADDRESS_DELETE",
-											});
-										}}
-									>
-										삭제
-									</button>
-								</div>
-							</li>
-						))}
-					</ul>
+										<button
+											className="btn-delete"
+											onClick={() => {
+												setChangeAddress({
+													...userAddress,
+												});
+												openModal("CONFIRM", {
+													content: `'${userAddress.addressName}' 배송지를 삭제하시겠습니까?`,
+													okResult: "ADDRESS_DELETE",
+												});
+											}}
+										>
+											삭제
+										</button>
+									</div>
+								</li>
+							))}
+						</ul>
 
-					<div className="address-add">
-						<button
-							className="btn-add"
-							onClick={() => {
-								setChangeAddress(null);
-								openModal("ADDRESSSET", {
-									address: undefined,
-									disableOverlayClose: true,
-								});
-							}}
-						>
-							추가 +
-						</button>
+						<div className="address-add">
+							<button
+								className="btn-add"
+								onClick={() => {
+									setChangeAddress(null);
+									openModal("ADDRESSSET", {
+										address: undefined,
+										disableOverlayClose: true,
+									});
+								}}
+							>
+								추가 +
+							</button>
+						</div>
 					</div>
-				</div>
+				)}
 			</div>
 		</main>
 	);

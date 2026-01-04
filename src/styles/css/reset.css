@@ -118,6 +118,9 @@ video {
 	display: block;
 	vertical-align: middle;
 }
+button > svg {
+	display: inline;
+}
 .c-red {
 	color: red !important;
 }

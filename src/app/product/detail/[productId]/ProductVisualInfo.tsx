@@ -21,9 +21,9 @@ export default function ProductVisualInfo() {
 					<div className="product-meta-info">
 						<div className="product-title-wishlist">
 							<div className="product-name">Crown Raive Graphic T-shirt VW5ME601_3color</div>
-							<div className="product-wishlist">
+							<button className="product-wishlist">
 								<FaHeart />
-							</div>
+							</button>
 						</div>
 						<div className="product-review-section">
 							<ReviewStar />
