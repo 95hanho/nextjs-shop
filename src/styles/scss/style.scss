@@ -956,14 +956,26 @@ main#productDetail {
 					left: 50px;
 					bottom: calc(50% - 150px);
 					border: 1px solid #fff;
-					padding: 8px 20px;
-					color: #fff;
+					font-weight: 600;
+					padding: 8px 14px 8px 20px;
+					background-color: #fff;
+					color: #000;
+					font-weight: 600;
+					border-radius: 5px;
+					.clear {
+						background-color: transparent;
+						color: #fff;
+					}
 					.brand-home-link-title {
 						font-size: 15px;
 					}
 					.brand-home-link-arrow {
-						margin-left: 50px;
-						font-size: 30px;
+						font-size: 17px;
+						margin-left: 5px;
+						display: inline-flex;
+						svg {
+							display: inline;
+						}
 					}
 				}
 			}
@@ -1099,6 +1111,8 @@ main#productDetail {
 						a {
 						}
 						.image-box {
+							width: 100%;
+							aspect-ratio: 1 / 1; // width와 height를 같게 설정
 						}
 						h4 {
 						}
