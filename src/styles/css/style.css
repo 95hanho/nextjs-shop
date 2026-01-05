@@ -580,9 +580,11 @@ main#productDetail {
   max-width: 1200px;
   padding: 0 30px;
   margin: 0 auto;
+  margin-bottom: 100px;
   /* 상품 사진 및 가격배송 정보 */
   /* 업체등록 상품 상세 블로그 */
   /* 상품정보 보기, 판매자 정보 */
+  /* 상품리뷰 뷰 */
   /* 배송정보, 교환, 환불, A/S안내, 같은 카테고리 추천 */
 }
 main#productDetail section#product-visual-info {
@@ -618,13 +620,15 @@ main#productDetail section#product-visual-info .product-text-info .product-meta-
 main#productDetail section#product-visual-info .product-text-info .product-meta-info .product-review-section {
   display: flex;
   font-size: 11px;
+  align-items: center;
 }
 main#productDetail section#product-visual-info .product-text-info .product-meta-info .product-review-section a {
+  margin-left: 10px;
   color: #494949;
   text-decoration: underline;
 }
 main#productDetail section#product-visual-info .product-text-info .product-meta-info .product-price-info {
-  padding-top: 10px;
+  margin-top: 8px;
 }
 main#productDetail section#product-visual-info .product-text-info .product-meta-info .product-price-info .original-price {
   font-size: 12px;
@@ -931,62 +935,59 @@ main#productDetail section#product-info-section .related-brand-products .brand-t
 main#productDetail section#product-info-section .related-brand-products .brand-thumbnail .brand-home-link .brand-home-link-arrow svg {
   display: inline;
 }
-main#productDetail section#product-info-section .related-brand-products .brand-other-products {
+main#productDetail section#product-info-section .brand-other-products h3 {
+  margin-top: 30px;
+  font-size: 18px;
+}
+main#productDetail section#product-info-section .brand-other-products .image-slide {
   margin-top: 20px;
 }
-main#productDetail section#product-info-section .related-brand-products .brand-other-products .product-slider {
+main#productDetail section#product-info-section .brand-other-products .image-slide .slider-item {
   position: relative;
-  width: 100%;
-  overflow: hidden;
 }
-main#productDetail section#product-info-section .related-brand-products .brand-other-products .product-slider .slider-belt {
-  display: flex;
-  flex-wrap: wrap;
-}
-main#productDetail section#product-info-section .related-brand-products .brand-other-products .product-slider .slider-belt .slider-item {
-  position: relative;
-  width: 20%;
-}
-main#productDetail section#product-info-section .related-brand-products .brand-other-products .product-slider .slider-belt .slider-item a {
+main#productDetail section#product-info-section .brand-other-products .image-slide .slider-item a {
   position: absolute;
   width: 100%;
   height: 100%;
 }
-main#productDetail section#product-info-section .related-brand-products .brand-other-products .product-slider .slider-belt .slider-item .image-box {
+main#productDetail section#product-info-section .brand-other-products .image-slide .slider-item .image-box {
+  position: relative;
   width: 100%;
   aspect-ratio: 1/1;
 }
-main#productDetail section#product-info-section .related-brand-products .brand-other-products .product-slider .slider-belt .slider-item .image-box img {
+main#productDetail section#product-info-section .brand-other-products .image-slide .slider-item .image-box img {
   width: 100%;
   height: 100%;
   display: block;
 }
-main#productDetail section#product-info-section .related-brand-products .brand-other-products .product-slider .slider-belt .slider-item .image-box button {
+main#productDetail section#product-info-section .brand-other-products .image-slide .slider-item .image-box button {
   position: absolute;
   top: 5px;
   right: 10px;
   font-size: 20px;
   color: #fff;
 }
-main#productDetail section#product-info-section .related-brand-products .brand-other-products .product-slider .slider-belt .slider-item p {
+main#productDetail section#product-info-section .brand-other-products .image-slide .slider-item .slide-product-name {
+  padding: 5px 5px;
+}
+main#productDetail section#product-info-section .brand-other-products .image-slide .slider-item .slide-product-name p {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   font-size: 12px;
-  padding: 5px 5px;
 }
-main#productDetail section#product-info-section .related-brand-products .brand-other-products .product-slider .slider-belt .slider-item h4 {
+main#productDetail section#product-info-section .brand-other-products .image-slide .slider-item h5 {
   font-size: 14px;
   padding: 0 5px;
 }
-main#productDetail section#product-info-section .related-brand-products .brand-other-products .product-slider .slider-belt .slider-item h4 b {
+main#productDetail section#product-info-section .brand-other-products .image-slide .slider-item h5 b {
   color: #f35b1f;
   vertical-align: middle;
 }
-main#productDetail section#product-info-section .related-brand-products .brand-other-products .product-slider .slider-belt .slider-item h4 span {
+main#productDetail section#product-info-section .brand-other-products .image-slide .slider-item h5 span {
   margin-left: 5px;
 }
-main#productDetail section#product-info-section .related-brand-products .brand-other-products .product-slider .slider-pagination {
+main#productDetail section#product-info-section .brand-other-products .image-slide .slider-pagination {
   padding: 15px 0;
   text-align: center;
   font-size: 30px;
@@ -994,12 +995,12 @@ main#productDetail section#product-info-section .related-brand-products .brand-o
   color: #ccc;
   font-style: italic;
 }
-main#productDetail section#product-info-section .related-brand-products .brand-other-products .product-slider .slider-pagination span {
+main#productDetail section#product-info-section .brand-other-products .image-slide .slider-pagination button {
   padding: 0 20px;
   vertical-align: baseline;
   font-size: 40px;
 }
-main#productDetail section#product-info-section .related-brand-products .brand-other-products .product-slider .slider-pagination strong {
+main#productDetail section#product-info-section .brand-other-products .image-slide .slider-pagination strong {
   vertical-align: baseline;
   color: #555;
 }
@@ -1055,10 +1056,79 @@ main#productDetail section#etc-info-section .best-short-sleeve-section .rank-tab
   background-color: #000;
   border: none;
 }
-main#productDetail section#etc-info-section .best-short-sleeve-section .rank-slider .slider-belt .slider-item .image-box {
+main#productDetail section#etc-info-section .best-short-sleeve-section .image-slide {
+  margin-top: 20px;
+}
+main#productDetail section#etc-info-section .best-short-sleeve-section .image-slide .slider-item {
+  position: relative;
+}
+main#productDetail section#etc-info-section .best-short-sleeve-section .image-slide .slider-item a {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+main#productDetail section#etc-info-section .best-short-sleeve-section .image-slide .slider-item .image-box {
+  position: relative;
   width: 100%;
   aspect-ratio: 1/1;
 }
+main#productDetail section#etc-info-section .best-short-sleeve-section .image-slide .slider-item .image-box img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+main#productDetail section#etc-info-section .best-short-sleeve-section .image-slide .slider-item .image-box mark {
+  position: absolute;
+  background-color: #000;
+  color: #fff;
+  padding: 0 6.1px;
+  font-size: 14px;
+}
+main#productDetail section#etc-info-section .best-short-sleeve-section .image-slide .slider-item .image-box button {
+  position: absolute;
+  top: 5px;
+  right: 10px;
+  font-size: 20px;
+  color: #fff;
+}
+main#productDetail section#etc-info-section .best-short-sleeve-section .image-slide .slider-item .slide-product-name {
+  padding: 5px 5px;
+}
+main#productDetail section#etc-info-section .best-short-sleeve-section .image-slide .slider-item .slide-product-name p {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 12px;
+}
+main#productDetail section#etc-info-section .best-short-sleeve-section .image-slide .slider-item h5 {
+  font-size: 14px;
+  padding: 0 5px;
+}
+main#productDetail section#etc-info-section .best-short-sleeve-section .image-slide .slider-item h5 b {
+  color: #f35b1f;
+  vertical-align: middle;
+}
+main#productDetail section#etc-info-section .best-short-sleeve-section .image-slide .slider-item h5 span {
+  margin-left: 5px;
+}
+main#productDetail section#etc-info-section .best-short-sleeve-section .image-slide .slider-pagination {
+  padding: 15px 0;
+  text-align: center;
+  font-size: 30px;
+  font-weight: 100;
+  color: #ccc;
+  font-style: italic;
+}
+main#productDetail section#etc-info-section .best-short-sleeve-section .image-slide .slider-pagination button {
+  padding: 0 20px;
+  vertical-align: baseline;
+  font-size: 40px;
+}
+main#productDetail section#etc-info-section .best-short-sleeve-section .image-slide .slider-pagination strong {
+  vertical-align: baseline;
+  color: #555;
+}
+
 /* 장바구니 */
 #cart {
   height: 2000px;

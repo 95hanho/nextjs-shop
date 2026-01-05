@@ -26,7 +26,7 @@ export default function ProductVisualInfo() {
 							</button>
 						</div>
 						<div className="product-review-section">
-							<ReviewStar />
+							<ReviewStar rate={3.5} size={15} />
 							<Link href="">274개 리뷰보기</Link>
 						</div>
 						<div className="product-price-info">

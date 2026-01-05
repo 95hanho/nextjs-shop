@@ -10,6 +10,13 @@ import ProductBlog from "./ProductBlog";
 import { FiHeart } from "react-icons/fi";
 import ImageFill from "@/components/common/ImageFill";
 import { BsChevronRight } from "react-icons/bs";
+import ImageSlide from "@/components/product/ImageSlide";
+import { Product } from "@/types/product";
+import Link from "next/link";
+import { money } from "@/lib/format";
+import BrandOtherProducts from "./BrandOtherProducts";
+import BestRankProducts from "./BestRankProducts";
+import ProductReview from "./ProductReview";
 
 export default function ProductDetail({
 	params: { productId },
@@ -121,46 +128,17 @@ export default function ProductDetail({
 								</span>
 							</a>
 						</div>
-
-						<div className="brand-other-products">
+					</div>
+					<div className="brand-other-products">
+						<h3>판매자 다른 상품</h3>
+						<div className="image-slide">
 							{/* 슬라이드 */}
-							<div className="product-slider">
-								{/* 슬라이드 벨트 */}
-								<div className="slider-belt">
-									{/* 슬라이드 요소 */}
-									<div className="slider-item">
-										{/* 전체 링크 */}
-										<a href=""></a>
-										{/* 이미지 */}
-										<div className="image-box">
-											<ImageFill />
-											<button>
-												{/* <FaHeart /> */}
-												<FiHeart />
-											</button>
-										</div>
-										<p>Waist String Wide Pants VW5ML470_3color</p>
-										<h4>
-											<b>10%</b>
-											<span>128,000</span>
-										</h4>
-									</div>
-								</div>
-								<div className="slider-pagination">
-									<span>
-										<RiArrowLeftSLine />
-									</span>{" "}
-									<strong>3</strong> / 4{" "}
-									<span>
-										<RiArrowRightSLine />
-									</span>
-								</div>
-							</div>
+							<BrandOtherProducts />
 						</div>
 					</div>
 				</article>
 			</section>
-			{/* <Review /> */}
+			<ProductReview />
 			{/* <QuestionAnswer /> */}
 			{/* 배송정보, 교환, 환불, A/S안내, 같은 카테고리 추천 */}
 			<section id="etc-info-section">
@@ -200,32 +178,9 @@ export default function ProductDetail({
 						<button>월간</button>
 					</div>
 					{/* 슬라이드 */}
-					<div className="rank-slider">
+					<div className="image-slide">
 						{/* 슬라이드 벨트 */}
-						<div className="slider-belt">
-							{/* 슬라이드요소 */}
-							<div className="slider-item">
-								<a href=""></a>
-								<div className="image-box">
-									<img src={"https://ehfqntuqntu.cdn1.cafe24.com/main/4.jpg"} alt="" />
-									{/* <ImageFill /> */}
-									<mark>1</mark>
-									<button>
-										<FaHeart />
-									</button>
-								</div>
-								<h4>마리떼 프랑소와 저버</h4>
-								<p>W CLASSIC LOGO TEE (7color)</p>
-								<p>
-									<b>15%</b>
-									<span>41,895</span>
-								</p>
-							</div>
-						</div>
-						<div className="slider-pagination">
-							<RiArrowRightSLine /> 1 / 10
-							<RiArrowLeftSLine />
-						</div>
+						<BestRankProducts />
 					</div>
 				</div>
 			</section>

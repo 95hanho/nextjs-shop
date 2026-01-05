@@ -602,6 +602,7 @@ main#productDetail {
 	max-width: 1200px;
 	padding: 0 30px;
 	margin: 0 auto;
+	margin-bottom: 100px;
 	/* 상품 사진 및 가격배송 정보 */
 	section#product-visual-info {
 		display: flex;
@@ -637,13 +638,15 @@ main#productDetail {
 				.product-review-section {
 					display: flex;
 					font-size: 11px;
+					align-items: center;
 					a {
+						margin-left: 10px;
 						color: #494949;
 						text-decoration: underline;
 					}
 				}
 				.product-price-info {
-					padding-top: 10px;
+					margin-top: 8px;
 					.original-price {
 						font-size: 12px;
 						font-weight: 500;
@@ -979,80 +982,81 @@ main#productDetail {
 					}
 				}
 			}
-			.brand-other-products {
+		}
+		.brand-other-products {
+			h3 {
+				margin-top: 30px;
+				font-size: 18px;
+			}
+			.image-slide {
 				margin-top: 20px;
-				.product-slider {
+				.slider-item {
 					position: relative;
-					width: 100%;
-					overflow: hidden;
-					.slider-belt {
-						display: flex;
-						flex-wrap: wrap;
-						.slider-item {
-							position: relative;
-							width: 20%;
-							a {
-								position: absolute;
-								width: 100%;
-								height: 100%;
-							}
-							.image-box {
-								width: 100%;
-								aspect-ratio: 1 / 1; // width와 height를 같게 설정
-								img {
-									width: 100%;
-									height: 100%;
-									display: block;
-								}
-								button {
-									position: absolute;
-									top: 5px;
-									right: 10px;
-									font-size: 20px;
-									color: #fff;
-								}
-							}
-							p {
-								white-space: nowrap;
-								overflow: hidden;
-								text-overflow: ellipsis;
-								font-size: 12px;
-								padding: 5px 5px;
-							}
-							h4 {
-								font-size: 14px;
-								padding: 0 5px;
-								b {
-									color: #f35b1f;
-									vertical-align: middle;
-								}
-								span {
-									margin-left: 5px;
-								}
-							}
+					a {
+						position: absolute;
+						width: 100%;
+						height: 100%;
+					}
+					.image-box {
+						position: relative;
+						width: 100%;
+						aspect-ratio: 1 / 1; // width와 height를 같게 설정
+						img {
+							width: 100%;
+							height: 100%;
+							display: block;
+						}
+						button {
+							position: absolute;
+							top: 5px;
+							right: 10px;
+							font-size: 20px;
+							color: #fff;
 						}
 					}
-					.slider-pagination {
-						padding: 15px 0;
-						text-align: center;
-						font-size: 30px;
-						font-weight: 100;
-						color: #ccc;
-						font-style: italic;
-
+					.slide-product-name {
+						padding: 5px 5px;
+						p {
+							white-space: nowrap;
+							overflow: hidden;
+							text-overflow: ellipsis;
+							font-size: 12px;
+						}
+					}
+					h5 {
+						font-size: 14px;
+						padding: 0 5px;
+						b {
+							color: #f35b1f;
+							vertical-align: middle;
+						}
 						span {
-							padding: 0 20px;
-							vertical-align: baseline;
-							font-size: 40px;
+							margin-left: 5px;
 						}
-						strong {
-							vertical-align: baseline;
-							color: #555;
-						}
+					}
+				}
+				.slider-pagination {
+					padding: 15px 0;
+					text-align: center;
+					font-size: 30px;
+					font-weight: 100;
+					color: #ccc;
+					font-style: italic;
+					button {
+						padding: 0 20px;
+						vertical-align: baseline;
+						font-size: 40px;
+					}
+					strong {
+						vertical-align: baseline;
+						color: #555;
 					}
 				}
 			}
 		}
+	}
+	/* 상품리뷰 뷰 */
+	section#review-info-section {
 	}
 	/* 배송정보, 교환, 환불, A/S안내, 같은 카테고리 추천 */
 	section#etc-info-section {
@@ -1105,19 +1109,75 @@ main#productDetail {
 					}
 				}
 			}
-			.rank-slider {
-				.slider-belt {
-					.slider-item {
-						a {
-						}
-						.image-box {
+			.image-slide {
+				margin-top: 20px;
+				.slider-item {
+					position: relative;
+					a {
+						position: absolute;
+						width: 100%;
+						height: 100%;
+					}
+					.image-box {
+						position: relative;
+						width: 100%;
+						aspect-ratio: 1 / 1; // width와 height를 같게 설정
+						img {
 							width: 100%;
-							aspect-ratio: 1 / 1; // width와 height를 같게 설정
+							height: 100%;
+							display: block;
 						}
-						h4 {
+						mark {
+							position: absolute;
+							background-color: #000;
+							color: #fff;
+							padding: 0 6.1px;
+							font-size: 14px;
 						}
+						button {
+							position: absolute;
+							top: 5px;
+							right: 10px;
+							font-size: 20px;
+							color: #fff;
+						}
+					}
+					.slide-product-name {
+						padding: 5px 5px;
 						p {
+							white-space: nowrap;
+							overflow: hidden;
+							text-overflow: ellipsis;
+							font-size: 12px;
 						}
+					}
+					h5 {
+						font-size: 14px;
+						padding: 0 5px;
+						b {
+							color: #f35b1f;
+							vertical-align: middle;
+						}
+						span {
+							margin-left: 5px;
+						}
+					}
+				}
+				.slider-pagination {
+					padding: 15px 0;
+					text-align: center;
+					font-size: 30px;
+					font-weight: 100;
+					color: #ccc;
+					font-style: italic;
+					button {
+						padding: 0 20px;
+						vertical-align: baseline;
+						font-size: 40px;
+					}
+					strong {
+						vertical-align: baseline;
+						color: #555;
 					}
 				}
 			}
