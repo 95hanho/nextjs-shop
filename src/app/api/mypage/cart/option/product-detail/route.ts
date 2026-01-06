@@ -2,10 +2,10 @@ import API_URL from "@/api/endpoints";
 import { getNormal } from "@/api/fetchFilter";
 import { withAuth } from "@/lib/auth";
 import { getBackendUrl } from "@/lib/getBaseUrl";
-import { GetCartOptionProductDetailListResponse } from "@/types/mypage";
+import { GetCartOptionProductOptionListResponse } from "@/types/mypage";
 import { NextResponse } from "next/server";
 
-// 장바구니 제품 다른detail조회
+// 장바구니 제품 다른 option조회
 export const GET = withAuth(async ({ nextRequest }) => {
 	// query 접근 (App Router에서는 req.nextUrl.searchParams)
 	const search = Object.fromEntries(nextRequest.nextUrl.searchParams.entries());
@@ -16,8 +16,8 @@ export const GET = withAuth(async ({ nextRequest }) => {
 	try {
 		const productId = nextRequest.nextUrl.searchParams.get("productId");
 		if (!productId) return NextResponse.json({ message: "잘 못 된 요청입니다." }, { status: 400 });
-		const data = await getNormal<GetCartOptionProductDetailListResponse>(getBackendUrl(API_URL.MY_CART_OPTION_PRODUCT_DETAIL), { productId });
-		// console.log("cartOptionProductDetailList", data);
+		const data = await getNormal<GetCartOptionProductOptionListResponse>(getBackendUrl(API_URL.MY_CART_OPTION_PRODUCT_DETAIL), { productId });
+		// console.log("cartOptionProductOptionList", data);
 
 		return NextResponse.json({ ...data }, { status: 200 });
 	} catch (err: any) {

@@ -1,7 +1,7 @@
 import { BaseResponse } from "./common";
 import { FileInfo } from "./file";
 import { Menu } from "./main";
-import { ProductDetail } from "./product";
+import { ProductOption } from "./product";
 // 쿠폰
 export type Coupon = {
 	couponId: number;
@@ -87,7 +87,7 @@ export interface UserCouponResponse extends BaseResponse {
 export type MyOrderItem = OrderItem & {
 	orderId: number;
 	holdId: number;
-	productDetailId: number;
+	productOptionId: number;
 	addPrice: number;
 	size: string;
 	productId: number;
@@ -127,7 +127,7 @@ export type MyOrderDetailItem = OrderItem & {
 	maxDiscount: null;
 	minimumOrderBeforeAmount: 80000.0;
 	holdId: 99;
-	productDetailId: 101;
+	productOptionId: 101;
 	addPrice: 0;
 	size: "M";
 	productId: 27;
@@ -178,7 +178,7 @@ export interface writeReviewRequest {
 }
 /*  */
 export type CartItem = Cart & {
-	productDetailId: number;
+	productOptionId: number;
 	addPrice: number;
 	stock: number;
 	size: string;
@@ -201,7 +201,7 @@ export interface GetCartResponse extends BaseResponse {
 /*  */
 export interface UpdateCartRequest {
 	cartId: number;
-	productDetailId: number;
+	productOptionId: number;
 	quantity: number;
 }
 /*  */
@@ -210,8 +210,8 @@ export interface UpdateCartSelectedRequest {
 	selected: boolean;
 }
 /*  */
-export interface GetCartOptionProductDetailListResponse extends BaseResponse {
-	cartOptionProductDetailList: ProductDetail[];
+export interface GetCartOptionProductOptionListResponse extends BaseResponse {
+	cartOptionProductOptionList: ProductOption[];
 }
 /*  */
 export type wishlistItem = {

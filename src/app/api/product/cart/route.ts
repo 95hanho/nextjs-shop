@@ -9,10 +9,10 @@ import { NextResponse } from "next/server";
 // 장바구니 넣기
 export const POST = withAuth(async ({ nextRequest, userId }) => {
 	try {
-		const { productDetailId, quantity } = await nextRequest.json();
-		if (!productDetailId || !userId || !quantity) return NextResponse.json({ message: "잘 못 된 요청입니다." }, { status: 400 });
+		const { productOptionId, quantity } = await nextRequest.json();
+		if (!productOptionId || !userId || !quantity) return NextResponse.json({ message: "잘 못 된 요청입니다." }, { status: 400 });
 
-		const payload: AddCartRequest = { productDetailId, quantity, userId };
+		const payload: AddCartRequest = { productOptionId, quantity, userId };
 		const data = await postUrlFormData<BaseResponse>(getBackendUrl(API_URL.PRODUCT_CART), { ...payload });
 		console.log("data", data);
 

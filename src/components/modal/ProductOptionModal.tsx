@@ -6,7 +6,7 @@ import { FaMinus, FaPlus } from "react-icons/fa";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import OptionSelector from "../ui/OptionSelector";
 import { FiMinus, FiPlus } from "react-icons/fi";
-import { CartItem, GetCartOptionProductDetailListResponse } from "@/types/mypage";
+import { CartItem, GetCartOptionProductOptionListResponse } from "@/types/mypage";
 import { useQuery } from "@tanstack/react-query";
 import API_URL from "@/api/endpoints";
 import { getApiUrl } from "@/lib/getBaseUrl";
@@ -22,34 +22,34 @@ export default function ProductOptionModal({ onClose, product }: ProductOptionMo
 	if (!product) return null;
 	const { resolveModal } = useModalStore();
 	// 제품상세옵션 리스트
-	// invalidateQueries(["cartOptionProductDetailList"])
+	// invalidateQueries(["cartOptionProductOptionList"])
 	const {
 		data: optionResponse,
 		isLoading,
 		isFetching,
-	} = useQuery<GetCartOptionProductDetailListResponse>({
-		queryKey: ["cartOptionProductDetailList", product.productId],
+	} = useQuery<GetCartOptionProductOptionListResponse>({
+		queryKey: ["cartOptionProductOptionList", product.productId],
 		queryFn: () => getNormal(getApiUrl(API_URL.MY_CART_OPTION_PRODUCT_DETAIL), { productId: product.productId }),
 		enabled: !!product?.productId,
 	});
 
-	// ✅ 선택된 옵션(productDetailId) 관리
-	const [pickId, setPickId] = useState<number>(product.productDetailId);
+	// ✅ 선택된 옵션(productOptionId) 관리
+	const [pickId, setPickId] = useState<number>(product.productOptionId);
 	//
 	const [productCount, setProductCount] = useState<number>(product.quantity);
 	// 원래 선택된 옵션과 같은지
 	const isSameOption = () => {
-		return pickId === product.productDetailId && productCount === product.quantity ? " off" : "";
+		return pickId === product.productOptionId && productCount === product.quantity ? " off" : "";
 	};
 
 	// ✅ optionResponse 들어오면, pickId가 없거나 유효하지 않을 때 기본값 보정
 	useEffect(() => {
-		const list = optionResponse?.cartOptionProductDetailList;
+		const list = optionResponse?.cartOptionProductOptionList;
 		if (!list || list.length === 0) return;
 
-		const exists = list.some((d) => d.productDetailId === pickId);
-		if (!exists) setPickId(product.productDetailId);
-	}, [optionResponse, product.productDetailId, pickId]);
+		const exists = list.some((d) => d.productOptionId === pickId);
+		if (!exists) setPickId(product.productOptionId);
+	}, [optionResponse, product.productOptionId, pickId]);
 
 	const optionSelectorEle = () => {
 		// 1) 로딩 중(최초)
@@ -59,7 +59,7 @@ export default function ProductOptionModal({ onClose, product }: ProductOptionMo
 				<OptionSelector
 					optionSelectorName="productVisualOption"
 					initData={{
-						id: product.productDetailId,
+						id: product.productOptionId,
 						val: `${product.size}(+${product.addPrice})`,
 					}}
 				/>
@@ -67,13 +67,13 @@ export default function ProductOptionModal({ onClose, product }: ProductOptionMo
 		}
 
 		// 2) 데이터 없음/비정상
-		const productDetailList = optionResponse?.cartOptionProductDetailList ?? [];
-		if (productDetailList.length === 0) {
+		const productOptionList = optionResponse?.cartOptionProductOptionList ?? [];
+		if (productOptionList.length === 0) {
 			return (
 				<OptionSelector
 					optionSelectorName="productVisualOption"
 					initData={{
-						id: product.productDetailId,
+						id: product.productOptionId,
 						val: `${product.size}(+${product.addPrice})`,
 					}}
 				/>
@@ -81,10 +81,10 @@ export default function ProductOptionModal({ onClose, product }: ProductOptionMo
 		}
 
 		// 3) 정상 데이터
-		const optionList = productDetailList.map((detail) => {
+		const optionList = productOptionList.map((detail) => {
 			const addPriceMark = detail.addPrice > 0 ? `(+${detail.addPrice})` : "";
 			return {
-				id: detail.productDetailId,
+				id: detail.productOptionId,
 				val: `${detail.size}${addPriceMark}`,
 				description: "내일(금) 출고 예정",
 			};
@@ -99,7 +99,7 @@ export default function ProductOptionModal({ onClose, product }: ProductOptionMo
 			<OptionSelector
 				optionSelectorName="productVisualOption"
 				initData={{
-					id: product.productDetailId,
+					id: product.productOptionId,
 					val: `${product.size}${addPriceMark}`,
 				}}
 				pickIdx={pickIdx}
@@ -158,8 +158,8 @@ export default function ProductOptionModal({ onClose, product }: ProductOptionMo
 								action: "PRODUCTOPTION_CHANGED",
 								payload: {
 									cartId: product.cartId,
-									originProductDetailId: product.productDetailId,
-									productDetailId: pickId,
+									originProductOptionId: product.productOptionId,
+									productOptionId: pickId,
 									quantity: productCount,
 								},
 							});

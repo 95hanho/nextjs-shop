@@ -10,8 +10,8 @@ export type Product = {
 	viewCount: number;
 	wishCount: number;
 };
-export type ProductDetail = {
-	productDetailId: number;
+export type ProductOption = {
+	productOptionId: number;
 	productId: number;
 	addPrice: number;
 	stock: number;
@@ -38,7 +38,7 @@ export interface GetProductListResponse {
 }
 /*  */
 export interface AddCartRequest {
-	productDetailId: number;
+	productOptionId: number;
 	quantity: number;
 	userId: string;
 }

@@ -54,7 +54,7 @@ const API_URL = {
 	/** 장바구니 조회, 장바구니 제품 수량 변경, 장바구니 선택여부 변경, 장바구니 제품 삭제 */
 	MY_CART: "/mypage/cart",
 	/** 장바구니 제품 삭제 */
-	MY_CART_OPTION_PRODUCT_DETAIL: "/mypage/cart/option/product-detail",
+	MY_CART_OPTION_PRODUCT_DETAIL: "/mypage/cart/option/product-option",
 	/** 위시리스트 조회 */
 	MY_WISH: "/mypage/wish",
 	/** 위시리스트 삭제 */
@@ -80,7 +80,7 @@ const API_URL = {
 	/** 판매자 제품 조회, 판매자제품추가/수정 */
 	SELLER_PRODUCT: "/seller/product",
 	/** 판매자제품상세추가, 판매자제품상세변경 */
-	SELLER_PRODUCT_DETAIL: "/seller/product/detail",
+	SELLER_PRODUCT_DETAIL: "/seller/product/option",
 	/** 판매자쿠폰조회, 판매자쿠폰등록 */
 	SELLER_COUPON: "/seller/coupon",
 	/** 판매자 쿠폰 상태 변경 */

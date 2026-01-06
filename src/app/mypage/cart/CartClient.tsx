@@ -48,8 +48,8 @@ export default function CartClient() {
 	});
 	// 장바구니 제품 옵션/수량 변경
 	const handleChangeQuantity = useMutation<BaseResponse, Error, UpdateCartRequest>({
-		mutationFn: ({ cartId, productDetailId, quantity }) =>
-			postJson<BaseResponse>(getApiUrl(API_URL.MY_CART), { cartId, productDetailId, quantity }),
+		mutationFn: ({ cartId, productOptionId, quantity }) =>
+			postJson<BaseResponse>(getApiUrl(API_URL.MY_CART), { cartId, productOptionId, quantity }),
 		// Mutation이 시작되기 직전에 특정 작업을 수행
 		onMutate(variables) {
 			console.log(variables);
@@ -133,12 +133,12 @@ export default function CartClient() {
 			const p = modalResult.payload as ModalResultMap["PRODUCTOPTION_CHANGED"];
 
 			// ✅ 여기서 장바구니 상태 갱신 / react-query invalidate / toast 등 처리
-			// await mutateOptionChange(p.nextProductDetailId) ...
+			// await mutateOptionChange(p.nextProductOptionId) ...
 			// queryClient.invalidateQueries({ queryKey: ["cartList"] });
 
 			console.log("옵션 변경 결과:", p);
 			const changeCartOption = async () => {
-				await handleChangeQuantity.mutateAsync({ cartId: p.cartId, productDetailId: p.productDetailId, quantity: p.quantity });
+				await handleChangeQuantity.mutateAsync({ cartId: p.cartId, productOptionId: p.productOptionId, quantity: p.quantity });
 				queryClient.invalidateQueries({ queryKey: ["cartList"] });
 			};
 			changeCartOption();

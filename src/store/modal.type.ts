@@ -35,8 +35,8 @@ export type ModalProps<T extends ModalType = ModalType> = T extends null ? {} : 
 export type ModalResultMap = {
 	PRODUCTOPTION_CHANGED: {
 		cartId: number;
-		originProductDetailId: number;
-		productDetailId: number;
+		originProductOptionId: number;
+		productOptionId: number;
 		quantity: number;
 	};
 	//
