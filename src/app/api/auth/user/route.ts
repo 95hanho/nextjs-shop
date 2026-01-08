@@ -79,17 +79,22 @@ export const POST = async (nextRequest: NextRequest) => {
 };
 
 // 회원정보변경
-export const PUT = withAuth(async ({ nextRequest, userId }) => {
+export const PUT = withAuth(async ({ nextRequest, accessToken }) => {
 	try {
 		const { phone, email }: JoinForm = await nextRequest.json();
 		if (!phone) return NextResponse.json({ message: "핸드폰번호를 입력해주세요." }, { status: 400 });
 		if (!email) return NextResponse.json({ message: "이메일을 입력해주세요." }, { status: 400 });
 
-		const data = await putUrlFormData<BaseResponse>(getBackendUrl(API_URL.AUTH_JOIN), {
-			userId,
-			phone,
-			email,
-		});
+		const data = await putUrlFormData<BaseResponse>(
+			getBackendUrl(API_URL.AUTH_JOIN),
+			{
+				phone,
+				email,
+			},
+			{
+				Authorization: `Bearer ${accessToken}`,
+			}
+		);
 		console.log("data", data);
 		const payload: UserUpdateResponse = { message: data.message, email, phone };
 

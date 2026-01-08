@@ -4,7 +4,6 @@ import ReviewStar from "@/components/product/ReviewStar";
 import TestImage from "@/components/test/TestImage";
 import OptionSelector from "@/components/ui/OptionSelector";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
 import { FaHeart } from "react-icons/fa";
 import { GoQuestion } from "react-icons/go";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
@@ -88,29 +87,32 @@ export default function ProductVisualInfo() {
 						</div>
 					</div>
 					<div className="product-option-buy">
-						<OptionSelector
-							optionSelectorName="productVisualOption"
-							pickIdx={0}
-							initData={{
-								id: 1,
-								val: "COLOR:SIZE",
-							}}
-							optionList={[
-								{
+						<div className="product-option-select">
+							<OptionSelector
+								optionSelectorName="productVisualOption"
+								pickIdx={0}
+								initData={{
 									id: 1,
 									val: "COLOR:SIZE",
-								},
-								{
-									id: 2,
-									val: "WHITE:0S",
-								},
-								{
-									id: 3,
-									val: "WHITE:01S",
-								},
-							]}
-							changeOption={(idx, id) => {}}
-						/>
+								}}
+								optionList={[
+									{
+										id: 1,
+										val: "COLOR:SIZE",
+									},
+									{
+										id: 2,
+										val: "WHITE:0S",
+									},
+									{
+										id: 3,
+										val: "WHITE:01S",
+									},
+								]}
+								changeOption={(idx, id) => {}}
+							/>
+						</div>
+
 						<div className="action-buttons">
 							<button className="btn-cart">장바구니 담기</button>
 							<button className="btn-buy">바로 구매하기</button>

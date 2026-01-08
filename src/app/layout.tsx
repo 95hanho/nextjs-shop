@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Inter, Roboto_Mono } from "next/font/google";
-import "@/styles/css/font.css";
 import "@/styles/css/reset.css";
 import "@/styles/css/style.css";
 import "@/styles/css/globals.css";
@@ -15,7 +14,7 @@ import { redirect } from "next/navigation";
 import TokenCheck from "@/components/common/TokenCheck";
 import Header from "@/components/common/Header";
 import { cookies } from "next/headers";
-import ModalRoot from "@/components/modal/ModalRoot";
+import ModalRoot from "@/components/modal/core/ModalRoot";
 
 const inter = Inter({
 	subsets: ["latin"],

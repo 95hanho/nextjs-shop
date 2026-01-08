@@ -1,4 +1,4 @@
-import { AddressForm } from "@/components/modal/AddressModal";
+import { AddressForm } from "@/components/modal/variants/AddressModal";
 import { CartItem, UserAddressListItem } from "@/types/mypage";
 
 // modal타입
@@ -17,7 +17,7 @@ export type ModalPropsMap = {
 	CONFIRM: ModalCommon & {
 		content: string;
 		title?: string;
-		okText?: string;
+		confirmText?: string;
 		okResult?: string;
 		cancelText?: string;
 		cancelResult?: string;

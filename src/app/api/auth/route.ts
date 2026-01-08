@@ -12,11 +12,17 @@ import { NextRequest, NextResponse } from "next/server";
 // 회원정보가져오기
 // - 초기패이지로딩(로그인되어있을 때), 로그인, 로그아웃, 유저정보필요할 때, 유저정보수정(상태변화)
 // 할 때 바로 가져올 수 있게 useQuery 실행함.
-export const GET = withAuth(async ({ nextRequest, userId }) => {
+export const GET = withAuth(async ({ userId, accessToken }) => {
 	try {
 		console.log("userId", userId);
 		if (!userId) return NextResponse.json({ message: "NO_LOGIN", user: null }, { status: 200 });
-		const data = await getNormal<UserResponse>(getBackendUrl(API_URL.AUTH), { userId });
+		const data = await getNormal<UserResponse>(
+			getBackendUrl(API_URL.AUTH),
+			{ userId },
+			{
+				Authorization: `Bearer ${accessToken}`,
+			}
+		);
 		return NextResponse.json({ message: data.message, user: data.user }, { status: 200 });
 	} catch (err: any) {
 		console.error("error :", {

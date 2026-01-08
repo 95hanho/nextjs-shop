@@ -1,0 +1,30 @@
+.addressInput {
+	font-size: 14px;
+}
+
+.optionBlock {
+	.optionMemo {
+		.title {
+			font-size: 16px;
+			width: 30%;
+			display: inline-block;
+		}
+
+		.memoOption {
+			font-size: 12px;
+			position: relative;
+			display: inline-block;
+			width: 70%;
+
+			.optionSelector .optionSelectBox input {
+				border: 1px solid #aaa;
+				border-radius: 5px;
+			}
+		}
+	}
+}
+
+.addressWrite {
+	margin-top: 10px;
+	font-size: 14px;
+}

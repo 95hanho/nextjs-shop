@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { BsXLg } from "react-icons/bs";
 import { FaMinus, FaPlus } from "react-icons/fa";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
-import OptionSelector from "../ui/OptionSelector";
+import OptionSelector from "../../ui/OptionSelector";
 import { FiMinus, FiPlus } from "react-icons/fi";
 import { CartItem, GetCartOptionProductOptionListResponse } from "@/types/mypage";
 import { useQuery } from "@tanstack/react-query";

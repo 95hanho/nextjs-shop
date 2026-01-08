@@ -2,10 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import { BsXLg } from "react-icons/bs";
-import OptionSelector from "../ui/OptionSelector";
+import OptionSelector from "../../ui/OptionSelector";
 import { UserAddressListItem } from "@/types/mypage";
 import { useModalStore } from "@/store/modal.store";
-import JoinInput from "../user/JoinInput";
+import JoinInput from "../../user/JoinInput";
 import { ChangeEvent, FormEvent } from "@/types/auth";
 
 interface AddressModalProps {
@@ -67,7 +67,7 @@ export default function AddressModal({ onClose, address }: AddressModalProps) {
 
 	const [addressForm, setAddressForm] = useState<AddressForm>(initAddressForm);
 	const changeAddressForm = (e: ChangeEvent) => {
-		let { name, value } = e.target as {
+		const { name, value } = e.target as {
 			name: keyof AddressForm;
 			value: string;
 		};
@@ -86,15 +86,15 @@ export default function AddressModal({ onClose, address }: AddressModalProps) {
 
 	// 유효성 확인 ex) 정규표현식 확인
 	const validateAddressForm = async (e: ChangeEvent) => {
-		let { name, value } = e.target as {
+		const { name, value } = e.target as {
 			name: keyof AddressForm;
 			value: string;
 		};
-		value = value.trim();
+		const trimValue = value.trim();
 		let failMent = "";
-		let successMent = "";
-		if (addressFormRegex[name] && value) {
-			if (!addressFormRegex[name].test(value)) {
+		// const successMent = "";
+		if (addressFormRegex[name] && trimValue) {
+			if (!addressFormRegex[name].test(trimValue)) {
 				failMent = addressFormRegexFailMent[name];
 			}
 		}
@@ -106,7 +106,7 @@ export default function AddressModal({ onClose, address }: AddressModalProps) {
 		}
 		setAddressForm((prev) => ({
 			...prev,
-			[name]: value,
+			[name]: trimValue,
 		}));
 	};
 	const addressSetSubmit = (e: FormEvent) => {

@@ -8,14 +8,20 @@ import { ExtendStockHoldRequest, ExtendStockHoldResponse } from "@/types/buy";
 import { NextResponse } from "next/server";
 
 // 상품 점유 연장
-export const POST = withAuth(async ({ nextRequest, userId }) => {
+export const POST = withAuth(async ({ nextRequest, accessToken }) => {
 	try {
 		const { holdIds }: ExtendStockHoldRequest = await nextRequest.json();
 
 		if (holdIds.length === 0) return NextResponse.json({ message: "잘 못 된 요청입니다." }, { status: 400 });
 
 		const payload: ExtendStockHoldRequest = { holdIds };
-		const data = await postJson<ExtendStockHoldResponse, ExtendStockHoldRequest>(getBackendUrl(API_URL.BUY_HOLD_EXTENT), { ...payload });
+		const data = await postJson<ExtendStockHoldResponse, ExtendStockHoldRequest>(
+			getBackendUrl(API_URL.BUY_HOLD_EXTENT),
+			{ ...payload },
+			{
+				Authorization: `Bearer ${accessToken}`,
+			}
+		);
 		console.log("data", data);
 
 		return NextResponse.json({ ...data }, { status: 200 });

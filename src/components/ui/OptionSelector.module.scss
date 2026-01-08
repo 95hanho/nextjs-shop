@@ -1,0 +1,55 @@
+/* 드롭다운 + 리스트 */
+.optionSelector {
+	font-family: "NotoSansKR";
+	position: relative;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	user-select: none;
+	.optionSelectBox {
+		position: relative;
+		cursor: pointer;
+		input {
+			font-family: "NotoSansKR";
+			width: 100%;
+			border: 1px solid #ccc;
+			font-size: 1em;
+			padding: 0.8em 1.1em;
+			vertical-align: baseline;
+			background-color: #fff;
+			cursor: pointer;
+		}
+		span {
+			position: absolute;
+			right: 2%;
+			/* width: 35px; */
+			height: 100%;
+			font-size: 1.5em;
+			align-content: center;
+		}
+	}
+	.optionList {
+		position: absolute;
+		width: 100%;
+		border: 1px solid #ccc;
+		border-top: none;
+		z-index: 100;
+		background-color: #fff;
+		li {
+			padding: 8px 10px;
+			font-size: 1em;
+			cursor: pointer;
+			&.on {
+				background-color: #f0f0f0;
+			}
+			&:hover {
+				background-color: #e6e6e6;
+			}
+			h5 {
+				font-family: "NotoSansKR";
+				font-size: 1em;
+				color: #979797;
+				font-weight: 400;
+			}
+		}
+	}
+}

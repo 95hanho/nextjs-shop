@@ -1,7 +1,8 @@
 "use client";
 
-import "./optionSelector.css";
-import { useEffect, useMemo, useRef, useState } from "react";
+import styles from "./OptionSelector.module.scss";
+
+import { useEffect, useRef, useState } from "react";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 
 interface OptionSelectorProps {
@@ -35,9 +36,9 @@ export default function OptionSelector({ optionSelectorName, initData, pickIdx =
 	}, [openOptionList]);
 
 	return (
-		<div className="option-selector" ref={optionSelectorRef}>
+		<div className={styles.optionSelector} ref={optionSelectorRef}>
 			<div
-				className="option-select-box"
+				className={styles.optionSelectBox}
 				onClick={() => {
 					if (optionList) setOpenOptionList(!openOptionList);
 				}}
@@ -46,13 +47,13 @@ export default function OptionSelector({ optionSelectorName, initData, pickIdx =
 				<span>{openOptionList ? <IoIosArrowUp /> : <IoIosArrowDown />}</span>
 			</div>
 			{openOptionList && (
-				<ul className="option-list">
+				<ul className={styles.optionList}>
 					{optionList &&
 						optionList.map((option, optionIdx) => {
 							return (
 								<li
 									key={optionSelectorName + "-optionItem" + optionIdx}
-									className={`${pickIdx === optionIdx ? "on" : ""}`}
+									className={`${pickIdx === optionIdx ? styles.on : ""}`}
 									onClick={() => {
 										if (changeOption) changeOption(optionIdx, option.id);
 										setOpenOptionList(false);

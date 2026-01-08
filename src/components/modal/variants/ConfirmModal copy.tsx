@@ -7,12 +7,12 @@ interface ConfirmModalProps {
 	title?: string;
 	content: string;
 	cancelText?: string;
-	okText?: string;
+	confirmText?: string;
 	okResult?: string;
 	cancelResult?: string;
 }
 
-export default function ConfirmModal({ onClose, title, content, cancelText, okText, okResult, cancelResult }: ConfirmModalProps) {
+export default function ConfirmModal({ onClose, title, content, cancelText, confirmText, okResult, cancelResult }: ConfirmModalProps) {
 	const { resolveModal } = useModalStore();
 	return (
 		<div id="confirmModal" className="modal-wrap">
@@ -55,7 +55,7 @@ export default function ConfirmModal({ onClose, title, content, cancelText, okTe
 							});
 						}}
 					>
-						{okText || "확인"}
+						{confirmText || "확인"}
 					</button>
 				</div>
 			</div>

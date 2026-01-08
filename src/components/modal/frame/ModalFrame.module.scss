@@ -1,0 +1,30 @@
+.modalWrap {
+	background-color: #fff;
+	min-width: 300px;
+	max-width: calc(100vw - 100px);
+	border-radius: 10px;
+	&.productOption {
+		min-width: 480px;
+	}
+	.modalHeader {
+		padding: 11px 15px 0px;
+		font-size: 17px;
+		min-height: 40px;
+		border-bottom: 1px solid #e5e5e5;
+	}
+	.modalClose {
+		position: absolute;
+		top: 0;
+		right: 0;
+		font-size: 19px;
+		padding: 10px;
+	}
+	.modalContent {
+		font-family: NotoSansKR;
+		padding: 17px 15px;
+		// 주소 변경 (기존: &.address)
+		&.address {
+			width: 430px;
+		}
+	}
+}
