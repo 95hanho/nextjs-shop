@@ -1,3 +1,4 @@
+// 제품 리뷰
 "use client";
 
 import ReviewStar from "@/components/product/ReviewStar";

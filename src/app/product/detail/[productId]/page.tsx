@@ -17,6 +17,7 @@ import { money } from "@/lib/format";
 import BrandOtherProducts from "./BrandOtherProducts";
 import BestRankProducts from "./BestRankProducts";
 import ProductReview from "./ProductReview";
+import QuestionAnswer from "./QuestionAnswer";
 
 export default function ProductDetail({
 	params: { productId },
@@ -139,7 +140,7 @@ export default function ProductDetail({
 				</article>
 			</section>
 			<ProductReview />
-			{/* <QuestionAnswer /> */}
+			<QuestionAnswer />
 			{/* 배송정보, 교환, 환불, A/S안내, 같은 카테고리 추천 */}
 			<section id="etc-info-section">
 				<div className="shipping-guide">
