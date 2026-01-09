@@ -1,13 +1,13 @@
 import API_URL from "@/api/endpoints";
-import { getNormal, postUrlFormData } from "@/api/fetchFilter";
+import { getNormal, postJson, postUrlFormData } from "@/api/fetchFilter";
 import { withAuth } from "@/lib/auth";
 import { getBackendUrl } from "@/lib/getBaseUrl";
-import { getStockHoldProductResponse } from "@/types/buy";
+import { getStockHoldProductResponse, payRequest } from "@/types/buy";
 import { BaseResponse } from "@/types/common";
 import { NextResponse } from "next/server";
 
 /*  */
-// 점유 중인 상품 및 사용 가능 쿠폰 조회
+// 점유 중인 상품 및 사용 가능 쿠폰 조회(결제화면)
 export const GET = withAuth(async ({ accessToken }) => {
 	try {
 		const data = await getNormal<getStockHoldProductResponse>(getBackendUrl(API_URL.BUY_PAY), undefined, {
@@ -30,18 +30,35 @@ export const GET = withAuth(async ({ accessToken }) => {
 	}
 });
 // 상품 구매/결제
-export const POST = withAuth(async ({ nextRequest, userId, params }) => {
+export const POST = withAuth(async ({ nextRequest, accessToken }) => {
 	try {
-		const {} = params ?? {};
-		// formdata || application/x-www-form-urlencoded로 보내면 이렇게
-		// const formData = await nextRequest.formData();
-		// const userId = formData.get("userId");
-		// const password = formData.get("password");
-		// json으로 받으면
-		const { userId, password } = await nextRequest.json();
-		if (!userId) return NextResponse.json({ message: "아이디를 입력해주세요." }, { status: 400 });
-		if (!password) return NextResponse.json({ message: "비밀번호를 입력해주세요." }, { status: 400 });
-		const data = await postUrlFormData<BaseResponse>(getBackendUrl(API_URL.AUTH), { userId, password });
+		const {
+			items,
+			eachCouponDiscountTotal,
+			commonCouponDiscountTotal,
+			shippingFee,
+			usedMileage,
+			remainingMileague,
+			totalFinal,
+			paymentMethod,
+			userCouponId,
+			addressId,
+		}: payRequest = await nextRequest.json();
+		const payload: payRequest = {
+			items,
+			eachCouponDiscountTotal,
+			commonCouponDiscountTotal,
+			shippingFee,
+			usedMileage,
+			remainingMileague,
+			totalFinal,
+			paymentMethod,
+			userCouponId,
+			addressId,
+		};
+		const data = await postJson<BaseResponse>(getBackendUrl(API_URL.AUTH), payload, {
+			Authorization: `Bearer ${accessToken}`,
+		});
 		console.log("data", data);
 
 		return NextResponse.json({ message: data.message }, { status: 200 });

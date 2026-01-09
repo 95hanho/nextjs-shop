@@ -40,7 +40,7 @@ export const GET = withAuth(async ({ nextRequest, userId, params }) => {
 export const POST = withAuth(async ({ nextRequest, userId, params }) => {
 	try {
 		const {} = params ?? {};
-		// formdata || application/x-www-form-urlencoded로 보내면 이렇게
+		// formdata || application/x-www-form-urlencoded로 보냈으면 이렇게
 		// const formData = await nextRequest.formData();
 		// const userId = formData.get("userId");
 		// const password = formData.get("password");

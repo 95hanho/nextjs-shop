@@ -1,9 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { BsXLg } from "react-icons/bs";
-import { FaMinus, FaPlus } from "react-icons/fa";
-import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
+import { useEffect, useState } from "react";
 import OptionSelector from "../../ui/OptionSelector";
 import { FiMinus, FiPlus } from "react-icons/fi";
 import { CartItem, GetCartOptionProductOptionListResponse } from "@/types/mypage";
@@ -12,6 +9,10 @@ import API_URL from "@/api/endpoints";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { getNormal } from "@/api/fetchFilter";
 import { useModalStore } from "@/store/modal.store";
+import ModalFrame from "@/components/modal/frame/ModalFrame";
+import styles from "../Modal.module.scss";
+import ConfirmButton from "@/components/modal/frame/ConfirmButton";
+import clsx from "clsx";
 
 interface ProductOptionModalProps {
 	onClose: () => void;
@@ -19,15 +20,10 @@ interface ProductOptionModalProps {
 }
 
 export default function ProductOptionModal({ onClose, product }: ProductOptionModalProps) {
-	if (!product) return null;
 	const { resolveModal } = useModalStore();
 	// 제품상세옵션 리스트
 	// invalidateQueries(["cartOptionProductOptionList"])
-	const {
-		data: optionResponse,
-		isLoading,
-		isFetching,
-	} = useQuery<GetCartOptionProductOptionListResponse>({
+	const { data: optionResponse, isLoading } = useQuery<GetCartOptionProductOptionListResponse>({
 		queryKey: ["cartOptionProductOptionList", product.productId],
 		queryFn: () => getNormal(getApiUrl(API_URL.MY_CART_OPTION_PRODUCT_DETAIL), { productId: product.productId }),
 		enabled: !!product?.productId,
@@ -37,10 +33,6 @@ export default function ProductOptionModal({ onClose, product }: ProductOptionMo
 	const [pickId, setPickId] = useState<number>(product.productOptionId);
 	//
 	const [productCount, setProductCount] = useState<number>(product.quantity);
-	// 원래 선택된 옵션과 같은지
-	const isSameOption = () => {
-		return pickId === product.productOptionId && productCount === product.quantity ? " off" : "";
-	};
 
 	// ✅ optionResponse 들어오면, pickId가 없거나 유효하지 않을 때 기본값 보정
 	useEffect(() => {
@@ -113,62 +105,56 @@ export default function ProductOptionModal({ onClose, product }: ProductOptionMo
 		);
 	};
 
+	if (!product) return null;
 	return (
-		<div id="productOptionModal" className="modal-wrap">
-			<header className="modal-header"></header>
-			<button className="modal-close" onClick={onClose}>
-				<BsXLg />
-			</button>
+		<ModalFrame title="" onClose={onClose} modalWrapVariant="productOption">
 			{/*  */}
-			<div className="modal-content">
-				{/* 위: 옵션 드롭다운 + 리스트 */}
-				<div className="option-block">{optionSelectorEle()}</div>
-				{/* 수량/금액 */}
-				<div className="option-summary">
-					<div className="option-summary__counter">
-						<button
-							className={`option-summary__btn${productCount === 1 ? " off" : ""}`}
-							onClick={() => {
-								if (productCount > 1) setProductCount(productCount - 1);
-							}}
-						>
-							<FiMinus />
-						</button>
-						<span className="option-summary__qty">{productCount}</span>
-						<button
-							className={`option-summary__btn${productCount === product.stock ? " off" : ""}`}
-							onClick={() => {
-								if (productCount < product.stock) setProductCount(productCount + 1);
-							}}
-						>
-							<FiPlus />
-						</button>
-					</div>
-					<b className="option-summary__price">62,100원</b>
-				</div>
-				{/* 버튼 */}
-				<div className="option-actions">
-					<button className="option-actions__cancel" onClick={onClose}>
-						취소
-					</button>
+			{/* 위: 옵션 드롭다운 + 리스트 */}
+			<div className={styles.optionBlock}>{optionSelectorEle()}</div>
+			{/* 수량/금액 */}
+			<div className={styles.optionSummary}>
+				<div className={styles.optionSummaryCounter}>
 					<button
-						className={`option-actions__submit${isSameOption()}`}
+						className={clsx([styles.optionSummaryBtn, `${productCount === 1 && styles.off}`])}
 						onClick={() => {
-							resolveModal({
-								action: "PRODUCTOPTION_CHANGED",
-								payload: {
-									cartId: product.cartId,
-									originProductOptionId: product.productOptionId,
-									productOptionId: pickId,
-									quantity: productCount,
-								},
-							});
+							if (productCount > 1) setProductCount(productCount - 1);
 						}}
 					>
-						변경하기
+						<FiMinus />
+					</button>
+					<span className={styles.optionSummaryQty}>{productCount}</span>
+					<button
+						className={clsx([styles.optionSummaryBtn, `${productCount === product.stock && styles.off}`])}
+						onClick={() => {
+							if (productCount < product.stock) setProductCount(productCount + 1);
+						}}
+					>
+						<FiPlus />
 					</button>
 				</div>
+				<b className={styles.optionSummaryPrice}>62,100원</b>
 			</div>
-		</div>
+			{/* 버튼 */}
+			<ConfirmButton
+				{...{
+					confirmText: "변경하기",
+					onCancel: () => {
+						onClose();
+					},
+					onConfirm: () => {
+						resolveModal({
+							action: "PRODUCTOPTION_CHANGED",
+							payload: {
+								cartId: product.cartId,
+								originProductOptionId: product.productOptionId,
+								productOptionId: pickId,
+								quantity: productCount,
+							},
+						});
+					},
+					confirmDisabled: pickId === product.productOptionId && productCount === product.quantity,
+				}}
+			/>
+		</ModalFrame>
 	);
 }

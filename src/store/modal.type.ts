@@ -1,4 +1,4 @@
-import { AddressForm } from "@/components/modal/variants/AddressModal";
+import { AddressForm } from "@/components/modal/domain/AddressModal";
 import { CartItem, UserAddressListItem } from "@/types/mypage";
 
 // modal타입

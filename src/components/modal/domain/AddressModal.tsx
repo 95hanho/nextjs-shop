@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { BsXLg } from "react-icons/bs";
 import OptionSelector from "../../ui/OptionSelector";
 import { UserAddressListItem } from "@/types/mypage";
 import { useModalStore } from "@/store/modal.store";
 import JoinInput from "../../user/JoinInput";
 import { ChangeEvent, FormEvent } from "@/types/auth";
+import ModalFrame from "@/components/modal/frame/ModalFrame";
+import styles from "../Modal.module.scss";
 
 interface AddressModalProps {
 	onClose: () => void;
@@ -191,133 +192,126 @@ export default function AddressModal({ onClose, address }: AddressModalProps) {
 
 	if (!addressForm) return null;
 	return (
-		<div id="addressModal" className="modal-wrap">
-			<header className="modal-header">{!address ? "배송지 추가" : "배송지 수정"}</header>
-			<button className="modal-close" onClick={onClose}>
-				<BsXLg />
-			</button>
-			{/*  */}
-			<div className="modal-content address">
-				<form onSubmit={addressSetSubmit}>
-					<div className="address-input">
-						<JoinInput
-							name="addressName"
-							label="배송지 이름"
-							placeholder="배송지 이름을 입력해주세요."
-							value={addressForm.addressName}
-							onChange={changeAddressForm}
-							onBlur={validateAddressForm}
-							failMessage={addressFormFailAlert.addressName}
-							ref={(el) => {
-								addressFormRefs.current.addressName = el;
-							}}
-						/>
-						<JoinInput
-							name="recipientName"
-							label="수령인"
-							placeholder="수령인을 입력해주세요."
-							value={addressForm.recipientName}
-							onChange={changeAddressForm}
-							onBlur={validateAddressForm}
-							failMessage={addressFormFailAlert.recipientName}
-							ref={(el) => {
-								addressFormRefs.current.recipientName = el;
-							}}
-						/>
-						<JoinInput
-							type="tel"
-							name="addressPhone"
-							label="수령인 전화번호"
-							placeholder="전화번호를 입력해주세요."
-							value={addressForm.addressPhone}
-							onChange={changeAddressForm}
-							onBlur={validateAddressForm}
-							failMessage={addressFormFailAlert.addressPhone}
-							inputMode="numeric"
-							pattern="[0-9]*"
-							maxLength={11}
-							ref={(el) => {
-								addressFormRefs.current.addressPhone = el;
-							}}
-						/>
-						<JoinInput
-							name="address"
-							label="주소"
-							placeholder="주소를 입력해주세요."
-							value={addressForm.address}
-							failMessage={addressFormFailAlert.address}
-							readOnly
-							onClick={addressPopup}
-							searchBtn={{ txt: "검색", fnc: addressPopup }}
-						/>
-						<JoinInput
-							name="addressDetail"
-							label="상세주소"
-							placeholder="상세주소를 입력해주세요."
-							value={addressForm.addressDetail}
-							failMessage={addressFormFailAlert.addressDetail}
-							onChange={changeAddressForm}
-							onBlur={validateAddressForm}
-							ref={(el) => {
-								addressFormRefs.current.addressDetail = el;
-							}}
-						/>
+		<ModalFrame title={!address ? "배송지 추가" : "배송지 수정"} onClose={onClose} contentVariant="address">
+			<form onSubmit={addressSetSubmit}>
+				<div className={styles.addressInput}>
+					<JoinInput
+						name="addressName"
+						label="배송지 이름"
+						placeholder="배송지 이름을 입력해주세요."
+						value={addressForm.addressName}
+						onChange={changeAddressForm}
+						onBlur={validateAddressForm}
+						failMessage={addressFormFailAlert.addressName}
+						ref={(el) => {
+							addressFormRefs.current.addressName = el;
+						}}
+					/>
+					<JoinInput
+						name="recipientName"
+						label="수령인"
+						placeholder="수령인을 입력해주세요."
+						value={addressForm.recipientName}
+						onChange={changeAddressForm}
+						onBlur={validateAddressForm}
+						failMessage={addressFormFailAlert.recipientName}
+						ref={(el) => {
+							addressFormRefs.current.recipientName = el;
+						}}
+					/>
+					<JoinInput
+						type="tel"
+						name="addressPhone"
+						label="수령인 전화번호"
+						placeholder="전화번호를 입력해주세요."
+						value={addressForm.addressPhone}
+						onChange={changeAddressForm}
+						onBlur={validateAddressForm}
+						failMessage={addressFormFailAlert.addressPhone}
+						inputMode="numeric"
+						pattern="[0-9]*"
+						maxLength={11}
+						ref={(el) => {
+							addressFormRefs.current.addressPhone = el;
+						}}
+					/>
+					<JoinInput
+						name="address"
+						label="주소"
+						placeholder="주소를 입력해주세요."
+						value={addressForm.address}
+						failMessage={addressFormFailAlert.address}
+						readOnly
+						onClick={addressPopup}
+						searchBtn={{ txt: "검색", fnc: addressPopup }}
+					/>
+					<JoinInput
+						name="addressDetail"
+						label="상세주소"
+						placeholder="상세주소를 입력해주세요."
+						value={addressForm.addressDetail}
+						failMessage={addressFormFailAlert.addressDetail}
+						onChange={changeAddressForm}
+						onBlur={validateAddressForm}
+						ref={(el) => {
+							addressFormRefs.current.addressDetail = el;
+						}}
+					/>
+				</div>
+				{/* 위: 옵션 드롭다운 + 리스트 */}
+				<div className={styles.optionBlock}>
+					<div className={styles.optionMemo}>
+						<span className={styles.title}>메모</span>
+						<span className={styles.memoOption}>
+							<OptionSelector
+								optionSelectorName="deliveryMemo"
+								pickIdx={memoPickidx}
+								initData={memoOptionInit}
+								optionList={memoOptionList}
+								changeOption={(idx, id) => {
+									setMemoPickidx(idx);
+									let memo;
+									if (id < 5) memo = memoOptionList[idx].val;
+									else memo = "";
+									setAddressForm((prev) => ({
+										...prev,
+										memo,
+									}));
+									setAddressFormFailAlert((prev) => ({
+										...prev,
+										memo: "",
+									}));
+								}}
+							/>
+						</span>
 					</div>
-					{/* 위: 옵션 드롭다운 + 리스트 */}
-					<div className="option-block">
-						<div className="option-memo">
-							<span className="title">메모</span>
-							<span className="memo-option">
-								<OptionSelector
-									optionSelectorName="deliveryMemo"
-									pickIdx={memoPickidx}
-									initData={memoOptionInit}
-									optionList={memoOptionList}
-									changeOption={(idx, id) => {
-										setMemoPickidx(idx);
-										let memo;
-										if (id < 5) memo = memoOptionList[idx].val;
-										else memo = "";
-										setAddressForm((prev) => ({
-											...prev,
-											memo,
-										}));
-										setAddressFormFailAlert((prev) => ({
-											...prev,
-											memo: "",
-										}));
-									}}
-								/>
-							</span>
-						</div>
-						<div className="address-write">
-							{memoPickidx === 4 && (
-								<JoinInput
-									name="memo"
-									label="직접입력"
-									placeholder="메모를 입력해주세요."
-									value={addressForm.memo}
-									failMessage={addressFormFailAlert.memo}
-									onChange={changeAddressForm}
-									onBlur={validateAddressForm}
-									ref={(el) => {
-										addressFormRefs.current.memo = el;
-									}}
-								/>
-							)}
-						</div>
+					<div className={styles.addressWrite}>
+						{memoPickidx === 4 && (
+							<JoinInput
+								name="memo"
+								label="직접입력"
+								placeholder="메모를 입력해주세요."
+								value={addressForm.memo}
+								failMessage={addressFormFailAlert.memo}
+								onChange={changeAddressForm}
+								onBlur={validateAddressForm}
+								ref={(el) => {
+									addressFormRefs.current.memo = el;
+								}}
+							/>
+						)}
 					</div>
-					{/* 버튼 */}
-					<div className="option-actions">
-						<button type="button" className="option-actions__cancel" onClick={onClose}>
-							취소
-						</button>
-						<button type="submit" className={`option-actions__submit`}>
-							{!address ? "완료" : "변경하기"}
-						</button>
-					</div>
-				</form>
-			</div>
-		</div>
+				</div>
+				{/* 버튼 */}
+				<div className="option-actions">
+					<button type="button" className="option-actions__cancel" onClick={onClose}>
+						취소
+					</button>
+					<button type="submit" className={`option-actions__submit`}>
+						{!address ? "완료" : "변경하기"}
+					</button>
+				</div>
+			</form>
+		</ModalFrame>
 	);
 }

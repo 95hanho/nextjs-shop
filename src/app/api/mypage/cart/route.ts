@@ -8,10 +8,16 @@ import { SYSTEM_ENTRYPOINTS } from "next/dist/shared/lib/constants";
 import { NextResponse } from "next/server";
 
 // 장바구니 조회
-export const GET = withAuth(async ({ nextRequest, userId }) => {
+export const GET = withAuth(async ({ userId, accessToken }) => {
 	try {
 		if (!userId) return NextResponse.json({ message: "잘 못 된 요청입니다." }, { status: 400 });
-		const data = await getNormal<GetCartResponse>(getBackendUrl(API_URL.MY_CART), { userId });
+		const data = await getNormal<GetCartResponse>(
+			getBackendUrl(API_URL.MY_CART),
+			{ userId },
+			{
+				Authorization: `Bearer ${accessToken}`,
+			}
+		);
 		// console.log("data", data);
 
 		return NextResponse.json({ ...data }, { status: 200 });
@@ -29,13 +35,19 @@ export const GET = withAuth(async ({ nextRequest, userId }) => {
 	}
 });
 // 장바구니 제품 옵션/수량 변경
-export const POST = withAuth(async ({ nextRequest }) => {
+export const POST = withAuth(async ({ nextRequest, accessToken }) => {
 	try {
 		const { cartId, productOptionId, quantity }: UpdateCartRequest = await nextRequest.json();
 		if (!cartId || !quantity) return NextResponse.json({ message: "잘 못 된 요청입니다." }, { status: 400 });
 
 		const payload: UpdateCartRequest = { cartId, productOptionId, quantity };
-		const data = await postUrlFormData<BaseResponse>(getBackendUrl(API_URL.MY_CART), { ...payload });
+		const data = await postUrlFormData<BaseResponse>(
+			getBackendUrl(API_URL.MY_CART),
+			{ ...payload },
+			{
+				Authorization: `Bearer ${accessToken}`,
+			}
+		);
 		console.log("data", data);
 
 		return NextResponse.json({ message: data.message }, { status: 200 });
@@ -83,12 +95,18 @@ export const PUT = withAuth(async ({ nextRequest, accessToken }) => {
 	}
 });
 // 장바구니 제품 삭제
-export const DELETE = withAuth(async ({ nextRequest, userId, params }) => {
+export const DELETE = withAuth(async ({ nextRequest, userId, accessToken }) => {
 	try {
 		const cartIdList = nextRequest.nextUrl.searchParams.getAll("cartIdList").map(Number);
 		if (!userId || !cartIdList?.length) return NextResponse.json({ message: "잘 못 된 요청입니다." }, { status: 400 });
 		console.log(cartIdList);
-		const data = await deleteNormal<BaseResponse>(getBackendUrl(API_URL.MY_CART), { cartIdList });
+		const data = await deleteNormal<BaseResponse>(
+			getBackendUrl(API_URL.MY_CART),
+			{ cartIdList },
+			{
+				Authorization: `Bearer ${accessToken}`,
+			}
+		);
 		return NextResponse.json({ message: data.message }, { status: 200 });
 	} catch (err: any) {
 		console.error("error :", {

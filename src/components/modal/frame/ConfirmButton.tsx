@@ -1,6 +1,6 @@
 "use client";
 
-import styles from "./ConfirmButton.module.scss";
+import styles from "../Modal.module.scss";
 
 interface ConfirmButtonProps {
 	cancelText?: string;

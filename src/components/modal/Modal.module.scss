@@ -1,153 +1,201 @@
-/* 모달 */
-#modalRoot {
-	.modalWrap {
-		background-color: #fff;
-		min-width: 300px;
-		max-width: calc(100vw - 100px);
-		border-radius: 10px;
+// =========================
+// ModalFrame.tsx
+// =========================
+.modalWrap {
+	background-color: #fff;
+	min-width: 300px;
+	max-width: calc(100vw - 100px);
+	border-radius: 10px;
+	&.productOption {
+		min-width: 480px;
+	}
+	.modalHeader {
+		padding: 11px 15px 0px;
+		font-size: 17px;
+		min-height: 40px;
+		border-bottom: 1px solid #e5e5e5;
+	}
+	.modalClose {
+		position: absolute;
+		top: 0;
+		right: 0;
+		font-size: 19px;
+		padding: 10px;
+	}
+	.modalContent {
+		font-family: NotoSansKR;
+		padding: 17px 15px;
+		// 주소 변경 (기존: &.address)
+		&.address {
+			width: 430px;
+		}
+	}
+}
+// =========================
+// ConfirmButton.tsx
+// =========================
+.ConfirmButton {
+	margin-top: 20px;
+	display: flex;
+	gap: 8px;
+	button {
+		width: 50%;
+		border: 1px solid #e5e5e5;
+		font-family: NotoSansKR;
+		border-radius: 4px;
+		padding: 10px 20px;
+		font-size: 14px;
 
-		/* 기존: #productOptionModal */
-		&#productOptionModal {
-			min-width: 480px;
+		&.off {
+			background-color: #e9e9e9;
+			color: #b1b1b1;
+			cursor: not-allowed;
+		}
+	}
+}
+// =========================
+// AddressModal.tsx
+// =========================
+.addressInput {
+	font-size: 14px;
+}
+.optionBlock {
+	.optionMemo {
+		.title {
+			font-size: 16px;
+			width: 30%;
+			display: inline-block;
 		}
 
-		.modalHeader {
-			padding: 11px 15px 0px;
-			font-size: 17px;
-			min-height: 40px;
-			border-bottom: 1px solid #e5e5e5;
-		}
+		.memoOption {
+			font-size: 12px;
+			position: relative;
+			display: inline-block;
+			width: 70%;
 
-		.modalClose {
-			position: absolute;
-			top: 0;
-			right: 0;
-			font-size: 19px;
-			padding: 10px;
-		}
-
-		.modalContent {
-			font-family: NotoSansKR;
-			padding: 17px 15px;
-
-			// 컨펌 내용
-			.modalConfirmContent {
-				margin-bottom: 27px;
-			}
-
-			// 옵션 드롭다운 + 리스트
-			.optionBlock {
-				font-size: 12px;
-			}
-
-			// 수량/금액
-			.optionSummary {
-				margin-top: 15px;
-				background-color: #efefef;
+			.optionSelector .optionSelectBox input {
+				border: 1px solid #aaa;
 				border-radius: 5px;
-				display: flex;
-				justify-content: space-between;
-				align-items: center;
-				padding: 11px;
-
-				.optionSummaryCounter {
-					display: inline-flex;
-
-					.optionSummaryBtn {
-						font-size: 15px;
-						padding: 5px 7px;
-						color: #080808;
-						background: #fff;
-						overflow: hidden;
-						border: 1px solid #cfcfcf;
-
-						&:first-child {
-							border-right: none;
-							border-radius: 4px 0 0 4px;
-						}
-						&:last-child {
-							border-left: none;
-							border-radius: 0 4px 4px 0;
-						}
-
-						&.off {
-							background-color: transparent;
-							color: #cfcfcf;
-							cursor: not-allowed;
-						}
-					}
-
-					.optionSummaryQty {
-						background-color: #fff;
-						padding: 0 13px;
-						font-size: 11px;
-						align-content: center;
-						border: 1px solid #cfcfcf;
-					}
-				}
-
-				.optionSummaryPrice {
-					font-size: 14px;
-				}
-			}
-
-			// 버튼
-			.optionActions {
-				margin-top: 20px;
-				display: flex;
-				gap: 8px;
-
-				button {
-					width: 50%;
-					border: 1px solid #e5e5e5;
-					font-family: NotoSansKR;
-					border-radius: 4px;
-					padding: 10px 20px;
-					font-size: 14px;
-
-					&.off {
-						background-color: #e9e9e9;
-						color: #b1b1b1;
-						cursor: not-allowed;
-					}
-				}
-			}
-
-			// 주소 변경 (기존: &.address)
-			&.address {
-				width: 430px;
-
-				.addressInput {
-					font-size: 14px;
-				}
-
-				.optionBlock {
-					.optionMemo {
-						.title {
-							font-size: 16px;
-							width: 30%;
-							display: inline-block;
-						}
-
-						.memoOption {
-							font-size: 12px;
-							position: relative;
-							display: inline-block;
-							width: 70%;
-
-							.optionSelector .optionSelectBox input {
-								border: 1px solid #aaa;
-								border-radius: 5px;
-							}
-						}
-					}
-				}
-
-				.addressWrite {
-					margin-top: 10px;
-					font-size: 14px;
-				}
 			}
 		}
 	}
+}
+.addressWrite {
+	margin-top: 10px;
+	font-size: 14px;
+}
+// =========================
+// ConfirmModal.tsx
+// =========================
+.modalConfirmContent {
+	margin-bottom: 27px;
+}
+// =========================
+// ProductOptionModal.tsx
+// =========================
+// 옵션 드롭다운 + 리스트
+.optionBlock {
+	font-size: 12px;
+}
+// 수량/금액
+.optionSummary {
+	margin-top: 15px;
+	background-color: #efefef;
+	border-radius: 5px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 11px;
+
+	.optionSummaryCounter {
+		display: inline-flex;
+
+		.optionSummaryBtn {
+			font-size: 15px;
+			padding: 5px 7px;
+			color: #080808;
+			background: #fff;
+			overflow: hidden;
+			border: 1px solid #cfcfcf;
+
+			&:first-child {
+				border-right: none;
+				border-radius: 4px 0 0 4px;
+			}
+			&:last-child {
+				border-left: none;
+				border-radius: 0 4px 4px 0;
+			}
+
+			&.off {
+				background-color: transparent;
+				color: #cfcfcf;
+				cursor: not-allowed;
+			}
+		}
+
+		.optionSummaryQty {
+			background-color: #fff;
+			padding: 0 13px;
+			font-size: 11px;
+			align-content: center;
+			border: 1px solid #cfcfcf;
+		}
+	}
+
+	.optionSummaryPrice {
+		font-size: 14px;
+	}
+}
+// =========================
+// ModalRoot.tsx
+// =========================
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+@keyframes fadeOut {
+	from {
+		opacity: 1;
+	}
+	to {
+		opacity: 0;
+	}
+}
+
+@keyframes popIn {
+	from {
+		opacity: 0;
+		transform: scale(0.95);
+	}
+	to {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+@keyframes popOut {
+	from {
+		opacity: 1;
+		transform: scale(1);
+	}
+	to {
+		opacity: 0;
+		transform: scale(0.95);
+	}
+}
+.animateFadeIn {
+	animation: fadeIn 0.4s ease-out;
+}
+.animateFadeOut {
+	animation: fadeOut 0.4s ease-out;
+}
+.animatePopIn {
+	animation: popIn 0.4s ease-out;
+}
+.animatePopOut {
+	animation: popOut 0.4s ease-out;
 }

@@ -6,12 +6,17 @@ import { MyOrderDetailResponse } from "@/types/mypage";
 import { NextResponse } from "next/server";
 
 // 주문배송정보 상세조회
-export const GET = withAuth(async ({ nextRequest, userId, params }) => {
+export const GET = withAuth(async ({ accessToken, params }) => {
 	try {
-		if (!userId) return NextResponse.json({ message: "잘 못 된 요청입니다." }, { status: 400 });
 		const { orderId } = params ?? {};
 
-		const data = await getNormal<MyOrderDetailResponse>(getBackendUrl(API_URL.MY_ORDER_DETAIL), { userId, orderId });
+		const data = await getNormal<MyOrderDetailResponse>(
+			getBackendUrl(API_URL.MY_ORDER_DETAIL),
+			{ orderId },
+			{
+				Authorization: `Bearer ${accessToken}`,
+			}
+		);
 		console.log("data", data);
 
 		return NextResponse.json({ ...data }, { status: 200 });

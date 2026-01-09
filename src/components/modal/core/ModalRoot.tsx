@@ -6,11 +6,11 @@ import { createPortal } from "react-dom";
 import { useModalStore } from "@/store/modal.store";
 import AlertModal from "../variants/AlertModal";
 import ConfirmModal from "../variants/ConfirmModal";
-import ProductOptionModal from "../variants/ProductOptionModal";
+import ProductOptionModal from "../domain/ProductOptionModal";
+import AddressModal from "../domain/AddressModal";
 import { CartItem, UserAddressListItem } from "@/types/mypage";
 import { ModalPropsMap } from "@/store/modal.type";
-import AddressModal from "../variants/AddressModal";
-import styles from "./ModalRoot.module.scss";
+import styles from "../Modal.module.scss";
 
 type ModalCommon = {
 	disableOverlayClose?: boolean;

@@ -6,12 +6,18 @@ import { BaseResponse } from "@/types/common";
 import { NextResponse } from "next/server";
 
 // 좋아요/취소
-export const POST = withAuth(async ({ nextRequest, userId, params }) => {
+export const POST = withAuth(async ({ nextRequest, accessToken }) => {
 	try {
 		const { productId }: { productId: number } = await nextRequest.json();
 
-		if (!userId || !productId) return NextResponse.json({ message: "잘 못 된 요청입니다." }, { status: 400 });
-		const data = await postUrlFormData<BaseResponse>(getBackendUrl(API_URL.PRODUCT_LIKE), { productId, userId });
+		if (!productId) return NextResponse.json({ message: "잘 못 된 요청입니다." }, { status: 400 });
+		const data = await postUrlFormData<BaseResponse>(
+			getBackendUrl(API_URL.PRODUCT_LIKE),
+			{ productId },
+			{
+				Authorization: `Bearer ${accessToken}`,
+			}
+		);
 		// console.log("data", data);
 
 		return NextResponse.json({ message: data.message }, { status: 200 });

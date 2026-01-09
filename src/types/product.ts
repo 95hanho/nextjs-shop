@@ -40,5 +40,4 @@ export interface GetProductListResponse {
 export interface AddCartRequest {
 	productOptionId: number;
 	quantity: number;
-	userId: string;
 }

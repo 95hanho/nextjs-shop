@@ -2,7 +2,7 @@
 
 import { ReactNode } from "react";
 import { BsXLg } from "react-icons/bs";
-import styles from "./ModalFrame.module.scss";
+import styles from "../Modal.module.scss";
 
 type ModalFrameProps = {
 	title?: string;
