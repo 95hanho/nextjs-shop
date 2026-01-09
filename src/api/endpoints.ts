@@ -13,10 +13,18 @@ const API_URL = {
 	AUTH_ID: "/auth/id",
 	/** 휴대폰 인증 */
 	AUTH_PHONE_AUTH: "/auth/phone",
+	/** 휴대폰 인증 확인 */
+	AUTH_PHONE_AUTH_CHECK: "/auth/phone/check",
 	/** 회원가입, 회원정보변경 */
 	AUTH_JOIN: "/auth/user",
-	/** 토큰재생성 */
+	/** spring:로그인 토큰 저장, 로그인 토큰 수정(재저장) */
 	AUTH_TOKEN: "/auth/token",
+	/** nextjs: r토큰확인 */
+	AUTH_TOKEN_CHECK: "/auth/token-check",
+	/** 패스워드 리셋토큰 확인 */
+	AUTH_TOKEN_CHECK_PASSWORD: "/auth/token-check/password",
+	/** 비밀번호 변경 토큰 생성, 비밀번호 변경 */
+	AUTH_PASSWORD: "/auth/password",
 
 	// 구매 ----------------------------------
 	/** 상품 확인 및 점유, 구매상품 점유 해제 */
@@ -43,10 +51,10 @@ const API_URL = {
 	MY_ORDER_DETAIL: "/mypage/my-order/:orderId",
 	/** 리뷰 작성 */
 	MY_REVIEW: "/mypage/review",
-	/** 장바구니 조회, 장바구니 제품 수량/선택여부 변경 */
+	/** 장바구니 조회, 장바구니 제품 수량 변경, 장바구니 선택여부 변경, 장바구니 제품 삭제 */
 	MY_CART: "/mypage/cart",
 	/** 장바구니 제품 삭제 */
-	MY_CART_DELETE: "/mypage/cart/:cartId",
+	MY_CART_OPTION_PRODUCT_DETAIL: "/mypage/cart/option/product-option",
 	/** 위시리스트 조회 */
 	MY_WISH: "/mypage/wish",
 	/** 위시리스트 삭제 */
@@ -59,10 +67,10 @@ const API_URL = {
 	// 제품 ----------------------------------
 	/** 제품리스트 조회 */
 	PRODUCT: "/product",
-	/** 위시 등록 */
+	/** 좋아요/취소 */
+	PRODUCT_LIKE: "/product/like",
+	/** 위시 등록/해제 */
 	PRODUCT_WISH: "/product/wish",
-	/** 위시 등록해제 */
-	PRODUCT_WISH_CANCEL: "/product/wish/:wishId",
 	/** 장바구니 넣기 */
 	PRODUCT_CART: "/product/cart",
 	/** 제품상세보기 조회 */
@@ -72,7 +80,7 @@ const API_URL = {
 	/** 판매자 제품 조회, 판매자제품추가/수정 */
 	SELLER_PRODUCT: "/seller/product",
 	/** 판매자제품상세추가, 판매자제품상세변경 */
-	SELLER_PRODUCT_DETAIL: "/seller/product/detail",
+	SELLER_PRODUCT_DETAIL: "/seller/product/option",
 	/** 판매자쿠폰조회, 판매자쿠폰등록 */
 	SELLER_COUPON: "/seller/coupon",
 	/** 판매자 쿠폰 상태 변경 */

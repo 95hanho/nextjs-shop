@@ -9,6 +9,7 @@ export type MainProduct = {
 	copyright: string;
 	copyrightUrl: string;
 	createdAt: Date;
+	likeCount: number;
 	viewCount: number;
 	wishCount: number;
 	// salesCount: number;

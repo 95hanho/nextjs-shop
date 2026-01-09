@@ -17,7 +17,7 @@ export const GET = withAuth(async ({ nextRequest, userId, params }) => {
 	try {
 		const {} = params ?? {};
 
-		const userId = nextRequest.nextUrl.searchParams.get("userId");
+		const productId = nextRequest.nextUrl.searchParams.get("productId");
 		if (!userId) return NextResponse.json({ message: "아이디를 입력해주세요." }, { status: 400 });
 		const data = await getNormal<BaseResponse>(getBackendUrl(API_URL.AUTH_ID), { userId });
 		console.log("data", data);
@@ -40,7 +40,7 @@ export const GET = withAuth(async ({ nextRequest, userId, params }) => {
 export const POST = withAuth(async ({ nextRequest, userId, params }) => {
 	try {
 		const {} = params ?? {};
-		// formdata || application/x-www-form-urlencoded로 보내면 이렇게
+		// formdata || application/x-www-form-urlencoded로 보냈으면 이렇게
 		// const formData = await nextRequest.formData();
 		// const userId = formData.get("userId");
 		// const password = formData.get("password");

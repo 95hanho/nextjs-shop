@@ -1,5 +1,9 @@
-import { ChangeEvent } from "@/types/form";
+"use client";
+
+import styles from "./JoinInput.module.scss";
+import { ChangeEvent } from "@/types/auth";
 import { forwardRef } from "react";
+import clsx from "clsx";
 
 interface FormInputProps {
 	name: string;
@@ -14,6 +18,9 @@ interface FormInputProps {
 	readOnly?: boolean;
 	onClick?: () => void;
 	searchBtn?: { txt: string; fnc: () => void };
+	inputMode?: React.HTMLAttributes<HTMLInputElement>["inputMode"];
+	pattern?: string;
+	maxLength?: number;
 }
 
 const JoinInput = forwardRef<HTMLInputElement, FormInputProps>((props, ref) => {
@@ -30,33 +37,49 @@ const JoinInput = forwardRef<HTMLInputElement, FormInputProps>((props, ref) => {
 		readOnly = false,
 		onClick,
 		searchBtn,
-	}: FormInputProps = props;
+		inputMode,
+		pattern,
+		maxLength,
+	} = props;
 
 	return (
-		<div className="join-input">
-			<div className="join-label">
+		<div className={styles.joinInput}>
+			<div className={styles.joinLabel}>
 				<label htmlFor={name}>{label}</label>
 			</div>
-			<div className={`join-text${failMessage ? " fail" : ""}${successMessage ? " success" : ""}`}>
+
+			<div className={clsx(styles.joinText, failMessage && styles.fail, successMessage && styles.success)}>
 				<div>
 					<input
+						ref={ref}
 						type={type}
-						placeholder={placeholder}
 						name={name}
+						placeholder={placeholder}
 						value={value}
 						onChange={onChange}
 						onBlur={onBlur}
 						readOnly={readOnly}
 						onClick={onClick}
-						ref={ref}
+						inputMode={inputMode}
+						pattern={pattern}
+						maxLength={maxLength}
 					/>
+
 					{searchBtn && (
-						<button type="button" className={`search-btn ${name}`} onClick={searchBtn.fnc}>
+						<button
+							type="button"
+							onClick={searchBtn.fnc}
+							className={clsx(
+								styles.searchBtn,
+								styles[name as keyof typeof styles] // address / phone / phoneAuth
+							)}
+						>
 							{searchBtn.txt}
 						</button>
 					)}
 				</div>
-				<p className={`${failMessage ? "c-red" : ""}${successMessage ? "c-green" : ""}`}>
+
+				<p className={clsx(failMessage && styles.red, successMessage && styles.green)}>
 					* <span>{failMessage || successMessage}</span>
 				</p>
 			</div>
@@ -64,4 +87,5 @@ const JoinInput = forwardRef<HTMLInputElement, FormInputProps>((props, ref) => {
 	);
 });
 
+JoinInput.displayName = "JoinInput";
 export default JoinInput;

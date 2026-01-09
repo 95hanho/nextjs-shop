@@ -3,7 +3,7 @@ import { getNormal, postUrlFormData } from "@/api/fetchFilter";
 import { withAuth } from "@/lib/auth";
 import { isProd } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
-import { generateAccessToken, generateRefreshToken, verifyToken } from "@/lib/jwt";
+import { generateAccessToken, generateRefreshToken } from "@/lib/jwt";
 import { ACCESS_TOKEN_COOKIE_AGE, REFRESH_TOKEN_COOKIE_AGE } from "@/lib/tokenTime";
 import { LoginForm, UserResponse } from "@/types/auth";
 import { BaseResponse } from "@/types/common";
@@ -12,11 +12,17 @@ import { NextRequest, NextResponse } from "next/server";
 // 회원정보가져오기
 // - 초기패이지로딩(로그인되어있을 때), 로그인, 로그아웃, 유저정보필요할 때, 유저정보수정(상태변화)
 // 할 때 바로 가져올 수 있게 useQuery 실행함.
-export const GET = withAuth(async ({ nextRequest, userId }) => {
+export const GET = withAuth(async ({ userId, accessToken }) => {
 	try {
 		console.log("userId", userId);
 		if (!userId) return NextResponse.json({ message: "NO_LOGIN", user: null }, { status: 200 });
-		const data = await getNormal<UserResponse>(getBackendUrl(API_URL.AUTH), { userId });
+		const data = await getNormal<UserResponse>(
+			getBackendUrl(API_URL.AUTH),
+			{ userId },
+			{
+				Authorization: `Bearer ${accessToken}`,
+			}
+		);
 		return NextResponse.json({ message: data.message, user: data.user }, { status: 200 });
 	} catch (err: any) {
 		console.error("error :", {
@@ -66,8 +72,9 @@ export async function POST(nextRequest: NextRequest) {
 		// 토큰 저장하기 : refreshToken랑 정보랑 유저 agent, ip 정보 보내기
 		await postUrlFormData<BaseResponse>(
 			getBackendUrl(API_URL.AUTH_TOKEN),
-			{ refreshToken, userId },
+			{ refreshToken },
 			{
+				Authorization: `Bearer ${accessToken}`,
 				userAgent: nextRequest.headers.get("user-agent") || "",
 				["x-forwarded-for"]: ip,
 			}

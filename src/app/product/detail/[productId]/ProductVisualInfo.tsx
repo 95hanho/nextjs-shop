@@ -2,35 +2,13 @@
 
 import ReviewStar from "@/components/product/ReviewStar";
 import TestImage from "@/components/test/TestImage";
+import OptionSelector from "@/components/ui/OptionSelector";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
 import { FaHeart } from "react-icons/fa";
 import { GoQuestion } from "react-icons/go";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 
 export default function ProductVisualInfo() {
-	const optionSelectorRef = useRef<HTMLDivElement>(null);
-	const [openOptionList, setOpenOptionList] = useState<boolean>(false);
-
-	useEffect(() => {
-		if (openOptionList) {
-			const handleClick = (e: MouseEvent) => {
-				if (
-					optionSelectorRef.current &&
-					!optionSelectorRef.current.contains(e.target as Node) // <- 여기 수정
-				) {
-					setOpenOptionList(false);
-				}
-			};
-
-			document.addEventListener("click", handleClick);
-			return () => {
-				console.log(123);
-				document.removeEventListener("click", handleClick); // ✅ 이벤트 제거도 추가!
-			};
-		}
-	}, [openOptionList]);
-
 	return (
 		<>
 			{/* 상품 사진 및 가격배송 정보 */}
@@ -42,12 +20,12 @@ export default function ProductVisualInfo() {
 					<div className="product-meta-info">
 						<div className="product-title-wishlist">
 							<div className="product-name">Crown Raive Graphic T-shirt VW5ME601_3color</div>
-							<div className="product-wishlist">
+							<button className="product-wishlist">
 								<FaHeart />
-							</div>
+							</button>
 						</div>
 						<div className="product-review-section">
-							<ReviewStar />
+							<ReviewStar rate={3.5} size={15} />
 							<Link href="">274개 리뷰보기</Link>
 						</div>
 						<div className="product-price-info">
@@ -109,24 +87,32 @@ export default function ProductVisualInfo() {
 						</div>
 					</div>
 					<div className="product-option-buy">
-						<div className="option-selector" ref={optionSelectorRef}>
-							<div
-								className="option-select-box"
-								onClick={() => {
-									setOpenOptionList(!openOptionList);
+						<div className="product-option-select">
+							<OptionSelector
+								optionSelectorName="productVisualOption"
+								pickIdx={0}
+								initData={{
+									id: 1,
+									val: "COLOR:SIZE",
 								}}
-							>
-								<input type="text" value={"COLOR:SIZE"} readOnly />
-								<span>{openOptionList ? <IoIosArrowUp /> : <IoIosArrowDown />}</span>
-							</div>
-							{openOptionList && (
-								<ul className="option-list">
-									<li>COLOR:SIZE</li>
-									<li>WHITE:0S</li>
-									<li>WHITE:01S</li>
-								</ul>
-							)}
+								optionList={[
+									{
+										id: 1,
+										val: "COLOR:SIZE",
+									},
+									{
+										id: 2,
+										val: "WHITE:0S",
+									},
+									{
+										id: 3,
+										val: "WHITE:01S",
+									},
+								]}
+								changeOption={(idx, id) => {}}
+							/>
 						</div>
+
 						<div className="action-buttons">
 							<button className="btn-cart">장바구니 담기</button>
 							<button className="btn-buy">바로 구매하기</button>

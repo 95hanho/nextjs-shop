@@ -51,7 +51,7 @@ const authFromTokens = async (nextRequest: NextRequest): Promise<AutoRefreshResu
 	console.log("authFromTokens -----------", accessToken?.slice(-10), refreshToken?.slice(-10));
 
 	// 1) accessToken 유효하면 그대로 통과
-	if (accessToken) {
+	if (accessToken?.trim()) {
 		try {
 			const token: Token = verifyToken(accessToken);
 			return { ok: true, userId: token.userId };
@@ -62,7 +62,7 @@ const authFromTokens = async (nextRequest: NextRequest): Promise<AutoRefreshResu
 	}
 
 	// 2) refreshToken도 없으면 완전 로그아웃 상태
-	if (!refreshToken) {
+	if (!refreshToken?.trim()) {
 		return {
 			ok: true,
 		};
@@ -111,12 +111,14 @@ const authFromTokens = async (nextRequest: NextRequest): Promise<AutoRefreshResu
 		newRefreshToken,
 	};
 };
+//
 type HandlerWithAuth = (ctx: {
 	nextRequest: NextRequest;
-	userId?: string;
+	userId: string; // ✅ 인증 성공이면 필수로 두는 게 좋아
+	accessToken: string; // ✅ Spring에 보낼 토큰
 	params?: { [key: string]: string }; // 🔹 여기에 params 추가
 }) => Promise<NextResponse> | NextResponse;
-
+//
 export const withAuth =
 	(handler: HandlerWithAuth) =>
 	async (
@@ -149,13 +151,26 @@ export const withAuth =
 			return response;
 		}
 
+		// ✅ “이번 요청에서 Spring에 보낼 accessToken” 결정
+		const accessToken = auth.newAccessToken ?? nextRequest.cookies.get("accessToken")?.value;
+
+		if (!accessToken || !auth.userId) {
+			return NextResponse.json({ message: "UNAUTHORIZED" }, { status: 401 });
+		}
+
 		// 🔹 비즈니스 핸들러 실행할 때 params도 함께 넘겨주기
 		const baseCtx = {
 			nextRequest,
+			userId: auth.userId,
+			accessToken,
 			params: context?.params, // 없으면 undefined
 		};
 
-		const response = await handler(auth.userId ? { ...baseCtx, userId: auth.userId } : baseCtx);
+		/* API 실행 전 --------------------------------> */
+
+		const response = await handler(baseCtx);
+
+		/* API 실행 후 --------------------------------> */
 
 		// 토큰 재발급된 경우 쿠키 세팅
 		if (auth.newAccessToken && auth.newRefreshToken) {
@@ -175,6 +190,10 @@ export const withAuth =
 			});
 			console.log("토큰 다시 세팅 !!!! ---------------------", nextRequest.url);
 		}
+		console.log(
+			"accessToken11111",
+			auth.newAccessToken || nextRequest.cookies.get("accessToken")?.value || response.cookies.get("accessToken")?.value
+		);
 
 		return response;
 	};

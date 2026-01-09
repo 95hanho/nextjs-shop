@@ -1,6 +1,7 @@
 import { BaseResponse } from "./common";
 import { FileInfo } from "./file";
 import { Menu } from "./main";
+import { ProductOption } from "./product";
 // 쿠폰
 export type Coupon = {
 	couponId: number;
@@ -57,8 +58,9 @@ export type UserCoupon = {
 };
 // 유저 주소
 export type UserAddress = {
-	addressId: number;
+	addressId?: number;
 	addressName: string;
+	recipientName: string;
 	addressPhone: string;
 	zonecode: string;
 	address: string;
@@ -85,7 +87,7 @@ export interface UserCouponResponse extends BaseResponse {
 export type MyOrderItem = OrderItem & {
 	orderId: number;
 	holdId: number;
-	productDetailId: number;
+	productOptionId: number;
 	addPrice: number;
 	size: string;
 	productId: number;
@@ -125,7 +127,7 @@ export type MyOrderDetailItem = OrderItem & {
 	maxDiscount: null;
 	minimumOrderBeforeAmount: 80000.0;
 	holdId: 99;
-	productDetailId: 101;
+	productOptionId: 101;
 	addPrice: 0;
 	size: "M";
 	productId: 27;
@@ -176,13 +178,14 @@ export interface writeReviewRequest {
 }
 /*  */
 export type CartItem = Cart & {
-	productDetailId: number;
+	productOptionId: number;
 	addPrice: number;
 	stock: number;
 	size: string;
 	productId: number;
 	productName: string;
 	price: number;
+	wishId: number;
 	fileId: number;
 	fileName: string | null;
 	storeName: string | null;
@@ -197,9 +200,18 @@ export interface GetCartResponse extends BaseResponse {
 }
 /*  */
 export interface UpdateCartRequest {
-	quantity: number;
-	selected: boolean;
 	cartId: number;
+	productOptionId: number;
+	quantity: number;
+}
+/*  */
+export interface UpdateCartSelectedRequest {
+	cartIdList: number[];
+	selected: boolean;
+}
+/*  */
+export interface GetCartOptionProductOptionListResponse extends BaseResponse {
+	cartOptionProductOptionList: ProductOption[];
 }
 /*  */
 export type wishlistItem = {
@@ -209,6 +221,7 @@ export type wishlistItem = {
 	productId: number;
 	name: string;
 	price: number;
+	likeCount: number;
 	viewCount: number;
 	wishCount: number;
 	productImageId: number;
@@ -225,7 +238,7 @@ export type UserAddressListItem = UserAddress & {
 	usedateAt: null;
 	userId: null;
 	deleted: false;
-	default: true;
+	defaultAddress: boolean;
 };
 export interface GetUserAddressListResponse extends BaseResponse {
 	userAddressList: UserAddressListItem[];
@@ -234,11 +247,21 @@ export interface GetUserAddressListResponse extends BaseResponse {
 export interface setUserAddressRequest {
 	addressId?: number;
 	addressName: string;
+	recipientName: string;
 	addressPhone: string;
 	zonecode: string;
 	address: string;
 	addressDetail: string;
 	memo: string;
-	isDefault?: boolean;
+	defaultAddress?: boolean;
 	default?: boolean;
 }
+/*  */
+export type InputAddress = {
+	addressName: string;
+	recipientName: string;
+	addressPhone: string;
+	address: string;
+	addressDetail: string;
+	memo: string;
+};

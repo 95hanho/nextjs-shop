@@ -6,12 +6,11 @@ import { UserCouponResponse } from "@/types/mypage";
 import { NextResponse } from "next/server";
 
 // 유저 쿠폰 조회
-export const GET = withAuth(async ({ nextRequest, userId }) => {
+export const GET = withAuth(async ({ accessToken }) => {
 	try {
-		const userId = nextRequest.nextUrl.searchParams.get("userId");
-		if (!userId) return NextResponse.json({ message: "잘 못 된 요청입니다." }, { status: 400 });
-
-		const data = await getNormal<UserCouponResponse>(getBackendUrl(API_URL.MY_USER_COUPON), { userId });
+		const data = await getNormal<UserCouponResponse>(getBackendUrl(API_URL.MY_USER_COUPON), undefined, {
+			Authorization: `Bearer ${accessToken}`,
+		});
 		console.log("data", data);
 
 		return NextResponse.json({ ...data }, { status: 200 });

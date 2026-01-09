@@ -1,3 +1,4 @@
+/* 회원가입 */
 "use client";
 
 import Link from "next/link";
@@ -23,6 +24,7 @@ const initJoinForm: JoinForm = {
 	addressDetail: "2층",
 	birthday: "1995/08/14",
 	phone: "01085546674",
+	phoneAuth: "",
 	email: "ehfqntuqntu@naver.com",
 };
 const initJoinAlert: JoinFormAlert = {
@@ -34,6 +36,7 @@ const initJoinAlert: JoinFormAlert = {
 	addressDetail: "",
 	birthday: "",
 	phone: "",
+	phoneAuth: "",
 	email: "",
 };
 
@@ -64,8 +67,12 @@ export default function UserJoin() {
 	const joinFormRefs = useRef<Partial<JoinFormRefs>>({});
 	// 아이디중복여부
 	const [idDuplCheck, setIdDuplCheck] = useState<boolean>(false);
+	// 인증번호 화면 띄울지
+	const [authNumberView, setAuthNumberView] = useState<boolean>(false);
+	// 인증번호 토큰
+	const [phoneAuthToken, setPhoneAuthToken] = useState<string | null>(null);
 	// 휴대폰인증완료여부
-	const [phoneAuth, setPhoneAuth] = useState<boolean>(false);
+	const [phoneAuthComplete, setPhoneAuthComplete] = useState<boolean>(false);
 
 	// 아이디중복확인 mutate
 	const handleIdDuplcheck = useMutation({
@@ -85,25 +92,72 @@ export default function UserJoin() {
 	});
 	// 휴대폰 인증
 	const handlePhoneAuth = useMutation({
-		mutationFn: (phone: string) => postJson<BaseResponse>(getApiUrl(API_URL.AUTH_PHONE_AUTH), { phone }),
+		mutationFn: () => postJson<BaseResponse & { phoneAuthToken: string }>(getApiUrl(API_URL.AUTH_PHONE_AUTH), { phone: joinForm.phone }),
 		onSuccess(data) {
-			setPhoneAuth(true);
+			setAuthNumberView(true);
+			setPhoneAuthToken(data.phoneAuthToken);
+			setPhoneAuthComplete(false);
 			setJoinFailAlert((prev) => ({
 				...prev,
 				phone: "",
+				phoneAuth: "",
 			}));
 			setJoinSuccessAlert((prev) => ({
 				...prev,
-				phone: "휴대폰 인증이 완료되었습니다.",
+				phone: "",
+				phoneAuth: "인증 번호가 발송되었습니다. 제한시간 3분",
+			}));
+			setJoinForm((prev) => ({
+				...prev,
+				phoneAuth: "",
 			}));
 		},
 		onError(err) {
 			console.log(err);
 		},
 	});
+	// 휴대폰 인증 확인
+	const handlePhoneAuthComplete = useMutation({
+		mutationFn: () =>
+			postJson<BaseResponse>(getApiUrl(API_URL.AUTH_PHONE_AUTH_CHECK), {
+				phone: joinForm.phone,
+				phoneAuthToken,
+				authNumber: joinForm.phoneAuth,
+			}),
+		onSuccess(data) {
+			setPhoneAuthComplete(true);
+			setAuthNumberView(false);
+			setJoinFailAlert((prev) => ({
+				...prev,
+				phone: "",
+				phoneAuth: "",
+			}));
+			setJoinSuccessAlert((prev) => ({
+				...prev,
+				phone: "휴대폰 인증이 완료되었습니다.",
+				phoneAuth: "",
+			}));
+		},
+		onError(err) {
+			console.log(err);
+			if (["VERIFICATION_EXPIRED", "PHONEAUTH_TOKEN_UNAUTHORIZED"].includes(err.message)) {
+				setJoinFailAlert((prev) => ({
+					...prev,
+					phone: "인증시간이 만료되었습니다.",
+				}));
+				setAuthNumberView(false);
+			}
+			if (err.message === "INVALID_VERIFICATION_CODE") {
+				setJoinFailAlert((prev) => ({
+					...prev,
+					phoneAuth: "인증번호가 일치하지 않습니다.",
+				}));
+			}
+		},
+	});
 	// 회원가입
 	const handleRegister = useMutation({
-		mutationFn: (joinForm: JoinForm) => postJson<BaseResponse>(getApiUrl(API_URL.AUTH_JOIN), { ...joinForm }),
+		mutationFn: () => postJson<BaseResponse>(getApiUrl(API_URL.AUTH_JOIN), { ...joinForm }),
 		// Mutation이 시작되기 직전에 특정 작업을 수행
 		onMutate(a) {
 			console.log(a);
@@ -115,6 +169,17 @@ export default function UserJoin() {
 		},
 		onError(err) {
 			console.log(err);
+			if (err.message === "PHONEAUTH_COMPLETE_UNAUTHORIZED") {
+				setPhoneAuthComplete(false);
+				setJoinSuccessAlert((prev) => ({
+					...prev,
+					phone: "",
+				}));
+				setJoinFailAlert((prev) => ({
+					...prev,
+					phone: "인증시간이 만료되었습니다. 다시 인증해주세요.",
+				}));
+			}
 		},
 		// 결과에 관계 없이 무언가 실행됨
 		onSettled(a, b) {
@@ -124,7 +189,12 @@ export default function UserJoin() {
 
 	// joinForm set
 	const changeJoinForm = (e: ChangeEvent) => {
-		let { name, value } = e.target;
+		let { name, value } = e.target as {
+			name: keyof JoinForm;
+			value: string;
+		};
+		let nextValue: string | number = value;
+
 		if (name == "passwordCheck") {
 			let ment = "";
 			if (joinForm.password && joinForm.password != value) {
@@ -135,31 +205,45 @@ export default function UserJoin() {
 				[name]: ment,
 			}));
 		}
-		if (name == "phone") {
-			setPhoneAuth(false);
+		if (name === "phone") {
+			nextValue = value.replace(/[^0-9]/g, "").slice(0, 13); // 예: 13자리 인증번호
+			setPhoneAuthComplete(false);
 			setJoinSuccessAlert((prev) => ({
 				...prev,
 				[name]: "",
 			}));
 		}
+		if (name === "phoneAuth") {
+			nextValue = value.replace(/[^0-9]/g, "").slice(0, 6); // 예: 6자리 인증번호
+			setJoinFailAlert((prev) => ({
+				...prev,
+				phone: "",
+			}));
+		}
 		setJoinForm((prev) => ({
 			...prev,
-			[name]: value,
+			[name]: nextValue as JoinForm[typeof name],
 		}));
 	};
 	// 유효성 확인 ex) 아이디 중복확인, 정규표현식 확인
 	const validateJoinForm = async (e: ChangeEvent) => {
-		let { name, value } = e.target;
+		let { name, value } = e.target as {
+			name: keyof JoinForm;
+			value: string;
+		};
 		value = value.trim();
 		let failMent = "";
 		let successMent = "";
-		const addMentObj: { [key: string]: string } = {};
+		const addFailMentObj: { [key: string]: string } = {};
 		if (joinFormRegex[name]) {
 			if (!joinFormRegex[name].test(value)) {
 				failMent = joinFormRegexFailMent[name];
 			}
 		}
-		if (!failMent) {
+		if (!value) {
+			failMent = "";
+			successMent = "";
+		} else if (!failMent) {
 			if (name == "userId") {
 				try {
 					await handleIdDuplcheck.mutateAsync(joinForm.userId);
@@ -173,8 +257,8 @@ export default function UserJoin() {
 				}
 			} else if (name == "password") {
 				if (joinForm.passwordCheck && joinForm.passwordCheck != value) {
-					addMentObj.passwordCheck = "비밀번호와 일치하지 않습니다.";
-				} else addMentObj.passwordCheck = "";
+					addFailMentObj.passwordCheck = "비밀번호와 일치하지 않습니다.";
+				} else addFailMentObj.passwordCheck = "";
 			} else if (name == "passwordCheck") {
 				if (joinForm.password && joinForm.password != value) {
 					failMent = "비밀번호와 일치하지 않습니다.";
@@ -193,6 +277,10 @@ export default function UserJoin() {
 				if (joinFailAlert.phone == "휴대폰 인증이 필요합니다.") {
 					failMent = joinFailAlert.phone;
 				}
+			} else if (name === "phoneAuth") {
+				if (value.length < 6) {
+					failMent = "인증번호 6자리를 입력해주세요.";
+				}
 			}
 		}
 		setJoinForm((prev) => ({
@@ -202,7 +290,7 @@ export default function UserJoin() {
 		setJoinFailAlert((prev) => ({
 			...prev,
 			[name]: failMent,
-			...addMentObj,
+			...addFailMentObj,
 		}));
 		setJoinSuccessAlert((prev) => ({
 			...prev,
@@ -227,7 +315,7 @@ export default function UserJoin() {
 					alertOn = "해당 내용을 입력해주세요.";
 				} else if (key == "userId" && !idDuplCheck) {
 					alertOn = "아이디 중복확인을 해주세요.";
-				} else if (key == "phone" && !phoneAuth) {
+				} else if (key == "phone" && !phoneAuthComplete) {
 					alertOn = "휴대폰 인증이 필요합니다.";
 				}
 			}
@@ -243,21 +331,53 @@ export default function UserJoin() {
 		}
 		if (alertOn) return;
 		// 회원가입 로직 추가
-		handleRegister.mutate(joinForm);
+		console.log("회원가입 완료");
+		handleRegister.mutate();
 	};
-
+	// 주소API 팝업 띄우기
 	const addressPopup = () => {
 		new window.daum.Postcode({
 			oncomplete: (data) => {
 				const fullAddress = data.roadAddress || data.jibunAddress;
 				setJoinForm((prev) => ({
 					...prev,
+					zonecode: data.zonecode,
 					address: fullAddress,
 				}));
 			},
 		}).open({
 			popupKey: "addpopup1",
 		});
+	};
+	// 휴대폰 인증 보내기 버튼
+	const clickPhoneAuth = () => {
+		if (!joinForm.phone) {
+			setJoinFailAlert((prev) => ({
+				...prev,
+				phone: "휴대폰 번호를 입력해주세요.",
+			}));
+			joinFormRefs.current.phone?.focus();
+			return;
+		}
+		if (joinFormRegex.phone) {
+			if (!joinFormRegex.phone.test(joinForm.phone)) {
+				setJoinFailAlert((prev) => ({
+					...prev,
+					phone: joinFormRegexFailMent.phone,
+				}));
+				joinFormRefs.current.phone?.focus();
+				return;
+			}
+		}
+		handlePhoneAuth.mutate();
+	};
+	// 휴대폰 인증확인 버튼
+	const clickCheckPhoneAuth = () => {
+		if (joinFailAlert.phoneAuth) {
+			joinFormRefs.current.phoneAuth?.focus();
+			return;
+		}
+		handlePhoneAuthComplete.mutate();
 	};
 
 	return (
@@ -367,14 +487,41 @@ export default function UserJoin() {
 						searchBtn={{
 							txt: "인증",
 							fnc: () => {
-								handlePhoneAuth.mutate(joinForm.phone);
+								clickPhoneAuth();
 							},
 						}}
 						onBlur={validateJoinForm}
 						ref={(el) => {
 							joinFormRefs.current.phone = el;
 						}}
+						inputMode="numeric"
+						pattern="[0-9]*"
+						maxLength={11}
 					/>
+					{authNumberView && (
+						<JoinInput
+							name="phoneAuth"
+							label="인증번호"
+							placeholder="인증번호를 입력해주세요."
+							value={joinForm.phoneAuth}
+							failMessage={joinFailAlert.phoneAuth}
+							successMessage={joinSuccessAlert.phoneAuth}
+							onChange={changeJoinForm}
+							searchBtn={{
+								txt: "확인",
+								fnc: () => {
+									clickCheckPhoneAuth();
+								},
+							}}
+							onBlur={validateJoinForm}
+							ref={(el) => {
+								joinFormRefs.current.phone = el;
+							}}
+							inputMode="numeric"
+							pattern="[0-9]*"
+							maxLength={6}
+						/>
+					)}
 					<JoinInput
 						name="email"
 						label="이메일"

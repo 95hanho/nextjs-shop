@@ -5,6 +5,7 @@ export type FormEvent = React.FormEvent<HTMLFormElement>;
 export type ChangeEvent = React.ChangeEvent<HTMLInputElement>;
 
 export type Token = {
+	type: "access" | "refresh" | "phoneAuth" | "phoneAuthComplete" | "pwdReset";
 	userId: string;
 } & JwtPayload;
 
@@ -30,6 +31,7 @@ export interface JoinForm extends LoginForm, joinFormAdd {
 	addressDetail: string;
 	birthday: string;
 	phone: string;
+	phoneAuth: string;
 	email: string;
 	// [key: string]: string;
 }
@@ -60,6 +62,7 @@ export interface JoinFormRefs {
 	address: HTMLInputElement | null;
 	addressDetail: HTMLInputElement | null;
 	phone: HTMLInputElement | null;
+	phoneAuth: HTMLInputElement | null;
 	email: HTMLInputElement | null;
 	birthday: HTMLInputElement | null;
 	[key: string]: HTMLInputElement | null | undefined;
@@ -97,3 +100,21 @@ export type UserInfo = {
 	weight: number;
 	withdrawalStatus: boolean;
 };
+/* --------------------------------------- */
+export interface PhoneAuthRequest {
+	phone: string;
+	phoneAuthToken: string;
+	userId?: string;
+}
+/*  */
+export interface PhoneAuthCheckRequest {
+	authNumber: string;
+	phoneAuthToken: string;
+	userId?: string;
+}
+/*  */
+export interface UserUpdateResponse {
+	message: string;
+	email: string;
+	phone: string;
+}

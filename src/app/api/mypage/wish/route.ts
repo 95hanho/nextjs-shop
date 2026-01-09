@@ -6,11 +6,17 @@ import { GetWishListResponse } from "@/types/mypage";
 import { NextResponse } from "next/server";
 
 // 위시리스트 조회
-export const GET = withAuth(async ({ userId }) => {
+export const GET = withAuth(async ({ userId, accessToken }) => {
 	try {
 		if (!userId) return NextResponse.json({ message: "잘 못 된 요청입니다." }, { status: 400 });
 
-		const data = await getNormal<GetWishListResponse>(getBackendUrl(API_URL.MY_WISH), { userId });
+		const data = await getNormal<GetWishListResponse>(
+			getBackendUrl(API_URL.MY_WISH),
+			{ userId },
+			{
+				Authorization: `Bearer ${accessToken}`,
+			}
+		);
 		console.log("data", data);
 
 		return NextResponse.json({ ...data }, { status: 200 });

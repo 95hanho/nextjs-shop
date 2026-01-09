@@ -1,12 +1,16 @@
 import API_URL from "@/api/endpoints";
 import { postUrlFormData, putUrlFormData } from "@/api/fetchFilter";
+import { withAuth } from "@/lib/auth";
+import { isProd } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
-import { JoinForm } from "@/types/auth";
+import { verifyPhoneAuthCompleteToken } from "@/lib/jwt";
+import { JoinForm, UserUpdateResponse } from "@/types/auth";
 import { BaseResponse } from "@/types/common";
+import { verify } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 
 // 회원가입
-export async function POST(nextRequest: NextRequest) {
+export const POST = async (nextRequest: NextRequest) => {
 	try {
 		const { userId, password, name, zonecode, address, addressDetail, birthday, phone, email }: JoinForm = await nextRequest.json();
 		if (!userId) return NextResponse.json({ message: "아이디를 입력해주세요." }, { status: 400 });
@@ -18,6 +22,24 @@ export async function POST(nextRequest: NextRequest) {
 		if (!birthday) return NextResponse.json({ message: "생년월일을 입력해주세요." }, { status: 400 });
 		if (!phone) return NextResponse.json({ message: "핸드폰번호를 입력해주세요." }, { status: 400 });
 		if (!email) return NextResponse.json({ message: "이메일을 입력해주세요." }, { status: 400 });
+
+		// 휴대폰인증완료토큰 검사
+		try {
+			const phoneAuthCompleteToken =
+				nextRequest.cookies.get("phoneAuthCompleteToken")?.value || nextRequest.headers.get("phoneAuthCompleteToken") || undefined;
+			if (!phoneAuthCompleteToken?.trim()) {
+				throw new Error("NOT_EXIST_TOKEN");
+			}
+			verifyPhoneAuthCompleteToken(phoneAuthCompleteToken);
+		} catch {
+			return NextResponse.json(
+				{
+					status: 401,
+					message: "PHONEAUTH_COMPLETE_UNAUTHORIZED",
+				},
+				{ status: 401 }
+			);
+		}
 
 		const data = await postUrlFormData<BaseResponse>(getBackendUrl(API_URL.AUTH_JOIN), {
 			userId,
@@ -32,7 +54,16 @@ export async function POST(nextRequest: NextRequest) {
 		});
 		console.log("data", data);
 
-		return NextResponse.json({ message: data.message }, { status: 200 });
+		const response = NextResponse.json({ message: data.message }, { status: 200 });
+		// 사용한 토큰 제거
+		response.cookies.set("phoneAuthCompleteToken", "", {
+			httpOnly: true,
+			secure: isProd,
+			sameSite: "strict",
+			path: "/",
+			maxAge: 0,
+		});
+		return response;
 	} catch (err: any) {
 		console.error("error :", {
 			message: err.message,
@@ -45,32 +76,29 @@ export async function POST(nextRequest: NextRequest) {
 
 		return NextResponse.json(payload, { status });
 	}
-}
+};
 
 // 회원정보변경
-export async function PUT(nextRequest: NextRequest) {
+export const PUT = withAuth(async ({ nextRequest, accessToken }) => {
 	try {
-		const { userId, zonecode, address, addressDetail, birthday, phone, email }: JoinForm = await nextRequest.json();
-		if (!userId) return NextResponse.json({ message: "아이디를 입력해주세요." }, { status: 400 });
-		if (!zonecode) return NextResponse.json({ message: "우편번호를 입력해주세요." }, { status: 400 });
-		if (!address) return NextResponse.json({ message: "주소를 입력해주세요." }, { status: 400 });
-		if (!addressDetail) return NextResponse.json({ message: "상세주소를 입력해주세요." }, { status: 400 });
-		if (!birthday) return NextResponse.json({ message: "생년월일을 입력해주세요." }, { status: 400 });
+		const { phone, email }: JoinForm = await nextRequest.json();
 		if (!phone) return NextResponse.json({ message: "핸드폰번호를 입력해주세요." }, { status: 400 });
 		if (!email) return NextResponse.json({ message: "이메일을 입력해주세요." }, { status: 400 });
 
-		const data = await putUrlFormData<BaseResponse>(getBackendUrl(API_URL.AUTH_JOIN), {
-			userId,
-			zonecode,
-			address,
-			addressDetail,
-			birthday,
-			phone,
-			email,
-		});
+		const data = await putUrlFormData<BaseResponse>(
+			getBackendUrl(API_URL.AUTH_JOIN),
+			{
+				phone,
+				email,
+			},
+			{
+				Authorization: `Bearer ${accessToken}`,
+			}
+		);
 		console.log("data", data);
+		const payload: UserUpdateResponse = { message: data.message, email, phone };
 
-		return NextResponse.json({ message: data.message }, { status: 200 });
+		return NextResponse.json(payload, { status: 200 });
 	} catch (err: any) {
 		console.error("error :", {
 			message: err.message,
@@ -83,4 +111,4 @@ export async function PUT(nextRequest: NextRequest) {
 
 		return NextResponse.json(payload, { status });
 	}
-}
+});

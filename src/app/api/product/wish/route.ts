@@ -5,14 +5,20 @@ import { getBackendUrl } from "@/lib/getBaseUrl";
 import { BaseResponse } from "@/types/common";
 import { NextResponse } from "next/server";
 
-// 위시 등록
-export const POST = withAuth(async ({ nextRequest, userId, params }) => {
+// 위시 등록/해제
+export const POST = withAuth(async ({ nextRequest, accessToken }) => {
 	try {
 		const { productId }: { productId: number } = await nextRequest.json();
 
-		if (!userId || !productId) return NextResponse.json({ message: "잘 못 된 요청입니다." }, { status: 400 });
-		const data = await postUrlFormData<BaseResponse>(getBackendUrl(API_URL.PRODUCT_WISH), { productId, userId });
-		console.log("data", data);
+		if (!productId) return NextResponse.json({ message: "잘 못 된 요청입니다." }, { status: 400 });
+		const data = await postUrlFormData<BaseResponse>(
+			getBackendUrl(API_URL.PRODUCT_WISH),
+			{ productId },
+			{
+				Authorization: `Bearer ${accessToken}`,
+			}
+		);
+		// console.log("data", data);
 
 		return NextResponse.json({ message: data.message }, { status: 200 });
 	} catch (err: any) {

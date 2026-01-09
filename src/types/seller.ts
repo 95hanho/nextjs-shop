@@ -3,13 +3,13 @@ import { BaseResponse } from "./common";
 import { Coupon } from "./mypage";
 import { Product } from "./product";
 
-export type sellerProductDetail = {};
+export type sellerProductOption = {};
 export type sellerProduct = Product & {
 	sellerId: string;
 	subMenuName: string;
 	topMenuName: string;
 	gender: string;
-	detailList: sellerProductDetail;
+	optionList: sellerProductOption;
 };
 export interface GetSellerProductListResponse extends BaseResponse {
 	sellerProductList: sellerProduct[];
@@ -31,14 +31,14 @@ export interface UpdateSellerProductRequest {
 	menuSubId: number;
 }
 /*  */
-export interface AddSellerProductDetail {
+export interface AddSellerProductOption {
 	productId: number;
 	addPrice: number;
 	stock: number;
 	size: string;
 }
-export interface UpdateSellerProductDetail {
-	productDetailId: number;
+export interface UpdateSellerProductOption {
+	productOptionId: number;
 	addPrice: number;
 	stock: number;
 }
@@ -103,6 +103,7 @@ export type ProductViewCount = {
 	userName: string;
 	productId: number;
 	productName: string;
+	likeCount: number;
 	viewCount: number;
 	latestDate: string;
 };

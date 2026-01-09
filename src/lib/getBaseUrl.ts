@@ -9,5 +9,5 @@ export const getApiUrl = (apiUrl: string) => {
 //
 export const getBackendUrl = (apiUrl: string) => {
 	// 서버일 경우 (production 환경 고려)
-	return process.env.SERVER_URL + "/bapi" + apiUrl;
+	return process.env.NEXT_PUBLIC_SERVER_URL + "/bapi" + apiUrl;
 };

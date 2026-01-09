@@ -1,0 +1,89 @@
+.joinInput {
+	display: flex;
+	font-size: 1.15em;
+	text-align: left;
+	margin-bottom: 10px;
+	.joinLabel {
+		align-content: center;
+		width: 30%;
+	}
+	.joinText {
+		width: 70%;
+		height: 100%;
+		> div {
+			display: flex;
+			align-items: center;
+			input {
+				width: 70%;
+				padding: 7px 10px;
+				font-size: 1em;
+				border: 1px solid #aaa;
+				border-radius: 5px;
+				outline: none;
+			}
+		}
+		p {
+			display: none;
+			margin-top: 5px;
+			font-size: 0.75em;
+		}
+	}
+}
+/* 상태 */
+.fail {
+	p {
+		display: block;
+	}
+	input {
+		border: 1px solid #f00;
+		color: #f00;
+	}
+}
+.success {
+	p {
+		display: block;
+	}
+	input {
+		border: 1px solid rgb(90, 161, 90);
+	}
+}
+/* 메시지 컬러 */
+.red {
+	color: #f00;
+}
+.green {
+	color: #0f0;
+}
+/* 검색 버튼 공통 */
+.searchBtn {
+	width: 25%;
+	margin-left: 5px;
+	padding: 7px 10px;
+	border-radius: 5px;
+	color: #fff;
+	font-size: 1em;
+	font-weight: bold;
+	cursor: pointer;
+}
+/* 버튼 타입별 */
+.address {
+	border: 2px solid #ad9090;
+	background: #ee6666;
+	&:hover {
+		background: #df6060;
+	}
+}
+.phone {
+	border: 2px solid #83a77e;
+	background: #4fdb3d;
+	&:hover {
+		background: #4acc39;
+	}
+}
+.phoneAuth {
+	border: 2px solid #d7d7d7;
+	background: #3a7add;
+	&:hover {
+		background: #2d72dd;
+	}
+}

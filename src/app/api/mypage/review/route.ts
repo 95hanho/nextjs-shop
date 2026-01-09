@@ -7,7 +7,7 @@ import { writeReviewRequest } from "@/types/mypage";
 import { NextResponse } from "next/server";
 
 // 리뷰 작성
-export const POST = withAuth(async ({ nextRequest, userId }) => {
+export const POST = withAuth(async ({ nextRequest, accessToken }) => {
 	try {
 		// formdata || application/x-www-form-urlencoded로 보내면 이렇게
 		// const formData = await nextRequest.formData();
@@ -20,7 +20,13 @@ export const POST = withAuth(async ({ nextRequest, userId }) => {
 		if (!orderListId) return NextResponse.json({ message: "잘 못 된 요청입니다." }, { status: 400 });
 
 		const payload: writeReviewRequest = { content, rating, orderListId };
-		const data = await postUrlFormData<BaseResponse>(getBackendUrl(API_URL.MY_REVIEW), { ...payload });
+		const data = await postUrlFormData<BaseResponse>(
+			getBackendUrl(API_URL.MY_REVIEW),
+			{ ...payload },
+			{
+				Authorization: `Bearer ${accessToken}`,
+			}
+		);
 		console.log("data", data);
 
 		return NextResponse.json({ message: data.message }, { status: 200 });

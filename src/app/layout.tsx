@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "@/styles/css/font.css";
+import { Inter, Roboto_Mono } from "next/font/google";
 import "@/styles/css/reset.css";
 import "@/styles/css/style.css";
 import "@/styles/css/globals.css";
@@ -15,15 +14,16 @@ import { redirect } from "next/navigation";
 import TokenCheck from "@/components/common/TokenCheck";
 import Header from "@/components/common/Header";
 import { cookies } from "next/headers";
+import ModalRoot from "@/components/modal/core/ModalRoot";
 
-const geistSans = Geist({
-	variable: "--font-geist-sans",
+const inter = Inter({
 	subsets: ["latin"],
+	variable: "--font-sans",
 });
 
-const geistMono = Geist_Mono({
-	variable: "--font-geist-mono",
+const robotoMono = Roboto_Mono({
 	subsets: ["latin"],
+	variable: "--font-mono",
 });
 
 export const metadata: Metadata = {
@@ -43,10 +43,11 @@ export default async function RootLayout({
 
 	return (
 		<html lang="ko">
-			<body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+			<body className={`${inter.variable} ${robotoMono.variable} antialiased`}>
 				<Providers>
 					<Header menuList={menuList} />
 					{children}
+					<ModalRoot />
 				</Providers>
 			</body>
 		</html>

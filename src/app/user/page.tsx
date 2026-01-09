@@ -29,6 +29,7 @@ export default function Login() {
 			router.push("/");
 		},
 		onError(err) {
+			console.log(err);
 			if (err.message === "USER_NOT_FOUND") {
 				console.error(err.message);
 				setAlertMessage("아이디 또는 비밀번호가 일치하지 않습니다.");

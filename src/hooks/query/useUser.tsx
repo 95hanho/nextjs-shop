@@ -5,7 +5,6 @@ import { JoinForm } from "@/types/form";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import useAuth from "../useAuth";
-import { LoginRequest } from "@/types/auth";
 
 export default function useUser() {
 	const router = useRouter();

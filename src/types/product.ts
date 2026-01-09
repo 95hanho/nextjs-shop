@@ -6,8 +6,18 @@ export type Product = {
 	colorName: string;
 	price: number;
 	createdAt: string;
+	likeCount: number;
 	viewCount: number;
 	wishCount: number;
+};
+export type ProductOption = {
+	productOptionId: number;
+	productId: number;
+	addPrice: number;
+	stock: number;
+	createdAt: string;
+	size: string;
+	salesCount: number;
 };
 
 /*  */
@@ -28,7 +38,6 @@ export interface GetProductListResponse {
 }
 /*  */
 export interface AddCartRequest {
-	productDetailId: number;
+	productOptionId: number;
 	quantity: number;
-	userId: string;
 }
