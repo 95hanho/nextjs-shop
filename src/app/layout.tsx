@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Inter, Roboto_Mono } from "next/font/google";
-import "@/styles/css/reset.css";
 import "@/styles/css/style.css";
 import "@/styles/css/globals.css";
 import Providers from "@/lib/providers";
@@ -13,7 +12,7 @@ import { UserInfo } from "@/types/auth";
 import { redirect } from "next/navigation";
 import TokenCheck from "@/components/common/TokenCheck";
 import Header from "@/components/common/Header";
-import { cookies } from "next/headers";
+import { cookies } from "next/he.aders";
 import ModalRoot from "@/components/modal/core/ModalRoot";
 
 const inter = Inter({
