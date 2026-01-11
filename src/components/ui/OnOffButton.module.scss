@@ -1,15 +1,17 @@
 /* on/off 버튼 */
-.onoff-btn-wrap {
+.onOffBtnWrap {
 	padding: 0 10px;
+	display: inline-flex;
+	align-items: center;
 }
-.onoff-btn-wrap .onf-checkbox {
+.onfCheckbox {
 	position: absolute;
 	/* hidden */
 	appearance: none;
 	-webkit-appearance: none;
 	-moz-appearance: none;
 }
-.onoff-btn-wrap .switch-label {
+.switchLabel {
 	position: relative;
 	cursor: pointer;
 	display: inline-block;
@@ -19,11 +21,11 @@
 	border: 2px solid #daa;
 	border-radius: 20px;
 	transition: 0.2s;
+	&:hover {
+		background: #efefef;
+	}
 }
-.onoff-btn-wrap .switch-label:hover {
-	background: #efefef;
-}
-.onoff-btn-wrap .onf-btn {
+.onfBtn {
 	position: absolute;
 	top: 2.5px;
 	left: 3px;
@@ -34,28 +36,29 @@
 	background: #daa;
 	transition: 0.2s;
 }
-.onoff-btn-wrap .onf-txt {
+.onfTxt {
 	font-size: 18px;
-	-webkit-user-select: none;
-	-moz-user-select: none;
 	user-select: none;
 	margin-left: 10px;
 }
-.onoff-btn-wrap .onf-checkbox:checked + .switch-label {
+/* checked 상태 */
+.onfCheckbox:checked + .switchLabel {
 	background: rgb(128, 197, 128);
 	border: 2px solid rgb(133, 190, 133);
+
+	&:hover {
+		background: rgb(103, 158, 103);
+	}
+
+	.onfBtn {
+		left: 34px;
+		background: #fff;
+		box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.1254901961);
+	}
 }
-.onoff-btn-wrap .onf-checkbox:checked + .switch-label:hover {
-	background: rgb(103, 158, 103);
-}
-.onoff-btn-wrap .onf-checkbox:checked + .switch-label .onf-btn {
-	left: 34px;
-	background: #fff;
-	box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.1254901961);
-}
-/* type="number" 숫자조절 없애기 */
-input.no-spin::-webkit-inner-spin-button,
-input.no-spin::-webkit-outer-spin-button {
+/* type="number" 숫자조절 없애기 (필요 시 유지) */
+.noSpin::-webkit-inner-spin-button,
+.noSpin::-webkit-outer-spin-button {
 	-webkit-appearance: none;
 	margin: 0;
 }
