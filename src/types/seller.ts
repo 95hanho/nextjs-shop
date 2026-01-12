@@ -1,7 +1,12 @@
-import { extname } from "path";
 import { BaseResponse } from "./common";
 import { Coupon } from "./mypage";
 import { Product } from "./product";
+
+// 로그인폼 데이터
+export type SellerLoginForm = {
+	sellerId: string;
+	password: string;
+};
 
 export type sellerProductOption = {};
 export type sellerProduct = Product & {

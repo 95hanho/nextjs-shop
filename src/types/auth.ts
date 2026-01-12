@@ -5,7 +5,7 @@ export type FormEvent = React.FormEvent<HTMLFormElement>;
 export type ChangeEvent = React.ChangeEvent<HTMLInputElement>;
 
 export type Token = {
-	type: "access" | "refresh" | "phoneAuth" | "phoneAuthComplete" | "pwdReset";
+	type: "ACCESS" | "REFRESH" | "PHONEAUTH" | "PHONEAUTHCOMPLETE" | "PWDRESET" | "SELLER";
 	userId: string;
 } & JwtPayload;
 
