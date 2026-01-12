@@ -12,6 +12,7 @@ import Image from "next/image";
 import { FaHeart, FaStar } from "react-icons/fa";
 import WishButton from "./WishButton";
 import ImageFill from "@/components/common/ImageFill";
+import OnOffButton from "@/components/ui/OnOffButton";
 
 export default function WishClient() {
 	const { user } = useAuth();
@@ -70,25 +71,9 @@ export default function WishClient() {
 			<section className="wish__content">
 				{/* 상품 필터 on/off 버튼 */}
 				<div className="wish__filters">
-					<div className="onoff-btn-wrap">
-						<input type="checkbox" id="sale-switch" name="sale" className="onf-checkbox" />
-						<label htmlFor="sale-switch" className="switch-label">
-							<span className="onf-btn"></span>
-						</label>
-						<label htmlFor="sale-switch" className="onf-txt">
-							세일중
-						</label>
-					</div>
+					<OnOffButton text="세일중" checked={false} />
 
-					<div className="onoff-btn-wrap">
-						<input type="checkbox" id="selling-switch" name="selling" className="onf-checkbox" />
-						<label htmlFor="selling-switch" className="switch-label">
-							<span className="onf-btn"></span>
-						</label>
-						<label htmlFor="selling-switch" className="onf-txt">
-							판매 중 상품만 보기
-						</label>
-					</div>
+					<OnOffButton text="판매 중 상품만 보기" checked={true} />
 				</div>
 				{/* 상품 리스트 */}
 				<div className="wish__list">
@@ -112,7 +97,7 @@ export default function WishClient() {
 
 									<div className="product__price">
 										<div aria-live="polite">
-											<span className="summary__badge text-red-500 mr-1">0%</span>
+											<span className="mr-1 text-red-500 summary__badge">0%</span>
 											<span className="summary__price">{wishItem.price}</span>
 										</div>
 									</div>

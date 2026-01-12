@@ -3,7 +3,7 @@
 import ModalFrame from "@/components/modal/frame/ModalFrame";
 import { useModalStore } from "@/store/modal.store";
 import { ModalResultMap } from "@/store/modal.type";
-import styles from "./ConfirmModal.module.scss";
+import styles from "../Modal.module.scss";
 import ConfirmButton from "@/components/modal/frame/ConfirmButton";
 
 interface ConfirmModalProps {

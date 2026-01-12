@@ -857,7 +857,6 @@ main#productDetail section#product-description .product-blog .description-more-b
 }
 main#productDetail section#product-info-section {
 	margin-top: 50px;
-	padding: 0 80px;
 }
 main#productDetail section#product-info-section .product-spec-table h2 {
 	font-size: 20px;
@@ -1009,7 +1008,6 @@ main#productDetail section#product-info-section .brand-other-products .image-sli
 }
 main#productDetail section#etc-info-section {
 	margin-top: 70px;
-	padding: 0 80px;
 }
 main#productDetail section#etc-info-section .shipping-guide h2,
 main#productDetail section#etc-info-section .refund-guide h2 {
