@@ -1,0 +1,52 @@
+/* 각 상품들 */
+.productItem {
+}
+
+/* 이미지 */
+.productThumb {
+	position: relative;
+	aspect-ratio: 5 / 6;
+}
+
+/* ImageFill에 className으로 넣을 클래스(필요하면 커스텀) */
+.productImg {
+	/* 필요 시 여기에 */
+}
+
+/* 정보 영역 */
+.productInfo {
+	padding: 12px 8px 24px 12px;
+	display: flex;
+	flex-direction: column;
+}
+
+.productName {
+	font-weight: 500;
+}
+
+.productPrice {
+	font-weight: 600;
+}
+
+.productMeta {
+	display: flex;
+	font-size: 14px;
+
+	> div {
+		display: inline-flex;
+		align-items: center;
+	}
+}
+
+.metaWish {
+	margin-right: 5px;
+	color: #f00;
+}
+
+.metaRate {
+	color: #e79278;
+}
+
+.metaIcon {
+	margin-right: 3px;
+}

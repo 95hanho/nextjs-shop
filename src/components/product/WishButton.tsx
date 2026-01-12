@@ -11,7 +11,7 @@ export default function WishButton({ clickFnc }: WishButtonProps) {
 
 	return (
 		<button
-			className="product__wish-btn"
+			className="absolute right-2 bottom-2 text-base block text-[#e79278]"
 			onClick={() => {
 				clickFnc();
 				setWishOn(!wishOn);

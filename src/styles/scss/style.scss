@@ -1779,59 +1779,6 @@ main#productDetail {
 		.wish__list {
 			display: flex;
 			flex-wrap: wrap;
-			// 각 상품들
-			.wish__item {
-				position: relative;
-				width: 16.66%;
-				// 이미지
-				.product__thumb {
-					position: relative;
-					aspect-ratio: 5 / 6;
-					.product__wish-btn {
-						display: block;
-						position: absolute;
-						font-size: 16px;
-						bottom: 7px;
-						right: 7px;
-						color: #e79278;
-					}
-				}
-				.product__info {
-					padding: 12px 8px 24px 12px;
-					display: flex;
-					flex-direction: column;
-					.product__brand {
-					}
-					.product__name {
-						font-weight: 500;
-					}
-					.product__price {
-						font-weight: 600;
-						.summary__badge {
-						}
-						.summary__price {
-						}
-					}
-					.product__meta {
-						display: flex;
-						font-size: 14px;
-						> div {
-							display: inline-flex;
-							align-items: center;
-						}
-						.meta__wish {
-							margin-right: 5px;
-							color: #f00;
-						}
-						.meta__rate {
-							color: #e79278;
-						}
-						.meta__icon {
-							margin-right: 3px;
-						}
-					}
-				}
-			}
 		}
 	}
 }
