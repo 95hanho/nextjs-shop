@@ -1,12 +1,6 @@
 import jwt from "jsonwebtoken";
 import { jwtVerify } from "jose";
-import {
-	ACCESS_TOKEN_EXPIRES_IN,
-	PHONE_AUTH_EXPIRES_IN,
-	PWD_CHANGE_EXPIRES_IN,
-	REFRESH_TOKEN_EXPIRES_IN,
-	SELLER_TOKEN_EXPIRES_IN,
-} from "./tokenTime";
+import { ACCESS_TOKEN_EXPIRES_IN, PHONE_AUTH_EXPIRES_IN, PWD_CHANGE_EXPIRES_IN, REFRESH_TOKEN_EXPIRES_IN } from "./tokenTime";
 import { Token } from "@/types/auth";
 import type { StringValue } from "ms";
 
@@ -15,7 +9,6 @@ const MIDDLEWARE_JWT_SECRET_KEY = new TextEncoder().encode(process.env.NEXT_PUBL
 const PHONE_AUTH_KEY = process.env.NEXT_PUBLIC_PHONE_AUTH || "your-secret";
 const PHONE_AUTH_COMPLETE_KEY = process.env.NEXT_PUBLIC_PHONE_AUTH_COMPLETE || "your-secret";
 const PWD_CHANGE_KEY = process.env.NEXT_PUBLIC_PWD_CHANGE || "your-secret";
-const SELLER_JWT_SECRET_KEY = process.env.NEXT_PUBLIC_SELLER_JWT_SECRET || "your-secret";
 
 // accessToken 생성
 export function generateAccessToken(payload: { userId: string }, expiresIn?: StringValue) {
@@ -96,20 +89,5 @@ export function verifyPwdResetToken(token: string): Token {
 		algorithms: ["HS256"],
 	}) as Token;
 	if (payload.type !== "PWDRESET") throw new Error("INVALID_TOKEN_TYPE");
-	return payload;
-}
-/* --------- 판매자 관련 ------------------------------------------------------- */
-// sellerToken 생성
-export function generateSellerToken(payload: { sellerId: string }, expiresIn?: StringValue) {
-	return jwt.sign({ type: "SELLER", sellerId: payload.sellerId }, SELLER_JWT_SECRET_KEY, {
-		expiresIn: expiresIn || SELLER_TOKEN_EXPIRES_IN,
-		algorithm: "HS256",
-	});
-}
-// sellerToken 토큰 복호화
-export function verifySellerToken(token: string): Token {
-	const payload = jwt.verify(token, SELLER_JWT_SECRET_KEY, { algorithms: ["HS256"] }) as Token; // 실패 시 오류 발생
-	const isSeller = payload.userId && payload.type === "SELLER";
-	if (!isSeller) throw new Error("INVALID_TOKEN_TYPE");
 	return payload;
 }

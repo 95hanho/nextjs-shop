@@ -1,3 +1,4 @@
+import { JwtPayload } from "jsonwebtoken";
 import { BaseResponse } from "./common";
 import { Coupon } from "./mypage";
 import { Product } from "./product";
@@ -8,7 +9,40 @@ export type SellerLoginForm = {
 	password: string;
 };
 
-export type sellerProductOption = {};
+// 로그인 토큰 구조
+export type SellerToken = {
+	type: "SELLER";
+	sellerId: string;
+} & JwtPayload;
+
+export type SellerInfo = {
+	sellerId: string;
+	sellerName: string;
+	sellerNameEn: string;
+	extensionNumber: string;
+	mobileNumber: string;
+	email: string;
+	businessRegistrationNumber: string;
+	telecomSalesNumber: string;
+	representativeName: string;
+	businessZipcode: string;
+	businessAddress: string;
+	businessAddressDetail: string;
+	updatedAt: string;
+	requestedAt: string;
+	approvedAt: string;
+};
+
+/* ------------------------------------------------------------- */
+
+// 회원정보 응답
+export interface SellerResponse extends BaseResponse {
+	seller: SellerInfo;
+}
+
+export type sellerProductOption = {
+	adsf: string;
+};
 export type sellerProduct = Product & {
 	sellerId: string;
 	subMenuName: string;

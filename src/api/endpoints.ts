@@ -81,6 +81,7 @@ const API_URL = {
 	SELLER: "/seller",
 	/** 판매자 로그인토큰 저장 */
 	SELLER_TOKEN: "/seller/token",
+	SELLER_LOGOUT: "/seller/logout",
 	/** 판매자 제품 조회, 판매자제품추가/수정 */
 	SELLER_PRODUCT: "/seller/product",
 	/** 판매자제품상세추가, 판매자제품상세변경 */

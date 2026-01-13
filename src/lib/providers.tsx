@@ -1,8 +1,6 @@
 "use client";
 
-import AuthProvider from "@/providers/AuthProvider";
-import { UserInfo } from "@/types/auth";
-import { ApiError } from "@/types/common";
+import AuthRouterProvider from "@/providers/AuthRouterProvider";
 import { MutationCache, QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactNode, useState } from "react";
 
@@ -66,7 +64,7 @@ export default function Providers({ children }: ProvidersProps) {
 
 	return (
 		<QueryClientProvider client={queryClient}>
-			<AuthProvider>{children}</AuthProvider>
+			<AuthRouterProvider>{children}</AuthRouterProvider>
 		</QueryClientProvider>
 	);
 }

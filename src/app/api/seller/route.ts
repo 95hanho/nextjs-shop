@@ -1,12 +1,37 @@
 import API_URL from "@/api/endpoints";
-import { postUrlFormData } from "@/api/fetchFilter";
+import { getNormal, postUrlFormData } from "@/api/fetchFilter";
 import { isProd } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
-import { generateRefreshToken, generateSellerToken } from "@/lib/jwt";
+import { generateRefreshToken } from "@/lib/jwt";
+import { withSellerAuth } from "@/lib/seller/auth";
+import { generateSellerToken } from "@/lib/seller/jwt";
 import { REFRESH_TOKEN_COOKIE_AGE, SELLER_TOKEN_COOKIE_AGE } from "@/lib/tokenTime";
 import { BaseResponse } from "@/types/common";
-import { SellerLoginForm } from "@/types/seller";
+import { SellerLoginForm, SellerResponse } from "@/types/seller";
 import { NextRequest, NextResponse } from "next/server";
+
+// 판매자 정보조회
+// - 초기패이지로딩(로그인되어있을 때), 로그인, 로그아웃, 유저정보필요할 때, 유저정보수정(상태변화)
+// 할 때 바로 가져올 수 있게 useQuery 실행함.
+export const GET = withSellerAuth(async ({ sellerToken }) => {
+	try {
+		const data = await getNormal<SellerResponse>(getBackendUrl(API_URL.AUTH), {
+			Authorization: `Bearer ${sellerToken}`,
+		});
+		return NextResponse.json({ ...data }, { status: 200 });
+	} catch (err: any) {
+		console.error("error :", {
+			message: err.message,
+			status: err.status,
+			data: err.data,
+		});
+
+		const status = Number.isInteger(err?.status) ? err.status : 500;
+		const payload = err?.data && typeof err.data === "object" ? err.data : { message: err?.message || "SERVER_ERROR" };
+
+		return NextResponse.json(payload, { status });
+	}
+});
 
 // 판매자 로그인
 export const POST = async (nextRequest: NextRequest) => {

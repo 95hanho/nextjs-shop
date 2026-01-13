@@ -4,10 +4,9 @@
 import Link from "next/link";
 import { useRef, useState } from "react";
 import JoinInput from "../../../components/user/JoinInput";
-import useUser from "@/hooks/query/useUser";
 import { isValidDateString } from "@/utils/ui";
 import { useMutation } from "@tanstack/react-query";
-import { getNormal, postJson, postUrlFormData } from "@/api/fetchFilter";
+import { getNormal, postJson } from "@/api/fetchFilter";
 import { BaseResponse } from "@/types/common";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import API_URL from "@/api/endpoints";
@@ -189,7 +188,7 @@ export default function UserJoin() {
 
 	// joinForm set
 	const changeJoinForm = (e: ChangeEvent) => {
-		let { name, value } = e.target as {
+		const { name, value } = e.target as {
 			name: keyof JoinForm;
 			value: string;
 		};
