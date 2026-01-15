@@ -41,7 +41,6 @@ export type UserAdd = {
 	mileage: number;
 	tall: number;
 	weight: number;
-	withdrawalStatus: boolean;
 };
 // 유저
 export type User = LoginForm & JoinForm & UserAdd;
@@ -98,7 +97,6 @@ export type UserInfo = {
 	mileage: number;
 	tall: number;
 	weight: number;
-	withdrawalStatus: boolean;
 };
 /* --------------------------------------- */
 export interface PhoneAuthRequest {
