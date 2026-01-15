@@ -20,5 +20,5 @@ export const PHONE_AUTH_COMPLETE_COOKIE_AGE: number = 60 * 30; // 30분
 export const PWD_CHANGE_EXPIRES_IN: StringValue = "5m";
 export const PWD_CHANGE_COOKIE_AGE: number = 60 * 5; // 5분
 // -------------------------------------------------------------
-export const SELLER_TOKEN_EXPIRES_IN: StringValue = "5s"; // 5초
+export const SELLER_TOKEN_EXPIRES_IN: StringValue = "5y"; // 5초
 export const SELLER_TOKEN_COOKIE_AGE: number = 5; // 5초

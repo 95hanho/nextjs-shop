@@ -6,7 +6,7 @@ import { GetProductListRequest, GetProductListResponse } from "@/types/product";
 import { NextResponse } from "next/server";
 
 // 제품 리스트 조회
-export const GET = withAuth(async ({ nextRequest, userId, params }) => {
+export const GET = withAuth(async ({ nextRequest }) => {
 	// query 접근 (App Router에서는 req.nextUrl.searchParams)
 	const search = Object.fromEntries(nextRequest.nextUrl.searchParams.entries());
 	if (Object.keys(search).length > 0) {

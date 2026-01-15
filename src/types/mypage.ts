@@ -117,31 +117,31 @@ export interface MyOrderListResponse extends BaseResponse {
 /*  */
 // 주문배송정보 상세상품 정보
 export type MyOrderDetailItem = OrderItem & {
-	orderId: 32;
-	userCouponId: 4;
-	couponId: 5;
-	description: "Daily Wear 1만원";
-	couponCode: "DAILY-10K";
-	discountType: "fixed_amount";
-	discountValue: 10000.0;
+	orderId: number;
+	userCouponId: number;
+	couponId: number;
+	description: string;
+	couponCode: string;
+	discountType: string;
+	discountValue: number;
 	maxDiscount: null;
-	minimumOrderBeforeAmount: 80000.0;
-	holdId: 99;
-	productOptionId: 101;
-	addPrice: 0;
-	size: "M";
-	productId: 27;
-	productName: "바시티 자켓";
-	colorName: "Wine";
-	price: 129000;
-	sellerId: "seller02";
-	sellerName: "Daily Wear";
+	minimumOrderBeforeAmount: number;
+	holdId: number;
+	productOptionId: number;
+	addPrice: number;
+	size: string;
+	productId: number;
+	productName: string;
+	colorName: string;
+	price: number;
+	sellerId: string;
+	sellerName: string;
 } & Review & {
-		menuSubId: 6;
-		subMenuName: "바시티";
-		menuTopId: 1;
-		topMenuName: "아우터";
-		productImageId: 0;
+		menuSubId: number;
+		subMenuName: string;
+		menuTopId: number;
+		topMenuName: string;
+		productImageId: number;
 	} & FileInfo & {
 		stackable: false;
 	};
