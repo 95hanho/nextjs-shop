@@ -9,7 +9,7 @@ import { useGetUserInfo } from "@/hooks/query/auth/useGetUserInfo";
 
 export default function UserMenu() {
 	const { data: user } = useGetUserInfo();
-	const { loginOn, logout } = useAuth();
+	const { logout } = useAuth();
 	const [isOpen, set_isOpen] = useState<boolean>(false);
 
 	const menuMouseleave = () => {

@@ -3,12 +3,10 @@
 import { FiShoppingCart, FiStar } from "react-icons/fi";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import useAuth from "@/hooks/useAuth";
 import { useEffect } from "react";
 import { Menu } from "@/types/main";
 import UserMenu from "./UserMenu";
 import Nav from "./Nav";
-import { useGetUserInfo } from "@/hooks/query/auth/useGetUserInfo";
 
 interface HeaderProps {
 	menuList: Menu[];
@@ -16,7 +14,6 @@ interface HeaderProps {
 
 export default function Header({ menuList }: HeaderProps) {
 	const pathname = usePathname();
-	const { user } = useAuth();
 
 	useEffect(() => {
 		// console.log("페이지 바껴서 토큰체크 실행됨");

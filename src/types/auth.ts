@@ -5,7 +5,7 @@ export type FormEvent = React.FormEvent<HTMLFormElement>;
 export type ChangeEvent = React.ChangeEvent<HTMLInputElement>;
 
 export type Token = {
-	type: "access" | "refresh" | "phoneAuth" | "phoneAuthComplete" | "pwdReset";
+	type: "ACCESS" | "REFRESH" | "PHONEAUTH" | "PHONEAUTHCOMPLETE" | "PWDRESET" | "SELLER";
 	userId: string;
 } & JwtPayload;
 
@@ -41,7 +41,6 @@ export type UserAdd = {
 	mileage: number;
 	tall: number;
 	weight: number;
-	withdrawalStatus: boolean;
 };
 // 유저
 export type User = LoginForm & JoinForm & UserAdd;
@@ -98,7 +97,6 @@ export type UserInfo = {
 	mileage: number;
 	tall: number;
 	weight: number;
-	withdrawalStatus: boolean;
 };
 /* --------------------------------------- */
 export interface PhoneAuthRequest {

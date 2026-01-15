@@ -3,7 +3,12 @@ type Primitive = string | number | boolean;
 type ParamValue = Primitive | Blob | File | FileList | Primitive[] | undefined;
 
 export type Params = Record<string, ParamValue>;
-export type HeadersMap = Record<string, string>;
+type AuthorizationHeader = `Bearer ${string}`;
+export type RequestHeaders = {
+	Authorization?: AuthorizationHeader;
+	"user-agent"?: string;
+	"x-forwarded-for"?: string;
+} & Record<string, string>;
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? ""; // BFF만 쓰면 ''로 둬도 OK
 const isServer = typeof window === "undefined";
@@ -139,7 +144,7 @@ async function http<T>(url: string, init?: RequestInit & { baseUrl?: string; tim
 // ---- 메서드별 헬퍼 ----
 
 // GET (쿼리스트링)
-export function getNormal<T>(url: string, params?: Params, headers?: HeadersMap) {
+export function getNormal<T>(url: string, params?: Params, headers?: RequestHeaders) {
 	const [u2, rest] = applyPathParams(url, cloneParams(params));
 	const qs = rest && Object.keys(rest).length > 0 ? `?${toSearchParams(rest).toString()}` : "";
 	// 공백 인코딩
@@ -148,7 +153,7 @@ export function getNormal<T>(url: string, params?: Params, headers?: HeadersMap)
 }
 
 // 파일 다운로드 (Blob + 에러 파싱)
-export async function getDownload(url: string, params?: Params, headers?: HeadersMap) {
+export async function getDownload(url: string, params?: Params, headers?: RequestHeaders) {
 	const [u2, rest] = applyPathParams(url, cloneParams(params));
 	const qs = rest && Object.keys(rest).length > 0 ? `?${toSearchParams(rest).toString()}` : "";
 	const blob = await http<Blob>((u2 + qs).replace(/ /g, "%20"), {
@@ -158,7 +163,7 @@ export async function getDownload(url: string, params?: Params, headers?: Header
 }
 
 // POST JSON
-export function postJson<TRes, TBody = unknown>(url: string, body?: TBody, headers?: HeadersMap) {
+export function postJson<TRes, TBody = unknown>(url: string, body?: TBody, headers?: RequestHeaders) {
 	const [u2, restBody] = applyPathParamsFromBody(url, body as any);
 
 	return http<TRes>(u2, {
@@ -169,7 +174,7 @@ export function postJson<TRes, TBody = unknown>(url: string, body?: TBody, heade
 }
 
 // POST FormData (Content-Type 설정 X: 브라우저가 boundary 포함 설정)
-export function postFormData<T>(url: string, params: Params, headers?: HeadersMap) {
+export function postFormData<T>(url: string, params: Params, headers?: RequestHeaders) {
 	const [u2, body] = applyPathParams(url, cloneParams(params));
 	const formData = new FormData();
 
@@ -206,7 +211,7 @@ function urlEncodedBody(params?: Params) {
 	return sp.toString();
 }
 
-export function postUrlFormData<T>(url: string, params: Params, headers?: HeadersMap) {
+export function postUrlFormData<T>(url: string, params: Params, headers?: RequestHeaders) {
 	const [u2, body] = applyPathParams(url, cloneParams(params));
 	return http<T>(u2, {
 		method: "POST",
@@ -215,7 +220,7 @@ export function postUrlFormData<T>(url: string, params: Params, headers?: Header
 	});
 }
 
-export function putUrlFormData<T>(url: string, params: Params, headers?: HeadersMap) {
+export function putUrlFormData<T>(url: string, params: Params, headers?: RequestHeaders) {
 	const [u2, body] = applyPathParams(url, cloneParams(params));
 	return http<T>(u2, {
 		method: "PUT",
@@ -225,7 +230,7 @@ export function putUrlFormData<T>(url: string, params: Params, headers?: Headers
 }
 
 // PUT JSON
-export function putJson<TRes, TBody = unknown>(url: string, body?: TBody, headers?: HeadersMap) {
+export function putJson<TRes, TBody = unknown>(url: string, body?: TBody, headers?: RequestHeaders) {
 	const [u2, restBody] = applyPathParamsFromBody(url, body as any);
 
 	return http<TRes>(u2, {
@@ -236,7 +241,7 @@ export function putJson<TRes, TBody = unknown>(url: string, body?: TBody, header
 }
 
 // DELETE (쿼리스트링)
-export function deleteNormal<T>(url: string, params?: Params, headers?: HeadersMap) {
+export function deleteNormal<T>(url: string, params?: Params, headers?: RequestHeaders) {
 	const [u2, rest] = applyPathParams(url, cloneParams(params));
 	const qs = rest && Object.keys(rest).length > 0 ? `?${toSearchParams(rest).toString()}` : "";
 	return http<T>((u2 + qs).replace(/ /g, "%20"), {

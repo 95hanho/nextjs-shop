@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi"; // 눈 모양 아이콘을 import 합니다.
 import { SiNaver, SiKakaotalk } from "react-icons/si"; // 네이버와 카카오 아이콘을 import 합니다.
-import useUser from "@/hooks/query/useUser";
 import { FormEvent, LoginForm } from "@/types/auth";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { getApiUrl } from "@/lib/getBaseUrl";

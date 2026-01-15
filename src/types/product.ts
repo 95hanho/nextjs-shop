@@ -1,3 +1,4 @@
+import { Coupon, UserCoupon } from "@/types/mypage";
 import { FileInfo } from "./file";
 
 export type Product = {
@@ -9,6 +10,21 @@ export type Product = {
 	likeCount: number;
 	viewCount: number;
 	wishCount: number;
+};
+export type ProductDetail = Product & {
+	sellerId: string;
+	menuSubId: number;
+	subName: string;
+	topName: string;
+	materialInfo: string;
+	manufacturerName: string;
+	countryOfOrigin: string;
+	washCareInfo: string;
+	manufacturedYm: string;
+	qualityGuaranteeInfo: string;
+	afterServiceContact: string;
+	afterServiceManager: string;
+	afterServicePhone: string;
 };
 export type ProductOption = {
 	productOptionId: number;
@@ -31,7 +47,8 @@ export interface GetProductListRequest {
 export type ProductItem = Product & {
 	sellerId: "seller07";
 	sellerName: "Casual Mood";
-} & FileInfo;
+	productImageList: FileInfo[];
+};
 
 export interface GetProductListResponse {
 	productList: ProductItem[];
@@ -40,4 +57,17 @@ export interface GetProductListResponse {
 export interface AddCartRequest {
 	productOptionId: number;
 	quantity: number;
+}
+/* ---------- */
+export interface GetProductDetailResponse {
+	productDetail: Product &
+		ProductDetail & {
+			productImageList: FileInfo[];
+		};
+	productOptionList: ProductOption[];
+	availableProductCoupon: Coupon &
+		UserCoupon & {
+			sellerId: string;
+			sellerName: string;
+		};
 }
