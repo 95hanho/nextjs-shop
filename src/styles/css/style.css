@@ -1773,55 +1773,10 @@ main#productDetail section#etc-info-section .best-short-sleeve-section .image-sl
 #wish .wish__content .wish__filters .onoff-btn-wrap .onf-checkbox:checked + .switch-label .onf-btn {
 	left: 12px;
 }
-#wish .wish__content .wish__list {
+/* #wish .wish__content .wish__list {
 	display: flex;
 	flex-wrap: wrap;
-}
-#wish .wish__content .wish__list .wish__item {
-	position: relative;
-	width: 16.66%;
-}
-#wish .wish__content .wish__list .wish__item .product__thumb {
-	position: relative;
-	aspect-ratio: 5/6;
-}
-#wish .wish__content .wish__list .wish__item .product__thumb .product__wish-btn {
-	display: block;
-	position: absolute;
-	font-size: 16px;
-	bottom: 7px;
-	right: 7px;
-	color: #e79278;
-}
-#wish .wish__content .wish__list .wish__item .product__info {
-	padding: 12px 8px 24px 12px;
-	display: flex;
-	flex-direction: column;
-}
-#wish .wish__content .wish__list .wish__item .product__info .product__name {
-	font-weight: 500;
-}
-#wish .wish__content .wish__list .wish__item .product__info .product__price {
-	font-weight: 600;
-}
-#wish .wish__content .wish__list .wish__item .product__info .product__meta {
-	display: flex;
-	font-size: 14px;
-}
-#wish .wish__content .wish__list .wish__item .product__info .product__meta > div {
-	display: inline-flex;
-	align-items: center;
-}
-#wish .wish__content .wish__list .wish__item .product__info .product__meta .meta__wish {
-	margin-right: 5px;
-	color: #f00;
-}
-#wish .wish__content .wish__list .wish__item .product__info .product__meta .meta__rate {
-	color: #e79278;
-}
-#wish .wish__content .wish__list .wish__item .product__info .product__meta .meta__icon {
-	margin-right: 3px;
-}
+} */
 
 /* 주문내역페이지 */
 #orderHistory.order-history {

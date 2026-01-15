@@ -2,17 +2,14 @@
 "use client";
 
 import API_URL from "@/api/endpoints";
-import { getNormal, postJson } from "@/api/fetchFilter";
+import { getNormal } from "@/api/fetchFilter";
 import useAuth from "@/hooks/useAuth";
 import { getApiUrl } from "@/lib/getBaseUrl";
-import { BaseResponse } from "@/types/common";
 import { GetWishListResponse } from "@/types/mypage";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import Image from "next/image";
-import { FaHeart, FaStar } from "react-icons/fa";
-import WishButton from "./WishButton";
-import ImageFill from "@/components/common/ImageFill";
+import { useQuery } from "@tanstack/react-query";
 import OnOffButton from "@/components/ui/OnOffButton";
+import ProductItem from "@/components/product/ProductItem";
+import ProductGrid from "@/components/product/ProductGrid";
 
 export default function WishClient() {
 	const { user } = useAuth();
@@ -23,22 +20,7 @@ export default function WishClient() {
 		queryKey: ["wishList", user?.userId],
 		queryFn: () => getNormal(getApiUrl(API_URL.MY_WISH)),
 		enabled: !!user?.userId,
-	});
-	// 위시 선택변경
-	const handleProductWish = useMutation({
-		mutationFn: (productId: number) => postJson<BaseResponse>(getApiUrl(API_URL.PRODUCT_WISH), { userId: user?.userId, productId }),
-		// Mutation이 시작되기 직전에 특정 작업을 수행
-		onMutate(a) {
-			console.log(a);
-		},
-		onSuccess(data) {
-			console.log(data);
-		},
-		onError(err) {
-			console.log(err);
-		},
-		// 결과에 관계 없이 무언가 실행됨
-		onSettled(a, b) {},
+		refetchOnWindowFocus: false,
 	});
 
 	if (isLoading) return <h1>로딩중....</h1>;
@@ -72,57 +54,30 @@ export default function WishClient() {
 				{/* 상품 필터 on/off 버튼 */}
 				<div className="wish__filters">
 					<OnOffButton text="세일중" checked={false} />
-
 					<OnOffButton text="판매 중 상품만 보기" checked={true} />
 				</div>
 				{/* 상품 리스트 */}
-				<div className="wish__list">
+				{/* <div className="grid grid-cols-6 gap-4 wish__list"> */}
+				<ProductGrid>
 					{/* 각 상품들 */}
 					{wishListData?.wishlistItems.map((wishItem) => {
 						return (
-							<div className="wish__item" key={"wishItem-" + wishItem.wishId}>
-								{/* 이미지 */}
-								<div className="product__thumb">
-									<ImageFill src={wishItem.filePath} fill={true} className="product__img" />
-									<WishButton
-										clickFnc={() => {
-											handleProductWish.mutate(wishItem.productId);
-										}}
-									/>
-								</div>
-								{/* 하단 상품설명 */}
-								<div className="product__info">
-									<h4 className="product__brand">{wishItem.sellerName}</h4>
-									<h5 className="product__name">{wishItem.name}</h5>
-
-									<div className="product__price">
-										<div aria-live="polite">
-											<span className="mr-1 text-red-500 summary__badge">0%</span>
-											<span className="summary__price">{wishItem.price}</span>
-										</div>
-									</div>
-									<div className="product__meta">
-										<div className="meta__wish">
-											<span className="meta__icon">
-												<FaHeart />
-											</span>
-											{/* <span className="meta__count">2.0만</span> */}
-											<span className="meta__count">{wishItem.likeCount}</span>
-										</div>
-
-										<div className="meta__rate">
-											<span className="meta__icon">
-												<FaStar />
-											</span>
-											{/* <span className="meta__count">4.9(6천+)</span> */}
-											<span className="meta__count">{wishItem.wishCount}</span>
-										</div>
-									</div>
-								</div>
-							</div>
+							<ProductItem
+								key={"wishItem-" + wishItem.wishId}
+								product={{
+									id: wishItem.wishId,
+									productId: wishItem.productId,
+									filePath: wishItem.filePath || "",
+									sellerName: wishItem.sellerName,
+									productName: wishItem.name,
+									price: wishItem.price,
+									likeCount: wishItem.likeCount,
+									wishCount: wishItem.wishCount,
+								}}
+							/>
 						);
 					})}
-				</div>
+				</ProductGrid>
 			</section>
 		</main>
 	);
