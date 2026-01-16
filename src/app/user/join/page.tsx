@@ -6,7 +6,7 @@ import { useRef, useState } from "react";
 import JoinInput from "../../../components/user/JoinInput";
 import { isValidDateString } from "@/utils/ui";
 import { useMutation } from "@tanstack/react-query";
-import { getNormal, postJson } from "@/api/fetchFilter";
+import { getNormal, postJson, postUrlFormData } from "@/api/fetchFilter";
 import { BaseResponse } from "@/types/common";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import API_URL from "@/api/endpoints";
@@ -75,7 +75,7 @@ export default function UserJoin() {
 
 	// 아이디중복확인 mutate
 	const handleIdDuplcheck = useMutation({
-		mutationFn: (userId: string) => getNormal<BaseResponse>(getApiUrl(API_URL.AUTH_ID), { userId }),
+		mutationFn: (userId: string) => postUrlFormData<BaseResponse>(getApiUrl(API_URL.AUTH_ID), { userId }),
 		// Mutation이 시작되기 직전에 특정 작업을 수행
 		onMutate(a) {
 			console.log(a);
