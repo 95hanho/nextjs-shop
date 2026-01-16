@@ -59,7 +59,7 @@ export async function middleware(nextRequest: NextRequest) {
 	// nextRequest.url : 쿼리 포함 path
 	// const pathname = nextRequest.nextUrl.pathname; // 쿼리제외 path
 	const searchParams = nextRequest.nextUrl.searchParams;
-	const cookieStore = await cookies(); // middleware.ts나 route handler 밖의 util함수에서 가져올 때, 안되는거 같은데...
+	// const cookieStore = await cookies(); // middleware.ts나 route handler 밖의 util함수에서 가져올 때, 안되는거 같은데...
 	// console.log("middleware", nextRequest.url, "---------------------------------------------------------------------------------------------------");
 	if (isApi) {
 		// console.log(

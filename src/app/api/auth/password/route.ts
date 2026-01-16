@@ -3,7 +3,7 @@ import { postUrlFormData } from "@/api/fetchFilter";
 import { withAuth } from "@/lib/auth";
 import { isProd } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
-import { generatePwdResetToken, verifyPhoneAuthCompleteToken, verifyPwdResetToken, verifyToken } from "@/lib/jwt";
+import { generatePwdResetToken, verifyPhoneAuthCompleteToken, verifyPwdResetToken, verifyRefreshToken, verifyToken } from "@/lib/jwt";
 import { PWD_CHANGE_COOKIE_AGE } from "@/lib/tokenTime";
 import { BaseResponse } from "@/types/common";
 import { NextRequest, NextResponse } from "next/server";
@@ -62,7 +62,7 @@ export const PUT = async (nextRequest: NextRequest) => {
 			}
 			// 마이페이지에서
 			else if (refreshToken?.trim()) {
-				verifyToken(refreshToken);
+				verifyRefreshToken(refreshToken);
 			}
 			// 실패
 			else throw new Error("NO_TOKEN");

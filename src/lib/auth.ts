@@ -4,7 +4,7 @@ import { getApiUrl, getBackendUrl } from "./getBaseUrl";
 import API_URL from "@/api/endpoints";
 import { Token, UserResponse } from "@/types/auth";
 import { NextRequest, NextResponse } from "next/server";
-import { generateAccessToken, generateRefreshToken, verifyToken } from "./jwt";
+import { generateAccessToken, generateRefreshToken, verifyRefreshToken, verifyToken } from "./jwt";
 import { BaseResponse } from "@/types/common";
 import { isProd } from "./env";
 import { ACCESS_TOKEN_COOKIE_AGE, REFRESH_TOKEN_COOKIE_AGE } from "./tokenTime";
@@ -70,7 +70,7 @@ const authFromTokens = async (nextRequest: NextRequest): Promise<AutoRefreshResu
 
 	// 3) refreshToken 검증
 	try {
-		verifyToken(refreshToken);
+		verifyRefreshToken(refreshToken);
 	} catch {
 		return {
 			ok: false,
