@@ -4,7 +4,8 @@ import { ACCESS_TOKEN_EXPIRES_IN, PHONE_AUTH_EXPIRES_IN, PWD_CHANGE_EXPIRES_IN, 
 import { Token } from "@/types/auth";
 import type { StringValue } from "ms";
 
-const JWT_SECRET_KEY = process.env.NEXT_PUBLIC_JWT_SECRET || "your-secret"; // 환경변수에 설정하세요
+const REFRESH_JWT_SECRET_KEY = process.env.NEXT_PUBLIC_REFRESH_SECRET || "your-secret";
+const JWT_SECRET_KEY = process.env.NEXT_PUBLIC_JWT_SECRET || "your-secret";
 const MIDDLEWARE_JWT_SECRET_KEY = new TextEncoder().encode(process.env.NEXT_PUBLIC_JWT_SECRET);
 const PHONE_AUTH_KEY = process.env.NEXT_PUBLIC_PHONE_AUTH || "your-secret";
 const PHONE_AUTH_COMPLETE_KEY = process.env.NEXT_PUBLIC_PHONE_AUTH_COMPLETE || "your-secret";
@@ -19,17 +20,24 @@ export function generateAccessToken(payload: { userId: string }, expiresIn?: Str
 }
 // refreshToken 생성
 export function generateRefreshToken(expiresIn?: StringValue) {
-	return jwt.sign({ type: "REFRESH" }, JWT_SECRET_KEY, {
+	return jwt.sign({ type: "REFRESH" }, REFRESH_JWT_SECRET_KEY, {
 		expiresIn: expiresIn || REFRESH_TOKEN_EXPIRES_IN,
 		algorithm: "HS256",
 	});
 }
-// 일반 page/api 상에서의 토큰 복호화
+// 일반 page/api 상에서의 a토큰 복호화
 export function verifyToken(token: string): Token {
 	const payload = jwt.verify(token, JWT_SECRET_KEY, { algorithms: ["HS256"] }) as Token; // 실패 시 오류 발생
 	const isAccess = payload.userId && payload.type === "ACCESS";
+	if (!isAccess) throw new Error("INVALID_TOKEN_TYPE");
+	return payload;
+}
+
+// 일반 page/api 상에서의 r토큰 복호화
+export function verifyRefreshToken(token: string): Token {
+	const payload = jwt.verify(token, REFRESH_JWT_SECRET_KEY, { algorithms: ["HS256"] }) as Token; // 실패 시 오류 발생
 	const isRefresh = !payload.userId && payload.type === "REFRESH";
-	if (!isAccess && !isRefresh) throw new Error("INVALID_TOKEN_TYPE");
+	if (!isRefresh) throw new Error("INVALID_TOKEN_TYPE");
 	return payload;
 }
 

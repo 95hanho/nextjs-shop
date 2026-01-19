@@ -6,7 +6,7 @@ export type ChangeEvent = React.ChangeEvent<HTMLInputElement>;
 
 export type Token = {
 	type: "ACCESS" | "REFRESH" | "PHONEAUTH" | "PHONEAUTHCOMPLETE" | "PWDRESET" | "SELLER";
-	userId: string;
+	userId?: string;
 } & JwtPayload;
 
 // 로그인폼 데이터

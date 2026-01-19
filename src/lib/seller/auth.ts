@@ -2,7 +2,7 @@ import { putUrlFormData } from "@/api/fetchFilter";
 import { getBackendUrl } from "../getBaseUrl";
 import API_URL from "@/api/endpoints";
 import { NextRequest, NextResponse } from "next/server";
-import { generateRefreshToken, verifyToken } from "../jwt";
+import { generateRefreshToken, verifyRefreshToken } from "../jwt";
 import { BaseResponse } from "@/types/common";
 import { isProd } from "../env";
 import { ACCESS_TOKEN_COOKIE_AGE, REFRESH_TOKEN_COOKIE_AGE } from "../tokenTime";
@@ -49,7 +49,7 @@ const authFromSellerTokens = async (nextRequest: NextRequest): Promise<AutoRefre
 
 	// 3) sellerRefreshToken 검증
 	try {
-		verifyToken(sellerRefreshToken);
+		verifyRefreshToken(sellerRefreshToken);
 	} catch {
 		return {
 			ok: false,

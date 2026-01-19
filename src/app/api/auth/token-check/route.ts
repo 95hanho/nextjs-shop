@@ -1,4 +1,4 @@
-import { verifyPwdResetToken, verifyToken } from "@/lib/jwt";
+import { verifyPwdResetToken, verifyRefreshToken, verifyToken } from "@/lib/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
 // 로그인 했는지 확인(토큰확인) AND 패스워드 리셋토큰 확인
@@ -27,7 +27,7 @@ export const GET = async (nextRequest: NextRequest) => {
 		if (!refreshToken?.trim()) {
 			throw new Error("NO_REFRESH_TOKEN");
 		}
-		verifyToken(refreshToken);
+		verifyRefreshToken(refreshToken);
 	} catch (error) {
 		return NextResponse.json(
 			{
