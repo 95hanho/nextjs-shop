@@ -9,7 +9,7 @@ import { NextRequest, NextResponse } from "next/server";
 // 휴대폰 인증
 export async function POST(nextRequest: NextRequest) {
 	try {
-		const { userId, phone } = await nextRequest.json();
+		const { phone } = await nextRequest.json();
 		if (!phone) return NextResponse.json({ message: "잘 못 된 요청입니다." }, { status: 400 });
 
 		const xffHeader = nextRequest.headers.get("x-forwarded-for");
@@ -19,12 +19,9 @@ export async function POST(nextRequest: NextRequest) {
 			nextRequest.headers.get("x-real-ip") ??
 			"unknown";
 
-		let phoneAuthToken;
-		if (userId) phoneAuthToken = generatePhoneAuthToken({ userId });
-		else phoneAuthToken = generatePhoneAuthToken();
+		const phoneAuthToken = generatePhoneAuthToken();
 
 		const payload: PhoneAuthRequest = { phone, phoneAuthToken };
-		if (userId) payload.userId = userId;
 
 		const data = await postUrlFormData<BaseResponse>(
 			getBackendUrl(API_URL.AUTH_PHONE_AUTH),
@@ -32,6 +29,7 @@ export async function POST(nextRequest: NextRequest) {
 			{
 				userAgent: nextRequest.headers.get("user-agent") || "",
 				["x-forwarded-for"]: ip,
+				Authorization: `Bearer ${string}`,
 			}
 		);
 

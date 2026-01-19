@@ -5,7 +5,7 @@ import { isProd } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { generateAccessToken, generateRefreshToken } from "@/lib/jwt";
 import { ACCESS_TOKEN_COOKIE_AGE, REFRESH_TOKEN_COOKIE_AGE } from "@/lib/tokenTime";
-import { LoginForm, UserResponse } from "@/types/auth";
+import { LoginForm, LoginResponse, UserResponse } from "@/types/auth";
 import { BaseResponse } from "@/types/common";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -14,7 +14,8 @@ import { NextRequest, NextResponse } from "next/server";
 // 할 때 바로 가져올 수 있게 useQuery 실행함.
 export const GET = withAuth(async ({ accessToken }) => {
 	try {
-		const data = await getNormal<UserResponse>(getBackendUrl(API_URL.AUTH), {
+		console.log("accessToken ===", accessToken);
+		const data = await getNormal<UserResponse>(getBackendUrl(API_URL.AUTH), undefined, {
 			Authorization: `Bearer ${accessToken}`,
 		});
 		return NextResponse.json({ ...data }, { status: 200 });
@@ -40,7 +41,7 @@ export async function POST(nextRequest: NextRequest) {
 		if (!userId) return NextResponse.json({ message: "아이디를 입력해주세요." }, { status: 400 });
 		if (!password) return NextResponse.json({ message: "비밀번호를 입력해주세요." }, { status: 400 });
 
-		const loginValidateData = await postUrlFormData<BaseResponse>(getBackendUrl(API_URL.AUTH), { userId, password });
+		const loginValidateData = await postUrlFormData<LoginResponse>(getBackendUrl(API_URL.AUTH), { userId, password });
 		console.log("loginValidateData", loginValidateData);
 		/* 에러는 FE에서 처리 */
 		// if (res.status === 401) {
@@ -52,7 +53,8 @@ export async function POST(nextRequest: NextRequest) {
 		// 	return response.status(502).json({ message: "인증 서버 오류" });
 		// }
 		// ✅ HttpOnly 쿠키 설정
-		const accessToken = generateAccessToken({ userId });
+		const userNo = loginValidateData.userNo;
+		const accessToken = generateAccessToken({ userNo });
 		const refreshToken = generateRefreshToken();
 		console.log("accessToken", accessToken.slice(-10), "refreshToken", refreshToken.slice(-10));
 

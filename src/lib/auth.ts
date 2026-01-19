@@ -1,4 +1,4 @@
-import { getNormal, putUrlFormData } from "@/api/fetchFilter";
+import { getNormal, postUrlFormData, putUrlFormData } from "@/api/fetchFilter";
 import { cookies } from "next/headers";
 import { getApiUrl, getBackendUrl } from "./getBaseUrl";
 import API_URL from "@/api/endpoints";
@@ -33,7 +33,7 @@ export const addLogoutQuery = (originUrl: string): string => {
 type AutoRefreshResult =
 	| {
 			ok: true;
-			userId?: string;
+			userNo?: number;
 			newAccessToken?: string;
 			newRefreshToken?: string;
 	  }
@@ -54,7 +54,7 @@ const authFromTokens = async (nextRequest: NextRequest): Promise<AutoRefreshResu
 	if (accessToken?.trim()) {
 		try {
 			const token: Token = verifyToken(accessToken);
-			return { ok: true, userId: token.userId };
+			return { ok: true, userNo: token.userNo };
 		} catch {
 			// accessToken 만료 → 아래에서 refreshToken으로 처리
 			console.warn("만료됨!!!");
@@ -88,8 +88,8 @@ const authFromTokens = async (nextRequest: NextRequest): Promise<AutoRefreshResu
 		nextRequest.headers.get("x-real-ip") ??
 		"unknown";
 
-	const reTokenData = await putUrlFormData<BaseResponse & { userId: string }>(
-		getBackendUrl(API_URL.AUTH_TOKEN),
+	const reTokenData = await postUrlFormData<BaseResponse & { userNo: number }>(
+		getBackendUrl(API_URL.AUTH_TOKEN_REFRESH),
 		{
 			beforeToken: refreshToken,
 			refreshToken: newRefreshToken,
@@ -101,12 +101,12 @@ const authFromTokens = async (nextRequest: NextRequest): Promise<AutoRefreshResu
 	);
 	console.log("reTokenData", reTokenData);
 
-	const newAccessToken = generateAccessToken({ userId: reTokenData.userId });
+	const newAccessToken = generateAccessToken({ userNo: reTokenData.userNo });
 	console.log("newAccessToken", newAccessToken.slice(-10), "newRefreshToken", newRefreshToken.slice(-10));
 
 	return {
 		ok: true,
-		userId: reTokenData.userId,
+		userNo: reTokenData.userNo,
 		newAccessToken,
 		newRefreshToken,
 	};
@@ -114,7 +114,7 @@ const authFromTokens = async (nextRequest: NextRequest): Promise<AutoRefreshResu
 //
 type HandlerWithAuth = (ctx: {
 	nextRequest: NextRequest;
-	userId: string; // ✅ 인증 성공이면 필수로 두는 게 좋아
+	userNo: number; // ✅ 인증 성공이면 필수로 두는 게 좋아
 	accessToken: string; // ✅ Spring에 보낼 토큰
 	params?: { [key: string]: string }; // 🔹 여기에 params 추가
 }) => Promise<NextResponse> | NextResponse;
@@ -154,14 +154,14 @@ export const withAuth =
 		// ✅ “이번 요청에서 Spring에 보낼 accessToken” 결정
 		const accessToken = auth.newAccessToken ?? nextRequest.cookies.get("accessToken")?.value;
 
-		if (!accessToken || !auth.userId) {
+		if (!accessToken || !auth.userNo) {
 			return NextResponse.json({ message: "UNAUTHORIZED" }, { status: 401 });
 		}
 
 		// 🔹 비즈니스 핸들러 실행할 때 params도 함께 넘겨주기
 		const baseCtx = {
 			nextRequest,
-			userId: auth.userId,
+			userNo: auth.userNo,
 			accessToken,
 			params: context?.params, // 없으면 undefined
 		};
