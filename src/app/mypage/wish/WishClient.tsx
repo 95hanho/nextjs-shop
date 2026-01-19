@@ -52,10 +52,10 @@ export default function WishClient() {
 			{/* 상품들 */}
 			<section className="wish__content">
 				{/* 상품 필터 on/off 버튼 */}
-				<div className="wish__filters">
+				{/* <div className="wish__filters">
 					<OnOffButton text="세일중" checked={false} />
 					<OnOffButton text="판매 중 상품만 보기" checked={true} />
-				</div>
+				</div> */}
 				{/* 상품 리스트 */}
 				{/* <div className="grid grid-cols-6 gap-4 wish__list"> */}
 				<ProductGrid>
