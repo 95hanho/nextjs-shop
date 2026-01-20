@@ -12,15 +12,20 @@ import ProductItem from "@/components/product/ProductItem";
 import ProductGrid from "@/components/product/ProductGrid";
 
 export default function WishClient() {
-	const { user } = useAuth();
+	const { loginOn } = useAuth();
 
 	// React Query 쓰면 위시리스트 수정(추가/삭제) 후 invalidateQueries(["wishlist"])로 새로고침 처리 가능.
 	// 위시리스트 조회
 	const { data: wishListData, isLoading } = useQuery<GetWishListResponse>({
-		queryKey: ["wishList", user?.userId],
+		queryKey: ["wishList"],
 		queryFn: () => getNormal(getApiUrl(API_URL.MY_WISH)),
-		enabled: !!user?.userId,
+		enabled: loginOn,
 		refetchOnWindowFocus: false,
+		select: (data) => {
+			console.log("-----------");
+			console.log(data);
+			return data;
+		},
 	});
 
 	if (isLoading) return <h1>로딩중....</h1>;
