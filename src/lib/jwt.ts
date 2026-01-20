@@ -12,8 +12,8 @@ const PHONE_AUTH_COMPLETE_KEY = process.env.NEXT_PUBLIC_PHONE_AUTH_COMPLETE || "
 const PWD_CHANGE_KEY = process.env.NEXT_PUBLIC_PWD_CHANGE || "your-secret";
 
 // accessToken 생성
-export function generateAccessToken(payload: { userId: string }, expiresIn?: StringValue) {
-	return jwt.sign({ type: "ACCESS", userId: payload.userId }, JWT_SECRET_KEY, {
+export function generateAccessToken(payload: { userNo: number }, expiresIn?: StringValue) {
+	return jwt.sign({ type: "ACCESS", userNo: payload.userNo }, JWT_SECRET_KEY, {
 		expiresIn: expiresIn || ACCESS_TOKEN_EXPIRES_IN,
 		algorithm: "HS256",
 	});
@@ -28,7 +28,7 @@ export function generateRefreshToken(expiresIn?: StringValue) {
 // 일반 page/api 상에서의 a토큰 복호화
 export function verifyToken(token: string): Token {
 	const payload = jwt.verify(token, JWT_SECRET_KEY, { algorithms: ["HS256"] }) as Token; // 실패 시 오류 발생
-	const isAccess = payload.userId && payload.type === "ACCESS";
+	const isAccess = payload.userNo && payload.type === "ACCESS";
 	if (!isAccess) throw new Error("INVALID_TOKEN_TYPE");
 	return payload;
 }
@@ -36,7 +36,7 @@ export function verifyToken(token: string): Token {
 // 일반 page/api 상에서의 r토큰 복호화
 export function verifyRefreshToken(token: string): Token {
 	const payload = jwt.verify(token, REFRESH_JWT_SECRET_KEY, { algorithms: ["HS256"] }) as Token; // 실패 시 오류 발생
-	const isRefresh = !payload.userId && payload.type === "REFRESH";
+	const isRefresh = !payload.userNo && payload.type === "REFRESH";
 	if (!isRefresh) throw new Error("INVALID_TOKEN_TYPE");
 	return payload;
 }
@@ -46,8 +46,8 @@ export function verifyRefreshToken(token: string): Token {
 export async function middleware_verifyToken(token: string): Promise<Token> {
 	try {
 		const { payload } = await jwtVerify(token, MIDDLEWARE_JWT_SECRET_KEY, { algorithms: ["HS256"] });
-		const isAccess = payload.userId && payload.type === "ACCESS";
-		const isRefresh = !payload.userId && payload.type === "REFRESH";
+		const isAccess = payload.userNo && payload.type === "ACCESS";
+		const isRefresh = !payload.userNo && payload.type === "REFRESH";
 		if (!isAccess && !isRefresh) throw new Error("INVALID_TOKEN_TYPE");
 		return payload as Token;
 	} catch (err) {
@@ -57,8 +57,8 @@ export async function middleware_verifyToken(token: string): Promise<Token> {
 }
 /* ----- 인증 관련 --------------------------------------------- */
 // 휴대폰인증 토큰 생성
-export function generatePhoneAuthToken(addPayload: { userId?: string } = {}) {
-	const payload = { type: "PHONEAUTH", ...addPayload };
+export function generatePhoneAuthToken() {
+	const payload = { type: "PHONEAUTH" };
 	return jwt.sign(payload, PHONE_AUTH_KEY, {
 		expiresIn: PHONE_AUTH_EXPIRES_IN,
 		algorithm: "HS256",

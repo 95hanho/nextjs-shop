@@ -17,8 +17,10 @@ const API_URL = {
 	AUTH_PHONE_AUTH_CHECK: "/auth/phone/check",
 	/** 회원가입, 회원정보변경 */
 	AUTH_JOIN: "/auth/user",
-	/** spring:로그인 토큰 저장, 로그인 토큰 수정(재저장) */
+	/** spring:로그인 토큰 저장 */
 	AUTH_TOKEN: "/auth/token",
+	/** 로그인 토큰 수정(재저장) */
+	AUTH_TOKEN_REFRESH: "/auth/token/refresh",
 	/** nextjs: r토큰확인 */
 	AUTH_TOKEN_CHECK: "/auth/token-check",
 	/** 패스워드 리셋토큰 확인 */

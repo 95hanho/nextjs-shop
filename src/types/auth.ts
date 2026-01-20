@@ -6,7 +6,7 @@ export type ChangeEvent = React.ChangeEvent<HTMLInputElement>;
 
 export type Token = {
 	type: "ACCESS" | "REFRESH" | "PHONEAUTH" | "PHONEAUTHCOMPLETE" | "PWDRESET" | "SELLER";
-	userId?: string;
+	userNo?: number;
 } & JwtPayload;
 
 // 로그인폼 데이터
@@ -23,8 +23,8 @@ export interface loginResponse extends BaseResponse {
 export type joinFormAdd = {
 	passwordCheck: string;
 };
-// 회원가입폼
-export interface JoinForm extends LoginForm, joinFormAdd {
+//
+export type UserForm = {
 	name: string;
 	zonecode: string;
 	address: string;
@@ -33,8 +33,7 @@ export interface JoinForm extends LoginForm, joinFormAdd {
 	phone: string;
 	phoneAuth: string;
 	email: string;
-	// [key: string]: string;
-}
+};
 // 회원정보 추가사항
 export type UserAdd = {
 	createdAt: Date;
@@ -42,11 +41,14 @@ export type UserAdd = {
 	tall: number;
 	weight: number;
 };
+// 회원가입폼
+export interface JoinForm extends LoginForm, UserForm, joinFormAdd {}
+
 // 유저
-export type User = LoginForm & JoinForm & UserAdd;
+export type UserInfo = UserForm & UserAdd;
 // 회원정보 응답
 export interface UserResponse extends BaseResponse {
-	user: User;
+	user: UserInfo;
 }
 
 export type JoinFormAlert = Omit<JoinForm, "zonecode">;
@@ -82,23 +84,13 @@ export interface JoinFormFocus {
 	email: boolean;
 	birthday: boolean;
 }
-/* ------------- */
 
-export type UserInfo = {
-	userId: string;
-	name: string;
-	zonecode: string;
-	address: string;
-	addressDetail: string;
-	birthday: string;
-	phone: string;
-	email: string;
-	createdAt: Date;
-	mileage: number;
-	tall: number;
-	weight: number;
-};
 /* --------------------------------------- */
+/* 로그인 */
+export interface LoginResponse extends BaseResponse {
+	userNo: number;
+}
+/*  */
 export interface PhoneAuthRequest {
 	phone: string;
 	phoneAuthToken: string;
