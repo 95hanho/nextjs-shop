@@ -1,4 +1,5 @@
 import API_URL from "@/api/endpoints";
+import { toErrorResponse } from "@/api/error";
 import { getNormal, postUrlFormData } from "@/api/fetchFilter";
 import { isProd } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
@@ -7,7 +8,7 @@ import { withSellerAuth } from "@/lib/seller/auth";
 import { generateSellerToken } from "@/lib/seller/jwt";
 import { REFRESH_TOKEN_COOKIE_AGE, SELLER_TOKEN_COOKIE_AGE } from "@/lib/tokenTime";
 import { BaseResponse } from "@/types/common";
-import { SellerLoginForm, SellerResponse } from "@/types/seller";
+import { SellerLoginForm, SellerLoginResponse, SellerResponse } from "@/types/seller";
 import { NextRequest, NextResponse } from "next/server";
 
 // 판매자 정보조회
@@ -19,16 +20,8 @@ export const GET = withSellerAuth(async ({ sellerToken }) => {
 			Authorization: `Bearer ${sellerToken}`,
 		});
 		return NextResponse.json({ ...data }, { status: 200 });
-	} catch (err: any) {
-		console.error("error :", {
-			message: err.message,
-			status: err.status,
-			data: err.data,
-		});
-
-		const status = Number.isInteger(err?.status) ? err.status : 500;
-		const payload = err?.data && typeof err.data === "object" ? err.data : { message: err?.message || "SERVER_ERROR" };
-
+	} catch (err: unknown) {
+		const { status, payload } = toErrorResponse(err);
 		return NextResponse.json(payload, { status });
 	}
 });
@@ -40,14 +33,14 @@ export const POST = async (nextRequest: NextRequest) => {
 		if (!sellerId) return NextResponse.json({ message: "아이디를 입력해주세요." }, { status: 400 });
 		if (!password) return NextResponse.json({ message: "비밀번호를 입력해주세요." }, { status: 400 });
 
-		const loginValidateData = await postUrlFormData<BaseResponse>(getBackendUrl(API_URL.SELLER), { sellerId, password });
+		const loginValidateData = await postUrlFormData<SellerLoginResponse>(getBackendUrl(API_URL.SELLER), { sellerId, password });
 		console.log("loginValidateData", loginValidateData);
 
 		// ✅ HttpOnly 쿠키 설정
-		const sellerToken = generateSellerToken({ sellerId });
+		const sellerToken = generateSellerToken({ sellerNo: loginValidateData.sellerNo });
 		const sellerRefreshToken = generateRefreshToken();
 		console.log("sellerToken", sellerToken);
-		console.log("sellerRefreshToken", sellerRefreshToken.slice(-10));
+		console.log("sellerRefreshToken", sellerRefreshToken);
 
 		const xffHeader = nextRequest.headers.get("x-forwarded-for");
 		const ip =
@@ -83,16 +76,8 @@ export const POST = async (nextRequest: NextRequest) => {
 		});
 
 		return response;
-	} catch (err: any) {
-		console.error("error :", {
-			message: err.message,
-			status: err.status,
-			data: err.data,
-		});
-
-		const status = Number.isInteger(err?.status) ? err.status : 500;
-		const payload = err?.data && typeof err.data === "object" ? err.data : { message: err?.message || "SERVER_ERROR" };
-
+	} catch (err: unknown) {
+		const { status, payload } = toErrorResponse(err);
 		return NextResponse.json(payload, { status });
 	}
 };

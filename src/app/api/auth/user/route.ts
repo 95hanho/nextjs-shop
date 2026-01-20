@@ -1,4 +1,5 @@
 import API_URL from "@/api/endpoints";
+import { toErrorResponse } from "@/api/error";
 import { postUrlFormData, putUrlFormData } from "@/api/fetchFilter";
 import { withAuth } from "@/lib/auth";
 import { isProd } from "@/lib/env";
@@ -64,16 +65,8 @@ export const POST = async (nextRequest: NextRequest) => {
 			maxAge: 0,
 		});
 		return response;
-	} catch (err: any) {
-		console.error("error :", {
-			message: err.message,
-			status: err.status,
-			data: err.data,
-		});
-
-		const status = Number.isInteger(err?.status) ? err.status : 500;
-		const payload = err?.data && typeof err.data === "object" ? err.data : { message: err?.message || "SERVER_ERROR" };
-
+	} catch (err: unknown) {
+		const { status, payload } = toErrorResponse(err);
 		return NextResponse.json(payload, { status });
 	}
 };
@@ -99,16 +92,8 @@ export const PUT = withAuth(async ({ nextRequest, accessToken }) => {
 		const payload: UserUpdateResponse = { message: data.message, email, phone };
 
 		return NextResponse.json(payload, { status: 200 });
-	} catch (err: any) {
-		console.error("error :", {
-			message: err.message,
-			status: err.status,
-			data: err.data,
-		});
-
-		const status = Number.isInteger(err?.status) ? err.status : 500;
-		const payload = err?.data && typeof err.data === "object" ? err.data : { message: err?.message || "SERVER_ERROR" };
-
+	} catch (err: unknown) {
+		const { status, payload } = toErrorResponse(err);
 		return NextResponse.json(payload, { status });
 	}
 });

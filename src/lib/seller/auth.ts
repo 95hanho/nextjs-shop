@@ -12,7 +12,7 @@ import { SellerToken } from "@/types/seller";
 type AutoRefreshResult =
 	| {
 			ok: true;
-			sellerId?: string;
+			sellerNo?: number;
 			newSellerToken?: string;
 			newSellerRefreshToken?: string;
 	  }
@@ -33,7 +33,7 @@ const authFromSellerTokens = async (nextRequest: NextRequest): Promise<AutoRefre
 	if (sellerToken?.trim()) {
 		try {
 			const token: SellerToken = verifySellerToken(sellerToken);
-			return { ok: true, sellerId: token.sellerId };
+			return { ok: true, sellerNo: token.sellerNo };
 		} catch {
 			// sellerToken 만료 → 아래에서 sellerRefreshToken으로 처리
 			console.warn("만료됨!!!");
@@ -67,7 +67,7 @@ const authFromSellerTokens = async (nextRequest: NextRequest): Promise<AutoRefre
 		nextRequest.headers.get("x-real-ip") ??
 		"unknown";
 
-	const reTokenData = await putUrlFormData<BaseResponse & { sellerId: string }>(
+	const reTokenData = await putUrlFormData<BaseResponse & { sellerNo: number }>(
 		getBackendUrl(API_URL.SELLER_TOKEN),
 		{
 			beforeToken: sellerRefreshToken,
@@ -80,12 +80,12 @@ const authFromSellerTokens = async (nextRequest: NextRequest): Promise<AutoRefre
 	);
 	console.log("reTokenData", reTokenData);
 
-	const newSellerToken = generateSellerToken({ sellerId: reTokenData.sellerId });
+	const newSellerToken = generateSellerToken({ sellerNo: reTokenData.sellerNo });
 	console.log("newSellerToken", newSellerToken.slice(-10), "newSellerRefreshToken", newSellerRefreshToken.slice(-10));
 
 	return {
 		ok: true,
-		sellerId: reTokenData.sellerId,
+		sellerNo: reTokenData.sellerNo,
 		newSellerToken,
 		newSellerRefreshToken,
 	};
@@ -93,7 +93,7 @@ const authFromSellerTokens = async (nextRequest: NextRequest): Promise<AutoRefre
 //
 type HandlerWithAuth = (ctx: {
 	nextRequest: NextRequest;
-	sellerId: string; // ✅ 인증 성공이면 필수로 두는 게 좋아
+	sellerNo: number; // ✅ 인증 성공이면 필수로 두는 게 좋아
 	sellerToken: string; // ✅ Spring에 보낼 토큰
 	params?: { [key: string]: string }; // 🔹 여기에 params 추가
 }) => Promise<NextResponse> | NextResponse;
@@ -133,14 +133,14 @@ export const withSellerAuth =
 		// ✅ “이번 요청에서 Spring에 보낼 sellerToken” 결정
 		const sellerToken = auth.newSellerToken ?? nextRequest.cookies.get("sellerToken")?.value;
 
-		if (!sellerToken || !auth.sellerId) {
+		if (!sellerToken || !auth.sellerNo) {
 			return NextResponse.json({ message: "UNAUTHORIZED" }, { status: 401 });
 		}
 
 		// 🔹 비즈니스 핸들러 실행할 때 params도 함께 넘겨주기
 		const baseCtx = {
 			nextRequest,
-			sellerId: auth.sellerId,
+			sellerNo: auth.sellerNo,
 			sellerToken,
 			params: context?.params, // 없으면 undefined
 		};

@@ -1,3 +1,4 @@
+import { toErrorResponse } from "@/api/error";
 import { isProd } from "@/lib/env";
 import { NextResponse } from "next/server";
 
@@ -15,16 +16,8 @@ export async function POST() {
 		);
 
 		return response;
-	} catch (err: any) {
-		console.error("error :", {
-			message: err.message,
-			status: err.status,
-			data: err.data,
-		});
-
-		const status = Number.isInteger(err?.status) ? err.status : 500;
-		const payload = err?.data && typeof err.data === "object" ? err.data : { message: err?.message || "SERVER_ERROR" };
-
+	} catch (err: unknown) {
+		const { status, payload } = toErrorResponse(err);
 		return NextResponse.json(payload, { status });
 	}
 }

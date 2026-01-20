@@ -1,4 +1,5 @@
 import API_URL from "@/api/endpoints";
+import { toErrorResponse } from "@/api/error";
 import { getNormal, postJson } from "@/api/fetchFilter";
 import { withAuth } from "@/lib/auth";
 import { getBackendUrl } from "@/lib/getBaseUrl";
@@ -24,16 +25,8 @@ export const POST = withAuth(async ({ nextRequest, accessToken }) => {
 		console.log("data", data);
 
 		return NextResponse.json({ message: data.message, holds: data.holds }, { status: 200 });
-	} catch (err: any) {
-		console.error("error :", {
-			message: err.message,
-			status: err.status,
-			data: err.data,
-		});
-
-		const status = Number.isInteger(err?.status) ? err.status : 500;
-		const payload = err?.data && typeof err.data === "object" ? err.data : { message: err?.message || "SERVER_ERROR" };
-
+	} catch (err: unknown) {
+		const { status, payload } = toErrorResponse(err);
 		return NextResponse.json(payload, { status });
 	}
 });
@@ -60,16 +53,8 @@ export const DELETE = withAuth(async ({ nextRequest, userId, accessToken }) => {
 		console.log("data", data);
 
 		return NextResponse.json({ ...data }, { status: 200 });
-	} catch (err: any) {
-		console.error("error :", {
-			message: err.message,
-			status: err.status,
-			data: err.data,
-		});
-
-		const status = Number.isInteger(err?.status) ? err.status : 500;
-		const payload = err?.data && typeof err.data === "object" ? err.data : { message: err?.message || "SERVER_ERROR" };
-
+	} catch (err: unknown) {
+		const { status, payload } = toErrorResponse(err);
 		return NextResponse.json(payload, { status });
 	}
 });

@@ -1,4 +1,5 @@
 import API_URL from "@/api/endpoints";
+import { toErrorResponse } from "@/api/error";
 import { postUrlFormData } from "@/api/fetchFilter";
 import { withAuth } from "@/lib/auth";
 import { isProd } from "@/lib/env";
@@ -30,16 +31,8 @@ export const POST = withAuth(async ({ userId }) => {
 		});
 
 		return response;
-	} catch (err: any) {
-		console.error("error :", {
-			message: err.message,
-			status: err.status,
-			data: err.data,
-		});
-
-		const status = Number.isInteger(err?.status) ? err.status : 500;
-		const payload = err?.data && typeof err.data === "object" ? err.data : { message: err?.message || "SERVER_ERROR" };
-
+	} catch (err: unknown) {
+		const { status, payload } = toErrorResponse(err);
 		return NextResponse.json(payload, { status });
 	}
 });
@@ -96,16 +89,8 @@ export const PUT = async (nextRequest: NextRequest) => {
 		});
 
 		return NextResponse.json({ message: data.message }, { status: 200 });
-	} catch (err: any) {
-		console.error("error :", {
-			message: err.message,
-			status: err.status,
-			data: err.data,
-		});
-
-		const status = Number.isInteger(err?.status) ? err.status : 500;
-		const payload = err?.data && typeof err.data === "object" ? err.data : { message: err?.message || "SERVER_ERROR" };
-
+	} catch (err: unknown) {
+		const { status, payload } = toErrorResponse(err);
 		return NextResponse.json(payload, { status });
 	}
 };

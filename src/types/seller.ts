@@ -1,7 +1,7 @@
 import { JwtPayload } from "jsonwebtoken";
 import { BaseResponse } from "./common";
 import { Coupon } from "./mypage";
-import { Product, ProductDetail, ProductOption } from "./product";
+import { ProductDetail, ProductOption } from "./product";
 
 // 로그인폼 데이터
 export type SellerLoginForm = {
@@ -12,7 +12,7 @@ export type SellerLoginForm = {
 // 로그인 토큰 구조
 export type SellerToken = {
 	type: "SELLER";
-	sellerId: string;
+	sellerNo: number;
 } & JwtPayload;
 
 export type SellerInfo = {
@@ -35,6 +35,10 @@ export type SellerApprove = {
 };
 
 /* ------------------------------------------------------------- */
+/* 판매자 로그인 */
+export interface SellerLoginResponse extends BaseResponse {
+	sellerNo: number;
+}
 
 /* ---------- 판매자 등록요청 ---------*/
 export interface SellerRegisterRequest extends SellerLoginForm, SellerInfo {}
