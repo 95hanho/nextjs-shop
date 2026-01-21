@@ -12,7 +12,7 @@ import { SellerLoginForm, SellerLoginResponse, SellerResponse } from "@/types/se
 import { NextRequest, NextResponse } from "next/server";
 
 // 판매자 정보조회
-// - 초기패이지로딩(로그인되어있을 때), 로그인, 로그아웃, 유저정보필요할 때, 유저정보수정(상태변화)
+// - 초기패이지로딩(로그인되어있을 때), 로그인, 로그아웃, 판매자정보필요할 때, 판매자정보수정(상태변화)
 // 할 때 바로 가져올 수 있게 useQuery 실행함.
 export const GET = withSellerAuth(async ({ sellerToken }) => {
 	try {
@@ -49,7 +49,7 @@ export const POST = async (nextRequest: NextRequest) => {
 			nextRequest.headers.get("x-real-ip") ??
 			"unknown";
 
-		// 토큰 저장하기 : refreshToken랑 정보랑 유저 agent, ip 정보 보내기
+		// 토큰 저장하기 : refreshToken랑 정보랑 판매자 agent, ip 정보 보내기
 		await postUrlFormData<BaseResponse>(
 			getBackendUrl(API_URL.SELLER_TOKEN),
 			{ refreshToken: sellerRefreshToken },
@@ -57,7 +57,7 @@ export const POST = async (nextRequest: NextRequest) => {
 				Authorization: `Bearer ${sellerToken}`,
 				userAgent: nextRequest.headers.get("user-agent") || "",
 				["x-forwarded-for"]: ip,
-			}
+			},
 		);
 		const response = NextResponse.json({ message: "SELLER_LOGIN_SUCCESS" }, { status: 200 });
 		response.cookies.set("sellerToken", sellerToken, {

@@ -3,7 +3,7 @@ import { toErrorResponse } from "@/api/error";
 import { getNormal, postUrlFormData } from "@/api/fetchFilter";
 import { withAuth } from "@/lib/auth";
 import { getBackendUrl } from "@/lib/getBaseUrl";
-import { withSellerAuth } from "@/lib/seller/auth";
+import { withSellerAuth } from "@/lib/admin/auth";
 import { BaseResponse } from "@/types/common";
 import { AddSellerProductRequest, GetSellerProductListResponse, UpdateSellerProductRequest } from "@/types/seller";
 import { NextResponse } from "next/server";
@@ -76,7 +76,7 @@ export const POST = withSellerAuth(async ({ nextRequest, sellerToken }) => {
 			{ ...payload },
 			{
 				Authorization: `Bearer ${sellerToken}`,
-			}
+			},
 		);
 		console.log("data", data);
 
@@ -144,7 +144,7 @@ export const PUT = withSellerAuth(async ({ nextRequest, sellerToken }) => {
 			{ ...payload },
 			{
 				Authorization: `Bearer ${sellerToken}`,
-			}
+			},
 		);
 		console.log("data", data);
 

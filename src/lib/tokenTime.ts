@@ -22,3 +22,6 @@ export const PWD_CHANGE_COOKIE_AGE: number = 60 * 5; // 5분
 // -------------------------------------------------------------
 export const SELLER_TOKEN_EXPIRES_IN: StringValue = "5y"; // 5초
 export const SELLER_TOKEN_COOKIE_AGE: number = 5; // 5초
+// -------------------------------------------------------------
+export const ADMIN_TOKEN_EXPIRES_IN: StringValue = "5y"; // 5초
+export const ADMIN_TOKEN_COOKIE_AGE: number = 5; // 5초
