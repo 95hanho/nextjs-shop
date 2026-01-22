@@ -1,6 +1,12 @@
 // API 엔드포인트 목록 - API url 모음집
 const API_URL = {
 	// 관리자 ----------------------------------
+	/** 관리자 정보가져오기, 로그인 */
+	ADMIN: "/admin",
+	/** spring:로그인 토큰 저장 */
+	ADMIN_TOKEN: "/admin/token",
+	/** 로그인 토큰 수정(재저장) */
+	ADMIN_TOKEN_REFRESH: "/admin/token/refresh",
 	/** 판매자 추가 */
 	ADMIN_ADD_SELLER: "/admin/seller",
 
@@ -79,7 +85,7 @@ const API_URL = {
 	PRODUCT_DETAIL: "/product/:productId",
 
 	// 판매자 ----------------------------------
-	/** 로그인 */
+	/** 판매자 정보조회, 로그인 */
 	SELLER: "/seller",
 	/** 판매자 로그인토큰 저장 */
 	SELLER_TOKEN: "/seller/token",

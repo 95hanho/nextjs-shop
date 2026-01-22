@@ -66,7 +66,7 @@ export async function POST(nextRequest: NextRequest) {
 				Authorization: `Bearer ${accessToken}`,
 				userAgent: nextRequest.headers.get("user-agent") || "",
 				["x-forwarded-for"]: ip,
-			}
+			},
 		);
 
 		const response = NextResponse.json({ message: "LOGIN_SUCCESS" }, { status: 200 });
