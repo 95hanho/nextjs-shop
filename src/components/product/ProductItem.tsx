@@ -10,7 +10,7 @@ import { BaseResponse } from "@/types/common";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import API_URL from "@/api/endpoints";
 import useAuth from "@/hooks/useAuth";
-import { money } from "@/lib/format";
+import { discountPercent, money } from "@/lib/format";
 import Link from "next/link";
 
 interface ProductItemProps {
@@ -20,20 +20,20 @@ interface ProductItemProps {
 		filePath: string;
 		sellerName: string;
 		productName: string;
-		price: number;
+		originPrice: number;
+		finalPrice: number;
 		likeCount: number;
 		wishCount: number;
 	};
 }
 
 export default function ProductItem({ product }: ProductItemProps) {
-	const { user } = useAuth();
+	// const { user } = useAuth();
 
 	const handleProductWish = useMutation({
-		mutationFn: (productId: number) =>
+		mutationFn: () =>
 			postJson<BaseResponse>(getApiUrl(API_URL.PRODUCT_WISH), {
-				userId: user?.userId,
-				productId,
+				productId: product.productId,
 			}),
 		onSuccess(data) {
 			console.log(data);
@@ -51,7 +51,7 @@ export default function ProductItem({ product }: ProductItemProps) {
 
 				{/* WishButton 내부에서 className을 못 받는 구조면 유지, 받을 수 있으면 아래 주석처럼 */}
 				<WishButton
-					clickFnc={() => handleProductWish.mutate(product.productId)}
+					clickFnc={() => handleProductWish.mutate()}
 					/* className={styles.productWishBtn} */
 				/>
 			</div>
@@ -63,8 +63,10 @@ export default function ProductItem({ product }: ProductItemProps) {
 
 				<div className={styles.productPrice}>
 					<div aria-live="polite">
-						<span className={`${styles.summaryBadge} mr-1 text-red-500`}>0%</span>
-						<span className={styles.summaryPrice}>{money(product.price)}</span>
+						<span className={`${styles.summaryBadge} mr-1 text-red-500`}>
+							{discountPercent(product.originPrice, product.finalPrice)}%
+						</span>
+						<span className={styles.summaryPrice}>{money(product.finalPrice)}</span>
 					</div>
 				</div>
 
