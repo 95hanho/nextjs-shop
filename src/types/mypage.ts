@@ -220,7 +220,8 @@ export type wishlistItem = {
 	userId: string;
 	productId: number;
 	name: string;
-	price: number;
+	originPrice: number;
+	finalPrice: number;
 	likeCount: number;
 	viewCount: number;
 	wishCount: number;

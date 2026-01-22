@@ -75,7 +75,8 @@ export default function WishClient() {
 									filePath: wishItem.filePath || "",
 									sellerName: wishItem.sellerName,
 									productName: wishItem.name,
-									price: wishItem.price,
+									originPrice: wishItem.originPrice,
+									finalPrice: wishItem.finalPrice,
 									likeCount: wishItem.likeCount,
 									wishCount: wishItem.wishCount,
 								}}
