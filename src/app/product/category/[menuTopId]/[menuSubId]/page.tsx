@@ -1,72 +1,42 @@
-import Image from "next/image";
-import { SlArrowRight } from "react-icons/sl";
-import { FaHeart } from "react-icons/fa";
-import { FaStar } from "react-icons/fa";
-import Link from "next/link";
-import TestImage from "@/components/test/TestImage";
+import API_URL from "@/api/endpoints";
+import { getNormal } from "@/api/fetchFilter";
+import CategoryProductListClient from "./CategoryProductListClient";
+import { getApiUrl, getBackendUrl } from "@/lib/getBaseUrl";
+import { GetProductListRequest, GetProductListResponse } from "@/types/product";
+import { cookies } from "next/headers";
 
 interface ProductListParams {
 	params: {
 		menuSubId: number;
 		menuTopId: number;
 	};
+	searchParams: {
+		page?: string;
+		sort?: string;
+		keyword?: string;
+	};
 }
 
-const Test = () => {
-	return (
-		<div className="product-card">
-			<div className="product-card__image">
-				<Link href={"/product/detail/1"}>
-					<TestImage />
-				</Link>
-			</div>
-			<div className="product-card__info">
-				<h6 className="product-card__badge">
-					<Link href="#">
-						하네
-						<span>
-							<SlArrowRight />
-						</span>
-					</Link>
-				</h6>
-				<Link href="/product/detail/1" className="product-info__link">
-					<h5 className="product-card__title">[스크런치 SET] 텐셀 글로우 시어셔츠 5Color</h5>
-
-					<h4 className="product-card__price">
-						<strong className="product-card__discount">37%</strong>
-						<span className="product-card__price-value">59,640</span>
-					</h4>
-
-					<div className="product-card__coupon">
-						<span>쿠폰</span>
-					</div>
-				</Link>
-				<div className="product-card__review">
-					<label className="product-card__review-count">
-						<FaHeart />
-						<span>11,152</span>
-					</label>
-					<label className="product-card__rating">
-						<FaStar />
-						<span>4.8</span>
-					</label>
-				</div>
-			</div>
-		</div>
-	);
-};
-export default function ProductList({ params: { menuSubId, menuTopId } }: ProductListParams) {
+export default async function CategoryProductList({
+	params: { menuSubId, menuTopId },
+	searchParams: { keyword, page = 1, sort = "latest" },
+}: ProductListParams) {
 	console.log(menuSubId, menuTopId);
-	return (
-		<main id="productList">
-			<div className="product-wrap">
-				<Test />
-				<Test />
-				<Test />
-				<Test />
-				<Test />
-				<Test />
-			</div>
-		</main>
-	);
+
+	const accessToken = cookies().get("accessToken")?.value; // HttpOnly 쿠키 OK
+	console.log("서버에서 accessToken", accessToken);
+	/* ============ */
+	menuSubId = 25; // TEST 입력
+	/* ============ */
+	const payload: GetProductListRequest = {
+		sort,
+		menuSubId,
+		// lastCreatedAt,
+		// lastProductId,
+		// lastPopularity
+	};
+	const productResponse: GetProductListResponse = await getNormal(getBackendUrl(API_URL.PRODUCT), payload);
+	console.log(productResponse.productList[0]);
+
+	return <CategoryProductListClient productList={productResponse.productList} />;
 }

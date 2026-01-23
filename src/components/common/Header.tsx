@@ -1,12 +1,14 @@
 "use client";
 
-import { FiShoppingCart, FiStar } from "react-icons/fi";
+import styles from "./Header.module.scss";
+import { FiShoppingCart, FiStar, FiUser } from "react-icons/fi";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Menu } from "@/types/main";
 import UserMenu from "./UserMenu";
 import Nav from "./Nav";
+import { useGetUserInfo } from "@/hooks/query/auth/useGetUserInfo";
 
 interface HeaderProps {
 	menuList: Menu[];
@@ -14,6 +16,20 @@ interface HeaderProps {
 
 export default function Header({ menuList }: HeaderProps) {
 	const pathname = usePathname();
+	const { data: user } = useGetUserInfo();
+
+	const headerRef = useRef<HTMLInputElement | null>(null);
+	const [isOpen, set_isOpen] = useState<boolean>(false);
+
+	const menuMouseleave = () => {
+		set_isOpen(false);
+	};
+
+	useEffect(() => {
+		if (isOpen) {
+			document.getElementById("header")?.addEventListener("mouseleave", menuMouseleave);
+		} else document.getElementById("header")?.removeEventListener("mouseleave", menuMouseleave);
+	}, [isOpen]);
 
 	useEffect(() => {
 		// console.log("페이지 바껴서 토큰체크 실행됨");
@@ -22,13 +38,19 @@ export default function Header({ menuList }: HeaderProps) {
 
 	return (
 		<>
-			<header id="header">
-				<h1>
-					<Link href={"/"}>NEXTJS-SHOP</Link>
+			<header id="header" ref={headerRef} className="flex items-center justify-center py-5 bg-slate-50 z-[1000] h-12 sticky top-0">
+				<h1 className={styles.title}>
+					<Link href={"/"} className="text-3xl ">
+						NEXTJS-SHOP
+					</Link>
 				</h1>
-				<div className="header-wrap">
-					<div className="header-btn">
-						<UserMenu />
+				<div className="absolute flex items-center header-wrap right-5">
+					<div className={styles.headerBtn + " header-btn"}>
+						{user && `${user.name}님`}
+						<button onClick={() => set_isOpen(!isOpen)}>
+							<FiUser />
+							<UserMenu isOpen={isOpen} />
+						</button>
 						<Link href={"/mypage/wish"} prefetch>
 							<FiStar />
 						</Link>

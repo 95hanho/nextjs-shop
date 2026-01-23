@@ -1,0 +1,31 @@
+.userMenu {
+	position: absolute;
+	top: calc(100% + 10px);
+	border: 1px solid #aaa;
+	border-radius: 15px;
+	padding: 10px 7px;
+	text-align: center;
+	font-size: 20px;
+	width: 140px;
+	left: -60px;
+	box-shadow: 2px 2px 2px #aaa;
+	background-color: #fff;
+}
+
+.popupMenu {
+	ul {
+		> li {
+			padding: 5px 0;
+			&:nth-child(n + 2) {
+				border-top: 1px solid #ccc;
+			}
+			a,
+			div {
+				font-size: 20px;
+				&:hover {
+					text-decoration: underline;
+				}
+			}
+		}
+	}
+}
