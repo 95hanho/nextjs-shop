@@ -49,7 +49,8 @@ export async function POST(nextRequest: NextRequest) {
 		const userNo = loginValidateData.userNo;
 		const accessToken = generateAccessToken({ userNo });
 		const refreshToken = generateRefreshToken();
-		console.log("accessToken", accessToken.slice(-10), "refreshToken", refreshToken.slice(-10));
+		console.log("accessToken", accessToken);
+		console.log("refreshToken", refreshToken);
 
 		const xffHeader = nextRequest.headers.get("x-forwarded-for");
 		const ip =
