@@ -5,7 +5,7 @@ import type { StringValue } from "ms";
 // -------------------------------------------------------------
 // export const ACCESS_TOKEN_EXPIRES_IN = "10m"; // 10분
 // export const ACCESS_TOKEN_COOKIE_AGE = 600; // 10분
-export const ACCESS_TOKEN_EXPIRES_IN: StringValue = "5s"; // 5초
+export const ACCESS_TOKEN_EXPIRES_IN: StringValue = "5y"; // 5초
 export const ACCESS_TOKEN_COOKIE_AGE: number = 5; // 5초
 export const REFRESH_TOKEN_EXPIRES_IN: StringValue = "3d"; // 3일
 export const REFRESH_TOKEN_COOKIE_AGE: number = 60 * 60 * 24 * 3; // 3일
