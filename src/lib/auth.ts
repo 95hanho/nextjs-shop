@@ -1,4 +1,4 @@
-import { getNormal, postUrlFormData, putUrlFormData } from "@/api/fetchFilter";
+import { getNormal, postUrlFormData } from "@/api/fetchFilter";
 import { cookies } from "next/headers";
 import { getApiUrl, getBackendUrl } from "./getBaseUrl";
 import API_URL from "@/api/endpoints";
@@ -97,7 +97,7 @@ const authFromTokens = async (nextRequest: NextRequest): Promise<AutoRefreshResu
 		{
 			userAgent: nextRequest.headers.get("user-agent") || "",
 			["x-forwarded-for"]: ip,
-		}
+		},
 	);
 	console.log("reTokenData", reTokenData);
 
@@ -123,7 +123,7 @@ export const withAuth =
 	(handler: HandlerWithAuth) =>
 	async (
 		nextRequest: NextRequest,
-		context?: { params?: { [key: string]: string } } // 🔹 App Router의 context 받기
+		context?: { params?: { [key: string]: string } }, // 🔹 App Router의 context 받기
 	): Promise<NextResponse> => {
 		const auth = await authFromTokens(nextRequest);
 
@@ -153,6 +153,7 @@ export const withAuth =
 
 		// ✅ “이번 요청에서 Spring에 보낼 accessToken” 결정
 		const accessToken = auth.newAccessToken ?? nextRequest.cookies.get("accessToken")?.value;
+		console.log("accessToken 여기냐?", accessToken);
 
 		if (!accessToken || !auth.userNo) {
 			return NextResponse.json({ message: "UNAUTHORIZED" }, { status: 401 });
@@ -192,7 +193,7 @@ export const withAuth =
 		}
 		console.log(
 			"accessToken11111",
-			auth.newAccessToken || nextRequest.cookies.get("accessToken")?.value || response.cookies.get("accessToken")?.value
+			auth.newAccessToken || nextRequest.cookies.get("accessToken")?.value || response.cookies.get("accessToken")?.value,
 		);
 
 		return response;

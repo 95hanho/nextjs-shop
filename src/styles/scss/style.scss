@@ -2,72 +2,7 @@ body {
 	background-color: #ffffff;
 	min-width: 800px;
 }
-#header {
-	height: 50px;
-	display: flex;
-	justify-content: center; /* 가운데 정렬 */
-	align-items: center;
-	padding: 0 20px;
-	background-color: #f8f9fa;
-	position: sticky; /* 버튼 컨테이너의 절대 위치를 위한 설정 */
-	top: 0;
-	z-index: 1000;
-	h1 {
-		a {
-			font-size: 30px;
-			color: gray;
-			font-weight: bold;
-			text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
-			margin: 0;
-		}
-	}
-	.header-wrap {
-		display: flex;
-		align-items: center;
-		position: absolute;
-		right: 20px; /* 오른쪽에 배치 */
-		.header-btn {
-			> a,
-			> button {
-				position: relative;
-				background: none;
-				border: none;
-				margin-left: 20px;
-				cursor: pointer;
-				font-size: 24px;
-				svg {
-					display: inline;
-				}
-			}
-			.user-menu {
-				position: absolute;
-				top: calc(100% + 10px);
-				border: 1px solid #aaa;
-				border-radius: 15px;
-				padding: 10px 7px;
-				text-align: center;
-				font-size: 20px;
-				width: 140px;
-				left: -60px;
-				box-shadow: 2px 2px 2px #aaa;
-				background-color: #fff;
-				ul > li {
-					padding: 5px 0;
-					&:nth-child(n + 2) {
-						border-top: 1px solid #ccc;
-					}
-					a,
-					div {
-						font-size: 20px;
-						&:hover {
-							text-decoration: underline;
-						}
-					}
-				}
-			}
-		}
-	}
-}
+
 #nav {
 	position: relative;
 	.nav-wrap {
@@ -518,75 +453,6 @@ body {
 				border: none;
 				border-radius: 6px;
 				cursor: pointer;
-			}
-		}
-	}
-}
-/* 상품리스트 */
-main#productList {
-	.product-wrap {
-		max-width: 80%;
-		min-width: 700px;
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-		gap: 15px; /* 카드 간 간격 */
-		justify-content: center; /* 가운데 정렬 */
-		padding: 20px;
-		margin: 0 auto;
-		.product-card {
-			width: 100%;
-			background: #fff;
-			border-radius: 8px;
-			overflow: hidden;
-			.product-card__image {
-				position: relative;
-				aspect-ratio: 1 / 1; // width와 height를 같게 설정
-				width: 100%;
-			}
-			.product-card__info {
-				padding: 10px;
-				.product-card__badge {
-					font-size: 15px;
-					span {
-						padding-left: 3px;
-						font-size: 10px;
-						vertical-align: text-top;
-					}
-				}
-				.product-info__link {
-					.product-card__title {
-						font-size: 17px;
-						font-weight: 500;
-					}
-					.product-card__price {
-						font-size: 20px;
-						.product-card__discount {
-							color: #d35b15;
-						}
-						.product-card__price-value {
-							margin-left: 5px;
-						}
-					}
-					.product-card__coupon {
-						margin-bottom: 5px;
-						span {
-							background-color: #f2f2f2;
-							padding: 2.7px 6.8px;
-							font-size: 15px;
-						}
-					}
-				}
-				.product-card__review {
-					font-size: 15px;
-					svg {
-						margin-right: 3px;
-					}
-					.product-card__review-count {
-						margin-right: 5px;
-					}
-					.product-card__rating {
-					}
-				}
 			}
 		}
 	}

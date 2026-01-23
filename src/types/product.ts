@@ -5,7 +5,8 @@ export type Product = {
 	productId: number;
 	name: string;
 	colorName: string;
-	price: number;
+	originPrice: number;
+	finalPrice: number;
 	createdAt: string;
 	likeCount: number;
 	viewCount: number;
@@ -40,9 +41,9 @@ export type ProductOption = {
 export interface GetProductListRequest {
 	sort: string;
 	menuSubId: number;
-	lastCreatedAt: string;
-	lastProductId: number;
-	lastPopularity: number;
+	lastCreatedAt?: string;
+	lastProductId?: number;
+	lastPopularity?: number;
 }
 export type ProductItem = Product & {
 	sellerId: "seller07";

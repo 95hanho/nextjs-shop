@@ -6,7 +6,7 @@ import Providers from "@/lib/providers";
 import { MenuResponse } from "@/types/main";
 import API_URL from "@/api/endpoints";
 import { getNormal } from "@/api/fetchFilter";
-import { getApiUrl } from "@/lib/getBaseUrl";
+import { getApiUrl, getBackendUrl } from "@/lib/getBaseUrl";
 import { getServerSession } from "@/lib/auth";
 import { UserInfo } from "@/types/auth";
 import { redirect } from "next/navigation";
@@ -35,8 +35,8 @@ export default async function RootLayout({
 }: Readonly<{
 	children: React.ReactNode;
 }>) {
-	// 공통 메뉴 가져오기
-	const menusData = await getNormal<MenuResponse>(getApiUrl(API_URL.MAIN_MENU));
+	// 공통 메뉴 가져오기(SSR에서 가져올 떄는 직접 spring에서 가져오기)
+	const menusData = await getNormal<MenuResponse>(getBackendUrl(API_URL.MAIN_MENU));
 	console.log("menusData", menusData?.message);
 	const menuList = [...menusData.menuList].sort((a, b) => a.menuTopId - b.menuTopId);
 
