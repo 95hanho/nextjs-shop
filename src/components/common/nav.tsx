@@ -3,6 +3,7 @@
 import { Menu } from "@/types/main";
 import Link from "next/link";
 import { useState, useEffect, useMemo } from "react";
+import styles from "./Nav.module.scss";
 
 export default function Nav({ menuList }: { menuList: Menu[] }) {
 	const maleMenuList = menuList.filter((menu) => menu.gender === "M");
@@ -22,11 +23,12 @@ export default function Nav({ menuList }: { menuList: Menu[] }) {
 	}, []);
 
 	return (
-		<nav id="nav" onMouseLeave={() => setShowMenu(false)}>
-			<div className="nav-wrap">
-				<div className="gender-container" onMouseEnter={() => setShowMenu(true)}>
+		<nav id="nav" className="relative" onMouseLeave={() => setShowMenu(false)}>
+			<div className="nav-wrap h-[50px] flex justify-between items-center py-5 bg-gray-100 min-w-[900px]">
+				<div className="flex items-center gender-container" onMouseEnter={() => setShowMenu(true)}>
 					<button
-						className={`gender-btn ${activeGender === "M" ? "active" : ""}`}
+						className={`gender-b
+							tn ${activeGender === "M" ? "active" : ""}`}
 						onClick={() => {
 							setActiveGender("M");
 						}}

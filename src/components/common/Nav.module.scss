@@ -1,0 +1,11 @@
+.genderBtn {
+	background: none;
+	border: 1px solid gray;
+	padding: 5px 15px;
+	cursor: pointer;
+	font-size: 16px;
+	color: gray;
+	background-color: transparent;
+	margin-right: -1px; /* 버튼들이 붙어있도록 마진 조정 */
+	border-radius: 0 20px 20px 0;
+}
