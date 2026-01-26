@@ -8,4 +8,68 @@
 	background-color: transparent;
 	margin-right: -1px; /* 버튼들이 붙어있도록 마진 조정 */
 	border-radius: 0 20px 20px 0;
+	&:first-of-type {
+		border-radius: 20px 0 0 20px; /* 왼쪽 버튼의 모서리 */
+	}
+	&:last-of-type {
+		border-radius: 0 20px 20px 0; /* 오른쪽 버튼의 모서리 */
+		margin-right: 0;
+	}
+	&:global(.active) {
+		color: #fff;
+		background-color: gray;
+
+		&:hover {
+			color: rgb(0, 0, 0);
+		}
+	}
+}
+
+.navMenu {
+	a {
+		margin: 0 15px;
+		font-size: 16px;
+		color: gray;
+		cursor: pointer;
+		text-decoration: none;
+		&:hover {
+			text-decoration: underline;
+		}
+	}
+}
+
+.menuListUi {
+	display: flex;
+	&:first-child {
+		font-size: 20px;
+	}
+}
+.menuListLi {
+	min-width: 100px;
+	margin-right: 10px;
+	&:nth-child(n + 2) {
+		border-left: 1px solid #d1d1d1;
+		padding-left: 20px;
+	}
+	&:global(.over) {
+		width: 200px;
+		div {
+			display: inline-block;
+			width: 100px;
+			&:first-child {
+				width: 200px;
+			}
+		}
+	}
+	div {
+		margin-bottom: 5px;
+		&:first-child {
+			font-size: 25px;
+			font-weight: bold;
+			margin-bottom: 10px;
+			a:hover {
+				text-decoration: underline;
+			}
+		}
+	}
 }
