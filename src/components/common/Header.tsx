@@ -7,7 +7,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Menu } from "@/types/main";
 import UserMenu from "./UserMenu";
-import Nav from "./Nav";
+import Nav from "./Nav123";
 import { useGetUserInfo } from "@/hooks/query/auth/useGetUserInfo";
 
 interface HeaderProps {

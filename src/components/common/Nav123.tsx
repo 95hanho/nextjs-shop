@@ -27,15 +27,17 @@ export default function Nav({ menuList }: { menuList: Menu[] }) {
 			<div className="nav-wrap h-[50px] flex justify-between items-center py-5 bg-gray-100 min-w-[900px]">
 				<div className="flex items-center gender-container" onMouseEnter={() => setShowMenu(true)}>
 					<button
-						className={`gender-b
-							tn ${activeGender === "M" ? "active" : ""}`}
+						className={[styles.genderBtn, `gender-btn`, `${activeGender === "M" ? "active" : ""}`].join(" ")}
 						onClick={() => {
 							setActiveGender("M");
 						}}
 					>
 						남자
 					</button>
-					<button className={`gender-btn ${activeGender === "F" ? "active" : ""}`} onClick={() => setActiveGender("F")}>
+					<button
+						className={[styles.genderBtn, `gender-btn`, `${activeGender === "F" ? "active" : ""}`].join(" ")}
+						onClick={() => setActiveGender("F")}
+					>
 						여자
 					</button>
 				</div>
