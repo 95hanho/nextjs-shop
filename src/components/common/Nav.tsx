@@ -10,10 +10,10 @@ export default function Nav({ menuList }: { menuList: Menu[] }) {
 	const femaleMenuList = menuList.filter((menu) => menu.gender === "F");
 
 	const [activeGender, setActiveGender] = useState<string>("F");
-	const showMenuList = useMemo(() => (activeGender === "M" ? maleMenuList : femaleMenuList), [activeGender]);
+	const showMenuList = useMemo(() => (activeGender === "M" ? maleMenuList : femaleMenuList), [activeGender, maleMenuList, femaleMenuList]);
 
 	// menu-wrap
-	const [showMenu, setShowMenu] = useState<boolean>(false);
+	const [showMenu, setShowMenu] = useState<boolean>(true);
 	const clickMenuLink = () => {
 		setShowMenu(false);
 	};
@@ -23,7 +23,7 @@ export default function Nav({ menuList }: { menuList: Menu[] }) {
 	}, []);
 
 	return (
-		<nav id="nav" className="relative" onMouseLeave={() => setShowMenu(false)}>
+		<nav id="nav" className="relative" /* onMouseLeave={() => setShowMenu(false)} */>
 			<div className="nav-wrap h-[50px] flex justify-between items-center py-5 bg-gray-100 min-w-[900px]">
 				<div className="flex items-center gender-container" onMouseEnter={() => setShowMenu(true)}>
 					<button
@@ -41,7 +41,7 @@ export default function Nav({ menuList }: { menuList: Menu[] }) {
 						여자
 					</button>
 				</div>
-				<div className="nav-menu">
+				<div className={[styles.navMenu, "absolute flex items-center content-center -translate-x-1/2 nav-menu left-1/2"].join(" ")}>
 					<a href="#">NEW</a>
 					<a href="#">BEST</a>
 					<a href="#">KIDS</a>
@@ -49,13 +49,16 @@ export default function Nav({ menuList }: { menuList: Menu[] }) {
 				</div>
 			</div>
 			{showMenu && (
-				<div className="menu-wrap">
-					<div className="menu-list">
-						<ul className="menu-list-ul">
+				<div className="menu-wrap absolute bg-white z-[1] shadow-md">
+					<div className="mb-4 ml-10 mr-6 menu-list">
+						<ul className={[styles.menuListUi, "menu-list-ul"].join(" ")}>
 							{showMenuList.map((menu) => {
 								const overMenuCount = menu.menuSubList.length > 10;
 								return (
-									<li key={"menu" + menu.menuTopId} className={`menu-list-li${overMenuCount ? " over" : ""}`}>
+									<li
+										key={"menu" + menu.menuTopId}
+										className={[`menu-list-li`, styles.menuListLi, `${overMenuCount ? " over" : ""}`].join(" ")}
+									>
 										<div>
 											<Link href={`/product/category/${menu.menuTopId}/1`} onClick={clickMenuLink}>
 												{menu.menuName}
@@ -63,7 +66,11 @@ export default function Nav({ menuList }: { menuList: Menu[] }) {
 										</div>
 										{menu.menuSubList.map((subMenu) => (
 											<div key={"subMenu" + subMenu.menuSubId} className="sub-menu-list">
-												<Link href={`/product/category/${menu.menuTopId}/${subMenu.menuSubId}`} onClick={clickMenuLink}>
+												<Link
+													className="text-lg hover:underline"
+													href={`/product/category/${menu.menuTopId}/${subMenu.menuSubId}`}
+													onClick={clickMenuLink}
+												>
 													{subMenu.menuName}
 												</Link>
 											</div>
