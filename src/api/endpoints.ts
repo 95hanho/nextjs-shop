@@ -7,15 +7,24 @@ const API_URL = {
 	ADMIN_TOKEN: "/admin/token",
 	/** 로그인 토큰 수정(재저장) */
 	ADMIN_TOKEN_REFRESH: "/admin/token/refresh",
-	/** 판매자 추가 */
-	ADMIN_ADD_SELLER: "/admin/seller",
+	/** 판매자 조회, 판매자 추가 */
+	ADMIN_SELLER: "/admin/seller",
+	/** 판매자 승인여부 변경 */
+	ADMIN_SELLER_APPROVAL: "/admin/seller/approval",
+	/** 회원조회, 회원 정보 보기(마스킹해제) */
+	ADMIN_USER: "/admin/user",
+	/** 회원 탈퇴 확정하기 */
+	ADMIN_USER_WITHDRAWAL: "/admin/user/withdrawal",
+	/** 공용 쿠폰 조회, 공용 쿠폰 등록, 공용 쿠폰 수정 */
+	ADMIN_COUPON_COMMON: "/admin/coupon/common",
+	ADMIN_COUPON_COMMON_DELETE: "/admin/coupon/:couponId",
 
 	// 인증 ----------------------------------
 	/** 로그인, 유저정보가져오기 */
 	AUTH: "/auth",
 	/** 로그아웃 */
 	AUTH_LOGOUT: "/auth/logout",
-	/** 아이디중복체크 */
+	/** 유저아이디 조회 By인증토큰, 아이디 중복확인 */
 	AUTH_ID: "/auth/id",
 	/** 휴대폰 인증 */
 	AUTH_PHONE_AUTH: "/auth/phone",
@@ -89,6 +98,8 @@ const API_URL = {
 	SELLER: "/seller",
 	/** 판매자 로그인토큰 저장 */
 	SELLER_TOKEN: "/seller/token",
+	/** 판매자 로그인 토큰 수정(재저장) */
+	SELLER_TOKEN_REFRESH: "/seller/token/refresh",
 	/** 판매자 로그아웃 */
 	SELLER_LOGOUT: "/seller/logout",
 	/** 판매자 등록요청(회원가입) */

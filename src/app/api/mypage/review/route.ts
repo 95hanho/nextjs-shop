@@ -18,7 +18,7 @@ export const POST = withAuth(async ({ nextRequest, accessToken }) => {
 		const { content, rating, orderListId }: writeReviewRequest = await nextRequest.json();
 		if (!content) return NextResponse.json({ message: "내용을 입력해주세요." }, { status: 400 });
 		if (!rating) return NextResponse.json({ message: "별점을 입력해주세요." }, { status: 400 });
-		if (!orderListId) return NextResponse.json({ message: "잘 못 된 요청입니다." }, { status: 400 });
+		if (!orderListId) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
 
 		const payload: writeReviewRequest = { content, rating, orderListId };
 		const data = await postUrlFormData<BaseResponse>(
@@ -26,7 +26,7 @@ export const POST = withAuth(async ({ nextRequest, accessToken }) => {
 			{ ...payload },
 			{
 				Authorization: `Bearer ${accessToken}`,
-			}
+			},
 		);
 		console.log("data", data);
 

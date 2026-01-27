@@ -1,4 +1,5 @@
 import { HttpError, isHttpError, isRecord } from "@/api/error";
+import { BASE_URL } from "@/lib/env";
 
 // fetchFilters.ts
 type Primitive = string | number | boolean;
@@ -12,7 +13,6 @@ export type RequestHeaders = {
 	"x-forwarded-for"?: string;
 } & Record<string, string>;
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? ""; // BFF만 쓰면 ''로 둬도 OK
 const isServer = typeof window === "undefined";
 
 // ---- 공통 유틸 ----

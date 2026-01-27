@@ -4,7 +4,7 @@ import API_URL from "@/api/endpoints";
 import { getNormal } from "@/api/fetchFilter";
 import useAuth from "@/hooks/useAuth";
 import { getApiUrl } from "@/lib/getBaseUrl";
-import { UserResponse } from "@/types/auth";
+import { GetUserResponse } from "@/types/auth";
 import { useQuery } from "@tanstack/react-query";
 
 export function useGetUserInfo() {
@@ -13,7 +13,7 @@ export function useGetUserInfo() {
 	return useQuery({
 		queryKey: ["me"],
 		queryFn: async () => {
-			const data = await getNormal<UserResponse>(getApiUrl(API_URL.AUTH));
+			const data = await getNormal<GetUserResponse>(getApiUrl(API_URL.AUTH));
 			const user = data.user ?? null; // undefined 방지
 			console.log("user", user);
 			setUser(user);

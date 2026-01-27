@@ -15,12 +15,12 @@ export const POST = withAuth(async ({ nextRequest }) => {
 		let payload: AddSellerProductOption | UpdateSellerProductOption;
 		// 추가
 		if (!productOptionId) {
-			if (!productId || !addPrice || !stock || !size) return NextResponse.json({ message: "잘 못 된 요청입니다." }, { status: 400 });
+			if (!productId || !addPrice || !stock || !size) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
 			payload = { productId, addPrice, stock, size };
 		}
 		// 수정
 		else {
-			if (!productOptionId || !addPrice || !stock) return NextResponse.json({ message: "잘 못 된 요청입니다." }, { status: 400 });
+			if (!productOptionId || !addPrice || !stock) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
 			payload = { productOptionId, addPrice, stock };
 		}
 

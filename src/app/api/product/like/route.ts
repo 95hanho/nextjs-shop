@@ -11,13 +11,13 @@ export const POST = withAuth(async ({ nextRequest, accessToken }) => {
 	try {
 		const { productId }: { productId: number } = await nextRequest.json();
 
-		if (!productId) return NextResponse.json({ message: "잘 못 된 요청입니다." }, { status: 400 });
+		if (!productId) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
 		const data = await postUrlFormData<BaseResponse>(
 			getBackendUrl(API_URL.PRODUCT_LIKE),
 			{ productId },
 			{
 				Authorization: `Bearer ${accessToken}`,
-			}
+			},
 		);
 		// console.log("data", data);
 

@@ -54,7 +54,7 @@ export const POST = withSellerAuth(async ({ nextRequest, sellerToken }) => {
 			!qualityGuaranteeInfo ||
 			!afterServiceContact
 		)
-			return NextResponse.json({ message: "잘 못 된 요청입니다." }, { status: 400 });
+			return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
 		const payload: AddSellerProductRequest = {
 			name,
 			colorName,
@@ -120,7 +120,7 @@ export const PUT = withSellerAuth(async ({ nextRequest, sellerToken }) => {
 			!qualityGuaranteeInfo ||
 			!afterServiceContact
 		)
-			return NextResponse.json({ message: "잘 못 된 요청입니다." }, { status: 400 });
+			return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
 
 		const payload: UpdateSellerProductRequest = {
 			productId,

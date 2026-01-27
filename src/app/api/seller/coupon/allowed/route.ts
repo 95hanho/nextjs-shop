@@ -11,7 +11,7 @@ import { NextResponse } from "next/server";
 export const GET = withAuth(async ({ nextRequest, userId }) => {
 	try {
 		const couponId = nextRequest.nextUrl.searchParams.get("couponId");
-		if (!couponId) return NextResponse.json({ message: "잘 못 된 요청입니다." }, { status: 400 });
+		if (!couponId) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
 		const data = await getNormal<GetSellerCouponAllowResponse>(getBackendUrl(API_URL.SELLER_COUPON_ALLOWED), { userId });
 		console.log("data", data);
 
@@ -26,7 +26,7 @@ export const POST = withAuth(async ({ nextRequest, userId, params }) => {
 	try {
 		// json으로 받으면
 		const { couponId, productIds } = await nextRequest.json();
-		if (!couponId || !productIds || productIds.length === 0) return NextResponse.json({ message: "잘 못 된 요청입니다." }, { status: 400 });
+		if (!couponId || !productIds || productIds.length === 0) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
 
 		const payload: SetSellerCouponAllowRequest = { couponId, productIds };
 		const data = await postUrlFormData<BaseResponse>(getBackendUrl(API_URL.SELLER_COUPON_ALLOWED), { ...payload });

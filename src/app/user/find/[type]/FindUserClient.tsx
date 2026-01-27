@@ -5,8 +5,8 @@ import API_URL from "@/api/endpoints";
 import { postJson } from "@/api/fetchFilter";
 import JoinInput from "@/components/user/JoinInput";
 import { getApiUrl } from "@/lib/getBaseUrl";
-import { ChangeEvent, FormEvent } from "@/types/auth";
 import { BaseResponse } from "@/types/common";
+import { ChangeEvent, FormEvent } from "@/types/event";
 import { useMutation } from "@tanstack/react-query";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -135,7 +135,7 @@ export default function FindUserClient() {
 
 	// 비번변경 폼 변경
 	const changeFindUserForm = (e: ChangeEvent) => {
-		let { name, value } = e.target as {
+		const { name, value } = e.target as {
 			name: keyof FindUserForm;
 			value: string;
 		};
@@ -166,7 +166,7 @@ export default function FindUserClient() {
 		};
 		value = value.trim();
 		let failMent = "";
-		let successMent = "";
+		const successMent = "";
 		if (name === "phone") {
 			if (value && !phoneRegex.test(value)) {
 				failMent = phoneRegexFailMent;

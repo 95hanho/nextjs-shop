@@ -11,13 +11,13 @@ import { NextResponse } from "next/server";
 // 장바구니 조회
 export const GET = withAuth(async ({ userId, accessToken }) => {
 	try {
-		if (!userId) return NextResponse.json({ message: "잘 못 된 요청입니다." }, { status: 400 });
+		if (!userId) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
 		const data = await getNormal<GetCartResponse>(
 			getBackendUrl(API_URL.MY_CART),
 			{ userId },
 			{
 				Authorization: `Bearer ${accessToken}`,
-			}
+			},
 		);
 		// console.log("data", data);
 
@@ -31,7 +31,7 @@ export const GET = withAuth(async ({ userId, accessToken }) => {
 export const POST = withAuth(async ({ nextRequest, accessToken }) => {
 	try {
 		const { cartId, productOptionId, quantity }: UpdateCartRequest = await nextRequest.json();
-		if (!cartId || !quantity) return NextResponse.json({ message: "잘 못 된 요청입니다." }, { status: 400 });
+		if (!cartId || !quantity) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
 
 		const payload: UpdateCartRequest = { cartId, productOptionId, quantity };
 		const data = await postUrlFormData<BaseResponse>(
@@ -39,7 +39,7 @@ export const POST = withAuth(async ({ nextRequest, accessToken }) => {
 			{ ...payload },
 			{
 				Authorization: `Bearer ${accessToken}`,
-			}
+			},
 		);
 		console.log("data", data);
 
@@ -53,7 +53,7 @@ export const POST = withAuth(async ({ nextRequest, accessToken }) => {
 export const PUT = withAuth(async ({ nextRequest, accessToken }) => {
 	try {
 		const { cartIdList, selected }: UpdateCartSelectedRequest = await nextRequest.json();
-		if (!cartIdList?.length || selected === undefined) return NextResponse.json({ message: "잘 못 된 요청입니다." }, { status: 400 });
+		if (!cartIdList?.length || selected === undefined) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
 
 		const payload: UpdateCartSelectedRequest = { cartIdList, selected };
 		const data = await putUrlFormData<BaseResponse>(
@@ -61,7 +61,7 @@ export const PUT = withAuth(async ({ nextRequest, accessToken }) => {
 			{ ...payload },
 			{
 				Authorization: `Bearer ${accessToken}`,
-			}
+			},
 		);
 		// console.log("data", data);
 
@@ -75,14 +75,14 @@ export const PUT = withAuth(async ({ nextRequest, accessToken }) => {
 export const DELETE = withAuth(async ({ nextRequest, userId, accessToken }) => {
 	try {
 		const cartIdList = nextRequest.nextUrl.searchParams.getAll("cartIdList").map(Number);
-		if (!userId || !cartIdList?.length) return NextResponse.json({ message: "잘 못 된 요청입니다." }, { status: 400 });
+		if (!userId || !cartIdList?.length) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
 		console.log(cartIdList);
 		const data = await deleteNormal<BaseResponse>(
 			getBackendUrl(API_URL.MY_CART),
 			{ cartIdList },
 			{
 				Authorization: `Bearer ${accessToken}`,
-			}
+			},
 		);
 		return NextResponse.json({ message: data.message }, { status: 200 });
 	} catch (err: unknown) {

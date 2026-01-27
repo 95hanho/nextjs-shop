@@ -44,10 +44,10 @@ export const POST = withAuth(async ({ nextRequest, accessToken }) => {
 			"memo",
 			memo,
 			"defaultAddress",
-			defaultAddress
+			defaultAddress,
 		);
 		if (!addressName || !recipientName || !addressPhone || !zonecode || !address || !addressDetail)
-			return NextResponse.json({ message: "잘 못 된 요청입니다." }, { status: 400 });
+			return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
 		// if (!memo) return NextResponse.json({ message: "비밀번호를 입력해주세요." }, { status: 400 });
 
 		const payload: setUserAddressRequest = { addressName, addressPhone, recipientName, zonecode, address, addressDetail, memo, defaultAddress };
@@ -58,7 +58,7 @@ export const POST = withAuth(async ({ nextRequest, accessToken }) => {
 			{ ...payload },
 			{
 				Authorization: `Bearer ${accessToken}`,
-			}
+			},
 		);
 		console.log("data", data);
 

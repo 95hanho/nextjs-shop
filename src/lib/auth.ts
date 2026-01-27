@@ -2,19 +2,20 @@ import { getNormal, postUrlFormData } from "@/api/fetchFilter";
 import { cookies } from "next/headers";
 import { getApiUrl, getBackendUrl } from "./getBaseUrl";
 import API_URL from "@/api/endpoints";
-import { Token, UserResponse } from "@/types/auth";
+import { GetUserResponse } from "@/types/auth";
 import { NextRequest, NextResponse } from "next/server";
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken, verifyToken } from "./jwt";
 import { BaseResponse } from "@/types/common";
 import { isProd } from "./env";
 import { ACCESS_TOKEN_COOKIE_AGE, REFRESH_TOKEN_COOKIE_AGE } from "./tokenTime";
+import { Token } from "@/types/token";
 
 /** 처음페이지로드 시 accessToken있으면 유저 정보 가져옴 */
 export async function getServerSession() {
 	const accessToken = (await cookies()).get("accessToken")?.value;
 	if (!accessToken) return null;
 	console.log("서버->서버로 유저정보 요청!!");
-	const data = await getNormal<UserResponse>(getApiUrl(API_URL.AUTH), undefined, {
+	const data = await getNormal<GetUserResponse>(getApiUrl(API_URL.AUTH), undefined, {
 		Cookie: `accessToken=${accessToken}`,
 	});
 
@@ -112,19 +113,16 @@ const authFromTokens = async (nextRequest: NextRequest): Promise<AutoRefreshResu
 	};
 };
 //
-type HandlerWithAuth = (ctx: {
+export type AuthHandler<TParams extends Record<string, string> = Record<string, never>> = (ctx: {
 	nextRequest: NextRequest;
-	userNo: number; // ✅ 인증 성공이면 필수로 두는 게 좋아
-	accessToken: string; // ✅ Spring에 보낼 토큰
-	params?: { [key: string]: string }; // 🔹 여기에 params 추가
-}) => Promise<NextResponse> | NextResponse;
+	userNo: number;
+	accessToken: string;
+	params: TParams;
+}) => Promise<NextResponse>;
 //
 export const withAuth =
-	(handler: HandlerWithAuth) =>
-	async (
-		nextRequest: NextRequest,
-		context?: { params?: { [key: string]: string } }, // 🔹 App Router의 context 받기
-	): Promise<NextResponse> => {
+	<TParams extends Record<string, string> = Record<string, never>>(handler: AuthHandler<TParams>) =>
+	async (nextRequest: NextRequest, context: { params: TParams }): Promise<NextResponse> => {
 		const auth = await authFromTokens(nextRequest);
 
 		if (!auth.ok) {
@@ -159,17 +157,110 @@ export const withAuth =
 			return NextResponse.json({ message: "UNAUTHORIZED" }, { status: 401 });
 		}
 
-		// 🔹 비즈니스 핸들러 실행할 때 params도 함께 넘겨주기
-		const baseCtx = {
+		/* API 실행 전 --------------------------------> */
+
+		const response = await handler({
 			nextRequest,
 			userNo: auth.userNo,
 			accessToken,
-			params: context?.params, // 없으면 undefined
-		};
+			params: context.params,
+		});
+
+		/* API 실행 후 --------------------------------> */
+
+		// 토큰 재발급된 경우 쿠키 세팅
+		if (auth.newAccessToken && auth.newRefreshToken) {
+			response.cookies.set("accessToken", auth.newAccessToken, {
+				httpOnly: true,
+				secure: isProd,
+				sameSite: "strict",
+				path: "/",
+				maxAge: ACCESS_TOKEN_COOKIE_AGE,
+			});
+			response.cookies.set("refreshToken", auth.newRefreshToken, {
+				httpOnly: true,
+				secure: isProd,
+				sameSite: "strict",
+				path: "/",
+				maxAge: REFRESH_TOKEN_COOKIE_AGE,
+			});
+			console.log("토큰 다시 세팅 !!!! ---------------------", nextRequest.url);
+		}
+		console.log(
+			"accessToken11111",
+			auth.newAccessToken || nextRequest.cookies.get("accessToken")?.value || response.cookies.get("accessToken")?.value,
+		);
+
+		return response;
+	};
+
+//
+export type OptionalAuthHandler<TParams extends Record<string, string> = Record<string, never>> = (ctx: {
+	nextRequest: NextRequest;
+	userNo: number | null;
+	accessToken: string | null;
+	params: TParams;
+}) => Promise<NextResponse>;
+//
+type AuthMode = "optional" | "required";
+const getAuthMode = (nextRequest: NextRequest): AuthMode => {
+	// "x-auth-mode": "required", // or "optional" 이렇게 FE에서 던지면됨.
+	const v = (nextRequest.headers.get("x-auth-mode") || "").toLowerCase();
+	return v === "required" ? "required" : "optional";
+};
+//
+export const withOptionalAuth =
+	<TParams extends Record<string, string> = Record<string, never>>(handler: OptionalAuthHandler<TParams>) =>
+	async (nextRequest: NextRequest, context: { params: TParams }): Promise<NextResponse> => {
+		const authMode = getAuthMode(nextRequest);
+		const auth = await authFromTokens(nextRequest);
+
+		if (!auth.ok) {
+			const response = await handler({
+				nextRequest,
+				userNo: null,
+				accessToken: null,
+				params: context.params,
+			});
+
+			if (auth.clearCookies) {
+				console.warn("토큰지워!!!!");
+				response.cookies.set("accessToken", "", {
+					httpOnly: true,
+					secure: isProd,
+					sameSite: "strict",
+					path: "/",
+					maxAge: 0,
+				});
+				response.cookies.set("refreshToken", "", {
+					httpOnly: true,
+					secure: isProd,
+					sameSite: "strict",
+					path: "/",
+					maxAge: 0,
+				});
+			}
+
+			return response;
+		}
+
+		// ✅ “이번 요청에서 Spring에 보낼 accessToken” 결정
+		const accessToken = auth.newAccessToken ?? nextRequest.cookies.get("accessToken")?.value;
+		console.log("accessToken 여기냐?", accessToken);
+		const userNo = auth.userNo ?? null;
+
+		if (!accessToken || !auth.userNo) {
+			return NextResponse.json({ message: "UNAUTHORIZED" }, { status: 401 });
+		}
 
 		/* API 실행 전 --------------------------------> */
 
-		const response = await handler(baseCtx);
+		const response = await handler({
+			nextRequest,
+			userNo,
+			accessToken,
+			params: context.params,
+		});
 
 		/* API 실행 후 --------------------------------> */
 

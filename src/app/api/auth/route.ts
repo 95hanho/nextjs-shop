@@ -6,7 +6,7 @@ import { isProd } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { generateAccessToken, generateRefreshToken } from "@/lib/jwt";
 import { ACCESS_TOKEN_COOKIE_AGE, REFRESH_TOKEN_COOKIE_AGE } from "@/lib/tokenTime";
-import { LoginForm, LoginResponse, UserResponse } from "@/types/auth";
+import { LoginForm, GetUserResponse } from "@/types/auth";
 import { BaseResponse } from "@/types/common";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -16,7 +16,7 @@ import { NextRequest, NextResponse } from "next/server";
 export const GET = withAuth(async ({ accessToken }) => {
 	try {
 		console.log("accessToken ===", accessToken);
-		const data = await getNormal<UserResponse>(getBackendUrl(API_URL.AUTH), undefined, {
+		const data = await getNormal<GetUserResponse>(getBackendUrl(API_URL.AUTH), undefined, {
 			Authorization: `Bearer ${accessToken}`,
 		});
 		return NextResponse.json({ ...data }, { status: 200 });
@@ -27,25 +27,16 @@ export const GET = withAuth(async ({ accessToken }) => {
 });
 
 // 로그인
-export async function POST(nextRequest: NextRequest) {
+export const POST = async (nextRequest: NextRequest) => {
 	console.log("로그인");
 	try {
 		const { userId, password }: LoginForm = await nextRequest.json();
 		if (!userId) return NextResponse.json({ message: "아이디를 입력해주세요." }, { status: 400 });
 		if (!password) return NextResponse.json({ message: "비밀번호를 입력해주세요." }, { status: 400 });
 
-		const loginValidateData = await postUrlFormData<LoginResponse>(getBackendUrl(API_URL.AUTH), { userId, password });
+		const loginValidateData = await postUrlFormData<BaseResponse & { userNo: number }>(getBackendUrl(API_URL.AUTH), { userId, password });
 		console.log("loginValidateData", loginValidateData);
-		/* 에러는 FE에서 처리 */
-		// if (res.status === 401) {
-		// 	return res.status(401).json({ message: "아이디 또는 비밀번호가 올바르지 않습니다." });
-		// }
-		// if (!res.ok) {
-		// 	// Spring 에러 그대로 전달하지 말고 요약해서 반환
-		// 	console.error("Spring auth error:", await res.text());
-		// 	return response.status(502).json({ message: "인증 서버 오류" });
-		// }
-		// ✅ HttpOnly 쿠키 설정
+
 		const userNo = loginValidateData.userNo;
 		const accessToken = generateAccessToken({ userNo });
 		const refreshToken = generateRefreshToken();
@@ -85,16 +76,10 @@ export async function POST(nextRequest: NextRequest) {
 			path: "/",
 			maxAge: REFRESH_TOKEN_COOKIE_AGE,
 		});
-		// response.headers.set(
-		// 	"Set-Cookie",
-		// 	[
-		// 		`accessToken=${accessToken}; Path=/; HttpOnly; ${isProd ? "Secure; " : ""}SameSite=Strict; Max-Age=${ACCESS_TOKEN_COOKIE_AGE}`,
-		// 		`refreshToken=${refreshToken}; Path=/; HttpOnly; ${isProd ? "Secure; " : ""}SameSite=Strict; Max-Age=${REFRESH_TOKEN_COOKIE_AGE}`,
-		// 	].join(", ")
-		// );
+
 		return response;
 	} catch (err: unknown) {
 		const { status, payload } = toErrorResponse(err);
 		return NextResponse.json(payload, { status });
 	}
-}
+};

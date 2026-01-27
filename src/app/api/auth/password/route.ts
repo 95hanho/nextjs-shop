@@ -2,7 +2,7 @@ import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { postUrlFormData } from "@/api/fetchFilter";
 import { withAuth } from "@/lib/auth";
-import { isProd } from "@/lib/env";
+import { isProd, WRONG_REQUEST_MESSAGE } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { generatePwdResetToken, verifyPhoneAuthCompleteToken, verifyPwdResetToken, verifyRefreshToken, verifyToken } from "@/lib/jwt";
 import { PWD_CHANGE_COOKIE_AGE } from "@/lib/tokenTime";
@@ -65,12 +65,12 @@ export const PUT = async (nextRequest: NextRequest) => {
 					status: 401,
 					message: "PWDRESET_UNAUTHORIZED",
 				},
-				{ status: 401 }
+				{ status: 401 },
 			);
 		}
 
 		const { curPassword, newPassword } = await nextRequest.json();
-		if (!newPassword) return NextResponse.json({ message: "잘 못 된 요청입니다." }, { status: 400 });
+		if (!newPassword) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
 
 		const payload: { curPassword?: string; newPassword: string; pwdResetToken: string } = { newPassword, pwdResetToken };
 		if (curPassword) payload.curPassword = curPassword;

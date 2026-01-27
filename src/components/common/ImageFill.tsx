@@ -1,3 +1,4 @@
+import { BASIC_NO_IMAGE } from "@/lib/env";
 import Image from "next/image";
 
 interface ImageBasicProps {
@@ -8,5 +9,5 @@ interface ImageBasicProps {
 }
 
 export default function ImageFill({ className = "", src = "", alt, fill = true }: ImageBasicProps) {
-	return <Image className={className} src={src || process.env.NEXT_PUBLIC_BASIC_IMAGE} alt={alt || "사진없음"} fill={fill} sizes="1" />;
+	return <Image className={className} src={src || BASIC_NO_IMAGE} alt={alt || "사진없음"} fill={fill} sizes="1" />;
 }

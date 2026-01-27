@@ -4,13 +4,14 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi"; // 눈 모양 아이콘을 import 합니다.
 import { SiNaver, SiKakaotalk } from "react-icons/si"; // 네이버와 카카오 아이콘을 import 합니다.
-import { FormEvent, LoginForm } from "@/types/auth";
+import { LoginForm } from "@/types/auth";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import API_URL from "@/api/endpoints";
 import { useRouter } from "next/navigation";
 import { postJson } from "@/api/fetchFilter";
 import { BaseResponse } from "@/types/common";
+import { FormEvent } from "@/types/event";
 
 export default function Login() {
 	const router = useRouter();

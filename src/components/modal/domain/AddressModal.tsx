@@ -5,9 +5,9 @@ import OptionSelector from "../../ui/OptionSelector";
 import { UserAddressListItem } from "@/types/mypage";
 import { useModalStore } from "@/store/modal.store";
 import JoinInput from "../../user/JoinInput";
-import { ChangeEvent, FormEvent } from "@/types/auth";
 import ModalFrame from "@/components/modal/frame/ModalFrame";
 import styles from "../Modal.module.scss";
+import { ChangeEvent, FormEvent } from "@/types/event";
 
 interface AddressModalProps {
 	onClose: () => void;

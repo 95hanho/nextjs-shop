@@ -56,7 +56,7 @@ export const POST = withAuth(async ({ nextRequest, userId, params }) => {
 			!startDate ||
 			!endDate
 		)
-			return NextResponse.json({ message: "잘 못 된 요청입니다." }, { status: 400 });
+			return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
 
 		const payload: AddCoupnRequest = {
 			description,
