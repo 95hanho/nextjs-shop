@@ -13,7 +13,7 @@ export const POST = withAuth(async ({ nextRequest, accessToken }) => {
 	try {
 		const { holdIds }: ExtendStockHoldRequest = await nextRequest.json();
 
-		if (holdIds.length === 0) return NextResponse.json({ message: "잘 못 된 요청입니다." }, { status: 400 });
+		if (holdIds.length === 0) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
 
 		const payload: ExtendStockHoldRequest = { holdIds };
 		const data = await postJson<ExtendStockHoldResponse, ExtendStockHoldRequest>(
@@ -21,7 +21,7 @@ export const POST = withAuth(async ({ nextRequest, accessToken }) => {
 			{ ...payload },
 			{
 				Authorization: `Bearer ${accessToken}`,
-			}
+			},
 		);
 		console.log("data", data);
 

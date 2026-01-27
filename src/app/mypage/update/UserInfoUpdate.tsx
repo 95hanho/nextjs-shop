@@ -7,8 +7,9 @@ import JoinInput from "@/components/user/JoinInput";
 import useAuth from "@/hooks/useAuth";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { useModalStore } from "@/store/modal.store";
-import { ChangeEvent, FormEvent, UserInfo, UserUpdateResponse } from "@/types/auth";
+import { UserInfo, UserUpdateResponse } from "@/types/auth";
 import { BaseResponse } from "@/types/common";
+import { ChangeEvent, FormEvent } from "@/types/event";
 import { useMutation } from "@tanstack/react-query";
 import Error from "next/error";
 import { useRouter } from "next/navigation";
@@ -157,7 +158,7 @@ export default function UserInfoUpdate() {
 	//
 	// joinForm set
 	const changeUserUpdateForm = (e: ChangeEvent) => {
-		let { name, value } = e.target as {
+		const { name, value } = e.target as {
 			name: keyof UserUpdateForm;
 			value: string;
 		};
@@ -334,7 +335,7 @@ export default function UserInfoUpdate() {
 										fnc: () => {
 											clickPhoneAuth();
 										},
-								  }
+									}
 						}
 						onBlur={validateUserUpdateForm}
 						ref={(el) => {

@@ -1,7 +1,7 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { postUrlFormData } from "@/api/fetchFilter";
-import { isProd } from "@/lib/env";
+import { isProd, WRONG_REQUEST_MESSAGE } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { generatePhoneAuthCompleteToken, generatePwdResetToken, verifyPhoneAuthToken } from "@/lib/jwt";
 import { PHONE_AUTH_COMPLETE_COOKIE_AGE, PWD_CHANGE_COOKIE_AGE } from "@/lib/tokenTime";
@@ -14,7 +14,7 @@ export async function POST(nextRequest: NextRequest) {
 	try {
 		const { userId, phoneAuthToken, authNumber } = await nextRequest.json();
 
-		if (!phoneAuthToken?.trim() || !authNumber) return NextResponse.json({ message: "잘 못 된 요청입니다." }, { status: 400 });
+		if (!phoneAuthToken?.trim() || !authNumber) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
 
 		try {
 			const tokenData = verifyPhoneAuthToken(phoneAuthToken);
@@ -27,7 +27,7 @@ export async function POST(nextRequest: NextRequest) {
 					status: 401,
 					message: "PHONEAUTH_TOKEN_UNAUTHORIZED",
 				},
-				{ status: 401 }
+				{ status: 401 },
 			);
 		}
 

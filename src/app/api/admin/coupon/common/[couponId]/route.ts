@@ -1,22 +1,23 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { deleteNormal } from "@/api/fetchFilter";
-import { withAuth } from "@/lib/auth";
+import { withAdminAuth } from "@/lib/admin/auth";
+import { WRONG_REQUEST_MESSAGE } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { BaseResponse } from "@/types/common";
 import { NextResponse } from "next/server";
 
-// 유저배송지 삭제
-export const DELETE = withAuth(async ({ params, accessToken }) => {
+// 공용 쿠폰 삭제
+export const DELETE = withAdminAuth<{ couponId: string }>(async ({ params, adminToken }) => {
 	try {
-		const { addressId } = params ?? {};
-		if (!addressId) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
+		const couponId = Number(params.couponId);
+		if (!Number.isInteger(couponId) || couponId <= 0) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
 
 		const data = await deleteNormal<BaseResponse>(
-			getBackendUrl(API_URL.MY_ADDRESS_DELETE),
-			{ addressId },
+			getBackendUrl(API_URL.ADMIN_COUPON_COMMON_DELETE),
+			{ couponId },
 			{
-				Authorization: `Bearer ${accessToken}`,
+				Authorization: `Bearer ${adminToken}`,
 			},
 		);
 		console.log("data", data);

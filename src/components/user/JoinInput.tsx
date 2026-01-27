@@ -1,9 +1,9 @@
 "use client";
 
 import styles from "./JoinInput.module.scss";
-import { ChangeEvent } from "@/types/auth";
 import { forwardRef } from "react";
 import clsx from "clsx";
+import { ChangeEvent } from "@/types/event";
 
 interface FormInputProps {
 	name: string;
@@ -71,7 +71,7 @@ const JoinInput = forwardRef<HTMLInputElement, FormInputProps>((props, ref) => {
 							onClick={searchBtn.fnc}
 							className={clsx(
 								styles.searchBtn,
-								styles[name as keyof typeof styles] // address / phone / phoneAuth
+								styles[name as keyof typeof styles], // address / phone / phoneAuth
 							)}
 						>
 							{searchBtn.txt}

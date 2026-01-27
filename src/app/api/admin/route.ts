@@ -29,7 +29,7 @@ export const GET = withAdminAuth(async ({ adminToken }) => {
 	}
 });
 
-// 판매자 로그인
+// 관리자 로그인
 export const POST = async (nextRequest: NextRequest) => {
 	try {
 		const { adminId, password }: AdminLoginForm = await nextRequest.json();

@@ -5,9 +5,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { generateRefreshToken, verifyRefreshToken } from "../jwt";
 import { BaseResponse } from "@/types/common";
 import { isProd } from "../env";
-import { ACCESS_TOKEN_COOKIE_AGE, REFRESH_TOKEN_COOKIE_AGE } from "../tokenTime";
-import { generateSellerToken, verifySellerToken } from "@/lib/admin/jwt";
-import { SellerToken } from "@/types/seller";
+import { REFRESH_TOKEN_COOKIE_AGE, SELLER_TOKEN_COOKIE_AGE } from "../tokenTime";
+import { generateSellerToken, verifySellerToken } from "@/lib/seller/jwt";
+import { Token } from "@/types/token";
 
 type AutoRefreshResult =
 	| {
@@ -32,7 +32,7 @@ const authFromSellerTokens = async (nextRequest: NextRequest): Promise<AutoRefre
 	// 1) sellerToken 유효하면 그대로 통과
 	if (sellerToken?.trim()) {
 		try {
-			const token: SellerToken = verifySellerToken(sellerToken);
+			const token: Token = verifySellerToken(sellerToken);
 			return { ok: true, sellerNo: token.sellerNo };
 		} catch {
 			// sellerToken 만료 → 아래에서 sellerRefreshToken으로 처리
@@ -68,7 +68,7 @@ const authFromSellerTokens = async (nextRequest: NextRequest): Promise<AutoRefre
 		"unknown";
 
 	const reTokenData = await putUrlFormData<BaseResponse & { sellerNo: number }>(
-		getBackendUrl(API_URL.SELLER_TOKEN),
+		getBackendUrl(API_URL.SELLER_TOKEN_REFRESH),
 		{
 			beforeToken: sellerRefreshToken,
 			sellerRefreshToken: newSellerRefreshToken,
@@ -91,19 +91,16 @@ const authFromSellerTokens = async (nextRequest: NextRequest): Promise<AutoRefre
 	};
 };
 //
-type HandlerWithAuth = (ctx: {
+export type SellerHandler<TParams extends Record<string, string> = Record<string, never>> = (ctx: {
 	nextRequest: NextRequest;
-	sellerNo: number; // ✅ 인증 성공이면 필수로 두는 게 좋아
-	sellerToken: string; // ✅ Spring에 보낼 토큰
-	params?: { [key: string]: string }; // 🔹 여기에 params 추가
-}) => Promise<NextResponse> | NextResponse;
+	sellerNo: number;
+	sellerToken: string;
+	params: TParams;
+}) => Promise<NextResponse>;
 //
 export const withSellerAuth =
-	(handler: HandlerWithAuth) =>
-	async (
-		nextRequest: NextRequest,
-		context?: { params?: { [key: string]: string } }, // 🔹 App Router의 context 받기
-	): Promise<NextResponse> => {
+	<TParams extends Record<string, string> = Record<string, never>>(handler: SellerHandler<TParams>) =>
+	async (nextRequest: NextRequest, context: { params: TParams }): Promise<NextResponse> => {
 		const auth = await authFromSellerTokens(nextRequest);
 
 		if (!auth.ok) {
@@ -137,17 +134,14 @@ export const withSellerAuth =
 			return NextResponse.json({ message: "UNAUTHORIZED" }, { status: 401 });
 		}
 
-		// 🔹 비즈니스 핸들러 실행할 때 params도 함께 넘겨주기
-		const baseCtx = {
+		/* API 실행 전 --------------------------------> */
+
+		const response = await handler({
 			nextRequest,
 			sellerNo: auth.sellerNo,
 			sellerToken,
-			params: context?.params, // 없으면 undefined
-		};
-
-		/* API 실행 전 --------------------------------> */
-
-		const response = await handler(baseCtx);
+			params: context.params,
+		});
 
 		/* API 실행 후 --------------------------------> */
 
@@ -158,7 +152,7 @@ export const withSellerAuth =
 				secure: isProd,
 				sameSite: "strict",
 				path: "/",
-				maxAge: ACCESS_TOKEN_COOKIE_AGE,
+				maxAge: SELLER_TOKEN_COOKIE_AGE,
 			});
 			response.cookies.set("sellerRefreshToken", auth.newSellerRefreshToken, {
 				httpOnly: true,

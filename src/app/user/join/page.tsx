@@ -6,12 +6,28 @@ import { useRef, useState } from "react";
 import JoinInput from "../../../components/user/JoinInput";
 import { isValidDateString } from "@/utils/ui";
 import { useMutation } from "@tanstack/react-query";
-import { getNormal, postJson, postUrlFormData } from "@/api/fetchFilter";
+import { postJson, postUrlFormData } from "@/api/fetchFilter";
 import { BaseResponse } from "@/types/common";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import API_URL from "@/api/endpoints";
-import { ChangeEvent, FormEvent, JoinForm, JoinFormAlert, JoinFormRefs } from "@/types/auth";
+import { JoinForm } from "@/types/auth";
 import { useRouter } from "next/navigation";
+import { ChangeEvent, FormEvent } from "@/types/event";
+
+export type JoinFormAlert = Omit<JoinForm, "zonecode">;
+export interface JoinFormRefs {
+	userId: HTMLInputElement | null;
+	password: HTMLInputElement | null;
+	passwordCheck: HTMLInputElement | null;
+	name: HTMLInputElement | null;
+	address: HTMLInputElement | null;
+	addressDetail: HTMLInputElement | null;
+	phone: HTMLInputElement | null;
+	phoneAuth: HTMLInputElement | null;
+	email: HTMLInputElement | null;
+	birthday: HTMLInputElement | null;
+	[key: string]: HTMLInputElement | null | undefined;
+}
 
 const initJoinForm: JoinForm = {
 	userId: "hoseongs",

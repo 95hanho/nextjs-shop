@@ -1,4 +1,3 @@
-import { JwtPayload } from "jsonwebtoken";
 import { BaseResponse } from "./common";
 import { Coupon } from "./mypage";
 import { ProductDetail, ProductOption } from "./product";
@@ -9,25 +8,19 @@ export type SellerLoginForm = {
 	password: string;
 };
 
-// 로그인 토큰 구조
-export type SellerToken = {
-	type: "SELLER";
-	sellerNo: number;
-} & JwtPayload;
-
 export type SellerInfo = {
 	sellerId: string;
-	sellerName: string;
-	sellerNameEn: string;
-	extensionNumber: string;
-	mobileNumber: string;
-	email: string;
-	businessRegistrationNumber: string;
-	telecomSalesNumber: string;
-	representativeName: string;
-	businessZipcode: string;
-	businessAddress: string;
-	businessAddressDetail: string;
+	sellerName: string; // 판매자 이름(한글)
+	sellerNameEn: string; // 판매자 이름(영어)
+	extensionNumber: string; // 내선전화
+	mobileNumber: string; // 대표 번호
+	email: string; // 이메일
+	businessRegistrationNumber: string; // 사업자 등록번호
+	telecomSalesNumber: string; // 통신 판매자 번호
+	representativeName: string; // 대표자 이름
+	businessZipcode: string; // 사업장 소재지 우편번호
+	businessAddress: string; // 사업장 소재지 주소
+	businessAddressDetail: string; // 사업장 소재지 상세주소
 };
 export type SellerApprove = {
 	requestedAt: string;

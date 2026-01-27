@@ -1,6 +1,7 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { postUrlFormData } from "@/api/fetchFilter";
+import { WRONG_REQUEST_MESSAGE } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { generatePhoneAuthToken } from "@/lib/jwt";
 import { PhoneAuthRequest } from "@/types/auth";
@@ -8,10 +9,12 @@ import { BaseResponse } from "@/types/common";
 import { NextRequest, NextResponse } from "next/server";
 
 // 휴대폰 인증
-export async function POST(nextRequest: NextRequest) {
+export const POST = async (nextRequest: NextRequest) => {
 	try {
 		const { phone } = await nextRequest.json();
-		if (!phone) return NextResponse.json({ message: "잘 못 된 요청입니다." }, { status: 400 });
+		if (!phone) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
+
+		const accessToken = nextRequest.cookies.get("accessToken")?.value || nextRequest.headers.get("accessToken") || undefined;
 
 		const xffHeader = nextRequest.headers.get("x-forwarded-for");
 		const ip =
@@ -20,9 +23,9 @@ export async function POST(nextRequest: NextRequest) {
 			nextRequest.headers.get("x-real-ip") ??
 			"unknown";
 
-		const phoneAuthToken = generatePhoneAuthToken();
+		const phoneAuthToken = generatePhoneAuthToken(phone);
 
-		const payload: PhoneAuthRequest = { phone, phoneAuthToken };
+		const payload = { phoneAuthToken };
 
 		const data = await postUrlFormData<BaseResponse>(
 			getBackendUrl(API_URL.AUTH_PHONE_AUTH),
@@ -30,8 +33,8 @@ export async function POST(nextRequest: NextRequest) {
 			{
 				userAgent: nextRequest.headers.get("user-agent") || "",
 				["x-forwarded-for"]: ip,
-				Authorization: `Bearer ${string}`,
-			}
+				Authorization: `Bearer ${accessToken}`,
+			},
 		);
 
 		return NextResponse.json({ message: data.message, phoneAuthToken }, { status: 200 });
@@ -39,4 +42,4 @@ export async function POST(nextRequest: NextRequest) {
 		const { status, payload } = toErrorResponse(err);
 		return NextResponse.json(payload, { status });
 	}
-}
+};

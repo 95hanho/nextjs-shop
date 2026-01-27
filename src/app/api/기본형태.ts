@@ -8,7 +8,7 @@ import { NextResponse } from "next/server";
 
 /*  */
 //
-export const GET = withAuth(async ({ nextRequest, userId, params }) => {
+export const GET = withAuth(async ({ nextRequest, userNo, params, accessToken }) => {
 	// query 접근 (App Router에서는 req.nextUrl.searchParams)
 	const search = Object.fromEntries(nextRequest.nextUrl.searchParams.entries());
 	if (Object.keys(search).length > 0) {
@@ -30,7 +30,7 @@ export const GET = withAuth(async ({ nextRequest, userId, params }) => {
 	}
 });
 //
-export const POST = withAuth(async ({ nextRequest, userId, params }) => {
+export const POST = withAuth(async ({ nextRequest, userNo, params, accessToken }) => {
 	try {
 		const {} = params ?? {};
 		// formdata || application/x-www-form-urlencoded로 보냈으면 이렇게

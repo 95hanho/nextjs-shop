@@ -11,7 +11,7 @@ export const POST = withAuth(async ({ nextRequest }) => {
 	try {
 		// json으로 받으면
 		const { couponId, status } = await nextRequest.json();
-		if (!couponId || !status) return NextResponse.json({ message: "잘 못 된 요청입니다." }, { status: 400 });
+		if (!couponId || !status) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
 
 		const data = await postUrlFormData<BaseResponse>(getBackendUrl(API_URL.SELLER_COUPON_STATUS), { couponId, status });
 		console.log("data", data);

@@ -6,8 +6,8 @@ import { getNormal, putJson } from "@/api/fetchFilter";
 import JoinInput from "@/components/user/JoinInput";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { useModalStore } from "@/store/modal.store";
-import { ChangeEvent, FormEvent } from "@/types/auth";
 import { BaseResponse } from "@/types/common";
+import { ChangeEvent, FormEvent } from "@/types/event";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -129,7 +129,7 @@ export default function PasswordChangeClient({ mode }: PasswordChangeClientProps
 	const pwdChangeFormRefs = useRef<Partial<PasswordChangeFormRefs>>({});
 	// 비번변경 폼 변경
 	const changePwdChangeForm = (e: ChangeEvent) => {
-		let { name, value } = e.target as {
+		const { name, value } = e.target as {
 			name: keyof PasswordChangeForm;
 			value: string;
 		};
@@ -157,7 +157,7 @@ export default function PasswordChangeClient({ mode }: PasswordChangeClientProps
 		};
 		value = value.trim();
 		let failMent = "";
-		let successMent = "";
+		const successMent = "";
 		const addFailMentObj: Partial<Record<keyof PasswordChangeForm, string>> = {};
 		if (name === "newPassword" && value && !passwordRegex.test(value)) {
 			failMent = passwordRegexFailMent;

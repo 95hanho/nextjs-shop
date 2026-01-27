@@ -1,15 +1,16 @@
 import jwt from "jsonwebtoken";
 import { jwtVerify } from "jose";
 import { ACCESS_TOKEN_EXPIRES_IN, PHONE_AUTH_EXPIRES_IN, PWD_CHANGE_EXPIRES_IN, REFRESH_TOKEN_EXPIRES_IN } from "./tokenTime";
-import { Token } from "@/types/auth";
 import type { StringValue } from "ms";
-
-const REFRESH_JWT_SECRET_KEY = process.env.NEXT_PUBLIC_REFRESH_SECRET || "your-secret";
-const JWT_SECRET_KEY = process.env.NEXT_PUBLIC_JWT_SECRET || "your-secret";
-const MIDDLEWARE_JWT_SECRET_KEY = new TextEncoder().encode(process.env.NEXT_PUBLIC_JWT_SECRET);
-const PHONE_AUTH_KEY = process.env.NEXT_PUBLIC_PHONE_AUTH || "your-secret";
-const PHONE_AUTH_COMPLETE_KEY = process.env.NEXT_PUBLIC_PHONE_AUTH_COMPLETE || "your-secret";
-const PWD_CHANGE_KEY = process.env.NEXT_PUBLIC_PWD_CHANGE || "your-secret";
+import {
+	JWT_SECRET_KEY,
+	MIDDLEWARE_JWT_SECRET_KEY,
+	PHONE_AUTH_COMPLETE_KEY,
+	PHONE_AUTH_KEY,
+	PWD_CHANGE_KEY,
+	REFRESH_JWT_SECRET_KEY,
+} from "@/lib/env";
+import { Token } from "@/types/token";
 
 // accessToken 생성
 export function generateAccessToken(payload: { userNo: number }, expiresIn?: StringValue) {
@@ -57,9 +58,8 @@ export async function middleware_verifyToken(token: string): Promise<Token> {
 }
 /* ----- 인증 관련 --------------------------------------------- */
 // 휴대폰인증 토큰 생성
-export function generatePhoneAuthToken() {
-	const payload = { type: "PHONEAUTH" };
-	return jwt.sign(payload, PHONE_AUTH_KEY, {
+export function generatePhoneAuthToken(payload: { phone: string }) {
+	return jwt.sign({ type: "PHONEAUTH", phone: payload.phone }, PHONE_AUTH_KEY, {
 		expiresIn: PHONE_AUTH_EXPIRES_IN,
 		algorithm: "HS256",
 	});

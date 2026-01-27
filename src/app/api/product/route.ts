@@ -19,7 +19,7 @@ export const GET = withAuth(async ({ nextRequest, accessToken }) => {
 	try {
 		const sort = nextRequest.nextUrl.searchParams.get("sort");
 		const menuSubId = Number(nextRequest.nextUrl.searchParams.get("menuSubId"));
-		if (!sort || !menuSubId) return NextResponse.json({ message: "잘 못 된 요청입니다." }, { status: 400 });
+		if (!sort || !menuSubId) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
 
 		const payload: GetProductListRequest = {
 			sort,

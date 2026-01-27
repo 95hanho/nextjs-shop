@@ -11,7 +11,7 @@ import { NextResponse } from "next/server";
 export const POST = withAuth(async ({ nextRequest, accessToken }) => {
 	try {
 		const { productOptionId, quantity } = await nextRequest.json();
-		if (!productOptionId || !quantity) return NextResponse.json({ message: "잘 못 된 요청입니다." }, { status: 400 });
+		if (!productOptionId || !quantity) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
 
 		const payload: AddCartRequest = { productOptionId, quantity };
 		const data = await postUrlFormData<BaseResponse>(
@@ -19,7 +19,7 @@ export const POST = withAuth(async ({ nextRequest, accessToken }) => {
 			{ ...payload },
 			{
 				Authorization: `Bearer ${accessToken}`,
-			}
+			},
 		);
 		console.log("data", data);
 

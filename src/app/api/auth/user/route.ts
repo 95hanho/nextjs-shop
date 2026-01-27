@@ -1,3 +1,4 @@
+// 회원가입
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { postUrlFormData, putUrlFormData } from "@/api/fetchFilter";
@@ -7,10 +8,8 @@ import { getBackendUrl } from "@/lib/getBaseUrl";
 import { verifyPhoneAuthCompleteToken } from "@/lib/jwt";
 import { JoinForm, UserUpdateResponse } from "@/types/auth";
 import { BaseResponse } from "@/types/common";
-import { verify } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 
-// 회원가입
 export const POST = async (nextRequest: NextRequest) => {
 	try {
 		const { userId, password, name, zonecode, address, addressDetail, birthday, phone, email }: JoinForm = await nextRequest.json();
@@ -38,7 +37,7 @@ export const POST = async (nextRequest: NextRequest) => {
 					status: 401,
 					message: "PHONEAUTH_COMPLETE_UNAUTHORIZED",
 				},
-				{ status: 401 }
+				{ status: 401 },
 			);
 		}
 
@@ -86,7 +85,7 @@ export const PUT = withAuth(async ({ nextRequest, accessToken }) => {
 			},
 			{
 				Authorization: `Bearer ${accessToken}`,
-			}
+			},
 		);
 		console.log("data", data);
 		const payload: UserUpdateResponse = { message: data.message, email, phone };
