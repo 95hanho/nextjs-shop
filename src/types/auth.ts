@@ -26,12 +26,12 @@ export type UserAdd = {
 /* ---- FE --------------------------------------------- */
 
 /* 로그인 */
-export type LoginForm = {
+export type LoginFormData = {
 	userId: string;
 	password: string;
 };
 /* 회원가입 */
-export interface JoinForm extends LoginForm, User {
+export interface JoinForm extends LoginFormData, User {
 	phoneAuth: string;
 	passwordCheck: string;
 }

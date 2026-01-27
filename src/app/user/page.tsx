@@ -78,95 +78,97 @@ export default function Login() {
 	}, []);
 
 	return (
-		<main id="login" className="user-wrapper">
-			<div className="form-wrap">
-				<h2>
-					<Link href={"/"}>NextJS-SHOP</Link>
-				</h2>
-				<form action="" onSubmit={loginSubmit}>
-					<div
-						className={`login-input ${userIdFocus ? "focus" : ""}`}
-						onMouseDown={(e) => {
-							if (!userIdFocus) {
-								e.preventDefault();
-								userIdRef.current?.focus();
-							}
-						}}
-					>
-						<input
-							type="text"
-							ref={userIdRef}
-							onFocus={() => {
-								setUserIdFocus(true);
-							}}
-							onBlur={() => {
-								if (!loginForm.userId) {
-									setUserIdFocus(false);
+		<main id="login">
+			<div className="flex items-center justify-center py-12 user-wrapper">
+				<div className="form-wrap">
+					<h2>
+						<Link href={"/"}>NextJS-SHOP</Link>
+					</h2>
+					<form action="" onSubmit={loginSubmit}>
+						<div
+							className={`login-input ${userIdFocus ? "focus" : ""}`}
+							onMouseDown={(e) => {
+								if (!userIdFocus) {
+									e.preventDefault();
+									userIdRef.current?.focus();
 								}
 							}}
-							value={loginForm.userId}
-							onChange={(e) => {
-								setLoginForm({ ...loginForm, userId: e.target.value });
-								setAlertMessage("");
-							}}
-						/>
-						<label className={`placeholder`}>아이디</label>
-					</div>
-					<div
-						className={`login-input ${pwdFocus ? "focus" : ""}`}
-						onMouseDown={(e) => {
-							if (!pwdFocus) {
-								e.preventDefault();
-								pwdRef.current?.focus();
-							}
-						}}
-					>
-						<input
-							type={showPassword ? "text" : "password"}
-							ref={pwdRef}
-							onFocus={() => {
-								setPwdFocus(true);
-							}}
-							onBlur={() => {
-								if (!loginForm.password) {
-									setPwdFocus(false);
+						>
+							<input
+								type="text"
+								ref={userIdRef}
+								onFocus={() => {
+									setUserIdFocus(true);
+								}}
+								onBlur={() => {
+									if (!loginForm.userId) {
+										setUserIdFocus(false);
+									}
+								}}
+								value={loginForm.userId}
+								onChange={(e) => {
+									setLoginForm({ ...loginForm, userId: e.target.value });
+									setAlertMessage("");
+								}}
+							/>
+							<label className={`placeholder`}>아이디</label>
+						</div>
+						<div
+							className={`login-input ${pwdFocus ? "focus" : ""}`}
+							onMouseDown={(e) => {
+								if (!pwdFocus) {
+									e.preventDefault();
+									pwdRef.current?.focus();
 								}
 							}}
-							value={loginForm.password}
-							onChange={(e) => {
-								setShowPassword(false);
-								setLoginForm({ ...loginForm, password: e.target.value });
-								setAlertMessage("");
-							}}
-						/>
-						<label className={`placeholder`}>비밀번호</label>
-						{pwdFocus && loginForm.password && (
-							<button className="show-pwd" type="button" onClick={() => setShowPassword(!showPassword)}>
-								{showPassword ? <FiEyeOff /> : <FiEye />}
-							</button>
-						)}
+						>
+							<input
+								type={showPassword ? "text" : "password"}
+								ref={pwdRef}
+								onFocus={() => {
+									setPwdFocus(true);
+								}}
+								onBlur={() => {
+									if (!loginForm.password) {
+										setPwdFocus(false);
+									}
+								}}
+								value={loginForm.password}
+								onChange={(e) => {
+									setShowPassword(false);
+									setLoginForm({ ...loginForm, password: e.target.value });
+									setAlertMessage("");
+								}}
+							/>
+							<label className={`placeholder`}>비밀번호</label>
+							{pwdFocus && loginForm.password && (
+								<button className="show-pwd" type="button" onClick={() => setShowPassword(!showPassword)}>
+									{showPassword ? <FiEyeOff /> : <FiEye />}
+								</button>
+							)}
+						</div>
+						{alertMessage && <p>* {alertMessage}</p>}
+						<div className="submit-wrap">
+							<input type="submit" value={"로그인"} />
+						</div>
+					</form>
+					<div className="find-wrap">
+						<Link href={"/user/join"}>회원가입</Link>
+						<Link href={"/user/find/id"}>아이디 찾기</Link>
+						<Link href={"/user/find/password"}>비밀번호 찾기</Link>
 					</div>
-					{alertMessage && <p>* {alertMessage}</p>}
-					<div className="submit-wrap">
-						<input type="submit" value={"로그인"} />
+					<div className="sns-login">
+						<button className="naver-login">
+							<SiNaver size={24} />
+							<span>네이버 로그인</span>
+						</button>
 					</div>
-				</form>
-				<div className="find-wrap">
-					<Link href={"/user/join"}>회원가입</Link>
-					<Link href={"/user/find/id"}>아이디 찾기</Link>
-					<Link href={"/user/find/password"}>비밀번호 찾기</Link>
-				</div>
-				<div className="sns-login">
-					<button className="naver-login">
-						<SiNaver size={24} />
-						<span>네이버 로그인</span>
-					</button>
-				</div>
-				<div className="sns-login">
-					<button className="kakao-login">
-						<SiKakaotalk size={24} />
-						<span>카카오 로그인</span>
-					</button>
+					<div className="sns-login">
+						<button className="kakao-login">
+							<SiKakaotalk size={24} />
+							<span>카카오 로그인</span>
+						</button>
+					</div>
 				</div>
 			</div>
 		</main>

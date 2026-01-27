@@ -3,7 +3,7 @@
 
 import API_URL from "@/api/endpoints";
 import { getNormal, putJson } from "@/api/fetchFilter";
-import JoinInput from "@/components/user/JoinInput";
+import FormInput from "@/components/auth/FormInput";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { useModalStore } from "@/store/modal.store";
 import { BaseResponse } from "@/types/common";
@@ -217,7 +217,7 @@ export default function PasswordChangeClient({ mode }: PasswordChangeClientProps
 				<h2>비밀번호 변경</h2>
 				<form onSubmit={pwdChangeSubmit}>
 					{mode === "LOGGED_IN" && (
-						<JoinInput
+						<FormInput
 							name="curPassword"
 							label="현재비밀번호"
 							placeholder="현재 비밀번호를 입력해주세요."
@@ -232,7 +232,7 @@ export default function PasswordChangeClient({ mode }: PasswordChangeClientProps
 							}}
 						/>
 					)}
-					<JoinInput
+					<FormInput
 						name="newPassword"
 						label="새로운 비밀번호"
 						type="password"
@@ -246,7 +246,7 @@ export default function PasswordChangeClient({ mode }: PasswordChangeClientProps
 							pwdChangeFormRefs.current.newPassword = el;
 						}}
 					/>
-					<JoinInput
+					<FormInput
 						name="newPasswordCheck"
 						label="비밀번호 확인"
 						placeholder="비밀번호를 다시 입력해주세요."

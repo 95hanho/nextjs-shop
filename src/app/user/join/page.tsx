@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { useRef, useState } from "react";
-import JoinInput from "../../../components/user/JoinInput";
+import FormInput from "../../../components/auth/FormInput";
 import { isValidDateString } from "@/utils/ui";
 import { useMutation } from "@tanstack/react-query";
 import { postJson, postUrlFormData } from "@/api/fetchFilter";
@@ -402,7 +402,7 @@ export default function UserJoin() {
 					<Link href={"/"}>NextJS-SHOP</Link>
 				</h2>
 				<form onSubmit={joinSubmit}>
-					<JoinInput
+					<FormInput
 						name="userId"
 						label="아이디"
 						placeholder="아이디를 입력해주세요."
@@ -415,7 +415,7 @@ export default function UserJoin() {
 							joinFormRefs.current.userId = el;
 						}}
 					/>
-					<JoinInput
+					<FormInput
 						name="password"
 						label="비밀번호"
 						placeholder="비밀번호를 입력해주세요."
@@ -428,7 +428,7 @@ export default function UserJoin() {
 							joinFormRefs.current.password = el;
 						}}
 					/>
-					<JoinInput
+					<FormInput
 						name="passwordCheck"
 						label="비밀번호 확인"
 						placeholder="비밀번호를 한 번 더 입력해주세요."
@@ -442,7 +442,7 @@ export default function UserJoin() {
 						}}
 					/>
 					<div className="join-space"></div>
-					<JoinInput
+					<FormInput
 						name="name"
 						label="이름"
 						placeholder="이름을 입력해주세요."
@@ -454,7 +454,7 @@ export default function UserJoin() {
 							joinFormRefs.current.name = el;
 						}}
 					/>
-					<JoinInput
+					<FormInput
 						name="address"
 						label="주소"
 						placeholder="주소를 입력해주세요."
@@ -465,7 +465,7 @@ export default function UserJoin() {
 						onBlur={validateJoinForm}
 						searchBtn={{ txt: "검색", fnc: addressPopup }}
 					/>
-					<JoinInput
+					<FormInput
 						name="addressDetail"
 						label="상세주소"
 						placeholder="상세주소를 입력해주세요."
@@ -477,7 +477,7 @@ export default function UserJoin() {
 							joinFormRefs.current.addressDetail = el;
 						}}
 					/>
-					<JoinInput
+					<FormInput
 						name="birthday"
 						label="생년월일"
 						placeholder="YYYY/MM/DD"
@@ -490,7 +490,7 @@ export default function UserJoin() {
 						}}
 					/>
 					<div className="join-space"></div>
-					<JoinInput
+					<FormInput
 						name="phone"
 						label="휴대폰"
 						placeholder="휴대폰번호를 입력해주세요."
@@ -514,7 +514,7 @@ export default function UserJoin() {
 						maxLength={11}
 					/>
 					{authNumberView && (
-						<JoinInput
+						<FormInput
 							name="phoneAuth"
 							label="인증번호"
 							placeholder="인증번호를 입력해주세요."
@@ -537,7 +537,7 @@ export default function UserJoin() {
 							maxLength={6}
 						/>
 					)}
-					<JoinInput
+					<FormInput
 						name="email"
 						label="이메일"
 						placeholder="이메일을 입력해주세요."

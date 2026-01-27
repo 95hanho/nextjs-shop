@@ -3,7 +3,7 @@
 
 import API_URL from "@/api/endpoints";
 import { postJson } from "@/api/fetchFilter";
-import JoinInput from "@/components/user/JoinInput";
+import FormInput from "@/components/auth/FormInput";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { BaseResponse } from "@/types/common";
 import { ChangeEvent, FormEvent } from "@/types/event";
@@ -258,7 +258,7 @@ export default function FindUserClient() {
 				{!phoneAuthComplete ? (
 					<form onSubmit={findUserSubmit}>
 						{findType == "password" && (
-							<JoinInput
+							<FormInput
 								name="userId"
 								label="아이디"
 								placeholder="아이디를 입력해주세요."
@@ -272,7 +272,7 @@ export default function FindUserClient() {
 								}}
 							/>
 						)}
-						<JoinInput
+						<FormInput
 							name="phone"
 							label="휴대폰"
 							placeholder="휴대폰번호를 입력해주세요."
@@ -296,7 +296,7 @@ export default function FindUserClient() {
 							maxLength={11}
 						/>
 						{phoneAuthView && (
-							<JoinInput
+							<FormInput
 								name="phoneAuth"
 								label="인증번호"
 								placeholder="인증번호를 입력해주세요."

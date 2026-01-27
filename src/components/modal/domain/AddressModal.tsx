@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import OptionSelector from "../../ui/OptionSelector";
 import { UserAddressListItem } from "@/types/mypage";
 import { useModalStore } from "@/store/modal.store";
-import JoinInput from "../../user/JoinInput";
+import FormInput from "../../auth/FormInput";
 import ModalFrame from "@/components/modal/frame/ModalFrame";
 import styles from "../Modal.module.scss";
 import { ChangeEvent, FormEvent } from "@/types/event";
@@ -195,7 +195,7 @@ export default function AddressModal({ onClose, address }: AddressModalProps) {
 		<ModalFrame title={!address ? "배송지 추가" : "배송지 수정"} onClose={onClose} contentVariant="address">
 			<form onSubmit={addressSetSubmit}>
 				<div className={styles.addressInput}>
-					<JoinInput
+					<FormInput
 						name="addressName"
 						label="배송지 이름"
 						placeholder="배송지 이름을 입력해주세요."
@@ -207,7 +207,7 @@ export default function AddressModal({ onClose, address }: AddressModalProps) {
 							addressFormRefs.current.addressName = el;
 						}}
 					/>
-					<JoinInput
+					<FormInput
 						name="recipientName"
 						label="수령인"
 						placeholder="수령인을 입력해주세요."
@@ -219,7 +219,7 @@ export default function AddressModal({ onClose, address }: AddressModalProps) {
 							addressFormRefs.current.recipientName = el;
 						}}
 					/>
-					<JoinInput
+					<FormInput
 						type="tel"
 						name="addressPhone"
 						label="수령인 전화번호"
@@ -235,7 +235,7 @@ export default function AddressModal({ onClose, address }: AddressModalProps) {
 							addressFormRefs.current.addressPhone = el;
 						}}
 					/>
-					<JoinInput
+					<FormInput
 						name="address"
 						label="주소"
 						placeholder="주소를 입력해주세요."
@@ -245,7 +245,7 @@ export default function AddressModal({ onClose, address }: AddressModalProps) {
 						onClick={addressPopup}
 						searchBtn={{ txt: "검색", fnc: addressPopup }}
 					/>
-					<JoinInput
+					<FormInput
 						name="addressDetail"
 						label="상세주소"
 						placeholder="상세주소를 입력해주세요."
@@ -287,7 +287,7 @@ export default function AddressModal({ onClose, address }: AddressModalProps) {
 					</div>
 					<div className={styles.addressWrite}>
 						{memoPickidx === 4 && (
-							<JoinInput
+							<FormInput
 								name="memo"
 								label="직접입력"
 								placeholder="메모를 입력해주세요."

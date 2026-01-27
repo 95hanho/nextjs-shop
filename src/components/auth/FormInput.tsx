@@ -23,7 +23,7 @@ interface FormInputProps {
 	maxLength?: number;
 }
 
-const JoinInput = forwardRef<HTMLInputElement, FormInputProps>((props, ref) => {
+const FormInput = forwardRef<HTMLInputElement, FormInputProps>((props, ref) => {
 	const {
 		name,
 		label,
@@ -71,7 +71,7 @@ const JoinInput = forwardRef<HTMLInputElement, FormInputProps>((props, ref) => {
 							onClick={searchBtn.fnc}
 							className={clsx(
 								styles.searchBtn,
-								styles[name as keyof typeof styles], // address / phone / phoneAuth
+								styles[name as keyof typeof styles] // address / phone / phoneAuth
 							)}
 						>
 							{searchBtn.txt}
@@ -87,5 +87,5 @@ const JoinInput = forwardRef<HTMLInputElement, FormInputProps>((props, ref) => {
 	);
 });
 
-JoinInput.displayName = "JoinInput";
-export default JoinInput;
+FormInput.displayName = "FormInput";
+export default FormInput;

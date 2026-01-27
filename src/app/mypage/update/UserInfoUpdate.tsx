@@ -3,7 +3,7 @@
 
 import API_URL from "@/api/endpoints";
 import { postJson, putJson } from "@/api/fetchFilter";
-import JoinInput from "@/components/user/JoinInput";
+import FormInput from "@/components/auth/FormInput";
 import useAuth from "@/hooks/useAuth";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { useModalStore } from "@/store/modal.store";
@@ -318,7 +318,7 @@ export default function UserInfoUpdate() {
 							</div>
 						</div>
 					</div>
-					<JoinInput
+					<FormInput
 						name="phone"
 						label="휴대폰"
 						placeholder="휴대폰번호를 입력해주세요."
@@ -335,7 +335,7 @@ export default function UserInfoUpdate() {
 										fnc: () => {
 											clickPhoneAuth();
 										},
-									}
+								  }
 						}
 						onBlur={validateUserUpdateForm}
 						ref={(el) => {
@@ -346,7 +346,7 @@ export default function UserInfoUpdate() {
 						maxLength={11}
 					/>
 					{authNumberView && (
-						<JoinInput
+						<FormInput
 							name="phoneAuth"
 							label="인증번호"
 							placeholder="인증번호를 입력해주세요."
@@ -369,7 +369,7 @@ export default function UserInfoUpdate() {
 							maxLength={6}
 						/>
 					)}
-					<JoinInput
+					<FormInput
 						name="email"
 						label="이메일"
 						placeholder="이메일을 입력해주세요."
