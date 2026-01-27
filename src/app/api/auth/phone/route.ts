@@ -4,7 +4,6 @@ import { postUrlFormData } from "@/api/fetchFilter";
 import { WRONG_REQUEST_MESSAGE } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { generatePhoneAuthToken } from "@/lib/jwt";
-import { PhoneAuthRequest } from "@/types/auth";
 import { BaseResponse } from "@/types/common";
 import { NextRequest, NextResponse } from "next/server";
 
