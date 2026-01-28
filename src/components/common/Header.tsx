@@ -27,8 +27,10 @@ export default function Header({ menuList }: HeaderProps) {
 
 	useEffect(() => {
 		if (isOpen) {
-			document.getElementById("header")?.addEventListener("mouseleave", menuMouseleave);
-		} else document.getElementById("header")?.removeEventListener("mouseleave", menuMouseleave);
+			setTimeout(() => {
+				headerRef.current?.addEventListener("mouseleave", menuMouseleave);
+			}, 300);
+		} else headerRef.current?.removeEventListener("mouseleave", menuMouseleave);
 	}, [isOpen]);
 
 	useEffect(() => {
@@ -38,14 +40,14 @@ export default function Header({ menuList }: HeaderProps) {
 
 	return (
 		<>
-			<header id="header" ref={headerRef} className="flex items-center justify-center py-5 bg-slate-50 z-[1000] h-12 sticky top-0">
+			<header ref={headerRef} className="flex items-center justify-center py-5 bg-slate-50 z-[1000] h-12 sticky top-0">
 				<h1 className={styles.title}>
-					<Link href={"/"} className="text-3xl ">
+					<Link href={"/"} className="text-3xl">
 						NEXTJS-SHOP
 					</Link>
 				</h1>
-				<div className="absolute flex items-center header-wrap right-5">
-					<div className={styles.headerBtn + " header-btn"}>
+				<div className="absolute flex items-center right-5">
+					<div className={styles.headerBtn}>
 						{user && `${user.name}님`}
 						<button onClick={() => set_isOpen(!isOpen)}>
 							<FiUser />

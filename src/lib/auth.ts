@@ -37,6 +37,8 @@ type AutoRefreshResult =
 			userNo?: number;
 			newAccessToken?: string;
 			newRefreshToken?: string;
+			isAnonymous?: boolean; // ✅ 추가
+			reason?: "NO_TOKENS" | "NO_REFRESH"; // ✅ 추가
 	  }
 	| {
 			ok: false;
@@ -66,6 +68,8 @@ const authFromTokens = async (nextRequest: NextRequest): Promise<AutoRefreshResu
 	if (!refreshToken?.trim()) {
 		return {
 			ok: true,
+			isAnonymous: true,
+			reason: "NO_REFRESH",
 		};
 	}
 
@@ -205,6 +209,7 @@ export type OptionalAuthHandler<TParams extends Record<string, string> = Record<
 type AuthMode = "optional" | "required";
 const getAuthMode = (nextRequest: NextRequest): AuthMode => {
 	// "x-auth-mode": "required", // or "optional" 이렇게 FE에서 던지면됨.
+	console.log('nextRequest.headers.get("x-auth-mode")', nextRequest.headers.get("x-auth-mode"));
 	const v = (nextRequest.headers.get("x-auth-mode") || "").toLowerCase();
 	return v === "required" ? "required" : "optional";
 };
@@ -215,7 +220,18 @@ export const withOptionalAuth =
 		const authMode = getAuthMode(nextRequest);
 		const auth = await authFromTokens(nextRequest);
 
+		console.log("auth", auth);
+		if (authMode === "required" && auth.ok && !auth.userNo) {
+			// 이건 테스트 해봐야곘는데~~
+			const response = NextResponse.json({ message: "SESSION_EXPIRED" }, { status: 401 });
+
+			// FE가 “아 이건 로그아웃해야겠다” 판단하기 쉽게 신호도 추가
+			// response.headers.set("x-session-expired", "1");
+			return response;
+		}
+
 		if (!auth.ok) {
+			// ✅ refresh 불량/만료 + FE가 required 의도면 => 로그아웃 유도(끊기)
 			const response = await handler({
 				nextRequest,
 				userNo: null,
@@ -245,13 +261,13 @@ export const withOptionalAuth =
 		}
 
 		// ✅ “이번 요청에서 Spring에 보낼 accessToken” 결정
-		const accessToken = auth.newAccessToken ?? nextRequest.cookies.get("accessToken")?.value;
+		const accessToken = auth.newAccessToken ?? nextRequest.cookies.get("accessToken")?.value ?? null;
 		console.log("accessToken 여기냐?", accessToken);
 		const userNo = auth.userNo ?? null;
 
-		if (!accessToken || !auth.userNo) {
-			return NextResponse.json({ message: "UNAUTHORIZED" }, { status: 401 });
-		}
+		// if (!accessToken || !auth.userNo) {
+		// 	return NextResponse.json({ message: "UNAUTHORIZED" }, { status: 401 });
+		// }
 
 		/* API 실행 전 --------------------------------> */
 

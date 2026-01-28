@@ -58,7 +58,14 @@ export default function UserInfoUpdate() {
 	/* ------------------------------------ */
 	// 휴대폰 인증
 	const handlePhoneAuth = useMutation({
-		mutationFn: () => postJson<BaseResponse & { phoneAuthToken: string }>(getApiUrl(API_URL.AUTH_PHONE_AUTH), { phone: userUpdateForm.phone }),
+		mutationFn: () =>
+			postJson<BaseResponse & { phoneAuthToken: string }>(
+				getApiUrl(API_URL.AUTH_PHONE_AUTH),
+				{ phone: userUpdateForm.phone },
+				{
+					["x-auth-mode"]: "required",
+				},
+			),
 		onSuccess(data) {
 			setAuthNumberView(true);
 			setPhoneAuthToken(data.phoneAuthToken);
@@ -335,7 +342,7 @@ export default function UserInfoUpdate() {
 										fnc: () => {
 											clickPhoneAuth();
 										},
-								  }
+									}
 						}
 						onBlur={validateUserUpdateForm}
 						ref={(el) => {

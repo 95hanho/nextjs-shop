@@ -43,10 +43,11 @@ export type UserInfo = User & UserAdd;
 export interface GetUserResponse extends BaseResponse {
 	user: UserInfo;
 }
+/* 휴대폰 인증 확인 */
 export interface PhoneAuthCheckRequest {
 	authNumber: string;
 	phoneAuthToken: string;
-	userId?: string;
+	requestId?: string;
 }
 /*  */
 export interface UserUpdateResponse {
