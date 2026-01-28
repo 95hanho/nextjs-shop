@@ -1,26 +1,24 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { postUrlFormData } from "@/api/fetchFilter";
+import { withOptionalAuth } from "@/lib/auth";
 import { isProd, WRONG_REQUEST_MESSAGE } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { generatePhoneAuthCompleteToken, generatePwdResetToken, verifyPhoneAuthToken } from "@/lib/jwt";
 import { PHONE_AUTH_COMPLETE_COOKIE_AGE, PWD_CHANGE_COOKIE_AGE } from "@/lib/tokenTime";
 import { PhoneAuthCheckRequest } from "@/types/auth";
 import { BaseResponse } from "@/types/common";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 // 휴대폰 인증 확인
-export async function POST(nextRequest: NextRequest) {
+export const POST = withOptionalAuth(async ({ nextRequest }) => {
 	try {
-		const { userId, phoneAuthToken, authNumber } = await nextRequest.json();
+		const { requestId, phoneAuthToken, authNumber }: PhoneAuthCheckRequest = await nextRequest.json();
 
 		if (!phoneAuthToken?.trim() || !authNumber) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
 
 		try {
-			const tokenData = verifyPhoneAuthToken(phoneAuthToken);
-			if (userId && tokenData.userId !== userId) {
-				throw new Error("NOT_EQUAL_ID");
-			}
+			verifyPhoneAuthToken(phoneAuthToken);
 		} catch {
 			return NextResponse.json(
 				{
@@ -35,9 +33,10 @@ export async function POST(nextRequest: NextRequest) {
 			authNumber,
 			phoneAuthToken,
 		};
-		if (userId) payload.userId = userId;
+		if (requestId) payload.requestId = requestId;
 
 		const data = await postUrlFormData<BaseResponse & { userId?: string }>(getBackendUrl(API_URL.AUTH_PHONE_AUTH_CHECK), { ...payload });
+		console.log(data);
 
 		const responseJson: BaseResponse & { userId?: string } = { message: data.message };
 		const response = NextResponse.json(responseJson, { status: 200 });
@@ -50,6 +49,8 @@ export async function POST(nextRequest: NextRequest) {
 			maxAge: 0,
 		});
 
+		if (!requestId) {
+		}
 		// 회원가입
 		if (responseJson.message === "PHONEAUTH_VALIDATE") {
 			const phoneAuthCompleteToken = generatePhoneAuthCompleteToken();
@@ -92,4 +93,4 @@ export async function POST(nextRequest: NextRequest) {
 		const { status, payload } = toErrorResponse(err);
 		return NextResponse.json(payload, { status });
 	}
-}
+});
