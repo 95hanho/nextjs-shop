@@ -41,62 +41,7 @@ body {
 	/* 로그인 */
 	/* 아이디비번찾기 */
 }
-.user-wrapper .form-wrap form .login-input {
-	position: relative;
-	padding: 25px 50px 7px 15px;
-	border: 3px solid #ccc;
-	cursor: pointer;
-	border-radius: 0 0 10px 10px;
-}
-.user-wrapper .form-wrap form .login-input:first-child {
-	border-bottom: none;
-	border-radius: 10px 10px 0 0;
-}
-.user-wrapper .form-wrap form .login-input input {
-	width: 100%;
-	border: none;
-	outline: none;
-	font-size: 25px;
-}
-.user-wrapper .form-wrap form .login-input label {
-	position: absolute;
-	display: block;
-	top: 0;
-	left: 0;
-	height: 100%;
-	padding: 15px;
-	font-size: 35px;
-	color: #aaa;
-	pointer-events: none;
-	transition: all 0.5s;
-}
-.user-wrapper .form-wrap form .login-input label.placeholder {
-	width: 100%;
-	text-align: left;
-}
-.user-wrapper .form-wrap form .login-input .show-pwd {
-	position: absolute;
-	cursor: pointer;
-	top: 0;
-	right: 0;
-	font-size: 30px;
-	height: 100%;
-	padding-right: 10px;
-	color: #777;
-}
-.user-wrapper .form-wrap form .login-input.focus {
-	cursor: initial;
-}
-.user-wrapper .form-wrap form .login-input.focus input {
-	position: relative;
-}
-.user-wrapper .form-wrap form .login-input.focus .placeholder {
-	width: auto;
-	height: 0;
-	padding: 5px 15px;
-	font-size: 20px;
-	color: #666;
-}
+
 .user-wrapper .form-wrap form .find-input {
 	font-size: 20px;
 	margin-bottom: 10px;
@@ -146,40 +91,7 @@ body {
 .user-wrapper .form-wrap .find-wrap a:hover {
 	text-decoration: underline;
 }
-.user-wrapper .form-wrap .sns-login {
-	margin: 10px 0;
-}
-.user-wrapper .form-wrap .sns-login button {
-	width: 100%;
-	padding: 8px 10px;
-	border-radius: 5px;
-	font-size: 25px;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	box-shadow: 0px 0px 5px #aaa;
-}
-.user-wrapper .form-wrap .sns-login button.naver-login {
-	background-color: #03c75a;
-	color: white;
-}
-.user-wrapper .form-wrap .sns-login button.naver-login:hover {
-	background-color: #04ac4f;
-}
-.user-wrapper .form-wrap .sns-login button.kakao-login {
-	background-color: #fee500;
-	color: #3c1e1e;
-}
-.user-wrapper .form-wrap .sns-login button.kakao-login:hover {
-	background-color: #ebd303;
-}
-.user-wrapper .form-wrap .sns-login button svg {
-	margin-right: 10px;
-}
-.user-wrapper .form-wrap .sns-login button:active {
-	box-shadow: none;
-	transform: translate(1px, 1px);
-}
+
 .user-wrapper .form-wrap .find-result .find-result__id .find-result__id-info .find-result__id-text {
 	font-size: 18px;
 }

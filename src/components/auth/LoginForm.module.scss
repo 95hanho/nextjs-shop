@@ -1,7 +1,52 @@
-.loginForm {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	min-height: calc(100vh - 50px);
-	padding: 50px 0;
+.loginInput {
+	position: relative;
+	padding: 25px 50px 7px 15px;
+	border: 3px solid #ccc;
+	cursor: pointer;
+	border-radius: 0 0 10px 10px;
+	&:first-child {
+		border-bottom: none;
+		border-radius: 10px 10px 0 0;
+	}
+	input {
+		width: 100%;
+		border: none;
+		outline: none;
+		font-size: 25px;
+	}
+	label {
+		position: absolute;
+		display: block;
+		top: 0;
+		left: 0;
+		height: 100%;
+		padding: 15px;
+		font-size: 35px;
+		color: #aaa;
+		pointer-events: none;
+		transition: all 0.5s;
+	}
+}
+.labelFocus {
+	cursor: initial;
+	input {
+		position: relative;
+	}
+	label {
+		width: auto;
+		height: 0;
+		padding: 5px 15px;
+		font-size: 20px;
+		color: #666;
+	}
+}
+.showPwd {
+	position: absolute;
+	cursor: pointer;
+	top: 0;
+	right: 0;
+	font-size: 30px;
+	height: 100%;
+	padding-right: 10px;
+	color: #777;
 }
