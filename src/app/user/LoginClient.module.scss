@@ -1,0 +1,38 @@
+.loginWrap {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	min-height: calc(100vh - 50px);
+	padding: 50px 0;
+}
+.snsButton {
+	width: 100%;
+	padding: 8px 10px;
+	border-radius: 5px;
+	font-size: 25px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	box-shadow: 0px 0px 5px #aaa;
+	svg {
+		margin-right: 10px;
+	}
+	&:active {
+		box-shadow: none;
+		transform: translate(1px, 1px);
+	}
+}
+.naverLogin {
+	background-color: #03c75a;
+	color: white;
+	&:hover {
+		background-color: #04ac4f;
+	}
+}
+.kakaoLogin {
+	background-color: #fee500;
+	color: #3c1e1e;
+	&:hover {
+		background-color: #ebd303;
+	}
+}
