@@ -8,11 +8,6 @@ export type User = {
 	birthday: string;
 	phone: string;
 	email: string;
-	// createdAt: string;
-	// updatedAt: string;
-	// withdrawalStatus: "ACTIVE" | "REQUESTED" | "WITHDRAWN"; //
-	// withdrawalRequestedAt: string;
-	// withdrawalCompletedAt: string;
 };
 
 // 회원정보 추가사항
@@ -31,10 +26,23 @@ export type LoginFormData = {
 	password: string;
 };
 /* 회원가입 */
-export interface JoinForm extends LoginFormData, User {
-	phoneAuth: string;
-	passwordCheck: string;
-}
+export type JoinFormInputKeys =
+	| "userId"
+	| "password"
+	| "passwordCheck"
+	| "name"
+	| "address"
+	| "addressDetail"
+	| "phone"
+	| "phoneAuth"
+	| "email"
+	| "birthday";
+// export type JoinFormAlert = Omit<JoinForm, "zonecode">; // zonecode제외 타입
+export type JoinFormAlert = {
+	name: JoinFormInputKeys;
+	message: string;
+	status?: "SUCCESS" | "FAIL";
+};
 
 /* ---- API --------------------------------------------- */
 
@@ -43,15 +51,43 @@ export type UserInfo = User & UserAdd;
 export interface GetUserResponse extends BaseResponse {
 	user: UserInfo;
 }
+/* 휴대폰 인증 */
+export interface PhoneAuthRequest {
+	phone: string;
+	mode: "JOIN" | "IDFIND" | "PWDFIND" | "CHANGE";
+	phoneAuthToken?: string;
+}
 /* 휴대폰 인증 확인 */
 export interface PhoneAuthCheckRequest {
 	authNumber: string;
 	phoneAuthToken: string;
-	requestId?: string;
 }
-/*  */
-export interface UserUpdateResponse {
-	message: string;
-	email: string;
+export type PhoneAuthCheckResponse =
+	| {
+			message: "PHONEAUTH_VALIDATE";
+	  }
+	| {
+			message: "IDFIND_SUCCESS";
+			userId: string;
+	  }
+	| {
+			message: "PWDFIND_SUCCESS";
+			userNo: number;
+	  };
+/* 회원가입 */
+export interface JoinRequest extends LoginFormData, User {}
+/* 회원정보변경 */
+export interface UserUpdateRequest {
+	zonecode: string;
+	address: string;
+	addressDetail: string;
 	phone: string;
+	changePhone?: boolean;
+	email: string;
+}
+/* 비밀번호 변경 */
+export interface PasswordChangeRequest {
+	curPassword?: string;
+	newPassword: string;
+	pwdResetToken: string;
 }

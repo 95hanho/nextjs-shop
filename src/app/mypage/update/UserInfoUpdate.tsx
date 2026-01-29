@@ -2,15 +2,15 @@
 "use client";
 
 import API_URL from "@/api/endpoints";
-import { postJson, putJson } from "@/api/fetchFilter";
+import { getNormal, postJson, putJson } from "@/api/fetchFilter";
 import FormInput from "@/components/auth/FormInput";
 import useAuth from "@/hooks/useAuth";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { useModalStore } from "@/store/modal.store";
-import { UserInfo, UserUpdateResponse } from "@/types/auth";
+import { PhoneAuthRequest, UserInfo, UserUpdateResponse } from "@/types/auth";
 import { BaseResponse } from "@/types/common";
 import { ChangeEvent, FormEvent } from "@/types/event";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import Error from "next/error";
 import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
@@ -45,7 +45,7 @@ const userUpdateFormRegexFailMent: { [key: string]: string } = {
 export default function UserInfoUpdate() {
 	const { replace } = useRouter();
 	const { openModal } = useModalStore();
-	const { user, setUser } = useAuth();
+	const { user, setUser, loginOn } = useAuth();
 	useEffect(() => {
 		if (user) {
 			setUserUpdateForm((prev) => ({
@@ -56,12 +56,22 @@ export default function UserInfoUpdate() {
 		}
 	}, [user]);
 	/* ------------------------------------ */
+	// 회원아이디 조회
+	const { data: userIdData } = useQuery<BaseResponse & { userId: string }>({
+		queryKey: ["wishList"],
+		queryFn: () => getNormal(getApiUrl(API_URL.AUTH_ID)),
+		enabled: loginOn,
+		refetchOnWindowFocus: false,
+		select: (data) => {
+			return data;
+		},
+	});
 	// 휴대폰 인증
 	const handlePhoneAuth = useMutation({
 		mutationFn: () =>
-			postJson<BaseResponse & { phoneAuthToken: string }>(
+			postJson<BaseResponse & { phoneAuthToken: string }, PhoneAuthRequest>(
 				getApiUrl(API_URL.AUTH_PHONE_AUTH),
-				{ phone: userUpdateForm.phone },
+				{ phone: userUpdateForm.phone, mode: "CHANGE" },
 				{
 					["x-auth-mode"]: "required",
 				},
@@ -128,7 +138,7 @@ export default function UserInfoUpdate() {
 			}
 		},
 	});
-	// 회원가입API
+	// 회원정보변경 API
 	const handleUserUpdate = useMutation<UserUpdateResponse, Error>({
 		mutationFn: () =>
 			putJson<UserUpdateResponse>(getApiUrl(API_URL.AUTH_JOIN), {
@@ -136,6 +146,9 @@ export default function UserInfoUpdate() {
 				email: userUpdateForm.email,
 			}),
 		onSuccess(data) {
+			/* --------
+			유저주소지에 일치하는 것이 없으면 주소지 변경하겠냐고 물어보고 보내주기
+			-----*/
 			setUser((prev) => ({
 				...prev,
 				phone: data.phone,
@@ -321,7 +334,7 @@ export default function UserInfoUpdate() {
 						</div>
 						<div className={`join-text`}>
 							<div className="info-val">
-								<span>{user.userId}</span>
+								<span>{userIdData?.userId}</span>
 							</div>
 						</div>
 					</div>

@@ -7,16 +7,16 @@ import { MyOrderDetailResponse } from "@/types/mypage";
 import { NextResponse } from "next/server";
 
 // 주문배송정보 상세조회
-export const GET = withAuth(async ({ accessToken, params }) => {
+export const GET = withAuth<{ orderId: string }>(async ({ accessToken, params }) => {
 	try {
-		const { orderId } = params ?? {};
+		const orderId = Number(params.orderId);
 
 		const data = await getNormal<MyOrderDetailResponse>(
 			getBackendUrl(API_URL.MY_ORDER_DETAIL),
 			{ orderId },
 			{
 				Authorization: `Bearer ${accessToken}`,
-			}
+			},
 		);
 		console.log("data", data);
 

@@ -4,6 +4,7 @@ import styles from "./FormInput.module.scss";
 import { forwardRef } from "react";
 import clsx from "clsx";
 import { ChangeEvent } from "@/types/event";
+import { JoinFormAlert } from "@/types/auth";
 
 interface FormInputProps {
 	name: string;
@@ -11,8 +12,7 @@ interface FormInputProps {
 	placeholder: string;
 	type?: string;
 	value: string;
-	failMessage: string;
-	successMessage?: string;
+	alarm: JoinFormAlert | null;
 	onChange?: (e: ChangeEvent) => void;
 	onBlur?: (e: ChangeEvent) => void;
 	readOnly?: boolean;
@@ -30,8 +30,7 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>((props, ref) => {
 		placeholder,
 		type = "text",
 		value,
-		failMessage,
-		successMessage,
+		alarm,
 		onChange,
 		onBlur,
 		readOnly = false,
@@ -42,13 +41,20 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>((props, ref) => {
 		maxLength,
 	} = props;
 
+	let alarmStatus,
+		alarmMessage = null;
+	if (alarm && name === alarm.name) {
+		alarmStatus = alarm.status || "SUCCESS";
+		alarmMessage = alarm.message;
+	}
+
 	return (
 		<div className={styles.joinInput}>
 			<div className={styles.joinLabel}>
 				<label htmlFor={name}>{label}</label>
 			</div>
 
-			<div className={clsx(styles.joinText, failMessage && styles.fail, successMessage && styles.success)}>
+			<div className={clsx(styles.joinText, alarmStatus === "FAIL" && styles.fail, alarmStatus === "SUCCESS" && styles.success)}>
 				<div>
 					<input
 						ref={ref}
@@ -63,8 +69,8 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>((props, ref) => {
 						inputMode={inputMode}
 						pattern={pattern}
 						maxLength={maxLength}
+						className={name === "address" ? "cursor-pointer" : ""}
 					/>
-
 					{searchBtn && (
 						<button
 							type="button"
@@ -78,10 +84,11 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>((props, ref) => {
 						</button>
 					)}
 				</div>
-
-				<p className={clsx(failMessage && styles.red, successMessage && styles.green)}>
-					* <span>{failMessage || successMessage}</span>
-				</p>
+				{alarmMessage && (
+					<p>
+						* <span>{alarmMessage}</span>
+					</p>
+				)}
 			</div>
 		</div>
 	);

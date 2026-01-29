@@ -35,27 +35,22 @@ const applyPathParams = (url: string, params?: Params): [string, Params | undefi
 
 // type JsonPrimitive = string | number | boolean | null;
 // type PathParamFromBody = JsonPrimitive | JsonPrimitive[];
-type BodyLike = Record<string, unknown>;
+type BodyLike = object;
 
 // JSON body용 :id 치환 헬퍼
 const applyPathParamsFromBody = <T extends BodyLike | undefined>(url: string, body: T): [string, T] => {
 	if (!body) return [url, body];
 
-	// 동적 접근/삭제를 위해 잠깐 Record<string, unknown>로 넓힘 (any 아님)
-	const rest: BodyLike = { ...body };
+	const rest = { ...(body as Record<string, unknown>) };
 
 	const newUrl = url.replace(/:([^/]+)/g, (_, name: string) => {
 		if (Object.prototype.hasOwnProperty.call(rest, name)) {
 			const v = rest[name];
 			delete rest[name];
 
-			// path param으로는 primitive만 안정적으로 처리
 			if (Array.isArray(v)) return String(v[0] ?? "");
 			if (v === null) return "null";
 			if (typeof v === "string" || typeof v === "number" || typeof v === "boolean") return String(v);
-
-			// 예상 외 타입이면 그냥 원문 유지 (혹은 String(v)로 강제 변환)
-			return _;
 		}
 		return _;
 	});
@@ -187,9 +182,8 @@ export async function getDownload(url: string, params?: Params, headers?: Reques
 }
 
 // POST JSON
-export function postJson<TRes, TBody extends Record<string, unknown> = Record<string, unknown>>(url: string, body?: TBody, headers?: RequestHeaders) {
+export function postJson<TRes, TBody extends object = object>(url: string, body?: TBody, headers?: RequestHeaders) {
 	const [u2, restBody] = applyPathParamsFromBody(url, body);
-
 	return http<TRes>(u2, {
 		method: "POST",
 		headers: { "Content-Type": "application/json", ...(headers ?? {}) },

@@ -1,19 +1,20 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { postUrlFormData } from "@/api/fetchFilter";
-import { withAuth } from "@/lib/auth";
+import { withAuth, withOptionalAuth } from "@/lib/auth";
 import { isProd, WRONG_REQUEST_MESSAGE } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { generatePwdResetToken, verifyPhoneAuthCompleteToken, verifyPwdResetToken, verifyRefreshToken, verifyToken } from "@/lib/jwt";
 import { PWD_CHANGE_COOKIE_AGE } from "@/lib/tokenTime";
+import { PasswordChangeRequest } from "@/types/auth";
 import { BaseResponse } from "@/types/common";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 // 비밀번호 변경 토큰 생성
-export const POST = withAuth(async ({ userId }) => {
+export const POST = withAuth(async ({ userNo }) => {
 	try {
 		const response = NextResponse.json({ message: "MAKE_PWDRESET_TOKEN" }, { status: 200 });
-		const pwdResetToken = generatePwdResetToken({ userId });
+		const pwdResetToken = generatePwdResetToken({ userNo });
 		response.cookies.set("pwdResetToken", pwdResetToken, {
 			httpOnly: true,
 			secure: isProd,
@@ -38,7 +39,7 @@ export const POST = withAuth(async ({ userId }) => {
 });
 
 // 비밀번호 변경
-export const PUT = async (nextRequest: NextRequest) => {
+export const PUT = withOptionalAuth(async ({ nextRequest }) => {
 	try {
 		let pwdResetToken;
 		try {
@@ -72,7 +73,7 @@ export const PUT = async (nextRequest: NextRequest) => {
 		const { curPassword, newPassword } = await nextRequest.json();
 		if (!newPassword) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
 
-		const payload: { curPassword?: string; newPassword: string; pwdResetToken: string } = { newPassword, pwdResetToken };
+		const payload: PasswordChangeRequest = { newPassword, pwdResetToken };
 		if (curPassword) payload.curPassword = curPassword;
 
 		const data = await postUrlFormData<BaseResponse>(getBackendUrl(API_URL.AUTH_PASSWORD), payload);
@@ -93,4 +94,4 @@ export const PUT = async (nextRequest: NextRequest) => {
 		const { status, payload } = toErrorResponse(err);
 		return NextResponse.json(payload, { status });
 	}
-};
+});

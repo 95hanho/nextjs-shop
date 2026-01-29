@@ -6,14 +6,13 @@ import { isProd, WRONG_REQUEST_MESSAGE } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { generatePhoneAuthCompleteToken, generatePwdResetToken, verifyPhoneAuthToken } from "@/lib/jwt";
 import { PHONE_AUTH_COMPLETE_COOKIE_AGE, PWD_CHANGE_COOKIE_AGE } from "@/lib/tokenTime";
-import { PhoneAuthCheckRequest } from "@/types/auth";
-import { BaseResponse } from "@/types/common";
+import { PhoneAuthCheckRequest, PhoneAuthCheckResponse } from "@/types/auth";
 import { NextResponse } from "next/server";
 
 // 휴대폰 인증 확인
 export const POST = withOptionalAuth(async ({ nextRequest }) => {
 	try {
-		const { requestId, phoneAuthToken, authNumber }: PhoneAuthCheckRequest = await nextRequest.json();
+		const { phoneAuthToken, authNumber }: PhoneAuthCheckRequest = await nextRequest.json();
 
 		if (!phoneAuthToken?.trim() || !authNumber) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
 
@@ -33,13 +32,14 @@ export const POST = withOptionalAuth(async ({ nextRequest }) => {
 			authNumber,
 			phoneAuthToken,
 		};
-		if (requestId) payload.requestId = requestId;
 
-		const data = await postUrlFormData<BaseResponse & { userId?: string }>(getBackendUrl(API_URL.AUTH_PHONE_AUTH_CHECK), { ...payload });
+		const data = await postUrlFormData<PhoneAuthCheckResponse>(getBackendUrl(API_URL.AUTH_PHONE_AUTH_CHECK), {
+			...payload,
+		});
 		console.log(data);
 
-		const responseJson: BaseResponse & { userId?: string } = { message: data.message };
-		const response = NextResponse.json(responseJson, { status: 200 });
+		const response = NextResponse.json({ ...data }, { status: 200 });
+
 		// 사용한 토큰 제거
 		response.cookies.set("phoneAuthToken", "", {
 			httpOnly: true,
@@ -49,10 +49,9 @@ export const POST = withOptionalAuth(async ({ nextRequest }) => {
 			maxAge: 0,
 		});
 
-		if (!requestId) {
-		}
-		// 회원가입
-		if (responseJson.message === "PHONEAUTH_VALIDATE") {
+		// 회원가입, 전화번호 변경
+		if (data.message === "PHONEAUTH_VALIDATE") {
+			// 완료 인증 토큰
 			const phoneAuthCompleteToken = generatePhoneAuthCompleteToken();
 			response.cookies.set("phoneAuthCompleteToken", phoneAuthCompleteToken, {
 				httpOnly: true,
@@ -64,13 +63,12 @@ export const POST = withOptionalAuth(async ({ nextRequest }) => {
 			return response;
 		}
 		// 아이디찾기 용 아이디
-		else if (responseJson.message === "IDFIND_SUCCESS" && data.userId) {
-			responseJson.userId = data.userId;
+		else if (data.message === "IDFIND_SUCCESS" && data.userId) {
 			return response;
 		}
 		// 비밀번호 찾기 페이지로 가기위한 쿠키저장.
-		else if (responseJson.message === "PWDFIND_SUCCESS" && data.userId) {
-			const pwdResetToken = generatePwdResetToken({ userId: data.userId });
+		else if (data.message === "PWDFIND_SUCCESS" && data.userNo) {
+			const pwdResetToken = generatePwdResetToken({ userNo: data.userNo });
 			response.cookies.set("pwdResetToken", pwdResetToken, {
 				httpOnly: true,
 				secure: isProd,

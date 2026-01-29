@@ -58,8 +58,8 @@ export async function middleware_verifyToken(token: string): Promise<Token> {
 }
 /* ----- 인증 관련 --------------------------------------------- */
 // 휴대폰인증 토큰 생성
-export function generatePhoneAuthToken(payload: { phone: string }) {
-	return jwt.sign({ type: "PHONEAUTH", phone: payload.phone }, PHONE_AUTH_KEY, {
+export function generatePhoneAuthToken() {
+	return jwt.sign({ type: "PHONEAUTH" }, PHONE_AUTH_KEY, {
 		expiresIn: PHONE_AUTH_EXPIRES_IN,
 		algorithm: "HS256",
 	});
@@ -85,8 +85,8 @@ export function verifyPhoneAuthCompleteToken(token: string): Token {
 	return payload;
 }
 // 비밀번호 변경토큰 생성
-export function generatePwdResetToken(payload: { userId: string }) {
-	return jwt.sign({ type: "PWDRESET", userId: payload.userId }, PWD_CHANGE_KEY, {
+export function generatePwdResetToken(payload: { userNo: number }) {
+	return jwt.sign({ type: "PWDRESET", userId: payload.userNo }, PWD_CHANGE_KEY, {
 		expiresIn: PWD_CHANGE_EXPIRES_IN,
 		algorithm: "HS256",
 	});
