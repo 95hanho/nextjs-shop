@@ -1,23 +1,8 @@
 import { BaseResponse } from "./common";
 
-export type MainProduct = {
-	productId: number;
-	name: string;
-	// brand: string;
-	price: string;
-	imgPath: string;
-	copyright: string;
-	copyrightUrl: string;
-	createdAt: Date;
-	likeCount: number;
-	viewCount: number;
-	wishCount: number;
-	// salesCount: number;
-};
+/* ---- API --------------------------------------------- */
 
-export interface MainProductResponse extends BaseResponse {
-	productList: MainProduct[];
-}
+/* 메뉴 가져오기 */
 // 서브메뉴
 export type SubMenu = {
 	menuSubId: number;
@@ -32,4 +17,22 @@ export type Menu = {
 };
 export interface MenuResponse extends BaseResponse {
 	menuList: Menu[];
+}
+/* 메인 슬라이드 제품 가져오기 */
+export type MainProduct = {
+	productId: number;
+	name: string;
+	// brand: string;
+	price: string;
+	imgPath: string;
+	copyright: string;
+	copyrightUrl: string;
+	createdAt: Date;
+	likeCount: number;
+	viewCount: number;
+	wishCount: number;
+	// salesCount: number;
+};
+export interface MainProductResponse extends BaseResponse {
+	productList: MainProduct[];
 }

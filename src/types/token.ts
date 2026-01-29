@@ -15,10 +15,6 @@ export type Token = JwtPayload &
 				adminNo: number;
 		  }
 		| {
-				type: "PHONEAUTH";
-				phone: string;
-		  }
-		| {
 				type: "PWDRESET";
 				userNo?: number;
 		  }

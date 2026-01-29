@@ -8,7 +8,7 @@ import { GetUserResponse } from "@/types/auth";
 import { useQuery } from "@tanstack/react-query";
 
 export function useGetUserInfo() {
-	const { user: initialUser, setUser, loginOn } = useAuth();
+	const { user: initialUser, setUser } = useAuth();
 
 	return useQuery({
 		queryKey: ["me"],
@@ -19,7 +19,6 @@ export function useGetUserInfo() {
 			setUser(user);
 			return user;
 		},
-		enabled: loginOn,
 		initialData: initialUser ?? null,
 		retry: 1, // 재시도 한 번만
 		// 로그인, 로그아웃, 로그아웃 시에만 수동으로 다시가져올꺼.

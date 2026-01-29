@@ -30,7 +30,7 @@ const API_URL = {
 	AUTH_PHONE_AUTH: "/auth/phone",
 	/** 휴대폰 인증 확인 */
 	AUTH_PHONE_AUTH_CHECK: "/auth/phone/check",
-	/** 회원가입, 회원정보변경 */
+	/** 회원가입, 회원정보변경, 회원탈퇴 요청 */
 	AUTH_JOIN: "/auth/user",
 	/** spring:로그인 토큰 저장 */
 	AUTH_TOKEN: "/auth/token",

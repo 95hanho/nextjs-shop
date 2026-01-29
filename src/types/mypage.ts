@@ -1,6 +1,5 @@
 import { BaseResponse } from "./common";
 import { FileInfo } from "./file";
-import { Menu } from "./main";
 import { ProductOption } from "./product";
 // 쿠폰
 export type Coupon = {
@@ -11,7 +10,7 @@ export type Coupon = {
 	discountValue: number;
 	maxDiscount: number;
 	minimumOrderBeforeAmount: number;
-	status: "Y" | "N";
+	status: "ACTIVE" | "SUSPENDED" | "DELETED";
 	isStackable: boolean;
 	isProductRestricted: boolean;
 	amount: number;
@@ -29,9 +28,9 @@ export type OrderGroup = {
 	shippingFee: number;
 	usedMileage: number;
 	totalPrice: number;
-	paymentMethod: string;
+	paymentMethod: "CARD" | "CASH";
 	paymentCode: string | null;
-	status: string;
+	status: "ORDERED" | "CANCELLED" | "PAID" | "SHIPPED" | "DELIVERED" | "PREPARING";
 	shippingDate: string | null;
 	deliveredDate: string | null;
 	returnDate: string | null;
@@ -42,7 +41,7 @@ export type OrderItem = {
 	count: number;
 	orderPrice: number;
 	discountPrice: number;
-	finalPrice: number;
+	paidUnitPrice: number;
 };
 // 리뷰
 export type Review = {
@@ -74,8 +73,8 @@ export type Cart = {
 	quantity: number;
 	selected: boolean;
 };
-/* ------------------------------------------------------------ */
-// 유저 쿠폰 조회
+/* ---- API --------------------------------------------- */
+/* 유저 쿠폰 조회 */
 export interface UserCouponResponse extends BaseResponse {
 	couponList: (Coupon &
 		UserCoupon & {
@@ -83,7 +82,8 @@ export interface UserCouponResponse extends BaseResponse {
 			sellerName: string;
 		})[];
 }
-// 주문배송정보 상품
+
+/* 주문배송정보 조회 */
 export type MyOrderItem = OrderItem & {
 	orderId: number;
 	holdId: number;
@@ -93,8 +93,8 @@ export type MyOrderItem = OrderItem & {
 	productId: number;
 	productName: string;
 	colorName: string;
-	price: number;
-	sellerId: string;
+	originPrice: number;
+	finalPrice: number;
 	sellerName: string;
 	//
 	productImageId: number;
@@ -105,9 +105,9 @@ export type MyOrderItem = OrderItem & {
 		topMenuName: string;
 		gender: string;
 	} & FileInfo;
+
 // 주문배송정보
 export type MyOrder = OrderGroup & {
-	userId: string;
 	items: MyOrderItem[];
 };
 // 주문배송정보 조회
