@@ -6,7 +6,7 @@ import { isProd } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { generateAccessToken, generateRefreshToken } from "@/lib/jwt";
 import { ACCESS_TOKEN_COOKIE_AGE, REFRESH_TOKEN_COOKIE_AGE } from "@/lib/tokenTime";
-import { LoginForm, GetUserResponse } from "@/types/auth";
+import { LoginFormData, GetUserResponse } from "@/types/auth";
 import { BaseResponse } from "@/types/common";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -30,7 +30,7 @@ export const GET = withAuth(async ({ accessToken }) => {
 export const POST = async (nextRequest: NextRequest) => {
 	console.log("로그인");
 	try {
-		const { userId, password }: LoginForm = await nextRequest.json();
+		const { userId, password }: LoginFormData = await nextRequest.json();
 		if (!userId) return NextResponse.json({ message: "아이디를 입력해주세요." }, { status: 400 });
 		if (!password) return NextResponse.json({ message: "비밀번호를 입력해주세요." }, { status: 400 });
 

@@ -4,10 +4,10 @@ import { useCallback, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 // 예시용 모달 컴포넌트들
 import { useModalStore } from "@/store/modal.store";
-import AlertModal from "../variants/AlertModal";
-import ConfirmModal from "../variants/ConfirmModal";
-import ProductOptionModal from "../domain/ProductOptionModal";
-import AddressModal from "../domain/AddressModal";
+import { AlertModal } from "../variants/AlertModal";
+import { ConfirmModal } from "../variants/ConfirmModal";
+import { ProductOptionModal } from "../domain/ProductOptionModal";
+import { AddressModal } from "../domain/AddressModal";
 import { CartItem, UserAddressListItem } from "@/types/mypage";
 import { ModalPropsMap } from "@/store/modal.type";
 import styles from "../Modal.module.scss";
@@ -17,7 +17,7 @@ type ModalCommon = {
 	disableEscClose?: boolean;
 };
 
-export default function ModalRoot() {
+export const ModalRoot = () => {
 	const { modalType, modalProps, closeModal } = useModalStore();
 	const [mounted, setMounted] = useState(false);
 	const [isClosing, setIsClosing] = useState(false);
@@ -96,7 +96,6 @@ export default function ModalRoot() {
 	if (!isOpen) return null;
 
 	// createPortal(요소, document.body) : DOM 구조는 여기지만, 실제 출력은 body 바로 아래에 그려라
-
 	return createPortal(
 		<div
 			id="modalRoot"
@@ -120,6 +119,6 @@ export default function ModalRoot() {
 				{childrenModal}
 			</div>
 		</div>,
-		document.body
+		document.body,
 	);
-}
+};

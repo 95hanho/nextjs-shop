@@ -10,10 +10,9 @@ import { getApiUrl, getBackendUrl } from "@/lib/getBaseUrl";
 import { getServerSession } from "@/lib/auth";
 import { UserInfo } from "@/types/auth";
 import { redirect } from "next/navigation";
-import TokenCheck from "@/components/common/TokenCheck";
-import Header from "@/components/common/Header";
 import { cookies } from "next/he.aders";
-import ModalRoot from "@/components/modal/core/ModalRoot";
+import { ModalRoot } from "@/components/modal/core/ModalRoot";
+import { Header } from "@/components/common/Header";
 
 const inter = Inter({
 	subsets: ["latin"],

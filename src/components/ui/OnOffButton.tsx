@@ -8,7 +8,7 @@ interface OnOffButtonProps {
 	checked: boolean;
 }
 
-export default function OnOffButton({ text, checked }: OnOffButtonProps) {
+export const OnOffButton = ({ text, checked }: OnOffButtonProps) => {
 	const id = useId();
 
 	return (
@@ -23,4 +23,4 @@ export default function OnOffButton({ text, checked }: OnOffButtonProps) {
 			</label>
 		</div>
 	);
-}
+};

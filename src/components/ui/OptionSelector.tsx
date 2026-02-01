@@ -13,7 +13,7 @@ interface OptionSelectorProps {
 	changeOption?: (pickIdx: number, id: number) => void;
 }
 
-export default function OptionSelector({ optionSelectorName, initData, pickIdx = 0, optionList, changeOption }: OptionSelectorProps) {
+export const OptionSelector = ({ optionSelectorName, initData, pickIdx = 0, optionList, changeOption }: OptionSelectorProps) => {
 	const optionSelectorRef = useRef<HTMLDivElement>(null);
 	const [openOptionList, setOpenOptionList] = useState<boolean>(false);
 
@@ -68,4 +68,4 @@ export default function OptionSelector({ optionSelectorName, initData, pickIdx =
 			)}
 		</div>
 	);
-}
+};

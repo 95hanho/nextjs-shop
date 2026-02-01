@@ -16,11 +16,11 @@ const LodingWrapDiv = styled.div`
 	align-items: center;
 `;
 
-export default function LodingWrap() {
+export const LodingWrap = () => {
 	return (
 		<LodingWrapDiv className="loding-wrap">
 			{/* <CircleLoader color="#333" size={40} /> */}
 			<ClipLoader color="#494949ff" size={100} />
 		</LodingWrapDiv>
 	);
-}
+};

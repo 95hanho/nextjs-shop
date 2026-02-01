@@ -12,7 +12,7 @@ type ModalFrameProps = {
 	contentVariant?: "address" | ""; // 추가 예정
 };
 
-export default function ModalFrame({ title = "", onClose, children, modalWrapVariant, contentVariant }: ModalFrameProps) {
+export const ModalFrame = ({ title = "", onClose, children, modalWrapVariant, contentVariant }: ModalFrameProps) => {
 	return (
 		<div className={[styles.modalWrap, modalWrapVariant ? styles[modalWrapVariant] : ""].join(" ")}>
 			<header className={styles.modalHeader}>{title}</header>
@@ -24,4 +24,4 @@ export default function ModalFrame({ title = "", onClose, children, modalWrapVar
 			<section className={[styles.modalContent, contentVariant ? styles[contentVariant] : ""].join(" ")}>{children}</section>
 		</div>
 	);
-}
+};

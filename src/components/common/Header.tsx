@@ -6,15 +6,15 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Menu } from "@/types/main";
-import UserMenu from "./UserMenu";
-import Nav from "./Nav";
+import { UserMenu } from "./UserMenu";
+import { Nav } from "./Nav";
 import { useGetUserInfo } from "@/hooks/query/auth/useGetUserInfo";
 
 interface HeaderProps {
 	menuList: Menu[];
 }
 
-export default function Header({ menuList }: HeaderProps) {
+export const Header = ({ menuList }: HeaderProps) => {
 	const pathname = usePathname();
 	const { data: user } = useGetUserInfo();
 
@@ -65,4 +65,4 @@ export default function Header({ menuList }: HeaderProps) {
 			{!pathname?.startsWith("/user") && <Nav menuList={menuList} />}
 		</>
 	);
-}
+};

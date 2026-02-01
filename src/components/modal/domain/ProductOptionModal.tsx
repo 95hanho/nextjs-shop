@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import OptionSelector from "../../ui/OptionSelector";
+import { OptionSelector } from "../../ui/OptionSelector";
 import { FiMinus, FiPlus } from "react-icons/fi";
 import { CartItem, GetCartOptionProductOptionListResponse } from "@/types/mypage";
 import { useQuery } from "@tanstack/react-query";
@@ -9,9 +9,9 @@ import API_URL from "@/api/endpoints";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { getNormal } from "@/api/fetchFilter";
 import { useModalStore } from "@/store/modal.store";
-import ModalFrame from "@/components/modal/frame/ModalFrame";
+import { ModalFrame } from "@/components/modal/frame/ModalFrame";
 import styles from "../Modal.module.scss";
-import ConfirmButton from "@/components/modal/frame/ConfirmButton";
+import { ConfirmButton } from "@/components/modal/frame/ConfirmButton";
 import clsx from "clsx";
 
 interface ProductOptionModalProps {
@@ -19,7 +19,7 @@ interface ProductOptionModalProps {
 	product: CartItem;
 }
 
-export default function ProductOptionModal({ onClose, product }: ProductOptionModalProps) {
+export const ProductOptionModal = ({ onClose, product }: ProductOptionModalProps) => {
 	const { resolveModal } = useModalStore();
 	// 제품상세옵션 리스트
 	// invalidateQueries(["cartOptionProductOptionList"])
@@ -84,7 +84,7 @@ export default function ProductOptionModal({ onClose, product }: ProductOptionMo
 
 		const pickIdx = Math.max(
 			0,
-			optionList.findIndex((v) => v.id === pickId)
+			optionList.findIndex((v) => v.id === pickId),
 		);
 
 		return (
@@ -157,4 +157,4 @@ export default function ProductOptionModal({ onClose, product }: ProductOptionMo
 			/>
 		</ModalFrame>
 	);
-}
+};

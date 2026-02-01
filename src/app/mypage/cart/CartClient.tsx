@@ -4,19 +4,19 @@ import { CartItem, GetCartResponse, UpdateCartRequest, UpdateCartSelectedRequest
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import API_URL from "@/api/endpoints";
 import { getApiUrl } from "@/lib/getBaseUrl";
-import useAuth from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/useAuth";
 import { IoIosArrowDown, IoIosArrowUp, IoIosClose } from "react-icons/io";
 import { BsExclamationCircle } from "react-icons/bs";
 import { deleteNormal, getNormal, postJson, putJson } from "@/api/fetchFilter";
 import { money } from "@/lib/format";
-import ImageFill from "@/components/common/ImageFill";
-import CartWishButton from "./CartWishButton";
+import Cart{ WishButton } from "./CartWishButton";
 import { BaseResponse } from "@/types/common";
 import React, { useEffect, useMemo, useState } from "react";
-import LodingWrap from "@/components/common/LodingWrap";
+import { LodingWrap } from "@/components/common/LodingWrap";
 import { useModalStore } from "@/store/modal.store";
 import { ModalResultMap } from "@/store/modal.type";
 import Error from "next/error";
+import { ImageFill } from "@/components/common/ImageFill";
 
 type BrandGroupEntry = [sellerName: string, items: CartItem[]];
 
@@ -240,7 +240,7 @@ export default function CartClient() {
 												{/* 상품 하나 */}
 												{productList.map((product, productIdx) => {
 													// console.log("productId", product.productId);
-													let selectDisabled = product.stock < product.quantity;
+													const selectDisabled = product.stock < product.quantity;
 													let productAlert = "";
 													if (product.stock !== 0 && selectDisabled) {
 														productAlert = "재고가 부족합니다. 옵션을 변경하시면 선택이 가능합니다.";
@@ -363,10 +363,10 @@ export default function CartClient() {
 									<div>배송비</div>
 									<div className="text-blue-700">무료배송</div>
 								</div>
-								<div className="price-line price-line--total font-bold mt-4">
+								<div className="mt-4 font-bold price-line price-line--total">
 									<div>총 구매 금액</div>
 									<div aria-live="polite">
-										<span className="summary__badge align-baseline mr-2 text-red-500">22%</span>
+										<span className="mr-2 text-red-500 align-baseline summary__badge">22%</span>
 										<span className="align-baseline" data-field="total">
 											145,040원
 										</span>
@@ -383,7 +383,7 @@ export default function CartClient() {
 							<div className="price-benefit benefit" aria-label="결제 혜택">
 								<div className="title benefit__header">
 									<div className="benefit__title">결제 혜택</div>
-									<div className="benefit__more text-sm">
+									<div className="text-sm benefit__more">
 										<a href="#" className="text-gray-600 underline">
 											더보기
 										</a>

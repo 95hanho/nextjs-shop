@@ -10,7 +10,7 @@ interface ReviewStarProps {
 	size?: number;
 }
 
-export default function ReviewStar({ rate, starColor = "#000", size = 18 }: ReviewStarProps) {
+export const ReviewStar = ({ rate, starColor = "#000", size = 18 }: ReviewStarProps) => {
 	return (
 		<div style={{ display: "flex", gap: 2, color: starColor }}>
 			{[1, 2, 3, 4, 5].map((i) => (
@@ -33,4 +33,4 @@ export default function ReviewStar({ rate, starColor = "#000", size = 18 }: Revi
 			))}
 		</div>
 	);
-}
+};

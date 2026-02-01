@@ -1,10 +1,9 @@
 import { MainProductResponse } from "@/types/main";
 
-import ProductSlider from "@/components/main/ProductSlider";
+import { ProductSlider } from "@/components/main/ProductSlider";
 import API_URL from "@/api/endpoints";
 import { getNormal } from "@/api/fetchFilter";
 import { getApiUrl } from "@/lib/getBaseUrl";
-import TokenCheck from "@/components/common/TokenCheck";
 
 export default async function Home() {
 	return <h1>테스트중</h1>;
@@ -23,7 +22,6 @@ export default async function Home() {
 				<ProductSlider productList={productList} right={true} />
 				<ProductSlider productList={productList} />
 			</div>
-			<TokenCheck />
 		</main>
 	);
 }

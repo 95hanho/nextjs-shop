@@ -1,4 +1,4 @@
-import TestImage from "@/components/test/TestImage";
+import { TestImage } from "@/components/test/TestImage";
 import { FaSearch } from "react-icons/fa";
 import { RiGlassesLine } from "react-icons/ri";
 

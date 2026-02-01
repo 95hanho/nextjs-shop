@@ -2,7 +2,7 @@
 
 import API_URL from "@/api/endpoints";
 import { getNormal } from "@/api/fetchFilter";
-import useAuth from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/useAuth";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { GetUserResponse } from "@/types/auth";
 import { useQuery } from "@tanstack/react-query";

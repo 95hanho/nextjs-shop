@@ -1,6 +1,6 @@
 "use client";
 
-import AuthRouterProvider from "@/providers/AuthRouterProvider";
+import { AuthRouterProvider } from "@/providers/AuthRouterProvider";
 import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactNode, useState } from "react";
 

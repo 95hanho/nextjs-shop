@@ -1,7 +1,7 @@
 // 제품 리뷰
 "use client";
 
-import ReviewStar from "@/components/product/ReviewStar";
+import { ReviewStar } from "@/components/product/ReviewStar";
 import { money } from "@/lib/format";
 
 export default function ProductReview() {

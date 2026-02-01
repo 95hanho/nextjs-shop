@@ -6,7 +6,7 @@ interface WishButtonProps {
 	clickFnc: () => void;
 }
 
-export default function WishButton({ clickFnc }: WishButtonProps) {
+export const WishButton = ({ clickFnc }: WishButtonProps) => {
 	const [wishOn, setWishOn] = useState(true);
 
 	return (
@@ -20,4 +20,4 @@ export default function WishButton({ clickFnc }: WishButtonProps) {
 			{wishOn ? <FaStar /> : <FiStar />}
 		</button>
 	);
-}
+};

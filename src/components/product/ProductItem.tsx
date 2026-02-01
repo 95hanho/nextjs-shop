@@ -1,15 +1,15 @@
 "use client";
 
 import styles from "./ProductItem.module.scss";
-import WishButton from "@/components/product/WishButton";
-import ImageFill from "@/components/common/ImageFill";
+import { WishButton } from "@/components/product/WishButton";
+import { ImageFill } from "@/components/common/ImageFill";
 import { FaHeart, FaStar } from "react-icons/fa";
 import { useMutation } from "@tanstack/react-query";
 import { postJson } from "@/api/fetchFilter";
 import { BaseResponse } from "@/types/common";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import API_URL from "@/api/endpoints";
-import useAuth from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/useAuth";
 import { discountPercent, money } from "@/lib/format";
 import Link from "next/link";
 
@@ -27,7 +27,7 @@ interface ProductItemProps {
 	};
 }
 
-export default function ProductItem({ product }: ProductItemProps) {
+export const ProductItem = ({ product }: ProductItemProps) => {
 	// const { user } = useAuth();
 
 	const handleProductWish = useMutation({
@@ -88,4 +88,4 @@ export default function ProductItem({ product }: ProductItemProps) {
 			</div>
 		</Link>
 	);
-}
+};

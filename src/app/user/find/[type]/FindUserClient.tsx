@@ -3,7 +3,7 @@
 
 import API_URL from "@/api/endpoints";
 import { postJson } from "@/api/fetchFilter";
-import FormInput from "@/components/auth/FormInput";
+import { FormInput } from "@/components/auth/FormInput";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { BaseResponse } from "@/types/common";
 import { ChangeEvent, FormEvent } from "@/types/event";
