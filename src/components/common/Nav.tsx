@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useState, useEffect, useMemo } from "react";
 import styles from "./Nav.module.scss";
 
-export default function Nav({ menuList }: { menuList: Menu[] }) {
+export const Nav = ({ menuList }: { menuList: Menu[] }) => {
 	const maleMenuList = menuList.filter((menu) => menu.gender === "M");
 	const femaleMenuList = menuList.filter((menu) => menu.gender === "F");
 
@@ -78,4 +78,4 @@ export default function Nav({ menuList }: { menuList: Menu[] }) {
 			)}
 		</nav>
 	);
-}
+};

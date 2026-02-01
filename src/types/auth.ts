@@ -1,4 +1,7 @@
+import { ChangeEvent } from "@/types/event";
 import { BaseResponse } from "./common";
+
+/* MODEL --------------------------------------------- */
 
 export type User = {
 	name: string;
@@ -19,6 +22,16 @@ export type UserAdd = {
 };
 
 /* ---- FE --------------------------------------------- */
+
+/* BEGIN : COMMON */
+export type FormInputAlarm = {
+	name: string;
+	message: string;
+	status?: "SUCCESS" | "FAIL";
+} | null;
+export type SetFormRef = (el: HTMLInputElement | null) => void;
+
+/* END : COMMON */
 
 /* 로그인 */
 export type LoginFormData = {

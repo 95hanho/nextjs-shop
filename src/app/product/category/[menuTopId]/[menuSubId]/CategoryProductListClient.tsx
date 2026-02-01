@@ -1,7 +1,7 @@
 "use client";
 
-import ProductGrid from "@/components/product/ProductGrid";
-import ProductItem from "@/components/product/ProductItem";
+import { ProductGrid } from "@/components/product/ProductGrid";
+import { ProductItem } from "@/components/product/ProductItem";
 import type { ProductItem as ProductItemType } from "@/types/product";
 
 interface CategoryProductListClientProps {

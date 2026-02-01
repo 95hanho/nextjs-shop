@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import OptionSelector from "../../ui/OptionSelector";
+import { OptionSelector } from "../../ui/OptionSelector";
 import { UserAddressListItem } from "@/types/mypage";
 import { useModalStore } from "@/store/modal.store";
-import FormInput from "../../auth/FormInput";
-import ModalFrame from "@/components/modal/frame/ModalFrame";
+import { ModalFrame } from "@/components/modal/frame/ModalFrame";
 import styles from "../Modal.module.scss";
 import { ChangeEvent, FormEvent } from "@/types/event";
+import { FormInput } from "@/components/auth/FormInput";
 
 interface AddressModalProps {
 	onClose: () => void;
@@ -63,7 +63,7 @@ const addressFormRegexFailMent: { [key: string]: string } = {
 	addressPhone: "휴대폰 번호 형식에 일치하지 않습니다.",
 };
 
-export default function AddressModal({ onClose, address }: AddressModalProps) {
+export const AddressModal = ({ onClose, address }: AddressModalProps) => {
 	const { resolveModal } = useModalStore();
 
 	const [addressForm, setAddressForm] = useState<AddressForm>(initAddressForm);
@@ -314,4 +314,4 @@ export default function AddressModal({ onClose, address }: AddressModalProps) {
 			</form>
 		</ModalFrame>
 	);
-}
+};

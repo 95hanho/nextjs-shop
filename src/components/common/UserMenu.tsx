@@ -4,14 +4,14 @@ import styles from "./UserMenu.module.scss";
 import React from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion"; // framer-motion을 import 합니다.
-import useAuth from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/useAuth";
 import { useGetUserInfo } from "@/hooks/query/auth/useGetUserInfo";
 
 interface UserMenuProps {
 	isOpen: boolean;
 }
 
-export default function UserMenu({ isOpen }: UserMenuProps) {
+export const UserMenu = ({ isOpen }: UserMenuProps) => {
 	const { data: user } = useGetUserInfo();
 	const { logout } = useAuth();
 
@@ -44,4 +44,4 @@ export default function UserMenu({ isOpen }: UserMenuProps) {
 			)}
 		</AnimatePresence>
 	);
-}
+};

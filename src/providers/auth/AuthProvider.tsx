@@ -11,7 +11,7 @@ interface AuthProviderProps {
 	children: React.ReactNode;
 }
 
-export default function AuthProvider({ children }: AuthProviderProps) {
+export const AuthProvider = ({ children }: AuthProviderProps) => {
 	const [user, setUser] = useState<UserInfo | null>(null);
 
 	const loginOn = !!user;
@@ -24,4 +24,4 @@ export default function AuthProvider({ children }: AuthProviderProps) {
 	};
 
 	return <authContext.Provider value={{ loginOn, logout, user, setUser }}>{children}</authContext.Provider>;
-}
+};

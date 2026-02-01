@@ -3,8 +3,8 @@
 
 import API_URL from "@/api/endpoints";
 import { getNormal, postJson, putJson } from "@/api/fetchFilter";
-import FormInput from "@/components/auth/FormInput";
-import useAuth from "@/hooks/useAuth";
+import { FormInput } from "@/components/auth/FormInput";
+import { useAuth } from "@/hooks/useAuth";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { useModalStore } from "@/store/modal.store";
 import { PhoneAuthRequest, UserInfo, UserUpdateResponse } from "@/types/auth";

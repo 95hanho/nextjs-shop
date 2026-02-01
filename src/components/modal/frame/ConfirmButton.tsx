@@ -10,7 +10,7 @@ interface ConfirmButtonProps {
 	confirmDisabled?: boolean;
 }
 
-export default function ConfirmButton({ cancelText = "취소", confirmText = "확인", onCancel, onConfirm, confirmDisabled }: ConfirmButtonProps) {
+export const ConfirmButton = ({ cancelText = "취소", confirmText = "확인", onCancel, onConfirm, confirmDisabled }: ConfirmButtonProps) => {
 	console.log("confirmDisabled", confirmDisabled);
 	return (
 		<div className={styles.ConfirmButton}>
@@ -22,4 +22,4 @@ export default function ConfirmButton({ cancelText = "취소", confirmText = "�
 			</button>
 		</div>
 	);
-}
+};

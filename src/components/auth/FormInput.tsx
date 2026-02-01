@@ -3,8 +3,8 @@
 import styles from "./FormInput.module.scss";
 import { forwardRef } from "react";
 import clsx from "clsx";
-import { ChangeEvent } from "@/types/event";
-import { JoinFormAlert } from "@/types/auth";
+import { ChangeFunction } from "@/types/event";
+import { FormInputAlarm } from "@/types/auth";
 
 interface FormInputProps {
 	name: string;
@@ -12,9 +12,9 @@ interface FormInputProps {
 	placeholder: string;
 	type?: string;
 	value: string;
-	alarm: JoinFormAlert | null;
-	onChange?: (e: ChangeEvent) => void;
-	onBlur?: (e: ChangeEvent) => void;
+	alarm: FormInputAlarm;
+	onChange?: ChangeFunction;
+	onBlur?: ChangeFunction;
 	readOnly?: boolean;
 	onClick?: () => void;
 	searchBtn?: { txt: string; fnc: () => void };
@@ -23,7 +23,7 @@ interface FormInputProps {
 	maxLength?: number;
 }
 
-const FormInput = forwardRef<HTMLInputElement, FormInputProps>((props, ref) => {
+export const FormInput = forwardRef<HTMLInputElement, FormInputProps>((props, ref) => {
 	const {
 		name,
 		label,
@@ -93,6 +93,4 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>((props, ref) => {
 		</div>
 	);
 });
-
 FormInput.displayName = "FormInput";
-export default FormInput;

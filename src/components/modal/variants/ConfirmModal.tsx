@@ -1,10 +1,10 @@
 "use client";
 
-import ModalFrame from "@/components/modal/frame/ModalFrame";
+import { ModalFrame } from "@/components/modal/frame/ModalFrame";
 import { useModalStore } from "@/store/modal.store";
 import { ModalResultMap } from "@/store/modal.type";
 import styles from "../Modal.module.scss";
-import ConfirmButton from "@/components/modal/frame/ConfirmButton";
+import { ConfirmButton } from "@/components/modal/frame/ConfirmButton";
 
 interface ConfirmModalProps {
 	onClose: () => void;
@@ -16,7 +16,7 @@ interface ConfirmModalProps {
 	cancelResult?: string;
 }
 
-export default function ConfirmModal({ onClose, title, content, cancelText, confirmText, okResult, cancelResult }: ConfirmModalProps) {
+export const ConfirmModal = ({ onClose, title, content, cancelText, confirmText, okResult, cancelResult }: ConfirmModalProps) => {
 	const { resolveModal } = useModalStore();
 
 	const confirmModalProps = {
@@ -51,4 +51,4 @@ export default function ConfirmModal({ onClose, title, content, cancelText, conf
 			<ConfirmButton {...confirmModalProps} />
 		</ModalFrame>
 	);
-}
+};

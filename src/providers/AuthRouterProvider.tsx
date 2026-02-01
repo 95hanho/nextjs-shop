@@ -1,11 +1,11 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import AuthProvider from "@/providers/auth/AuthProvider";
-import SellerProvider from "@/providers/auth/SellerProvider";
-import AdminProvider from "@/providers/auth/AdminProvider";
+import { AuthProvider } from "@/providers/auth/AuthProvider";
+import { SellerProvider } from "@/providers/auth/SellerProvider";
+import { AdminProvider } from "@/providers/auth/AdminProvider";
 
-export default function AuthRouterProvider({ children }: { children: React.ReactNode }) {
+export const AuthRouterProvider = ({ children }: { children: React.ReactNode }) => {
 	const pathname = usePathname();
 
 	if (pathname.startsWith("/seller")) {
@@ -17,4 +17,4 @@ export default function AuthRouterProvider({ children }: { children: React.React
 	}
 
 	return <AuthProvider>{children}</AuthProvider>;
-}
+};

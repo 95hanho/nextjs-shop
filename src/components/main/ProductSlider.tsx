@@ -3,7 +3,7 @@
 import { MainProduct } from "@/types/main";
 import { useRef, useState } from "react";
 
-export default function ProductSlider({ productList, right }: { productList: MainProduct[]; right?: boolean }) {
+export const ProductSlider = ({ productList, right }: { productList: MainProduct[]; right?: boolean }) => {
 	const [isPaused, setIsPaused] = useState(false);
 	const marqueeRef = useRef<HTMLDivElement>(null);
 
@@ -66,4 +66,4 @@ export default function ProductSlider({ productList, right }: { productList: Mai
 			</button>
 		</div>
 	);
-}
+};

@@ -3,13 +3,13 @@
 
 import API_URL from "@/api/endpoints";
 import { getNormal } from "@/api/fetchFilter";
-import useAuth from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/useAuth";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { GetWishListResponse } from "@/types/mypage";
 import { useQuery } from "@tanstack/react-query";
-import OnOffButton from "@/components/ui/OnOffButton";
-import ProductItem from "@/components/product/ProductItem";
-import ProductGrid from "@/components/product/ProductGrid";
+import { OnOffButton } from "@/components/ui/OnOffButton";
+import { ProductItem } from "@/components/product/ProductItem";
+import { ProductGrid } from "@/components/product/ProductGrid";
 
 export default function WishClient() {
 	const { loginOn } = useAuth();

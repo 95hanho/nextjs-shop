@@ -8,6 +8,6 @@ interface ImageBasicProps {
 	fill?: boolean;
 }
 
-export default function ImageFill({ className = "", src = "", alt, fill = true }: ImageBasicProps) {
+export const ImageFill = ({ className = "", src = "", alt, fill = true }: ImageBasicProps) => {
 	return <Image className={className} src={src || BASIC_NO_IMAGE} alt={alt || "사진없음"} fill={fill} sizes="1" />;
-}
+};

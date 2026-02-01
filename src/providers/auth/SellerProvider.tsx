@@ -11,7 +11,7 @@ interface SellerProviderProps {
 	children: React.ReactNode;
 }
 
-export default function SellerProvider({ children }: SellerProviderProps) {
+export const SellerProvider = ({ children }: SellerProviderProps) => {
 	const [loginOn, setLoginOn] = useState<boolean>(false);
 	const [seller, setSeller] = useState<SellerInfo | null>(null);
 
@@ -24,4 +24,4 @@ export default function SellerProvider({ children }: SellerProviderProps) {
 	};
 
 	return <sellerAuthContext.Provider value={{ loginOn, logout, seller, setSeller }}>{children}</sellerAuthContext.Provider>;
-}
+};

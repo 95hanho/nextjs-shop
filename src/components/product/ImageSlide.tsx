@@ -24,7 +24,7 @@ interface ImageSlideProps<T> {
 	renderItem: (item: T, index: number) => ReactNode;
 }
 
-export default function ImageSlide<T>({
+export const ImageSlide = <T,>({
 	slidesPerView = 5,
 	spaceBetween = 20,
 	onPageChange,
@@ -32,7 +32,7 @@ export default function ImageSlide<T>({
 	items,
 	renderItem,
 	slideItemKey,
-}: ImageSlideProps<T>) {
+}: ImageSlideProps<T>) => {
 	const swiperRef = useRef<SwiperType | null>(null);
 
 	// "3 / 4" 같은 페이지 단위는 Swiper의 snapGrid 기준이 가장 안정적
@@ -88,4 +88,4 @@ export default function ImageSlide<T>({
 			))}
 		</Swiper>
 	);
-}
+};

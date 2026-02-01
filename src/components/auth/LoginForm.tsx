@@ -13,7 +13,7 @@ import { LoginFormData } from "@/types/auth";
 import styles from "./LoginForm.module.scss";
 import clsx from "clsx";
 
-export default function LoginForm() {
+export const LoginForm = () => {
 	const router = useRouter();
 	const queryClient = useQueryClient();
 
@@ -142,4 +142,4 @@ export default function LoginForm() {
 			</div>
 		</form>
 	);
-}
+};
