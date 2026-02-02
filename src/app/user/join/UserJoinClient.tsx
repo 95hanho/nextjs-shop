@@ -5,6 +5,7 @@ import { FormInput } from "@/components/auth/FormInput";
 import { FormPageShell } from "@/components/auth/FormPageShell";
 import { PhoneAuthSection } from "@/components/auth/PhoneAuthSection";
 import { useUserJoinForm } from "@/hooks/query/auth/useUserJoinForm";
+import Link from "next/link";
 
 /* 회원가입 */
 export default function UserJoinClient() {
@@ -22,7 +23,7 @@ export default function UserJoinClient() {
 	} = useUserJoinForm();
 
 	return (
-		<FormPageShell title="NextJS-SHOP" formWidth={500}>
+		<FormPageShell title={<Link href={"/"}>NextJS-SHOP</Link>} formWidth={500}>
 			<form onSubmit={joinSubmit}>
 				<FormInput
 					name="userId"

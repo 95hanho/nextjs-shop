@@ -1,0 +1,27 @@
+.findResultActions {
+	margin-top: 25px;
+	display: flex;
+	gap: 10px;
+	a {
+		border-radius: 5px;
+		width: 50%;
+		padding: 4px 0px;
+		font-size: 24px;
+		color: #fff;
+		font-weight: bold;
+	}
+}
+.btnLogin {
+	border: 2px solid #9dc198;
+	background: #4fdb3d;
+	&:hover {
+		background: #4acc39;
+	}
+}
+.btnPassword {
+	border: 2px solid #d7d7d7;
+	background: #3a7add;
+	&:hover {
+		background: #2d72dd;
+	}
+}
