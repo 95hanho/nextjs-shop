@@ -92,6 +92,10 @@ const API_URL = {
 	PRODUCT_CART: "/product/cart",
 	/** 제품상세보기 조회 */
 	PRODUCT_DETAIL: "/product/:productId",
+	/** 제품 리뷰 조회 */
+	PRODUCT_REVIEW: "/product/review",
+	/** 제품 상품 Q&A 조회 */
+	PRODUCT_QNA: "/product/qna",
 
 	// 판매자 ----------------------------------
 	/** 판매자 정보조회, 로그인 */
@@ -102,17 +106,23 @@ const API_URL = {
 	SELLER_TOKEN_REFRESH: "/seller/token/refresh",
 	/** 판매자 로그아웃 */
 	SELLER_LOGOUT: "/seller/logout",
+	/** 판매자id 중복확인 */
+	SELLER_ID: "/seller/id",
 	/** 판매자 등록요청(회원가입) */
 	SELLER_REGISTRATION: "/seller/registration",
-	/** 판매자 제품 조회, 판매자제품추가/수정 */
+	/** 제품 조회, 제품추가, 제품수정 */
 	SELLER_PRODUCT: "/seller/product",
-	/** 판매자제품상세추가, 판매자제품상세변경 */
-	SELLER_PRODUCT_DETAIL: "/seller/product/option",
-	/** 판매자쿠폰조회, 판매자쿠폰등록 */
+	/** 제품옵션추가, 판매자제품옵션변경 */
+	SELLER_PRODUCT_OPTION: "/seller/product/option",
+	/** 옵션삭제 */
+	SELLER_PRODUCT_OPTION_DELETE: "/seller/product/option/:productOptionId",
+	/** 쿠폰조회, 쿠폰등록, 쿠폰수정 */
 	SELLER_COUPON: "/seller/coupon",
-	/** 판매자 쿠폰 상태 변경 */
+	/** 쿠폰삭제 */
+	SELLER_COUPON_DELETE: "/seller/coupon/:couponId",
+	/** 쿠폰 상태 변경 */
 	SELLER_COUPON_STATUS: "/seller/coupon/status",
-	/** 판매자 해당 쿠폰 허용제품 조회, 판매자 해당 쿠폰 허용제품 변경 */
+	/** 쿠폰 허용제품 조회, 쿠폰 허용제품 변경 */
 	SELLER_COUPON_ALLOWED: "/seller/coupon/allowed",
 	/** 해당 쿠폰을 유저에게 발행하기 */
 	SELLER_COUPON_USER_COUPON: "/seller/coupon/user-coupon",

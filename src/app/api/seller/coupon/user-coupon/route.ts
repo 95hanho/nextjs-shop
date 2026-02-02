@@ -1,14 +1,14 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { postUrlFormData } from "@/api/fetchFilter";
-import { withAuth } from "@/lib/auth";
 import { getBackendUrl } from "@/lib/getBaseUrl";
+import { withSellerAuth } from "@/lib/seller/auth";
 import { BaseResponse } from "@/types/common";
 import { IssueCouponsToUsersRequest } from "@/types/seller";
 import { NextResponse } from "next/server";
 
-// 해당 쿠폰을 유저에게 발행하기
-export const POST = withAuth(async ({ nextRequest }) => {
+// 쿠폰을 유저에게 발행하기(개발필요)
+export const POST = withSellerAuth(async ({ nextRequest }) => {
 	try {
 		const { couponId, userIds } = await nextRequest.json();
 		if (!couponId || !userIds || userIds.length === 0) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });

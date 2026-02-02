@@ -2,23 +2,18 @@ import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { deleteNormal, getNormal, postUrlFormData, putUrlFormData } from "@/api/fetchFilter";
 import { withAuth } from "@/lib/auth";
+import { WRONG_REQUEST_MESSAGE } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { BaseResponse } from "@/types/common";
 import { GetCartResponse, UpdateCartRequest, UpdateCartSelectedRequest } from "@/types/mypage";
-import { SYSTEM_ENTRYPOINTS } from "next/dist/shared/lib/constants";
 import { NextResponse } from "next/server";
 
 // 장바구니 조회
-export const GET = withAuth(async ({ userId, accessToken }) => {
+export const GET = withAuth(async ({ accessToken }) => {
 	try {
-		if (!userId) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
-		const data = await getNormal<GetCartResponse>(
-			getBackendUrl(API_URL.MY_CART),
-			{ userId },
-			{
-				Authorization: `Bearer ${accessToken}`,
-			},
-		);
+		const data = await getNormal<GetCartResponse>(getBackendUrl(API_URL.MY_CART), undefined, {
+			Authorization: `Bearer ${accessToken}`,
+		});
 		// console.log("data", data);
 
 		return NextResponse.json({ ...data }, { status: 200 });
@@ -31,7 +26,7 @@ export const GET = withAuth(async ({ userId, accessToken }) => {
 export const POST = withAuth(async ({ nextRequest, accessToken }) => {
 	try {
 		const { cartId, productOptionId, quantity }: UpdateCartRequest = await nextRequest.json();
-		if (!cartId || !quantity) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
+		if (!cartId || !productOptionId || !quantity) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
 
 		const payload: UpdateCartRequest = { cartId, productOptionId, quantity };
 		const data = await postUrlFormData<BaseResponse>(
@@ -72,10 +67,10 @@ export const PUT = withAuth(async ({ nextRequest, accessToken }) => {
 	}
 });
 // 장바구니 제품 삭제
-export const DELETE = withAuth(async ({ nextRequest, userId, accessToken }) => {
+export const DELETE = withAuth(async ({ nextRequest, accessToken }) => {
 	try {
 		const cartIdList = nextRequest.nextUrl.searchParams.getAll("cartIdList").map(Number);
-		if (!userId || !cartIdList?.length) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
+		if (!cartIdList || !cartIdList?.length) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
 		console.log(cartIdList);
 		const data = await deleteNormal<BaseResponse>(
 			getBackendUrl(API_URL.MY_CART),

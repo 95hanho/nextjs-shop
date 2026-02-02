@@ -1,25 +1,18 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { deleteNormal } from "@/api/fetchFilter";
-import { withAuth } from "@/lib/auth";
 import { WRONG_REQUEST_MESSAGE } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
+import { withSellerAuth } from "@/lib/seller/auth";
 import { BaseResponse } from "@/types/common";
 import { NextResponse } from "next/server";
 
-// 유저배송지 삭제
-export const DELETE = withAuth<{ addressId: string }>(async ({ params, accessToken }) => {
+// 제품 옵션 삭제
+export const DELETE = withSellerAuth<{ productOptionId: string }>(async ({ params }) => {
 	try {
-		const addressId = Number(params.addressId);
-		if (Number.isNaN(addressId)) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
-
-		const data = await deleteNormal<BaseResponse>(
-			getBackendUrl(API_URL.MY_ADDRESS_DELETE),
-			{ addressId },
-			{
-				Authorization: `Bearer ${accessToken}`,
-			},
-		);
+		const productOptionId = Number(params.productOptionId);
+		if (!productOptionId) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
+		const data = await deleteNormal<BaseResponse>(getBackendUrl(API_URL.SELLER_PRODUCT_OPTION_DELETE), { productOptionId });
 		console.log("data", data);
 
 		return NextResponse.json({ message: data.message }, { status: 200 });

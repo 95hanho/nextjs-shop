@@ -3,7 +3,6 @@ import { FileInfo } from "./file";
 import { ProductOption } from "./product";
 // 쿠폰
 export type Coupon = {
-	couponId: number;
 	description: string;
 	couponCode: string;
 	discountType: "percentage" | "fixed_amount";
@@ -114,7 +113,7 @@ export type MyOrder = OrderGroup & {
 export interface MyOrderListResponse extends BaseResponse {
 	myOrderList: MyOrder[];
 }
-/*  */
+/* 주문배송정보 상세조회 */
 // 주문배송정보 상세상품 정보
 export type MyOrderDetailItem = OrderItem & {
 	orderId: number;
@@ -133,8 +132,8 @@ export type MyOrderDetailItem = OrderItem & {
 	productId: number;
 	productName: string;
 	colorName: string;
-	price: number;
-	sellerId: string;
+	originPrice: number;
+	finalPrice: number;
 	sellerName: string;
 } & Review & {
 		menuSubId: number;
@@ -163,20 +162,19 @@ export type MyOrderDetail = OrderGroup &
 	} & {
 		item: MyOrderDetailItem[];
 	} & {
-		default: boolean;
+		defaultAddress: boolean;
 		stackable: boolean;
 	};
-// 주문배송정보 상세조회
 export interface MyOrderDetailResponse extends BaseResponse {
 	myOrderDetail: MyOrderDetail;
 }
-/*  */
+/* 리뷰 작성 */
 export interface writeReviewRequest {
 	content: string;
 	rating: number;
 	orderListId: number;
 }
-/*  */
+/* 장바구니 조회 */
 export type CartItem = Cart & {
 	productOptionId: number;
 	addPrice: number;
@@ -184,40 +182,34 @@ export type CartItem = Cart & {
 	size: string;
 	productId: number;
 	productName: string;
-	price: number;
+	originPrice: number;
+	finalPrice: number;
 	wishId: number;
-	fileId: number;
-	fileName: string | null;
-	storeName: string | null;
-	filePath: string | null;
-	copyright: string | null;
-	copyrightUrl: string | null;
-	sellerId: string;
-	sellerName: string;
-};
+} & FileInfo & {
+		sellerName: string;
+	};
 export interface GetCartResponse extends BaseResponse {
 	cartList: CartItem[];
 }
-/*  */
+/* 장바구니 제품 옵션/수량 변경 */
 export interface UpdateCartRequest {
 	cartId: number;
 	productOptionId: number;
 	quantity: number;
 }
-/*  */
+/* 장바구니 제품 선택여부 변경 */
 export interface UpdateCartSelectedRequest {
 	cartIdList: number[];
 	selected: boolean;
 }
-/*  */
-export interface GetCartOptionProductOptionListResponse extends BaseResponse {
+/* 장바구니 제품 다른 option조회 */
+export interface GetCartOtherOptionListResponse extends BaseResponse {
 	cartOptionProductOptionList: ProductOption[];
 }
-/*  */
+/* 위시리스트 조회 */
 export type wishlistItem = {
 	wishId: number;
 	createdAt: string;
-	userId: string;
 	productId: number;
 	name: string;
 	originPrice: number;
@@ -227,24 +219,20 @@ export type wishlistItem = {
 	wishCount: number;
 	productImageId: number;
 } & FileInfo & {
-		sellerId: string;
 		sellerName: string;
 	};
 export interface GetWishListResponse extends BaseResponse {
 	wishlistItems: wishlistItem[];
 }
-/*  */
+/* 유저배송지 조회 */
 export type UserAddressListItem = UserAddress & {
-	createdAt: "2025-10-20T05:56:25.000+00:00";
 	usedateAt: null;
-	userId: null;
-	deleted: false;
 	defaultAddress: boolean;
 };
 export interface GetUserAddressListResponse extends BaseResponse {
 	userAddressList: UserAddressListItem[];
 }
-/*  */
+/* 유저배송지 추가/수정 */
 export interface setUserAddressRequest {
 	addressId?: number;
 	addressName: string;
@@ -257,12 +245,3 @@ export interface setUserAddressRequest {
 	defaultAddress?: boolean;
 	default?: boolean;
 }
-/*  */
-export type InputAddress = {
-	addressName: string;
-	recipientName: string;
-	addressPhone: string;
-	address: string;
-	addressDetail: string;
-	memo: string;
-};

@@ -1,14 +1,14 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { getNormal, postUrlFormData } from "@/api/fetchFilter";
-import { withAuth } from "@/lib/auth";
+import { WRONG_REQUEST_MESSAGE } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
-import { withSellerAuth } from "@/lib/admin/auth";
+import { withSellerAuth } from "@/lib/seller/auth";
 import { BaseResponse } from "@/types/common";
 import { AddSellerProductRequest, GetSellerProductListResponse, UpdateSellerProductRequest } from "@/types/seller";
 import { NextResponse } from "next/server";
 
-// 판매자 제품 조회
+// 제품 조회
 export const GET = withSellerAuth(async ({ sellerToken }) => {
 	try {
 		const data = await getNormal<GetSellerProductListResponse>(getBackendUrl(API_URL.SELLER_PRODUCT), undefined, {
@@ -22,13 +22,14 @@ export const GET = withSellerAuth(async ({ sellerToken }) => {
 		return NextResponse.json(payload, { status });
 	}
 });
-// 판매자 제품 추가
+// 제품 추가
 export const POST = withSellerAuth(async ({ nextRequest, sellerToken }) => {
 	try {
 		const {
 			name,
 			colorName,
-			price,
+			originPrice,
+			finalPrice,
 			menuSubId,
 			materialInfo,
 			manufacturerName,
@@ -44,7 +45,8 @@ export const POST = withSellerAuth(async ({ nextRequest, sellerToken }) => {
 		if (
 			!name ||
 			!colorName ||
-			!price ||
+			!originPrice ||
+			!finalPrice ||
 			!menuSubId ||
 			!materialInfo ||
 			!manufacturerName ||
@@ -58,7 +60,8 @@ export const POST = withSellerAuth(async ({ nextRequest, sellerToken }) => {
 		const payload: AddSellerProductRequest = {
 			name,
 			colorName,
-			price,
+			originPrice,
+			finalPrice,
 			menuSubId,
 			materialInfo,
 			manufacturerName,
@@ -93,7 +96,8 @@ export const PUT = withSellerAuth(async ({ nextRequest, sellerToken }) => {
 			productId,
 			name,
 			colorName,
-			price,
+			originPrice,
+			finalPrice,
 			menuSubId,
 			materialInfo,
 			manufacturerName,
@@ -110,7 +114,8 @@ export const PUT = withSellerAuth(async ({ nextRequest, sellerToken }) => {
 			!productId ||
 			!name ||
 			!colorName ||
-			!price ||
+			!originPrice ||
+			!finalPrice ||
 			!menuSubId ||
 			!materialInfo ||
 			!manufacturerName ||
@@ -126,13 +131,14 @@ export const PUT = withSellerAuth(async ({ nextRequest, sellerToken }) => {
 			productId,
 			name,
 			colorName,
-			price,
+			originPrice,
+			finalPrice,
 			menuSubId,
 			materialInfo,
 			manufacturerName,
 			countryOfOrigin,
 			washCareInfo,
-			manufacturedYm,
+			manufacturedYm: manufacturedYm.replace(/\//g, "-"),
 			qualityGuaranteeInfo,
 			afterServiceContact,
 			afterServiceManager,
