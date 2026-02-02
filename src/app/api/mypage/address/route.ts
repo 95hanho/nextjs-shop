@@ -1,7 +1,8 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
-import { getNormal, postUrlFormData } from "@/api/fetchFilter";
+import { getNormal, postUrlFormData, putUrlFormData } from "@/api/fetchFilter";
 import { withAuth } from "@/lib/auth";
+import { WRONG_REQUEST_MESSAGE } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { BaseResponse } from "@/types/common";
 import { GetUserAddressListResponse, setUserAddressRequest } from "@/types/mypage";
@@ -21,8 +22,50 @@ export const GET = withAuth(async ({ accessToken }) => {
 		return NextResponse.json(payload, { status });
 	}
 });
-// 유저배송지 추가/수정
+// 유저배송지 추가
 export const POST = withAuth(async ({ nextRequest, accessToken }) => {
+	try {
+		const { addressName, recipientName, addressPhone, zonecode, address, addressDetail, memo, defaultAddress }: setUserAddressRequest =
+			await nextRequest.json();
+		console.log(
+			"addressName",
+			addressName,
+			"recipientName",
+			recipientName,
+			"addressPhone",
+			addressPhone,
+			"zonecode",
+			zonecode,
+			"address",
+			address,
+			"addressDetail",
+			addressDetail,
+			"memo",
+			memo,
+			"defaultAddress",
+			defaultAddress,
+		);
+		if (!addressName || !recipientName || !addressPhone || !zonecode || !address || !addressDetail)
+			return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
+
+		const payload: setUserAddressRequest = { addressName, addressPhone, recipientName, zonecode, address, addressDetail, memo, defaultAddress };
+		const data = await postUrlFormData<BaseResponse>(
+			getBackendUrl(API_URL.MY_ADDRESS),
+			{ ...payload },
+			{
+				Authorization: `Bearer ${accessToken}`,
+			},
+		);
+		console.log("data", data);
+
+		return NextResponse.json({ message: data.message }, { status: 200 });
+	} catch (err: unknown) {
+		const { status, payload } = toErrorResponse(err);
+		return NextResponse.json(payload, { status });
+	}
+});
+// 유저배송지 수정
+export const PUT = withAuth(async ({ nextRequest, accessToken }) => {
 	try {
 		const { addressId, addressName, recipientName, addressPhone, zonecode, address, addressDetail, memo, defaultAddress }: setUserAddressRequest =
 			await nextRequest.json();
@@ -48,12 +91,20 @@ export const POST = withAuth(async ({ nextRequest, accessToken }) => {
 		);
 		if (!addressName || !recipientName || !addressPhone || !zonecode || !address || !addressDetail)
 			return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
-		// if (!memo) return NextResponse.json({ message: "비밀번호를 입력해주세요." }, { status: 400 });
 
-		const payload: setUserAddressRequest = { addressName, addressPhone, recipientName, zonecode, address, addressDetail, memo, defaultAddress };
-		if (addressId) payload.addressId = addressId;
+		const payload: setUserAddressRequest = {
+			addressId,
+			addressName,
+			addressPhone,
+			recipientName,
+			zonecode,
+			address,
+			addressDetail,
+			memo,
+			defaultAddress,
+		};
 		console.log(payload);
-		const data = await postUrlFormData<BaseResponse>(
+		const data = await putUrlFormData<BaseResponse>(
 			getBackendUrl(API_URL.MY_ADDRESS),
 			{ ...payload },
 			{
@@ -62,7 +113,7 @@ export const POST = withAuth(async ({ nextRequest, accessToken }) => {
 		);
 		console.log("data", data);
 
-		return NextResponse.json({ message: "SUCCESS" }, { status: 200 });
+		return NextResponse.json({ message: data.message }, { status: 200 });
 	} catch (err: unknown) {
 		const { status, payload } = toErrorResponse(err);
 		return NextResponse.json(payload, { status });

@@ -2,6 +2,8 @@ import { BaseResponse } from "./common";
 import { Coupon } from "./mypage";
 import { ProductDetail, ProductOption } from "./product";
 
+/* -- FE -------------------------------------------------------- */
+
 // 로그인폼 데이터
 export type SellerLoginForm = {
 	sellerId: string;
@@ -9,7 +11,6 @@ export type SellerLoginForm = {
 };
 
 export type SellerInfo = {
-	sellerId: string;
 	sellerName: string; // 판매자 이름(한글)
 	sellerNameEn: string; // 판매자 이름(영어)
 	extensionNumber: string; // 내선전화
@@ -27,35 +28,37 @@ export type SellerApprove = {
 	approvedAt: string;
 };
 
-/* ------------------------------------------------------------- */
+/* -- API -------------------------------------------------------- */
+
 /* 판매자 로그인 */
 export interface SellerLoginResponse extends BaseResponse {
 	sellerNo: number;
 }
-
-/* ---------- 판매자 등록요청 ---------*/
-export interface SellerRegisterRequest extends SellerLoginForm, SellerInfo {}
-
-/* ---------- 회원정보 조회 ---------*/
+/* 회원정보 조회 */
 export interface SellerResponse extends BaseResponse {
 	seller: SellerInfo;
 }
-/* ---------- 판매자 제품 조회 ---------*/
+/* 판매자 등록요청 */
+export interface SellerRegisterRequest extends SellerLoginForm, SellerInfo {}
+
+/* 판매자 제품 조회 */
+type SellerProductOptionAdd = { salesCount: number; createdAt: string; updatedAt: string; displayed: boolean };
 export type sellerProduct = ProductDetail & {
 	sellerId: string;
 	subMenuName: string;
 	topMenuName: string;
 	gender: string;
-	optionList: ProductOption[];
+	optionList: (ProductOption & SellerProductOptionAdd)[];
 };
 export interface GetSellerProductListResponse extends BaseResponse {
 	sellerProductList: sellerProduct[];
 }
-/* ---------- 판매자 제품 추가 ---------*/
+/* 제품 추가 */
 export interface AddSellerProductRequest {
 	name: string;
 	colorName: string;
-	price: number;
+	originPrice: number;
+	finalPrice: number;
 	menuSubId: number;
 	materialInfo: string;
 	manufacturerName: string;
@@ -67,59 +70,75 @@ export interface AddSellerProductRequest {
 	afterServiceManager: string;
 	afterServicePhone: string;
 }
-/* ---------- 판매자 제품 수정 ---------*/
+/* 제품 수정 */
 export interface UpdateSellerProductRequest extends AddSellerProductRequest {
 	productId: number;
 }
+
+/* 제품 상세보기(개발) */
+/* 제품 상세 사진수정(개발) */
+
+/* 제품 옵션 추가 */
 export interface AddSellerProductOption {
 	productId: number;
 	addPrice: number;
 	stock: number;
 	size: string;
 }
+/* 제품 옵션 수정 */
 export interface UpdateSellerProductOption {
 	productOptionId: number;
 	addPrice: number;
 	stock: number;
+	isDisplayed: boolean;
 }
-/*  */
-export type CouponListItem = Coupon & {
-	sellerId: null;
-};
+/* 쿠폰 조회 */
 export interface GetSellerCouponListResponse extends BaseResponse {
-	couponList: CouponListItem[];
+	couponList: (Coupon & {
+		couponId: number;
+	})[];
 }
-/*  */
-export interface AddCoupnRequest {
+/* 쿠폰 등록 */
+export interface AddCouponRequest {
 	description: string;
-	couponCode: string;
 	discountType: "percentage" | "fixed_amount";
 	discountValue: number;
 	maxDiscount: number;
-	minimumOrderBeforeAmount: number;
-	status: "Y" | "N";
+	minimumOrderBeforeAmount?: number;
+	amount: number;
+	startDate: string;
+	endDate: string;
+}
+/* 쿠폰 수정 */
+export interface UpdateCouponRequest {
+	couponId: number;
+	description: string;
+	discountType: "percentage" | "fixed_amount";
+	discountValue: number;
+	maxDiscount: number;
+	minimumOrderBeforeAmount?: number;
+	status: "ACTIVE" | "SUSPENDED" | "DELETED";
 	isStackable: boolean;
 	isProductRestricted: boolean;
 	amount: number;
 	startDate: string;
 	endDate: string;
-	sellerId: string;
 }
-/*  */
+/* 쿠폰 허용제품 조회 */
 export type CouponAllowedProductListItem = {
 	couponAllowedId: number;
 	couponId: number;
 	productId: number;
 	name: string;
-	createdAt: string;
 };
 export interface GetSellerCouponAllowResponse extends BaseResponse {
 	CouponAllowedProductList: CouponAllowedProductListItem[];
 }
-/*  */
+/* 쿠폰 허용제품 변경 */
 export interface SetSellerCouponAllowRequest {
 	couponId: number;
 	productIds: number[];
+	allow: boolean;
 }
 /*  */
 export interface IssueCouponsToUsersRequest {

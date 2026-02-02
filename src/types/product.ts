@@ -1,5 +1,8 @@
-import { Coupon, UserCoupon } from "@/types/mypage";
+import { Coupon, Review, UserCoupon } from "@/types/mypage";
 import { FileInfo } from "./file";
+import { BaseResponse } from "@/types/common";
+
+/* MODEL ----------------------------------------------------------------- */
 
 export type Product = {
 	productId: number;
@@ -13,10 +16,10 @@ export type Product = {
 	wishCount: number;
 };
 export type ProductDetail = Product & {
-	sellerId: string;
 	menuSubId: number;
-	subName: string;
-	topName: string;
+	subMenuName: string;
+	topMenuName: string;
+	gender: "M" | "F";
 	materialInfo: string;
 	manufacturerName: string;
 	countryOfOrigin: string;
@@ -32,12 +35,20 @@ export type ProductOption = {
 	productId: number;
 	addPrice: number;
 	stock: number;
-	createdAt: string;
 	size: string;
-	salesCount: number;
+};
+export type ProductQna = {
+	productQnaId: number;
+	question: string;
+	createdAt: string;
+	answer: string;
+	resCreatedAt: string;
+	secret: false;
+	productQnaTypeId: 4;
 };
 
-/*  */
+/* API ----------------------------------------------------------------- */
+/* 제품 리스트 조회 */
 export interface GetProductListRequest {
 	sort: string;
 	menuSubId: number;
@@ -54,21 +65,33 @@ export type ProductItem = Product & {
 export interface GetProductListResponse {
 	productList: ProductItem[];
 }
-/*  */
+/* 장바구니 넣기 */
 export interface AddCartRequest {
 	productOptionId: number;
 	quantity: number;
 }
-/* ---------- */
+/* 제품 상세보기 조회 */
 export interface GetProductDetailResponse {
 	productDetail: Product &
 		ProductDetail & {
-			productImageList: FileInfo[];
+			productImageList: (FileInfo & { productId: number })[];
 		};
 	productOptionList: ProductOption[];
 	availableProductCoupon: Coupon &
 		UserCoupon & {
-			sellerId: string;
+			couponId: number;
 			sellerName: string;
 		};
+}
+/* 제품 리뷰 조회 */
+export interface ProductReviewResponse extends BaseResponse {
+	productReviewList: (Review & { userName: string })[];
+}
+/* 제품 상품 Q&A 조회 */
+type ProductQnaItem = ProductQna & {
+	productQnaTypeName: string;
+	userName: string;
+};
+export interface ProductQnaResponse extends BaseResponse {
+	ProductQnaList: ProductQnaItem[];
 }

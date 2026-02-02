@@ -83,6 +83,7 @@ export interface UserWithdrawalStatusRequest {
 /* 공용 쿠폰 조회 */
 export interface GetCommonCouponListResponse extends BaseResponse {
 	commonCouponList: Coupon & {
+		couponId: number;
 		adminNo: number;
 		isDeleted: boolean;
 	};
