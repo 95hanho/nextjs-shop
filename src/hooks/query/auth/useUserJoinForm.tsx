@@ -1,5 +1,3 @@
-"use client";
-
 import { useRef, useState } from "react";
 import { isValidDateString } from "@/utils/ui";
 import { useMutation } from "@tanstack/react-query";
@@ -65,7 +63,7 @@ export function useUserJoinForm() {
 	const router = useRouter();
 
 	// 회원가입 폼 데이터
-	const [joinForm, setJoinForm] = useState<JoinForm>(testJoinForm);
+	const [joinForm, setJoinForm] = useState<JoinForm>(initJoinForm);
 	// 회원가입 알람.
 	const [joinAlarm, setJoinAlarm] = useState<JoinFormAlert | null>(null);
 	const changeJoinAlarm = (name: JoinFormInputKeys, message: string, status: "SUCCESS" | "FAIL" = "SUCCESS") => {
@@ -181,26 +179,26 @@ export function useUserJoinForm() {
 			name: keyof JoinForm;
 			value: string;
 		};
-		let nextValue: string | number = value;
-		let nextAlarm: JoinFormAlert | null = null;
+		let changeValue: string | number = value;
+		let changeAlarm: JoinFormAlert | null = null;
 
 		if (name == "passwordCheck") {
 			if (joinForm.password && joinForm.password != value) {
-				nextAlarm = { name: "passwordCheck", message: "비밀번호와 일치하지 않습니다.", status: "FAIL" };
+				changeAlarm = { name: "passwordCheck", message: "비밀번호와 일치하지 않습니다.", status: "FAIL" };
 			}
 		}
 		if (name === "phone") {
-			nextValue = value.replace(/[^0-9]/g, "").slice(0, 13); // 예: 13자리 인증번호
+			changeValue = value.replace(/[^0-9]/g, "").slice(0, 13); // 예: 13자리 인증번호
 			setAuthNumberView(false);
 			setPhoneAuthComplete(false);
 		}
 		if (name === "phoneAuth") {
-			nextValue = value.replace(/[^0-9]/g, "").slice(0, 6); // 예: 6자리 인증번호
+			changeValue = value.replace(/[^0-9]/g, "").slice(0, 6); // 예: 6자리 인증번호
 		}
-		setJoinAlarm(nextAlarm);
+		setJoinAlarm(changeAlarm);
 		setJoinForm((prev) => ({
 			...prev,
-			[name]: nextValue as JoinForm[typeof name],
+			[name]: changeValue as JoinForm[typeof name],
 		}));
 	};
 	// 유효성 확인 ex) 아이디 중복확인, 정규표현식 확인
@@ -273,9 +271,10 @@ export function useUserJoinForm() {
 		let changeAlarm: JoinFormAlert | null = null;
 		const alertKeys = Object.keys(joinForm) as JoinFormInputKeys[];
 		for (const key of alertKeys) {
+			if (!joinFormRefs.current[key]) continue;
 			const value = joinForm[key];
 			// 알람없을 때 처음 누를 때
-			if (!value && joinFormRefs.current[key]) {
+			if (!value) {
 				changeAlarm = { name: key, message: "해당 내용을 입력해주세요.", status: "FAIL" };
 				joinFormRefs.current[key]?.focus();
 			} else if (key == "userId" && !idDuplCheck) {
@@ -291,7 +290,7 @@ export function useUserJoinForm() {
 		}
 		// 회원가입 로직 추가
 		console.log("회원가입 완료");
-		handleRegister.mutate();
+		// handleRegister.mutate();
 	};
 
 	// 휴대폰 인증 보내기 버튼

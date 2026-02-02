@@ -21,7 +21,7 @@ const FormWrap = styled.div<{ formWidth?: number }>`
 `;
 
 interface FormPageShellProps {
-	title: string;
+	title: React.ReactNode;
 	children: React.ReactNode;
 	wrapMinHeight?: number;
 	formWidth?: number;
@@ -32,9 +32,7 @@ export const FormPageShell = ({ title, children, wrapMinHeight, formWidth }: For
 	return (
 		<FormWrapper minPx={wrapMinHeight}>
 			<FormWrap formWidth={formWidth}>
-				<h2>
-					<Link href={"/"}>{title}</Link>
-				</h2>
+				<h2 className="py-4 text-5xl">{title}</h2>
 				{children}
 			</FormWrap>
 		</FormWrapper>
