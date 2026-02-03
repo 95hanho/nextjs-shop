@@ -10,3 +10,8 @@ export interface ApiError {
 	/** 서버에서 온 상세 데이터 (선택) */
 	data?: any;
 }
+
+export type ISODate = `${number}${number}${number}${number}-${number}${number}-${number}${number}`;
+export type ISODateTimeLocal =
+	| `${number}${number}${number}${number}-${number}${number}-${number}${number}T${number}${number}:${number}${number}`
+	| `${number}${number}${number}${number}-${number}${number}-${number}${number}T${number}${number}:${number}${number}:${number}${number}`;

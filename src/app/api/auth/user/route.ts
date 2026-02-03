@@ -6,8 +6,13 @@ import { isProd } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { verifyPhoneAuthCompleteToken } from "@/lib/jwt";
 import { JoinRequest, UserUpdateRequest } from "@/types/auth";
-import { BaseResponse } from "@/types/common";
+import { BaseResponse, ISODate } from "@/types/common";
+import { parseISODate } from "@/utils/date";
 import { NextRequest, NextResponse } from "next/server";
+
+type JoinPayloadForSpring = Omit<JoinRequest, "birthday"> & {
+	birthday: ISODate;
+};
 
 // 회원가입
 export const POST = async (nextRequest: NextRequest) => {
@@ -41,14 +46,14 @@ export const POST = async (nextRequest: NextRequest) => {
 			);
 		}
 
-		const payload: JoinRequest = {
+		const payload: JoinPayloadForSpring = {
 			userId,
 			password,
 			name,
 			zonecode,
 			address,
 			addressDetail,
-			birthday: birthday.replace(/\//g, "-"),
+			birthday: parseISODate(birthday),
 			phone,
 			email,
 		};
