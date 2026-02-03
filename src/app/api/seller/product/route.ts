@@ -4,8 +4,9 @@ import { getNormal, postUrlFormData } from "@/api/fetchFilter";
 import { WRONG_REQUEST_MESSAGE } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { withSellerAuth } from "@/lib/seller/auth";
-import { BaseResponse } from "@/types/common";
+import { BaseResponse, ISODate } from "@/types/common";
 import { AddSellerProductRequest, GetSellerProductListResponse, UpdateSellerProductRequest } from "@/types/seller";
+import { parseISODate } from "@/utils/date";
 import { NextResponse } from "next/server";
 
 // 제품 조회
@@ -22,6 +23,11 @@ export const GET = withSellerAuth(async ({ sellerToken }) => {
 		return NextResponse.json(payload, { status });
 	}
 });
+
+type AddSellerProductPayloadForSpring = Omit<AddSellerProductRequest, "manufacturedYm"> & {
+	manufacturedYm: ISODate;
+};
+
 // 제품 추가
 export const POST = withSellerAuth(async ({ nextRequest, sellerToken }) => {
 	try {
@@ -57,7 +63,7 @@ export const POST = withSellerAuth(async ({ nextRequest, sellerToken }) => {
 			!afterServiceContact
 		)
 			return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
-		const payload: AddSellerProductRequest = {
+		const payload: AddSellerProductPayloadForSpring = {
 			name,
 			colorName,
 			originPrice,
@@ -67,7 +73,7 @@ export const POST = withSellerAuth(async ({ nextRequest, sellerToken }) => {
 			manufacturerName,
 			countryOfOrigin,
 			washCareInfo,
-			manufacturedYm,
+			manufacturedYm: parseISODate(manufacturedYm),
 			qualityGuaranteeInfo,
 			afterServiceContact,
 			afterServiceManager,

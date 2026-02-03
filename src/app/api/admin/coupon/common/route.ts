@@ -5,7 +5,8 @@ import { withAdminAuth } from "@/lib/admin/auth";
 import { WRONG_REQUEST_MESSAGE } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { AddCommonCouponRequest, GetCommonCouponListResponse, UpdateCommonCouponRequest } from "@/types/admin";
-import { BaseResponse } from "@/types/common";
+import { BaseResponse, ISODateTimeLocal } from "@/types/common";
+import { parseISODateTimeLocal } from "@/utils/date";
 import { NextResponse } from "next/server";
 
 // 공용 쿠폰 조회
@@ -22,6 +23,12 @@ export const GET = withAdminAuth(async ({ adminToken }) => {
 		return NextResponse.json(payload, { status });
 	}
 });
+
+type AddCommonCouponPayloadForSpring = Omit<AddCommonCouponRequest, "startDate" | "endDate"> & {
+	startDate: ISODateTimeLocal;
+	endDate: ISODateTimeLocal;
+};
+
 // 공용 쿠폰 등록
 export const POST = withAdminAuth(async ({ nextRequest, adminToken }) => {
 	try {
@@ -39,14 +46,14 @@ export const POST = withAdminAuth(async ({ nextRequest, adminToken }) => {
 			return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
 		if (discountType === "percentage" && !maxDiscount) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
 
-		const payload: AddCommonCouponRequest = {
+		const payload: AddCommonCouponPayloadForSpring = {
 			description,
 			discountType,
 			discountValue,
 			minimumOrderBeforeAmount,
 			amount,
-			startDate,
-			endDate,
+			startDate: parseISODateTimeLocal(startDate),
+			endDate: parseISODateTimeLocal(endDate),
 		};
 		if (maxDiscount) payload.maxDiscount = maxDiscount;
 		const data = await postUrlFormData<BaseResponse>(
@@ -64,6 +71,12 @@ export const POST = withAdminAuth(async ({ nextRequest, adminToken }) => {
 		return NextResponse.json(payload, { status });
 	}
 });
+
+type UpdateCommonCouponPayloadForSpring = Omit<UpdateCommonCouponRequest, "startDate" | "endDate"> & {
+	startDate: ISODateTimeLocal;
+	endDate: ISODateTimeLocal;
+};
+
 // 공용 쿠폰 수정
 export const PUT = withAdminAuth(async ({ nextRequest, adminToken }) => {
 	try {
@@ -97,7 +110,7 @@ export const PUT = withAdminAuth(async ({ nextRequest, adminToken }) => {
 			return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
 		if (discountType === "percentage" && !maxDiscount) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
 
-		const payload: UpdateCommonCouponRequest = {
+		const payload: UpdateCommonCouponPayloadForSpring = {
 			couponId,
 			description,
 			discountType,
@@ -107,8 +120,8 @@ export const PUT = withAdminAuth(async ({ nextRequest, adminToken }) => {
 			isStackable,
 			isProductRestricted,
 			amount,
-			startDate,
-			endDate,
+			startDate: parseISODateTimeLocal(startDate),
+			endDate: parseISODateTimeLocal(endDate),
 		};
 		if (maxDiscount) payload.maxDiscount = maxDiscount;
 		const data = await putUrlFormData<BaseResponse>(

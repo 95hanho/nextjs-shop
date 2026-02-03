@@ -1,4 +1,3 @@
-import { ChangeEvent } from "@/types/event";
 import { BaseResponse } from "./common";
 
 /* MODEL --------------------------------------------- */
