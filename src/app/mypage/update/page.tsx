@@ -1,6 +1,6 @@
-import UserInfoUpdate from "./UserInfoUpdate";
+import UserUpdateClient from "./UserUpdateClient";
 
 /* 마이페이지 - 수정 */
 export default function UserUpdatePage() {
-	return <UserInfoUpdate />;
+	return <UserUpdateClient />;
 }
