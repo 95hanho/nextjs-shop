@@ -1,14 +1,9 @@
-/* 내 정보 수정 */
-"use client";
-
 import API_URL from "@/api/endpoints";
 import { getNormal, postJson, putJson } from "@/api/fetchFilter";
-import { FormInput } from "@/components/auth/FormInput";
-import { InfoMark } from "@/components/auth/InfoMark";
 import { useAuth } from "@/hooks/useAuth";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { useModalStore } from "@/store/modal.store";
-import { PhoneAuthRequest, UserUpdateResponse } from "@/types/auth";
+import { PhoneAuthRequest } from "@/types/auth";
 import { BaseResponse } from "@/types/common";
 import { ChangeEvent, FormEvent } from "@/types/event";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -25,6 +20,11 @@ type UserUpdateFormRefs = {
 	phone: HTMLInputElement | null;
 	phoneAuth: HTMLInputElement | null;
 	email: HTMLInputElement | null;
+};
+type UserUpdateAlarm = {
+	name: keyof UserUpdateForm;
+	message: string;
+	status?: "SUCCESS" | "FAIL";
 };
 
 const initUpdateForm = {
@@ -43,7 +43,7 @@ const userUpdateFormRegexFailMent: { [key: string]: string } = {
 	email: "이메일 형식에 일치하지 않습니다.",
 };
 
-export default function UserInfoUpdate() {
+export function useUserUpdateForm() {
 	const { replace } = useRouter();
 	const { openModal } = useModalStore();
 	const { user, setUser, loginOn } = useAuth();
@@ -140,9 +140,9 @@ export default function UserInfoUpdate() {
 		},
 	});
 	// 회원정보변경 API
-	const handleUserUpdate = useMutation<UserUpdateResponse, Error>({
+	const handleUserUpdate = useMutation<BaseResponse, Error>({
 		mutationFn: () =>
-			putJson<UserUpdateResponse>(getApiUrl(API_URL.AUTH_JOIN), {
+			putJson<BaseResponse>(getApiUrl(API_URL.AUTH_JOIN), {
 				phone: userUpdateForm.phone,
 				email: userUpdateForm.email,
 			}),
@@ -164,6 +164,8 @@ export default function UserInfoUpdate() {
 	/* ------------------------------------ */
 	// 유저업데이트 폼
 	const [userUpdateForm, setUserUpdateForm] = useState<UserUpdateForm>(initUpdateForm);
+	// 유저업데이트 알람
+	const [userUpdateAlarm, setUserUpdateAlarm] = useState<UserUpdateAlarm | null>(null);
 	// 유저업데이트 실패 알람.
 	const [userUpdateFailAlert, setUserUpdateFailAlert] = useState<UserUpdateForm>(initUpdateForm);
 	// 유저업데이트 성공 알람.
@@ -323,82 +325,16 @@ export default function UserInfoUpdate() {
 		handleUserUpdate.mutate();
 	};
 
-	if (!user) return null;
-	return (
-		<main id="myPageInfo" className="user-info">
-			<div id="userInfo" className="form-wrap update">
-				<form onSubmit={userUpdateSubmit}>
-					<h2>내 정보 수정</h2>
-					<InfoMark title="아이디" infoVal={<span>{userIdData?.userId}</span>} />
-					<FormInput
-						name="phone"
-						label="휴대폰"
-						placeholder="휴대폰번호를 입력해주세요."
-						type="tel"
-						value={userUpdateForm.phone}
-						failMessage={userUpdateFailAlert.phone}
-						successMessage={userUpdateSuccessAlert.phone}
-						onChange={changeUserUpdateForm}
-						searchBtn={
-							user.phone === userUpdateForm.phone
-								? undefined
-								: {
-										txt: "인증",
-										fnc: () => {
-											clickPhoneAuth();
-										},
-									}
-						}
-						onBlur={validateUserUpdateForm}
-						ref={(el) => {
-							userUpdateFormRefs.current.phone = el;
-						}}
-						inputMode="numeric"
-						pattern="[0-9]*"
-						maxLength={11}
-					/>
-					{authNumberView && (
-						<FormInput
-							name="phoneAuth"
-							label="인증번호"
-							placeholder="인증번호를 입력해주세요."
-							value={userUpdateForm.phoneAuth}
-							failMessage={userUpdateFailAlert.phoneAuth}
-							successMessage={userUpdateSuccessAlert.phoneAuth}
-							onChange={changeUserUpdateForm}
-							searchBtn={{
-								txt: "확인",
-								fnc: () => {
-									clickCheckPhoneAuth();
-								},
-							}}
-							onBlur={validateUserUpdateForm}
-							ref={(el) => {
-								userUpdateFormRefs.current.phone = el;
-							}}
-							inputMode="numeric"
-							pattern="[0-9]*"
-							maxLength={6}
-						/>
-					)}
-					<FormInput
-						name="email"
-						label="이메일"
-						placeholder="이메일을 입력해주세요."
-						type="text"
-						value={userUpdateForm.email}
-						failMessage={userUpdateFailAlert.email}
-						onChange={changeUserUpdateForm}
-						onBlur={validateUserUpdateForm}
-						ref={(el) => {
-							userUpdateFormRefs.current.email = el;
-						}}
-					/>
-					<div className="submit-wrap info">
-						<input type="submit" className="" value={"완료"} />
-					</div>
-				</form>
-			</div>
-		</main>
-	);
+	return {
+		userUpdateSubmit,
+		userIdData,
+		userUpdateForm,
+		userUpdateAlarm,
+		changeUserUpdateForm,
+		clickPhoneAuth,
+		validateUserUpdateForm,
+		userUpdateFormRefs,
+		authNumberView,
+		clickCheckPhoneAuth,
+	};
 }
