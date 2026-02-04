@@ -3,6 +3,7 @@
 import API_URL from "@/api/endpoints";
 import { getNormal, postJson } from "@/api/fetchFilter";
 import { InfoMark } from "@/components/auth/InfoMark";
+import { NormalButton } from "@/components/common/NormalButton";
 import { useAuth } from "@/hooks/useAuth";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { BaseResponse } from "@/types/common";
@@ -36,80 +37,41 @@ export default function UserInfoClient() {
 			<div className="form-wrap">
 				<h2>내 정보 수정</h2>
 				<InfoMark title="아이디" infoVal={<span>{userIdResponse?.userId}</span>} />
-				<div className="join-input mark">
-					<div className="join-label">
-						<label>비밀번호</label>
-					</div>
-					<div className={`join-text`}>
-						<div className="info-val">
-							<button
-								className="btn"
-								onClick={() => {
-									handlePhoneAuth.mutate();
-								}}
-							>
-								비밀번호 변경
-							</button>
-						</div>
-					</div>
-				</div>
-				<div className="join-input mark">
-					<div className="join-label">
-						<label>이름</label>
-					</div>
-					<div className={`join-text`}>
-						<div className="info-val">
-							<span>{user.name}</span>
-						</div>
-					</div>
-				</div>
-				<div className="join-input mark">
-					<div className="join-label">
-						<label>배송지관리</label>
-					</div>
-					<div className={`join-text`}>
-						<div className="info-val">
-							<button
-								className="btn"
-								onClick={() => {
-									push("/mypage/address");
-								}}
-							>
-								수정하기
-							</button>
-						</div>
-					</div>
-				</div>
-				<div className="join-input mark">
-					<div className="join-label">
-						<label>생년월일</label>
-					</div>
-					<div className={`join-text`}>
-						<div className="info-val">
-							<span>{user.birthday}</span>
-						</div>
-					</div>
-				</div>
-				<div className="join-input mark">
-					<div className="join-label">
-						<label>휴대폰</label>
-					</div>
-					<div className={`join-text`}>
-						<div className="info-val">
-							<span>{user.phone}</span>
-						</div>
-					</div>
-				</div>
-				<div className="join-input mark">
-					<div className="join-label">
-						<label>이메일</label>
-					</div>
-					<div className={`join-text`}>
-						<div className="info-val">
-							<span>{user.email}</span>
-						</div>
-					</div>
-				</div>
+				<InfoMark
+					title="비밀번호"
+					infoVal={
+						<NormalButton
+							title="비밀번호 변경"
+							onClick={() => {
+								handlePhoneAuth.mutate();
+							}}
+							bgColor="#d7ac06"
+							borderColor="#a98704"
+							bgActiveColor="#efc007"
+						/>
+					}
+				/>
+				<InfoMark title="이름" infoVal={<span>{user.name}</span>} />
+				<InfoMark
+					title="배송지관리"
+					infoVal={
+						<NormalButton
+							title="수정하기"
+							onClick={() => {
+								push("/mypage/address");
+							}}
+							bgColor="#0b66c7"
+							borderColor="#0b4889"
+							bgHoverColor=""
+							bgActiveColor=""
+						/>
+					}
+				/>
+				<InfoMark title="생년월일" infoVal={<span>{user.birthday}</span>} />
+				<InfoMark title="휴대폰" infoVal={<span>{user.phone}</span>} />
+				<InfoMark title="이메일" infoVal={<span>{user.email}</span>} />
+				<InfoMark title="이름" infoVal={<span>{user.name}</span>} />
+				<InfoMark title="이름" infoVal={<span>{user.name}</span>} />
 				<div className="submit-wrap info">
 					<input
 						type="submit"
