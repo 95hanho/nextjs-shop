@@ -21,6 +21,7 @@ interface FormInputProps {
 	inputMode?: React.HTMLAttributes<HTMLInputElement>["inputMode"];
 	pattern?: string;
 	maxLength?: number;
+	inputWidthFill?: boolean;
 }
 
 export const FormInput = forwardRef<HTMLInputElement, FormInputProps>((props, ref) => {
@@ -39,6 +40,7 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>((props, re
 		inputMode,
 		pattern,
 		maxLength,
+		inputWidthFill = false,
 	} = props;
 
 	let alarmStatus,
@@ -50,11 +52,11 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>((props, re
 
 	return (
 		<div className={styles.joinInput}>
-			<div className={styles.joinLabel}>
+			<div className={clsx(styles.joinLabel, "w-1/3")}>
 				<label htmlFor={name}>{label}</label>
 			</div>
 
-			<div className={clsx(styles.joinText, alarmStatus === "FAIL" && styles.fail, alarmStatus === "SUCCESS" && styles.success)}>
+			<div className={clsx(styles.joinText, alarmStatus === "FAIL" && styles.fail, alarmStatus === "SUCCESS" && styles.success, "w-2/3")}>
 				<div>
 					<input
 						ref={ref}
@@ -69,7 +71,7 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>((props, re
 						inputMode={inputMode}
 						pattern={pattern}
 						maxLength={maxLength}
-						className={name === "address" ? "cursor-pointer" : ""}
+						className={clsx(name === "address" && "cursor-pointer", inputWidthFill && styles.fill)}
 					/>
 					{searchBtn && (
 						<button

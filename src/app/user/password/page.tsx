@@ -15,5 +15,9 @@ export default function PasswordChangePage() {
 		// redirect("/user"); // 또는 /find-password
 	}
 
-	return <PasswordChangeClient mode={hasRefresh ? "LOGGED_IN" : "RESET"} />;
+	return (
+		<main id="passwordChange">
+			<PasswordChangeClient mode={hasRefresh ? "LOGGED_IN" : "RESET"} />;
+		</main>
+	);
 }

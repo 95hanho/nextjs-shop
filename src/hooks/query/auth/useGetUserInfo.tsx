@@ -1,5 +1,3 @@
-"use client";
-
 import API_URL from "@/api/endpoints";
 import { getNormal } from "@/api/fetchFilter";
 import { useAuth } from "@/hooks/useAuth";

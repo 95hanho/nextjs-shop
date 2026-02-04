@@ -4,16 +4,17 @@
 import API_URL from "@/api/endpoints";
 import { getNormal, postJson, putJson } from "@/api/fetchFilter";
 import { FormInput } from "@/components/auth/FormInput";
+import { InfoMark } from "@/components/auth/InfoMark";
 import { useAuth } from "@/hooks/useAuth";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { useModalStore } from "@/store/modal.store";
-import { PhoneAuthRequest, UserInfo, UserUpdateResponse } from "@/types/auth";
+import { PhoneAuthRequest, UserUpdateResponse } from "@/types/auth";
 import { BaseResponse } from "@/types/common";
 import { ChangeEvent, FormEvent } from "@/types/event";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import Error from "next/error";
 import { useRouter } from "next/navigation";
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type UserUpdateForm = {
 	phone: string;
@@ -328,16 +329,7 @@ export default function UserInfoUpdate() {
 			<div id="userInfo" className="form-wrap update">
 				<form onSubmit={userUpdateSubmit}>
 					<h2>내 정보 수정</h2>
-					<div className="join-input mark">
-						<div className="join-label">
-							<label>아이디</label>
-						</div>
-						<div className={`join-text`}>
-							<div className="info-val">
-								<span>{userIdData?.userId}</span>
-							</div>
-						</div>
-					</div>
+					<InfoMark title="아이디" infoVal={<span>{userIdData?.userId}</span>} />
 					<FormInput
 						name="phone"
 						label="휴대폰"

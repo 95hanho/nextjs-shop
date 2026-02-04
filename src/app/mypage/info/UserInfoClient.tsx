@@ -9,6 +9,7 @@ import { getApiUrl } from "@/lib/getBaseUrl";
 import { BaseResponse } from "@/types/common";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import moment from "moment";
 
 export default function UserInfoClient() {
 	const { user, loginOn } = useAuth();
@@ -45,9 +46,10 @@ export default function UserInfoClient() {
 							onClick={() => {
 								handlePhoneAuth.mutate();
 							}}
-							bgColor="#d7ac06"
+							bgColor="#f9c703"
 							borderColor="#a98704"
-							bgActiveColor="#efc007"
+							bgHoverColor="#efc007"
+							bgActiveColor="#f9c90b"
 						/>
 					}
 				/>
@@ -62,16 +64,26 @@ export default function UserInfoClient() {
 							}}
 							bgColor="#0b66c7"
 							borderColor="#0b4889"
-							bgHoverColor=""
-							bgActiveColor=""
+							bgHoverColor="#5fa1e7"
+							bgActiveColor="#3889df"
 						/>
 					}
 				/>
-				<InfoMark title="생년월일" infoVal={<span>{user.birthday}</span>} />
+				<InfoMark title="생년월일" infoVal={<span>{moment(user.birthday).format("YYYY/MM/DD")}</span>} />
 				<InfoMark title="휴대폰" infoVal={<span>{user.phone}</span>} />
 				<InfoMark title="이메일" infoVal={<span>{user.email}</span>} />
 				<InfoMark title="이름" infoVal={<span>{user.name}</span>} />
-				<InfoMark title="이름" infoVal={<span>{user.name}</span>} />
+				<InfoMark title="남은 마일리지" infoVal={<span>{user.mileage}</span>} />
+				{user.tall > 0 && user.weight > 0 && (
+					<InfoMark
+						title="신체정보"
+						infoVal={
+							<span>
+								{user.tall}cm / {user.weight}kg
+							</span>
+						}
+					/>
+				)}
 				<div className="submit-wrap info">
 					<input
 						type="submit"
