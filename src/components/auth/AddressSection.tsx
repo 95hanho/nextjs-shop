@@ -18,10 +18,10 @@ interface AddressSectionProps<K extends string> {
 	setFormRef: SetFormRef;
 }
 
-export const AddressSection = ({ form, alarm, setAddress, changeForm, validateForm, setFormRef }: AddressSectionProps) => {
+export const AddressSection = <K extends string>({ form, alarm, setAddress, changeForm, validateForm, setFormRef }: AddressSectionProps<K>) => {
 	// 주소API 팝업 띄우기
 	const addressPopup = () => {
-		new window.daum.Postcode({
+		new kakao.Postcode({
 			oncomplete: (data) => {
 				const fullAddress = data.roadAddress || data.jibunAddress;
 				setAddress({

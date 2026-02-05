@@ -1,7 +1,7 @@
 /* 글로벌 타입 지정 파일 */
 declare global {
 	interface Window {
-		daum: {
+		kakao: {
 			Postcode: new (options: {
 				oncomplete: (data: { userSelectedType: string; roadAddress: string; jibunAddress: string; zonecode: string }) => void;
 			}) => {
@@ -9,6 +9,8 @@ declare global {
 			};
 		};
 	}
+
+	const kakao: Window["kakao"];
 }
 
 export {};
