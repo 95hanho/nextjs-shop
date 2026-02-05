@@ -3,16 +3,17 @@
 
 import { FormInput } from "@/components/auth/FormInput";
 import { FormPageShell } from "@/components/auth/FormPageShell";
-import { usePasswordChangeForm } from "@/hooks/query/auth/usePasswordChangeForm";
+import { usePasswordChangeForm } from "@/hooks/query/auth/form/usePasswordChangeForm";
 
 interface PasswordChangeClientProps {
 	mode: "LOGGED_IN" | "RESET";
 }
 //
 export default function PasswordChangeClient({ mode }: PasswordChangeClientProps) {
-	const { pwdChangeSubmit, pwdChangeForm, pwdChangeAlarm, changePwdChangeForm, validatePwdChangeForm, pwdChangeFormRefs } = usePasswordChangeForm({
-		mode,
-	});
+	const { pwdChangeSubmit, pwdChangeForm, pwdChangeAlarm, changePwdChangeForm, validatePwdChangeForm, pwdChangeFormInputRefs } =
+		usePasswordChangeForm({
+			mode,
+		});
 
 	return (
 		<FormPageShell title="비밀번호 변경" formWidth={400}>
@@ -28,7 +29,7 @@ export default function PasswordChangeClient({ mode }: PasswordChangeClientProps
 						onChange={changePwdChangeForm}
 						onBlur={validatePwdChangeForm}
 						ref={(el) => {
-							pwdChangeFormRefs.current.curPassword = el;
+							pwdChangeFormInputRefs.current.curPassword = el;
 						}}
 						inputWidthFill={true}
 					/>
@@ -43,7 +44,7 @@ export default function PasswordChangeClient({ mode }: PasswordChangeClientProps
 					onChange={changePwdChangeForm}
 					onBlur={validatePwdChangeForm}
 					ref={(el) => {
-						pwdChangeFormRefs.current.newPassword = el;
+						pwdChangeFormInputRefs.current.newPassword = el;
 					}}
 					inputWidthFill={true}
 				/>
@@ -57,7 +58,7 @@ export default function PasswordChangeClient({ mode }: PasswordChangeClientProps
 					onChange={changePwdChangeForm}
 					onBlur={validatePwdChangeForm}
 					ref={(el) => {
-						pwdChangeFormRefs.current.newPasswordCheck = el;
+						pwdChangeFormInputRefs.current.newPasswordCheck = el;
 					}}
 					inputWidthFill={true}
 				/>

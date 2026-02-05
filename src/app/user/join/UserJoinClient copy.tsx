@@ -18,7 +18,7 @@ export interface JoinForm extends LoginFormData, User {
 	passwordCheck: string;
 }
 
-export type JoinFormRefs = {
+export type JoinFormInputRefs = {
 	[K in JoinFormInputKeys]: HTMLInputElement | null;
 };
 
@@ -75,7 +75,7 @@ export default function UserJoinClient() {
 		setJoinAlarm({ name, message, status });
 	};
 	// 회원가입 input들 HTMLInputElement
-	const joinFormRefs = useRef<Partial<JoinFormRefs>>({});
+	const joinFormInputRefs = useRef<Partial<JoinFormInputRefs>>({});
 	// 아이디중복여부
 	const [idDuplCheck, setIdDuplCheck] = useState<boolean>(false);
 	// 인증번호 화면 띄울지
@@ -181,7 +181,7 @@ export default function UserJoinClient() {
 	// joinForm set
 	const changeJoinForm = (e: ChangeEvent) => {
 		const { name, value } = e.target as {
-			name: keyof JoinForm;
+			name: JoinFormInputKeys;
 			value: string;
 		};
 		let nextValue: string | number = value;
@@ -268,9 +268,9 @@ export default function UserJoinClient() {
 	const joinSubmit = (e: FormEvent) => {
 		console.log("joinSubmit");
 		e.preventDefault();
-		// const keys = Object.keys(joinForm) as (keyof JoinForm)[];
+		// const keys = Object.keys(joinForm) as (JoinFormInputKeys)[];
 		if (joinAlarm?.status === "FAIL") {
-			joinFormRefs.current[joinAlarm.name]?.focus();
+			joinFormInputRefs.current[joinAlarm.name]?.focus();
 			return;
 		}
 		let changeAlarm: JoinFormAlert | null = null;
@@ -278,9 +278,9 @@ export default function UserJoinClient() {
 		for (const key of alertKeys) {
 			const value = joinForm[key];
 			// 알람없을 때 처음 누를 때
-			if (!value && joinFormRefs.current[key]) {
+			if (!value && joinFormInputRefs.current[key]) {
 				changeAlarm = { name: key, message: "해당 내용을 입력해주세요.", status: "FAIL" };
-				joinFormRefs.current[key]?.focus();
+				joinFormInputRefs.current[key]?.focus();
 			} else if (key == "userId" && !idDuplCheck) {
 				changeAlarm = { name: key, message: "아이디 중복확인을 해주세요.", status: "FAIL" };
 			} else if (key == "phone" && !phoneAuthComplete) {
@@ -315,13 +315,13 @@ export default function UserJoinClient() {
 	const clickPhoneAuth = () => {
 		if (!joinForm.phone) {
 			changeJoinAlarm("phone", "휴대폰 번호를 입력해주세요.", "FAIL");
-			joinFormRefs.current.phone?.focus();
+			joinFormInputRefs.current.phone?.focus();
 			return;
 		}
 		if (joinFormRegex.phone) {
 			if (!joinFormRegex.phone.test(joinForm.phone)) {
 				changeJoinAlarm("phone", joinFormRegexFailMent.phone, "FAIL");
-				joinFormRefs.current.phone?.focus();
+				joinFormInputRefs.current.phone?.focus();
 				return;
 			}
 		}
@@ -330,7 +330,7 @@ export default function UserJoinClient() {
 	// 휴대폰 인증확인 버튼
 	const clickCheckPhoneAuth = () => {
 		if (joinAlarm?.name === "phone" && joinAlarm.status === "FAIL") {
-			joinFormRefs.current.phoneAuth?.focus();
+			joinFormInputRefs.current.phoneAuth?.focus();
 			return;
 		}
 		handlePhoneAuthComplete.mutate();
@@ -352,7 +352,7 @@ export default function UserJoinClient() {
 						onChange={changeJoinForm}
 						onBlur={validateJoinForm}
 						ref={(el) => {
-							joinFormRefs.current.userId = el;
+							joinFormInputRefs.current.userId = el;
 						}}
 					/>
 					<FormInput
@@ -365,7 +365,7 @@ export default function UserJoinClient() {
 						onChange={changeJoinForm}
 						onBlur={validateJoinForm}
 						ref={(el) => {
-							joinFormRefs.current.password = el;
+							joinFormInputRefs.current.password = el;
 						}}
 					/>
 					<FormInput
@@ -378,7 +378,7 @@ export default function UserJoinClient() {
 						onChange={changeJoinForm}
 						onBlur={validateJoinForm}
 						ref={(el) => {
-							joinFormRefs.current.passwordCheck = el;
+							joinFormInputRefs.current.passwordCheck = el;
 						}}
 					/>
 					<div className="join-space"></div>
@@ -391,7 +391,7 @@ export default function UserJoinClient() {
 						onChange={changeJoinForm}
 						onBlur={validateJoinForm}
 						ref={(el) => {
-							joinFormRefs.current.name = el;
+							joinFormInputRefs.current.name = el;
 						}}
 					/>
 					<FormInput
@@ -414,7 +414,7 @@ export default function UserJoinClient() {
 						onChange={changeJoinForm}
 						onBlur={validateJoinForm}
 						ref={(el) => {
-							joinFormRefs.current.addressDetail = el;
+							joinFormInputRefs.current.addressDetail = el;
 						}}
 					/>
 					<FormInput
@@ -426,7 +426,7 @@ export default function UserJoinClient() {
 						onChange={changeJoinForm}
 						onBlur={validateJoinForm}
 						ref={(el) => {
-							joinFormRefs.current.birthday = el;
+							joinFormInputRefs.current.birthday = el;
 						}}
 					/>
 					<div className="join-space"></div>
@@ -446,7 +446,7 @@ export default function UserJoinClient() {
 						}}
 						onBlur={validateJoinForm}
 						ref={(el) => {
-							joinFormRefs.current.phone = el;
+							joinFormInputRefs.current.phone = el;
 						}}
 						inputMode="numeric"
 						pattern="[0-9]*"
@@ -468,7 +468,7 @@ export default function UserJoinClient() {
 							}}
 							onBlur={validateJoinForm}
 							ref={(el) => {
-								joinFormRefs.current.phone = el;
+								joinFormInputRefs.current.phone = el;
 							}}
 							inputMode="numeric"
 							pattern="[0-9]*"
@@ -485,7 +485,7 @@ export default function UserJoinClient() {
 						onChange={changeJoinForm}
 						onBlur={validateJoinForm}
 						ref={(el) => {
-							joinFormRefs.current.email = el;
+							joinFormInputRefs.current.email = el;
 						}}
 					/>
 					<div className="submit-wrap">

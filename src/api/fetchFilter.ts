@@ -248,9 +248,8 @@ export function putUrlFormData<T>(url: string, params: Params, headers?: Request
 }
 
 // PUT JSON
-export function putJson<TRes, TBody extends Record<string, unknown> = Record<string, unknown>>(url: string, body?: TBody, headers?: RequestHeaders) {
+export function putJson<TRes, TBody extends object = object>(url: string, body?: TBody, headers?: RequestHeaders) {
 	const [u2, restBody] = applyPathParamsFromBody(url, body);
-
 	return http<TRes>(u2, {
 		method: "PUT",
 		headers: { "Content-Type": "application/json", ...(headers ?? {}) },

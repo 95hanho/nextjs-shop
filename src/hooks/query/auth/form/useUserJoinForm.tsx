@@ -5,18 +5,18 @@ import { postJson } from "@/api/fetchFilter";
 import { BaseResponse } from "@/types/common";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import API_URL from "@/api/endpoints";
-import { JoinFormAlert, JoinFormInputKeys, JoinRequest, LoginFormData, PhoneAuthCheckRequest, PhoneAuthRequest, User } from "@/types/auth";
+import { JoinRequest, LoginFormData, PhoneAuthCheckRequest, PhoneAuthRequest, User } from "@/types/auth";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, FormEvent } from "@/types/event";
+import { FormInputAlarm, FormInputRefs } from "@/types/form";
 
 export interface JoinForm extends LoginFormData, User {
 	phoneAuth: string;
 	passwordCheck: string;
 }
-
-export type JoinFormRefs = {
-	[K in JoinFormInputKeys]: HTMLInputElement | null;
-};
+export type JoinFormInputKeys = keyof Omit<JoinForm, "zonecode">;
+export type JoinFormAlert = FormInputAlarm<JoinFormInputKeys>;
+export type JoinFormInputRefs = FormInputRefs<JoinFormInputKeys>;
 
 const initJoinForm: JoinForm = {
 	userId: "",
@@ -70,7 +70,7 @@ export function useUserJoinForm() {
 		setJoinAlarm({ name, message, status });
 	};
 	// 회원가입 input들 HTMLInputElement
-	const joinFormRefs = useRef<Partial<JoinFormRefs>>({});
+	const joinFormInputRefs = useRef<Partial<JoinFormInputRefs>>({});
 	// 아이디중복여부
 	const [idDuplCheck, setIdDuplCheck] = useState<boolean>(false);
 	// 인증번호 화면 띄울지
@@ -176,7 +176,7 @@ export function useUserJoinForm() {
 	// joinForm set
 	const changeJoinForm = (e: ChangeEvent) => {
 		const { name, value } = e.target as {
-			name: keyof JoinForm;
+			name: JoinFormInputKeys;
 			value: string;
 		};
 		let changeValue: string | number = value;
@@ -198,7 +198,7 @@ export function useUserJoinForm() {
 		setJoinAlarm(changeAlarm);
 		setJoinForm((prev) => ({
 			...prev,
-			[name]: changeValue as JoinForm[typeof name],
+			[name]: changeValue,
 		}));
 	};
 	// 유효성 확인 ex) 아이디 중복확인, 정규표현식 확인
@@ -263,20 +263,20 @@ export function useUserJoinForm() {
 	const joinSubmit = (e: FormEvent) => {
 		console.log("joinSubmit");
 		e.preventDefault();
-		// const keys = Object.keys(joinForm) as (keyof JoinForm)[];
+		// const keys = Object.keys(joinForm) as (JoinFormInputKeys)[];
 		if (joinAlarm?.status === "FAIL") {
-			joinFormRefs.current[joinAlarm.name]?.focus();
+			joinFormInputRefs.current[joinAlarm.name]?.focus();
 			return;
 		}
 		let changeAlarm: JoinFormAlert | null = null;
 		const alertKeys = Object.keys(joinForm) as JoinFormInputKeys[];
 		for (const key of alertKeys) {
-			if (!joinFormRefs.current[key]) continue;
+			if (!joinFormInputRefs.current[key]) continue;
 			const value = joinForm[key];
 			// 알람없을 때 처음 누를 때
 			if (!value) {
 				changeAlarm = { name: key, message: "해당 내용을 입력해주세요.", status: "FAIL" };
-				joinFormRefs.current[key]?.focus();
+				joinFormInputRefs.current[key]?.focus();
 			} else if (key == "userId" && !idDuplCheck) {
 				changeAlarm = { name: key, message: "아이디 중복확인을 해주세요.", status: "FAIL" };
 			} else if (key == "phone" && !phoneAuthComplete) {
@@ -297,13 +297,13 @@ export function useUserJoinForm() {
 	const clickPhoneAuth = () => {
 		if (!joinForm.phone) {
 			changeJoinAlarm("phone", "휴대폰 번호를 입력해주세요.", "FAIL");
-			joinFormRefs.current.phone?.focus();
+			joinFormInputRefs.current.phone?.focus();
 			return;
 		}
 		if (joinFormRegex.phone) {
 			if (!joinFormRegex.phone.test(joinForm.phone)) {
 				changeJoinAlarm("phone", joinFormRegexFailMent.phone, "FAIL");
-				joinFormRefs.current.phone?.focus();
+				joinFormInputRefs.current.phone?.focus();
 				return;
 			}
 		}
@@ -312,7 +312,7 @@ export function useUserJoinForm() {
 	// 휴대폰 인증확인 버튼
 	const clickCheckPhoneAuth = () => {
 		if (joinAlarm?.name === "phone" && joinAlarm.status === "FAIL") {
-			joinFormRefs.current.phoneAuth?.focus();
+			joinFormInputRefs.current.phoneAuth?.focus();
 			return;
 		}
 		handlePhoneAuthComplete.mutate();
@@ -323,7 +323,7 @@ export function useUserJoinForm() {
 		joinForm,
 		setJoinForm,
 		joinAlarm,
-		joinFormRefs,
+		joinFormInputRefs,
 		changeJoinForm,
 		validateJoinForm,
 		clickPhoneAuth,

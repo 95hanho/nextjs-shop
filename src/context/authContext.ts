@@ -6,22 +6,22 @@ import { createContext, Dispatch, SetStateAction } from "react";
 interface AuthContextType {
 	loginOn: boolean;
 	logout: () => void;
-	user: UserInfo | null;
-	setUser: Dispatch<SetStateAction<UserInfo | null>>;
+	user: UserInfo;
+	setUser: Dispatch<SetStateAction<UserInfo>>;
 }
 
 interface SellerAuthContextType {
 	loginOn: boolean;
 	logout: () => void;
-	seller: SellerInfo | null;
-	setSeller: Dispatch<SetStateAction<SellerInfo | null>>;
+	seller: SellerInfo;
+	setSeller: Dispatch<SetStateAction<SellerInfo>>;
 }
 
 interface AdminAuthContextType {
 	loginOn: boolean;
 	logout: () => void;
-	admin: AdminInfo | null;
-	setAdmin: Dispatch<SetStateAction<AdminInfo | null>>;
+	admin: AdminInfo;
+	setAdmin: Dispatch<SetStateAction<AdminInfo>>;
 }
 
 // 인증관련 컨텍스트

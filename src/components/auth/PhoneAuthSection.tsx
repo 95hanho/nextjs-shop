@@ -1,13 +1,13 @@
 import { FormInput } from "@/components/auth/FormInput";
-import { FormInputAlarm, SetFormRef } from "@/types/auth";
 import { ChangeFunction } from "@/types/event";
+import { FormInputAlarm, SetFormRef } from "@/types/form";
 
 interface PhoneAuthSectionProps {
 	form: {
 		phone: string;
 		phoneAuth: string;
 	};
-	alarm: FormInputAlarm;
+	alarm: FormInputAlarm<keyof PhoneAuthSectionProps["form"]>;
 	changeForm: ChangeFunction;
 	validateForm: ChangeFunction;
 	setPhoneRef: SetFormRef;
