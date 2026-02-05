@@ -3,6 +3,7 @@ import { postJson } from "@/api/fetchFilter";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { BaseResponse } from "@/types/common";
 import { ChangeEvent, FormEvent } from "@/types/event";
+import { FormInputAlarm, FormInputRefs } from "@/types/form";
 import { useMutation } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -14,17 +15,9 @@ type FindUserForm = {
 	phone: string;
 	phoneAuth: string;
 };
-type FindUserFormAlarm = {
-	name: keyof FindUserForm;
-	message: string;
-	status?: "SUCCESS" | "FAIL";
-};
-
-type FindUserFormRefs = {
-	userId: HTMLInputElement | null;
-	phone: HTMLInputElement | null;
-	phoneAuth: HTMLInputElement | null;
-};
+type FindUserFormInputKeys = keyof FindUserForm;
+type FindUserFormAlarm = FormInputAlarm<FindUserFormInputKeys>;
+type FindUserFormInputRefs = FormInputRefs<FindUserFormInputKeys>;
 
 const initFindUserForm: FindUserForm = {
 	userId: "",
@@ -114,7 +107,7 @@ export function useFindUserForm() {
 	const [findUserForm, setFindUserForm] = useState<FindUserForm>(initFindUserForm);
 	const [findUserFormAlarm, setFindUserFormAlarm] = useState<FindUserFormAlarm | null>(null);
 	// 비번변경 input들 HTMLInputElement
-	const findUserFormRefs = useRef<Partial<FindUserFormRefs>>({});
+	const findUserFormInputRefs = useRef<Partial<FindUserFormInputRefs>>({});
 	// 인증번호 화면 띄울지
 	const [phoneAuthView, setAuthNumberView] = useState<boolean>(false);
 	// 인증번호 토큰
@@ -127,32 +120,27 @@ export function useFindUserForm() {
 	// 비번변경 폼 변경
 	const changeFindUserForm = (e: ChangeEvent) => {
 		const { name, value } = e.target as {
-			name: keyof FindUserForm;
+			name: FindUserFormInputKeys;
 			value: string;
 		};
-		let nextValue: string | number = value;
+		let changeValue: string | number = value;
 
 		if (name === "phone") {
-			nextValue = value.replace(/[^0-9]/g, "").slice(0, 13); // 예: 13자리 인증번호
+			changeValue = value.replace(/[^0-9]/g, "").slice(0, 13); // 예: 13자리 인증번호
 			setPhoneAuthComplete(false);
-			// setFindUserSuccessAlert((prev) => ({
-			// 	...prev,
-			// 	[name]: "",
-			// }));
 		}
 		if (name === "phoneAuth") {
-			nextValue = value.replace(/[^0-9]/g, "").slice(0, 6); // 예: 6자리 인증번호
+			changeValue = value.replace(/[^0-9]/g, "").slice(0, 6); // 예: 6자리 인증번호
 		}
-
 		setFindUserForm((prev) => ({
 			...prev,
-			[name]: nextValue as FindUserForm[typeof name],
+			[name]: changeValue as FindUserForm[typeof name],
 		}));
 	};
 	// 유효성 확인 ex) 아이디 중복확인, 정규표현식 확인
 	const validatefindUserForm = async (e: ChangeEvent) => {
 		const { name, value } = e.target as {
-			name: keyof FindUserForm;
+			name: FindUserFormInputKeys;
 			value: string;
 		};
 		const changeVal = value.trim();
@@ -177,18 +165,18 @@ export function useFindUserForm() {
 		console.log("findUserSubmit");
 		e.preventDefault();
 		if (findUserFormAlarm?.status === "FAIL") {
-			findUserFormRefs.current[findUserFormAlarm.name]?.focus();
+			findUserFormInputRefs.current[findUserFormAlarm.name]?.focus();
 		}
 		let changeAlarm: FindUserFormAlarm | null = null;
-		const alertKeys = Object.keys(findUserForm) as (keyof FindUserForm)[];
+		const alertKeys = Object.keys(findUserForm) as FindUserFormInputKeys[];
 		for (const key of alertKeys) {
-			if (!findUserFormRefs.current[key]) continue;
+			if (!findUserFormInputRefs.current[key]) continue;
 			const value = findUserForm[key];
 
 			// 알람없을 때 처음 누를 때
 			if (!value) {
 				changeAlarm = { name: key, message: "해당 내용을 입력해주세요.", status: "FAIL" };
-				findUserFormRefs.current[key]?.focus();
+				findUserFormInputRefs.current[key]?.focus();
 			}
 		}
 		if (changeAlarm) {
@@ -209,11 +197,11 @@ export function useFindUserForm() {
 				message: "휴대폰 번호를 입력해주세요.",
 				status: "FAIL",
 			});
-			findUserFormRefs.current.phone?.focus();
+			findUserFormInputRefs.current.phone?.focus();
 			return;
 		}
 		if (findUserFormAlarm?.name === "phone") {
-			findUserFormRefs.current.phone?.focus();
+			findUserFormInputRefs.current.phone?.focus();
 			return;
 		}
 		handlePhoneAuth.mutate();
@@ -221,7 +209,7 @@ export function useFindUserForm() {
 	// 휴대폰 인증확인 버튼
 	const clickCheckPhoneAuth = () => {
 		if (findUserFormAlarm?.name === "phoneAuth") {
-			findUserFormRefs.current.phoneAuth?.focus();
+			findUserFormInputRefs.current.phoneAuth?.focus();
 			return;
 		}
 		handlePhoneAuthComplete.mutate();
@@ -235,7 +223,7 @@ export function useFindUserForm() {
 		findUserFormAlarm,
 		changeFindUserForm,
 		validatefindUserForm,
-		findUserFormRefs,
+		findUserFormInputRefs,
 		clickPhoneAuth,
 		phoneAuthView,
 		clickCheckPhoneAuth,

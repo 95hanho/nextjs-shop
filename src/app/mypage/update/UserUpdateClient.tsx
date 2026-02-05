@@ -1,10 +1,12 @@
 /* 내 정보 수정 */
 "use client";
 
+import { AddressResult, AddressSection } from "@/components/auth/AddressSection";
 import { FormInput } from "@/components/auth/FormInput";
 import { InfoMark } from "@/components/auth/InfoMark";
-import { useUserUpdateForm } from "@/hooks/query/auth/useUserUpdateForm";
+import { useUserUpdateForm } from "@/hooks/query/auth/form/useUserUpdateForm";
 import { useAuth } from "@/hooks/useAuth";
+import { FormInputRef } from "@/types/form";
 
 export default function UserInfoUpdate() {
 	const { user } = useAuth();
@@ -12,22 +14,37 @@ export default function UserInfoUpdate() {
 		userUpdateSubmit,
 		userIdData,
 		userUpdateForm,
+		setUserUpdateForm,
 		userUpdateAlarm,
 		changeUserUpdateForm,
 		clickPhoneAuth,
 		validateUserUpdateForm,
-		userUpdateFormRefs,
+		userUpdateFormInputRefs,
 		authNumberView,
 		clickCheckPhoneAuth,
 	} = useUserUpdateForm();
 
-	if (!user) return null;
+	if (!user.name) return null;
 	return (
 		<main id="myPageInfo" className="user-info">
 			<div id="userInfo" className="form-wrap update">
 				<form onSubmit={userUpdateSubmit}>
 					<h2>내 정보 수정</h2>
 					<InfoMark title="아이디" infoVal={<span>{userIdData?.userId}</span>} />
+					<AddressSection
+						form={userUpdateForm}
+						alarm={userUpdateAlarm}
+						setAddress={(result: AddressResult) => {
+							setUserUpdateForm((prev) => ({
+								...prev,
+								zonecode: result.zonecode,
+								address: result.address,
+							}));
+						}}
+						changeForm={changeUserUpdateForm}
+						validateForm={validateUserUpdateForm}
+						setFormRef={(el: FormInputRef) => (userUpdateFormInputRefs.current.addressDetail = el)}
+					/>
 					<FormInput
 						name="phone"
 						label="휴대폰"
@@ -48,7 +65,7 @@ export default function UserInfoUpdate() {
 						}
 						onBlur={validateUserUpdateForm}
 						ref={(el) => {
-							userUpdateFormRefs.current.phone = el;
+							userUpdateFormInputRefs.current.phone = el;
 						}}
 						inputMode="numeric"
 						pattern="[0-9]*"
@@ -70,7 +87,7 @@ export default function UserInfoUpdate() {
 							}}
 							onBlur={validateUserUpdateForm}
 							ref={(el) => {
-								userUpdateFormRefs.current.phone = el;
+								userUpdateFormInputRefs.current.phone = el;
 							}}
 							inputMode="numeric"
 							pattern="[0-9]*"
@@ -87,7 +104,7 @@ export default function UserInfoUpdate() {
 						onChange={changeUserUpdateForm}
 						onBlur={validateUserUpdateForm}
 						ref={(el) => {
-							userUpdateFormRefs.current.email = el;
+							userUpdateFormInputRefs.current.email = el;
 						}}
 					/>
 					<div className="submit-wrap info">

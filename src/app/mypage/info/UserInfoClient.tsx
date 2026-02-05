@@ -32,7 +32,7 @@ export default function UserInfoClient() {
 		},
 	});
 
-	if (!user) return null;
+	if (!user.name) return null;
 	return (
 		<main id="userInfo" className="user-info">
 			<div className="form-wrap">

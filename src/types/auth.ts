@@ -22,38 +22,10 @@ export type UserAdd = {
 
 /* ---- FE --------------------------------------------- */
 
-/* BEGIN : COMMON */
-export type FormInputAlarm = {
-	name: string;
-	message: string;
-	status?: "SUCCESS" | "FAIL";
-} | null;
-export type SetFormRef = (el: HTMLInputElement | null) => void;
-
-/* END : COMMON */
-
 /* 로그인 */
 export type LoginFormData = {
 	userId: string;
 	password: string;
-};
-/* 회원가입 */
-export type JoinFormInputKeys =
-	| "userId"
-	| "password"
-	| "passwordCheck"
-	| "name"
-	| "address"
-	| "addressDetail"
-	| "phone"
-	| "phoneAuth"
-	| "email"
-	| "birthday";
-// export type JoinFormAlert = Omit<JoinForm, "zonecode">; // zonecode제외 타입
-export type JoinFormAlert = {
-	name: JoinFormInputKeys;
-	message: string;
-	status?: "SUCCESS" | "FAIL";
 };
 
 /* ---- API --------------------------------------------- */

@@ -5,7 +5,7 @@ import styles from "./FindUserClient.module.scss";
 import { FormInput } from "@/components/auth/FormInput";
 import { FormPageShell } from "@/components/auth/FormPageShell";
 import { PhoneAuthSection } from "@/components/auth/PhoneAuthSection";
-import { useFindUserForm } from "@/hooks/query/auth/useFindUserForm";
+import { useFindUserForm } from "@/hooks/query/auth/form/useFindUserForm";
 import Link from "next/link";
 
 export default function FindUserClient() {
@@ -17,7 +17,7 @@ export default function FindUserClient() {
 		findUserFormAlarm,
 		changeFindUserForm,
 		validatefindUserForm,
-		findUserFormRefs,
+		findUserFormInputRefs,
 		clickPhoneAuth,
 		phoneAuthView,
 		clickCheckPhoneAuth,
@@ -46,7 +46,7 @@ export default function FindUserClient() {
 							onChange={changeFindUserForm}
 							onBlur={validatefindUserForm}
 							ref={(el) => {
-								findUserFormRefs.current.userId = el;
+								findUserFormInputRefs.current.userId = el;
 							}}
 						/>
 					)}
@@ -56,10 +56,10 @@ export default function FindUserClient() {
 						changeForm={changeFindUserForm}
 						validateForm={validatefindUserForm}
 						setPhoneRef={(el) => {
-							findUserFormRefs.current.phone = el;
+							findUserFormInputRefs.current.phone = el;
 						}}
 						setPhoneAuthRef={(el) => {
-							findUserFormRefs.current.phoneAuth = el;
+							findUserFormInputRefs.current.phoneAuth = el;
 						}}
 						clickPhoneAuth={clickPhoneAuth}
 						authNumberView={phoneAuthView}

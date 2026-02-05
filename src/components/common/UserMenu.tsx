@@ -32,7 +32,7 @@ export const UserMenu = ({ isOpen }: UserMenuProps) => {
 									내정보
 								</Link>
 							</li>
-							<li>{!user ? <Link href="/user">로그인</Link> : <div onClick={logout}>로그아웃</div>}</li>
+							<li>{!user.name ? <Link href="/user">로그인</Link> : <div onClick={logout}>로그아웃</div>}</li>
 							<li>
 								<Link href="/mypage/order-history" prefetch>
 									주문/배송내역

@@ -1,10 +1,11 @@
 "use client";
 
-import { AddressSection } from "@/components/auth/AddressSection";
+import { AddressResult, AddressSection } from "@/components/auth/AddressSection";
 import { FormInput } from "@/components/auth/FormInput";
 import { FormPageShell } from "@/components/auth/FormPageShell";
 import { PhoneAuthSection } from "@/components/auth/PhoneAuthSection";
-import { useUserJoinForm } from "@/hooks/query/auth/useUserJoinForm";
+import { useUserJoinForm } from "@/hooks/query/auth/form/useUserJoinForm";
+import { FormInputRef } from "@/types/form";
 import Link from "next/link";
 
 /* 회원가입 */
@@ -14,7 +15,7 @@ export default function UserJoinClient() {
 		joinForm,
 		setJoinForm,
 		joinAlarm,
-		joinFormRefs,
+		joinFormInputRefs,
 		changeJoinForm,
 		validateJoinForm,
 		clickPhoneAuth,
@@ -34,7 +35,7 @@ export default function UserJoinClient() {
 					onChange={changeJoinForm}
 					onBlur={validateJoinForm}
 					ref={(el) => {
-						joinFormRefs.current.userId = el;
+						joinFormInputRefs.current.userId = el;
 					}}
 				/>
 				<FormInput
@@ -47,7 +48,7 @@ export default function UserJoinClient() {
 					onChange={changeJoinForm}
 					onBlur={validateJoinForm}
 					ref={(el) => {
-						joinFormRefs.current.password = el;
+						joinFormInputRefs.current.password = el;
 					}}
 				/>
 				<FormInput
@@ -60,7 +61,7 @@ export default function UserJoinClient() {
 					onChange={changeJoinForm}
 					onBlur={validateJoinForm}
 					ref={(el) => {
-						joinFormRefs.current.passwordCheck = el;
+						joinFormInputRefs.current.passwordCheck = el;
 					}}
 				/>
 				<div className="join-space"></div>
@@ -73,13 +74,13 @@ export default function UserJoinClient() {
 					onChange={changeJoinForm}
 					onBlur={validateJoinForm}
 					ref={(el) => {
-						joinFormRefs.current.name = el;
+						joinFormInputRefs.current.name = el;
 					}}
 				/>
 				<AddressSection
 					form={joinForm}
 					alarm={joinAlarm}
-					setAddress={(result) => {
+					setAddress={(result: AddressResult) => {
 						setJoinForm((prev) => ({
 							...prev,
 							zonecode: result.zonecode,
@@ -88,7 +89,7 @@ export default function UserJoinClient() {
 					}}
 					changeForm={changeJoinForm}
 					validateForm={validateJoinForm}
-					setFormRef={(el) => (joinFormRefs.current.addressDetail = el)}
+					setFormRef={(el: FormInputRef) => (joinFormInputRefs.current.addressDetail = el)}
 				/>
 				<FormInput
 					name="birthday"
@@ -99,7 +100,7 @@ export default function UserJoinClient() {
 					onChange={changeJoinForm}
 					onBlur={validateJoinForm}
 					ref={(el) => {
-						joinFormRefs.current.birthday = el;
+						joinFormInputRefs.current.birthday = el;
 					}}
 				/>
 				<div className="join-space"></div>
@@ -109,10 +110,10 @@ export default function UserJoinClient() {
 					changeForm={changeJoinForm}
 					validateForm={validateJoinForm}
 					setPhoneRef={(el) => {
-						joinFormRefs.current.phone = el;
+						joinFormInputRefs.current.phone = el;
 					}}
 					setPhoneAuthRef={(el) => {
-						joinFormRefs.current.phoneAuth = el;
+						joinFormInputRefs.current.phoneAuth = el;
 					}}
 					clickPhoneAuth={clickPhoneAuth}
 					authNumberView={authNumberView}
@@ -129,7 +130,7 @@ export default function UserJoinClient() {
 					onChange={changeJoinForm}
 					onBlur={validateJoinForm}
 					ref={(el) => {
-						joinFormRefs.current.email = el;
+						joinFormInputRefs.current.email = el;
 					}}
 				/>
 				<div className="submit-wrap">

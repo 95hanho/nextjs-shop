@@ -8,31 +8,25 @@ import { ModalFrame } from "@/components/modal/frame/ModalFrame";
 import styles from "../Modal.module.scss";
 import { ChangeEvent, FormEvent } from "@/types/event";
 import { FormInput } from "@/components/auth/FormInput";
+import { FormInputRefs } from "@/types/form";
 
 interface AddressModalProps {
 	onClose: () => void;
 	address?: UserAddressListItem;
 }
 
-type AddressFormAlert = {
+export type AddressForm = {
 	addressName: string;
 	recipientName: string;
 	addressPhone: string;
+	zonecode: string;
 	address: string;
 	addressDetail: string;
 	memo: string;
 };
-export type AddressForm = AddressFormAlert & {
-	zonecode: string;
-};
-type AddressFormFormRefs = {
-	addressName: HTMLInputElement | null;
-	recipientName: HTMLInputElement | null;
-	addressPhone: HTMLInputElement | null;
-	address: HTMLInputElement | null;
-	addressDetail: HTMLInputElement | null;
-	memo: HTMLInputElement | null;
-};
+type AddressFormInputKeys = keyof Omit<AddressForm, "zonecode">;
+type AddressFormAlert = Omit<AddressForm, "zonecode">;
+type AddressFormFormInputRefs = FormInputRefs<AddressFormInputKeys>;
 
 const memoOptionList = [
 	{ id: 1, val: "문 앞에 놓아주세요" },
@@ -69,7 +63,7 @@ export const AddressModal = ({ onClose, address }: AddressModalProps) => {
 	const [addressForm, setAddressForm] = useState<AddressForm>(initAddressForm);
 	const changeAddressForm = (e: ChangeEvent) => {
 		const { name, value } = e.target as {
-			name: keyof AddressForm;
+			name: AddressFormInputKeys;
 			value: string;
 		};
 		setAddressFormFailAlert(() => ({
@@ -81,14 +75,14 @@ export const AddressModal = ({ onClose, address }: AddressModalProps) => {
 		}));
 	};
 	const [addressFormFailAlert, setAddressFormFailAlert] = useState<AddressFormAlert>(initAddressFormAlert);
-	const addressFormRefs = useRef<Partial<AddressFormFormRefs>>({});
+	const addressFormInputRefs = useRef<Partial<AddressFormFormInputRefs>>({});
 	const [memoPickidx, setMemoPickidx] = useState(0);
 	const [memoOptionInit, setMemoOptionInit] = useState(memoOptionList[0]);
 
 	// 유효성 확인 ex) 정규표현식 확인
 	const validateAddressForm = async (e: ChangeEvent) => {
 		const { name, value } = e.target as {
-			name: keyof AddressForm;
+			name: AddressFormInputKeys;
 			value: string;
 		};
 		const trimValue = value.trim();
@@ -115,7 +109,7 @@ export const AddressModal = ({ onClose, address }: AddressModalProps) => {
 		e.preventDefault();
 
 		let alertOn = "";
-		const alertKeys = Object.keys(initAddressFormAlert) as (keyof AddressFormAlert)[];
+		const alertKeys = Object.keys(initAddressFormAlert) as AddressFormInputKeys[];
 
 		for (const key of alertKeys) {
 			// for (let i = 0; i < keys.length; i++) {
@@ -134,7 +128,7 @@ export const AddressModal = ({ onClose, address }: AddressModalProps) => {
 					...prev,
 					[key]: alertOn,
 				}));
-				addressFormRefs.current[key]?.focus();
+				addressFormInputRefs.current[key]?.focus();
 				break;
 			}
 		}
@@ -204,7 +198,7 @@ export const AddressModal = ({ onClose, address }: AddressModalProps) => {
 						onBlur={validateAddressForm}
 						failMessage={addressFormFailAlert.addressName}
 						ref={(el) => {
-							addressFormRefs.current.addressName = el;
+							addressFormInputRefs.current.addressName = el;
 						}}
 					/>
 					<FormInput
@@ -216,7 +210,7 @@ export const AddressModal = ({ onClose, address }: AddressModalProps) => {
 						onBlur={validateAddressForm}
 						failMessage={addressFormFailAlert.recipientName}
 						ref={(el) => {
-							addressFormRefs.current.recipientName = el;
+							addressFormInputRefs.current.recipientName = el;
 						}}
 					/>
 					<FormInput
@@ -232,7 +226,7 @@ export const AddressModal = ({ onClose, address }: AddressModalProps) => {
 						pattern="[0-9]*"
 						maxLength={11}
 						ref={(el) => {
-							addressFormRefs.current.addressPhone = el;
+							addressFormInputRefs.current.addressPhone = el;
 						}}
 					/>
 					<FormInput
@@ -254,7 +248,7 @@ export const AddressModal = ({ onClose, address }: AddressModalProps) => {
 						onChange={changeAddressForm}
 						onBlur={validateAddressForm}
 						ref={(el) => {
-							addressFormRefs.current.addressDetail = el;
+							addressFormInputRefs.current.addressDetail = el;
 						}}
 					/>
 				</div>
@@ -296,7 +290,7 @@ export const AddressModal = ({ onClose, address }: AddressModalProps) => {
 								onChange={changeAddressForm}
 								onBlur={validateAddressForm}
 								ref={(el) => {
-									addressFormRefs.current.memo = el;
+									addressFormInputRefs.current.memo = el;
 								}}
 							/>
 						)}

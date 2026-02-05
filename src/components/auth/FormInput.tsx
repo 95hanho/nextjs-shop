@@ -1,18 +1,16 @@
-"use client";
-
 import styles from "./FormInput.module.scss";
 import { forwardRef } from "react";
 import clsx from "clsx";
 import { ChangeFunction } from "@/types/event";
-import { FormInputAlarm } from "@/types/auth";
+import { FormInputAlarm } from "@/types/form";
 
-interface FormInputProps {
-	name: string;
+interface FormInputProps<T extends string, K extends string = T> {
+	name: T;
 	label: string;
 	placeholder: string;
 	type?: string;
 	value: string;
-	alarm: FormInputAlarm;
+	alarm: FormInputAlarm<K>;
 	onChange?: ChangeFunction;
 	onBlur?: ChangeFunction;
 	readOnly?: boolean;
@@ -24,7 +22,7 @@ interface FormInputProps {
 	inputWidthFill?: boolean;
 }
 
-export const FormInput = forwardRef<HTMLInputElement, FormInputProps>((props, ref) => {
+export const FormInput = forwardRef(<T extends string>(props: FormInputProps<T>, ref: React.ForwardedRef<HTMLInputElement>) => {
 	const {
 		name,
 		label,

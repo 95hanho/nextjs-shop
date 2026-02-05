@@ -1,13 +1,17 @@
 import { FormInput } from "@/components/auth/FormInput";
-import { FormInputAlarm, SetFormRef } from "@/types/auth";
 import { ChangeFunction } from "@/types/event";
+import { FormInputAlarm, SetFormRef } from "@/types/form";
 
-interface AddressSectionProps {
-	form: {
-		address: string;
-		addressDetail: string;
-	};
-	alarm: FormInputAlarm;
+export type AddressResult = { zonecode: string; address: string };
+
+type AddressForm = {
+	address: string;
+	addressDetail: string;
+};
+
+interface AddressSectionProps<K extends string> {
+	form: AddressForm;
+	alarm: FormInputAlarm<K>;
 	setAddress: ({ zonecode, address }: { zonecode: string; address: string }) => void;
 	changeForm: ChangeFunction;
 	validateForm: ChangeFunction;
