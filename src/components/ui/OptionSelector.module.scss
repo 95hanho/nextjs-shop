@@ -27,6 +27,10 @@
 			align-content: center;
 		}
 	}
+	&.addressModal .optionSelectBox input {
+		border-color: #aaa;
+		border-radius: 5px;
+	}
 	.optionList {
 		position: absolute;
 		width: 100%;

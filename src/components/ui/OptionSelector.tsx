@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import styles from "./OptionSelector.module.scss";
 
 import { useEffect, useRef, useState } from "react";
@@ -9,9 +10,10 @@ interface OptionSelectorProps {
 	pickIdx?: number;
 	optionList?: { id: number; val: string; description?: string }[];
 	changeOption?: (pickIdx: number, id: number) => void;
+	variant?: "default" | "addressModal";
 }
 
-export const OptionSelector = ({ optionSelectorName, initData, pickIdx = 0, optionList, changeOption }: OptionSelectorProps) => {
+export const OptionSelector = ({ optionSelectorName, initData, pickIdx = 0, optionList, changeOption, variant = "default" }: OptionSelectorProps) => {
 	const optionSelectorRef = useRef<HTMLDivElement>(null);
 	const [openOptionList, setOpenOptionList] = useState<boolean>(false);
 
@@ -34,7 +36,7 @@ export const OptionSelector = ({ optionSelectorName, initData, pickIdx = 0, opti
 	}, [openOptionList]);
 
 	return (
-		<div className={styles.optionSelector} ref={optionSelectorRef}>
+		<div className={clsx(styles.optionSelector, styles[variant])} ref={optionSelectorRef}>
 			<div
 				className={styles.optionSelectBox}
 				onClick={() => {

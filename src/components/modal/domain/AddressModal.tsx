@@ -8,6 +8,7 @@ import { ChangeEvent, FormEvent } from "@/types/event";
 import { FormInput } from "@/components/auth/FormInput";
 import { FormInputAlarm, FormInputRefs } from "@/types/form";
 import { AddressSection } from "@/components/auth/AddressSection";
+import clsx from "clsx";
 
 interface AddressModalProps {
 	onClose: () => void;
@@ -129,26 +130,6 @@ export const AddressModal = ({ onClose, address }: AddressModalProps) => {
 		});
 	};
 	/* -------------------- */
-	// 주소API 팝업 띄우기
-	const addressPopup = () => {
-		new window.kakao.Postcode({
-			oncomplete: (data) => {
-				if (!data) return;
-				const fullAddress = data.roadAddress || data.jibunAddress;
-				setAddressForm((prev) => {
-					const address = prev as AddressForm;
-					return {
-						...address,
-						zonecode: data.zonecode,
-						address: fullAddress,
-					};
-				});
-			},
-		}).open({
-			popupKey: "addpopup2",
-		});
-	};
-	/* -------------------- */
 	// 처음 들어올 때
 	useEffect(() => {
 		if (address) {
@@ -234,34 +215,12 @@ export const AddressModal = ({ onClose, address }: AddressModalProps) => {
 							addressFormInputRefs.current.addressDetail = el;
 						}}
 					/>
-					<FormInput
-						name="address"
-						label="주소"
-						placeholder="주소를 입력해주세요."
-						value={addressForm.address}
-						alarm={addressFormAlarm}
-						readOnly
-						onClick={addressPopup}
-						searchBtn={{ txt: "검색", fnc: addressPopup }}
-					/>
-					<FormInput
-						name="addressDetail"
-						label="상세주소"
-						placeholder="상세주소를 입력해주세요."
-						value={addressForm.addressDetail}
-						alarm={addressFormAlarm}
-						onChange={changeAddressForm}
-						onBlur={validateAddressForm}
-						ref={(el) => {
-							addressFormInputRefs.current.addressDetail = el;
-						}}
-					/>
 				</div>
 				{/* 위: 옵션 드롭다운 + 리스트 */}
 				<div className={styles.optionBlock}>
 					<div className={styles.optionMemo}>
-						<span className={styles.title}>메모</span>
-						<span className={styles.memoOption}>
+						<span className={clsx(styles.title, "w-1/3")}>메모</span>
+						<span className={clsx(styles.memoOption, "w-2/3")}>
 							<OptionSelector
 								optionSelectorName="deliveryMemo"
 								pickIdx={memoPickidx}
@@ -278,6 +237,7 @@ export const AddressModal = ({ onClose, address }: AddressModalProps) => {
 									}));
 									setAddressFormAlarm(null);
 								}}
+								variant="addressModal"
 							/>
 						</span>
 					</div>
@@ -299,7 +259,7 @@ export const AddressModal = ({ onClose, address }: AddressModalProps) => {
 					</div>
 				</div>
 				{/* 버튼 */}
-				<div className="option-actions">
+				<div className={styles.optionActions}>
 					<button type="button" className="option-actions__cancel" onClick={onClose}>
 						취소
 					</button>

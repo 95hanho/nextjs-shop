@@ -24,7 +24,7 @@ export default function UserInfoClient() {
 	// 비밀변경 토큰 생성 후 비밀변경 페이지로
 	const handlePhoneAuth = useMutation({
 		mutationFn: () => postJson<BaseResponse>(getApiUrl(API_URL.AUTH_PASSWORD), {}),
-		onSuccess(data) {
+		onSuccess() {
 			push("/user/password");
 		},
 		onError(err) {
