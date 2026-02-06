@@ -1,5 +1,3 @@
-"use client";
-
 import API_URL from "@/api/endpoints";
 import { postJson } from "@/api/fetchFilter";
 import { adminAuthContext } from "@/context/authContext";

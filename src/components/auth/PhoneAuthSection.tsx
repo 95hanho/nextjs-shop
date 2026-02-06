@@ -2,22 +2,27 @@ import { FormInput } from "@/components/auth/FormInput";
 import { ChangeFunction } from "@/types/event";
 import { FormInputAlarm, SetFormRef } from "@/types/form";
 
-interface PhoneAuthSectionProps {
-	form: {
-		phone: string;
-		phoneAuth: string;
-	};
-	alarm: FormInputAlarm<keyof PhoneAuthSectionProps["form"]>;
+export type PhoneAuthResult = { zonecode: string; address: string };
+
+type PhoneAuthForm = {
+	phone: string;
+	phoneAuth: string;
+};
+
+interface PhoneAuthSectionProps<K extends string> {
+	form: PhoneAuthForm;
+	alarm: FormInputAlarm<K>;
 	changeForm: ChangeFunction;
 	validateForm: ChangeFunction;
 	setPhoneRef: SetFormRef;
 	setPhoneAuthRef: SetFormRef;
 	clickPhoneAuth: () => void;
-	authNumberView: boolean;
+	searchBtnHide?: boolean;
+	phoneAuthView: boolean;
 	clickCheckPhoneAuth: () => void;
 }
 
-export const PhoneAuthSection = ({
+export const PhoneAuthSection = <K extends string>({
 	form,
 	alarm,
 	changeForm,
@@ -25,9 +30,10 @@ export const PhoneAuthSection = ({
 	setPhoneRef,
 	setPhoneAuthRef,
 	clickPhoneAuth,
-	authNumberView,
+	searchBtnHide = false,
+	phoneAuthView,
 	clickCheckPhoneAuth,
-}: PhoneAuthSectionProps) => {
+}: PhoneAuthSectionProps<K>) => {
 	return (
 		<>
 			<FormInput
@@ -38,12 +44,16 @@ export const PhoneAuthSection = ({
 				value={form.phone}
 				alarm={alarm}
 				onChange={changeForm}
-				searchBtn={{
-					txt: "인증",
-					fnc: () => {
-						clickPhoneAuth();
-					},
-				}}
+				searchBtn={
+					searchBtnHide
+						? undefined
+						: {
+								txt: "인증",
+								fnc: () => {
+									clickPhoneAuth();
+								},
+							}
+				}
 				onBlur={validateForm}
 				ref={(el) => {
 					setPhoneRef(el);
@@ -52,7 +62,7 @@ export const PhoneAuthSection = ({
 				pattern="[0-9]*"
 				maxLength={11}
 			/>
-			{authNumberView && (
+			{phoneAuthView && (
 				<FormInput
 					name="phoneAuth"
 					label="인증번호"

@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { SiKakaotalk, SiNaver } from "react-icons/si";
 import styles from "./LoginClient.module.scss";

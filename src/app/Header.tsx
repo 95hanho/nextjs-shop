@@ -6,8 +6,8 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Menu } from "@/types/main";
-import { UserMenu } from "./UserMenu";
-import { Nav } from "./Nav";
+import { UserMenu } from "../components/common/UserMenu";
+import { Nav } from "../components/common/Nav";
 import { useGetUserInfo } from "@/hooks/query/auth/useGetUserInfo";
 
 interface HeaderProps {
@@ -48,7 +48,7 @@ export const Header = ({ menuList }: HeaderProps) => {
 				</h1>
 				<div className="absolute flex items-center right-5">
 					<div className={styles.headerBtn}>
-						{user && `${user.name}님`}
+						{user.name && `${user.name}님`}
 						<button onClick={() => set_isOpen(!isOpen)}>
 							<FiUser />
 							<UserMenu isOpen={isOpen} />

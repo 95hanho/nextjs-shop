@@ -1,12 +1,12 @@
 /* 내 정보 수정 */
 "use client";
 
-import { AddressResult, AddressSection } from "@/components/auth/AddressSection";
+import { AddressSection } from "@/components/auth/AddressSection";
 import { FormInput } from "@/components/auth/FormInput";
 import { InfoMark } from "@/components/auth/InfoMark";
+import { PhoneAuthSection } from "@/components/auth/PhoneAuthSection";
 import { useUserUpdateForm } from "@/hooks/query/auth/form/useUserUpdateForm";
 import { useAuth } from "@/hooks/useAuth";
-import { FormInputRef } from "@/types/form";
 
 export default function UserInfoUpdate() {
 	const { user } = useAuth();
@@ -20,7 +20,7 @@ export default function UserInfoUpdate() {
 		clickPhoneAuth,
 		validateUserUpdateForm,
 		userUpdateFormInputRefs,
-		authNumberView,
+		phoneAuthView,
 		clickCheckPhoneAuth,
 	} = useUserUpdateForm();
 
@@ -34,7 +34,7 @@ export default function UserInfoUpdate() {
 					<AddressSection
 						form={userUpdateForm}
 						alarm={userUpdateAlarm}
-						setAddress={(result: AddressResult) => {
+						setAddress={(result) => {
 							setUserUpdateForm((prev) => ({
 								...prev,
 								zonecode: result.zonecode,
@@ -43,57 +43,26 @@ export default function UserInfoUpdate() {
 						}}
 						changeForm={changeUserUpdateForm}
 						validateForm={validateUserUpdateForm}
-						setFormRef={(el: FormInputRef) => (userUpdateFormInputRefs.current.addressDetail = el)}
+						setFormRef={(el) => {
+							userUpdateFormInputRefs.current.addressDetail = el;
+						}}
 					/>
-					<FormInput
-						name="phone"
-						label="휴대폰"
-						placeholder="휴대폰번호를 입력해주세요."
-						type="tel"
-						value={userUpdateForm.phone}
+					<PhoneAuthSection
+						form={userUpdateForm}
 						alarm={userUpdateAlarm}
-						onChange={changeUserUpdateForm}
-						searchBtn={
-							user.phone === userUpdateForm.phone
-								? undefined
-								: {
-										txt: "인증",
-										fnc: () => {
-											clickPhoneAuth();
-										},
-									}
-						}
-						onBlur={validateUserUpdateForm}
-						ref={(el) => {
+						changeForm={changeUserUpdateForm}
+						validateForm={validateUserUpdateForm}
+						setPhoneRef={(el) => {
 							userUpdateFormInputRefs.current.phone = el;
 						}}
-						inputMode="numeric"
-						pattern="[0-9]*"
-						maxLength={11}
+						setPhoneAuthRef={(el) => {
+							userUpdateFormInputRefs.current.phone = el;
+						}}
+						clickPhoneAuth={clickPhoneAuth}
+						searchBtnHide={user.phone === userUpdateForm.phone}
+						phoneAuthView={phoneAuthView}
+						clickCheckPhoneAuth={clickCheckPhoneAuth}
 					/>
-					{authNumberView && (
-						<FormInput
-							name="phoneAuth"
-							label="인증번호"
-							placeholder="인증번호를 입력해주세요."
-							value={userUpdateForm.phoneAuth}
-							alarm={userUpdateAlarm}
-							onChange={changeUserUpdateForm}
-							searchBtn={{
-								txt: "확인",
-								fnc: () => {
-									clickCheckPhoneAuth();
-								},
-							}}
-							onBlur={validateUserUpdateForm}
-							ref={(el) => {
-								userUpdateFormInputRefs.current.phone = el;
-							}}
-							inputMode="numeric"
-							pattern="[0-9]*"
-							maxLength={6}
-						/>
-					)}
 					<FormInput
 						name="email"
 						label="이메일"

@@ -1,5 +1,3 @@
-"use client";
-
 import { ReactNode } from "react";
 import { BsXLg } from "react-icons/bs";
 import styles from "../Modal.module.scss";

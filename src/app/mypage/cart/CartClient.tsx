@@ -241,9 +241,9 @@ export default function CartClient() {
 												{productList.map((product, productIdx) => {
 													// console.log("productId", product.productId);
 													const selectDisabled = product.stock < product.quantity;
-													let productAlert = "";
+													let productAlarm = "";
 													if (product.stock !== 0 && selectDisabled) {
-														productAlert = "재고가 부족합니다. 옵션을 변경하시면 선택이 가능합니다.";
+														productAlarm = "재고가 부족합니다. 옵션을 변경하시면 선택이 가능합니다.";
 													}
 													return (
 														<li key={"cartBrandItem-" + product.cartId} className="product-item" data-sku="DEN0861">
@@ -306,7 +306,7 @@ export default function CartClient() {
 																		</div>
 																	</div>
 																</div>
-																{productAlert && <p className="product-alert">* {productAlert}</p>}
+																{productAlarm && <p className="product-alert">* {productAlarm}</p>}
 
 																<h5 className="product-item__delivery">
 																	<b>10.02(목) 도착 예정</b>

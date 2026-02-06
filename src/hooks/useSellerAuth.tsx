@@ -1,5 +1,3 @@
-"use client";
-
 import { sellerAuthContext } from "@/context/authContext";
 import { useContext } from "react";
 

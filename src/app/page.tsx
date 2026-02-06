@@ -1,6 +1,6 @@
 import { MainProductResponse } from "@/types/main";
 
-import { ProductSlider } from "@/components/main/ProductSlider";
+// import { ProductSlider } from "@/components/main/ProductSlider";
 import API_URL from "@/api/endpoints";
 import { getNormal } from "@/api/fetchFilter";
 import { getApiUrl } from "@/lib/getBaseUrl";

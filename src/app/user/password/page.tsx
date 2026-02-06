@@ -1,7 +1,6 @@
 /* 비밀번호 변경페이지 */
 import { cookies } from "next/headers";
 import PasswordChangeClient from "./PasswordChangeClient";
-import { redirect } from "next/navigation";
 
 export default function PasswordChangePage() {
 	const cookieStore = cookies();

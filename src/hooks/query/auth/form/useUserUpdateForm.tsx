@@ -48,9 +48,12 @@ export function useUserUpdateForm() {
 	const { openModal } = useModalStore();
 	const { user, setUser, loginOn } = useAuth();
 	useEffect(() => {
-		if (user) {
+		if (user.name) {
 			setUserUpdateForm((prev) => ({
 				...prev,
+				zonecode: user.zonecode,
+				address: user.address,
+				addressDetail: user.addressDetail,
 				phone: user.phone,
 				email: user.email,
 			}));
@@ -78,7 +81,7 @@ export function useUserUpdateForm() {
 				},
 			),
 		onSuccess(data) {
-			setAuthNumberView(true);
+			setPhoneAuthView(true);
 			setPhoneAuthToken(data.phoneAuthToken);
 			setPhoneAuthComplete(false);
 			setUserUpdateAlarm({
@@ -102,9 +105,9 @@ export function useUserUpdateForm() {
 				phoneAuthToken,
 				authNumber: userUpdateForm.phoneAuth,
 			}),
-		onSuccess(data) {
+		onSuccess() {
 			setPhoneAuthComplete(true);
-			setAuthNumberView(false);
+			setPhoneAuthView(false);
 			setUserUpdateAlarm({
 				name: "phone",
 				message: "휴대폰 인증이 완료되었습니다.",
@@ -116,13 +119,15 @@ export function useUserUpdateForm() {
 				setUserUpdateAlarm({
 					name: "phone",
 					message: "인증시간이 만료되었습니다.",
+					status: "FAIL",
 				});
-				setAuthNumberView(false);
+				setPhoneAuthView(false);
 			}
 			if (err.message === "INVALID_VERIFICATION_CODE") {
 				setUserUpdateAlarm({
 					name: "phoneAuth",
 					message: "인증번호가 일치하지 않습니다.",
+					status: "FAIL",
 				});
 			}
 		},
@@ -131,10 +136,9 @@ export function useUserUpdateForm() {
 	const handleUserUpdate = useMutation<BaseResponse, Error>({
 		mutationFn: () =>
 			putJson<BaseResponse, UserUpdateRequest>(getApiUrl(API_URL.AUTH_JOIN), {
-				phone: userUpdateForm.phone,
-				email: userUpdateForm.email,
+				...userUpdateForm,
 			}),
-		onSuccess(data) {
+		onSuccess() {
 			/* --------
 			유저주소지에 일치하는 것이 없으면 주소지 변경하겠냐고 물어보고 보내주기
 			-----*/
@@ -159,7 +163,7 @@ export function useUserUpdateForm() {
 	// 유저업데이트 input들 HTMLInputElement
 	const userUpdateFormInputRefs = useRef<Partial<UserUpdateFormInputRefs>>({});
 	// 인증번호 화면 띄울지
-	const [authNumberView, setAuthNumberView] = useState<boolean>(false);
+	const [phoneAuthView, setPhoneAuthView] = useState<boolean>(false);
 	// 인증번호 토큰
 	const [phoneAuthToken, setPhoneAuthToken] = useState<string | null>(null);
 	// 휴대폰인증완료여부
@@ -191,21 +195,19 @@ export function useUserUpdateForm() {
 			name: UserUpdateFormInputKeys;
 			value: string;
 		};
-		const changevVal = value.trim();
+		const changeVal = value.trim();
 		let changeAlarm: UserUpdateAlarm | null = null;
-		if (userUpdateFormRegex[name]) {
-			if (!userUpdateFormRegex[name].test(changevVal)) {
+		if (!changeVal) return;
+		if (changeVal) {
+			if (userUpdateFormRegex[name] && !userUpdateFormRegex[name].test(changeVal)) {
 				changeAlarm = { name, message: userUpdateFormRegexFailMent[name], status: "FAIL" };
-			}
-		}
-		if (changevVal) {
-			if (name == "phone") {
-				if (changevVal !== user?.phone) setPhoneAuthComplete(false);
+			} else if (name == "phone") {
+				if (changeVal !== user?.phone) setPhoneAuthComplete(false);
 				else {
 					setPhoneAuthComplete(true);
 				}
 			} else if (name === "phoneAuth") {
-				if (changevVal.length < 6) {
+				if (changeVal.length < 6) {
 					changeAlarm = { name, message: "인증번호 6자리를 입력해주세요.", status: "FAIL" };
 				}
 			}
@@ -213,8 +215,52 @@ export function useUserUpdateForm() {
 		setUserUpdateAlarm(changeAlarm);
 		setUserUpdateForm((prev) => ({
 			...prev,
-			[name]: changevVal,
+			[name]: changeVal,
 		}));
+	};
+	// 유저업데이트 완료
+	const userUpdateSubmit = (e: FormEvent) => {
+		console.log("userUpdateSubmit");
+		e.preventDefault();
+		/* 변한게 없으면 다시 그냥 유저정보보기 화면으로 */
+		if (
+			Object.entries(userUpdateForm).every((entry) => {
+				const key = entry[0] as UserUpdateFormInputKeys;
+				const value = entry[1];
+				if (key === "phoneAuth") return true;
+				return value === user[key];
+			})
+		) {
+			console.log("변한게 없다!!");
+			replace("/mypage/info");
+			return;
+		}
+		/*  */
+		if (userUpdateAlarm?.status === "FAIL") {
+			userUpdateFormInputRefs.current[userUpdateAlarm.name]?.focus();
+		}
+		/*  */
+		let changeAlarm: UserUpdateAlarm | null = null;
+		const alertKeys = Object.keys(userUpdateForm) as UserUpdateFormInputKeys[];
+		for (const key of alertKeys) {
+			if (!userUpdateFormInputRefs.current[key]) continue;
+			const value = userUpdateForm[key];
+			// 알람없을 때 처음 누를 때
+			if (!value) {
+				changeAlarm = { name: key, message: "해당 내용을 입력해주세요.", status: "FAIL" };
+			} else if (userUpdateFormRegex[key] && !userUpdateFormRegex[key].test(value)) {
+				changeAlarm = { name: key, message: userUpdateFormRegexFailMent[key], status: "FAIL" };
+			} else if (key == "phone" && !phoneAuthComplete) {
+				changeAlarm = { name: key, message: "휴대폰 인증이 필요합니다.", status: "FAIL" };
+			}
+			if (changeAlarm) break;
+		}
+		if (changeAlarm) {
+			setUserUpdateAlarm(changeAlarm);
+			return;
+		}
+		console.log("내 정보 변경 완료");
+		// handleUserUpdate.mutate();
 	};
 	/* ------------------------------------ */
 	// 휴대폰 인증 보내기 버튼
@@ -247,47 +293,12 @@ export function useUserUpdateForm() {
 			userUpdateFormInputRefs.current.phoneAuth?.focus();
 			return;
 		}
+		if (userUpdateForm.phoneAuth.length < 6) {
+			setUserUpdateAlarm({ name: "phoneAuth", message: "인증번호 6자리를 입력해주세요.", status: "FAIL" });
+			userUpdateFormInputRefs.current.phoneAuth?.focus();
+			return;
+		}
 		handlePhoneAuthComplete.mutate();
-	};
-	// 유저업데이트 완료
-	const userUpdateSubmit = (e: FormEvent) => {
-		console.log("userUpdateSubmit");
-		e.preventDefault();
-		console.log("phoneAuthComplete", phoneAuthComplete);
-		/* 변한게 없으면 다시 그냥 유저정보보기 화면으로 */
-		if (
-			Object.entries(userUpdateForm).every((entry) => {
-				const key = entry[0] as Exclude<UserUpdateFormInputKeys, "phoneAuth">;
-				const value = entry[1];
-				return value === user[key];
-			})
-		) {
-			replace("/mypage/info");
-			return;
-		}
-		/*  */
-		if (userUpdateAlarm?.status === "FAIL") {
-			userUpdateFormInputRefs.current[userUpdateAlarm.name]?.focus();
-		}
-		/*  */
-		let changeAlarm: UserUpdateAlarm | null = null;
-		const alertKeys = Object.keys(userUpdateForm) as UserUpdateFormInputKeys[];
-		for (const key of alertKeys) {
-			if (!userUpdateFormInputRefs.current[key]) continue;
-			const value = userUpdateForm[key];
-			// 알람없을 때 처음 누를 때
-			if (!value) {
-				changeAlarm = { name: key, message: "해당 내용을 입력해주세요.", status: "FAIL" };
-			} else if (key == "phone" && !phoneAuthComplete) {
-				changeAlarm = { name: key, message: "휴대폰 인증이 필요합니다.", status: "FAIL" };
-			}
-		}
-		if (changeAlarm) {
-			setUserUpdateAlarm(changeAlarm);
-			return;
-		}
-		console.log("내 정보 변경");
-		handleUserUpdate.mutate();
 	};
 
 	return {
@@ -300,7 +311,7 @@ export function useUserUpdateForm() {
 		clickPhoneAuth,
 		validateUserUpdateForm,
 		userUpdateFormInputRefs,
-		authNumberView,
+		phoneAuthView,
 		clickCheckPhoneAuth,
 	};
 }

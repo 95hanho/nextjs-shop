@@ -1,5 +1,3 @@
-"use client";
-
 import { adminAuthContext } from "@/context/authContext";
 import { useContext } from "react";
 

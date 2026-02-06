@@ -1,5 +1,3 @@
-"use client";
-
 import styles from "../Modal.module.scss";
 
 interface ConfirmButtonProps {
