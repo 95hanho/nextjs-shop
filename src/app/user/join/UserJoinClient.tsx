@@ -1,11 +1,10 @@
 "use client";
 
-import { AddressResult, AddressSection } from "@/components/auth/AddressSection";
+import { AddressSection } from "@/components/auth/AddressSection";
 import { FormInput } from "@/components/auth/FormInput";
 import { FormPageShell } from "@/components/auth/FormPageShell";
 import { PhoneAuthSection } from "@/components/auth/PhoneAuthSection";
 import { useUserJoinForm } from "@/hooks/query/auth/form/useUserJoinForm";
-import { FormInputRef } from "@/types/form";
 import Link from "next/link";
 
 /* 회원가입 */
@@ -19,7 +18,7 @@ export default function UserJoinClient() {
 		changeJoinForm,
 		validateJoinForm,
 		clickPhoneAuth,
-		authNumberView,
+		phoneAuthView,
 		clickCheckPhoneAuth,
 	} = useUserJoinForm();
 
@@ -80,7 +79,7 @@ export default function UserJoinClient() {
 				<AddressSection
 					form={joinForm}
 					alarm={joinAlarm}
-					setAddress={(result: AddressResult) => {
+					setAddress={(result) => {
 						setJoinForm((prev) => ({
 							...prev,
 							zonecode: result.zonecode,
@@ -89,7 +88,9 @@ export default function UserJoinClient() {
 					}}
 					changeForm={changeJoinForm}
 					validateForm={validateJoinForm}
-					setFormRef={(el: FormInputRef) => (joinFormInputRefs.current.addressDetail = el)}
+					setFormRef={(el) => {
+						joinFormInputRefs.current.addressDetail = el;
+					}}
 				/>
 				<FormInput
 					name="birthday"
@@ -116,7 +117,7 @@ export default function UserJoinClient() {
 						joinFormInputRefs.current.phoneAuth = el;
 					}}
 					clickPhoneAuth={clickPhoneAuth}
-					authNumberView={authNumberView}
+					phoneAuthView={phoneAuthView}
 					clickCheckPhoneAuth={clickCheckPhoneAuth}
 				/>
 

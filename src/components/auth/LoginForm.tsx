@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useRef, useState } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi"; // 눈 모양 아이콘을 import 합니다.
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -32,7 +30,7 @@ export const LoginForm = () => {
 			console.log(err);
 			if (err.message === "USER_NOT_FOUND") {
 				console.error(err.message);
-				setAlertMessage("아이디 또는 비밀번호가 일치하지 않습니다.");
+				setAlarmMessage("아이디 또는 비밀번호가 일치하지 않습니다.");
 			}
 		},
 		// 결과에 관계 없이 무언가 실행됨
@@ -50,18 +48,18 @@ export const LoginForm = () => {
 	const [userIdFocus, setUserIdFocus] = useState<boolean>(loginForm.userId !== "");
 	const [pwdFocus, setPwdFocus] = useState<boolean>(loginForm.password !== "");
 	const [showPassword, setShowPassword] = useState<boolean>(false);
-	const [alertMessage, setAlertMessage] = useState("");
+	const [alarmMessage, setAlarmMessage] = useState("");
 
 	const loginSubmit = (e: FormEvent) => {
 		console.log("loginSubmit");
 		e.preventDefault();
 		if (!loginForm.userId) {
-			setAlertMessage("아이디를 입력해주세요.");
+			setAlarmMessage("아이디를 입력해주세요.");
 			userIdRef.current?.focus();
 			return;
 		}
 		if (!loginForm.password) {
-			setAlertMessage("비밀번호를 입력해주세요.");
+			setAlarmMessage("비밀번호를 입력해주세요.");
 			pwdRef.current?.focus();
 			return;
 		}
@@ -95,7 +93,7 @@ export const LoginForm = () => {
 					value={loginForm.userId}
 					onChange={(e) => {
 						setLoginForm({ ...loginForm, userId: e.target.value });
-						setAlertMessage("");
+						setAlarmMessage("");
 					}}
 				/>
 				<label className="content-center">아이디</label>
@@ -126,7 +124,7 @@ export const LoginForm = () => {
 					onChange={(e) => {
 						setShowPassword(false);
 						setLoginForm({ ...loginForm, password: e.target.value });
-						setAlertMessage("");
+						setAlarmMessage("");
 					}}
 				/>
 				<label className="content-center">비밀번호</label>
@@ -136,7 +134,7 @@ export const LoginForm = () => {
 					</button>
 				)}
 			</div>
-			{alertMessage && <p>* {alertMessage}</p>}
+			{alarmMessage && <p>* {alarmMessage}</p>}
 			<div className="submit-wrap">
 				<input type="submit" value={"로그인"} />
 			</div>

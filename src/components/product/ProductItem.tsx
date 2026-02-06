@@ -1,5 +1,3 @@
-"use client";
-
 import styles from "./ProductItem.module.scss";
 import { WishButton } from "@/components/product/WishButton";
 import { ImageFill } from "@/components/common/ImageFill";

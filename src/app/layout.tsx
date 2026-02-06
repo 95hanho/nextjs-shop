@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Inter, Roboto_Mono } from "next/font/google";
 import "@/styles/css/style.css";
 import "@/styles/css/globals.css";
-import Providers from "@/lib/providers";
 import { MenuResponse } from "@/types/main";
 import API_URL from "@/api/endpoints";
 import { getNormal } from "@/api/fetchFilter";
@@ -12,7 +11,8 @@ import { UserInfo } from "@/types/auth";
 import { redirect } from "next/navigation";
 import { cookies } from "next/he.aders";
 import { ModalRoot } from "@/components/modal/core/ModalRoot";
-import { Header } from "@/components/common/Header";
+import Providers from "@/app/Providers";
+import { Header } from "@/app/Header";
 
 const inter = Inter({
 	subsets: ["latin"],

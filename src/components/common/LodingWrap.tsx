@@ -1,5 +1,3 @@
-"use client";
-
 import styled from "@emotion/styled";
 import { CircleLoader, ClipLoader } from "react-spinners";
 

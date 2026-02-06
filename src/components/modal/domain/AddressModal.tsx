@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useRef, useState } from "react";
 import { OptionSelector } from "../../ui/OptionSelector";
 import { UserAddressListItem } from "@/types/mypage";
@@ -8,7 +6,8 @@ import { ModalFrame } from "@/components/modal/frame/ModalFrame";
 import styles from "../Modal.module.scss";
 import { ChangeEvent, FormEvent } from "@/types/event";
 import { FormInput } from "@/components/auth/FormInput";
-import { FormInputRefs } from "@/types/form";
+import { FormInputAlarm, FormInputRefs } from "@/types/form";
+import { AddressSection } from "@/components/auth/AddressSection";
 
 interface AddressModalProps {
 	onClose: () => void;
@@ -25,7 +24,7 @@ export type AddressForm = {
 	memo: string;
 };
 type AddressFormInputKeys = keyof Omit<AddressForm, "zonecode">;
-type AddressFormAlert = Omit<AddressForm, "zonecode">;
+type AddressFormAlarm = FormInputAlarm<AddressFormInputKeys>;
 type AddressFormFormInputRefs = FormInputRefs<AddressFormInputKeys>;
 
 const memoOptionList = [
@@ -36,17 +35,13 @@ const memoOptionList = [
 	{ id: 5, val: "직접 입력" },
 ];
 
-const initAddressFormAlert = {
+const initAddressForm = {
 	addressName: "",
 	recipientName: "",
 	addressPhone: "",
+	zonecode: "",
 	address: "",
 	addressDetail: "",
-	memo: "",
-};
-const initAddressForm = {
-	...initAddressFormAlert,
-	zonecode: "",
 	memo: "문 앞에 놓아주세요",
 };
 
@@ -61,79 +56,73 @@ export const AddressModal = ({ onClose, address }: AddressModalProps) => {
 	const { resolveModal } = useModalStore();
 
 	const [addressForm, setAddressForm] = useState<AddressForm>(initAddressForm);
+	const [addressFormAlarm, setAddressFormAlarm] = useState<AddressFormAlarm | null>(null);
+	const addressFormInputRefs = useRef<Partial<AddressFormFormInputRefs>>({});
+	const [memoPickidx, setMemoPickidx] = useState(0);
+	const [memoOptionInit, setMemoOptionInit] = useState(memoOptionList[0]);
+
 	const changeAddressForm = (e: ChangeEvent) => {
 		const { name, value } = e.target as {
 			name: AddressFormInputKeys;
 			value: string;
 		};
-		setAddressFormFailAlert(() => ({
-			...initAddressFormAlert,
-		}));
+		setAddressFormAlarm(null);
 		setAddressForm((prev) => ({
 			...prev,
 			[name]: value,
 		}));
 	};
-	const [addressFormFailAlert, setAddressFormFailAlert] = useState<AddressFormAlert>(initAddressFormAlert);
-	const addressFormInputRefs = useRef<Partial<AddressFormFormInputRefs>>({});
-	const [memoPickidx, setMemoPickidx] = useState(0);
-	const [memoOptionInit, setMemoOptionInit] = useState(memoOptionList[0]);
-
 	// 유효성 확인 ex) 정규표현식 확인
 	const validateAddressForm = async (e: ChangeEvent) => {
 		const { name, value } = e.target as {
 			name: AddressFormInputKeys;
 			value: string;
 		};
-		const trimValue = value.trim();
-		let failMent = "";
-		// const successMent = "";
-		if (addressFormRegex[name] && trimValue) {
-			if (!addressFormRegex[name].test(trimValue)) {
-				failMent = addressFormRegexFailMent[name];
+		const changeVal = value.trim();
+		let changeAlarm: AddressFormAlarm | null = null;
+
+		if (!changeVal) return;
+		if (changeVal) {
+			if (addressFormRegex[name]) {
+				if (!addressFormRegex[name].test(changeVal)) {
+					changeAlarm = { name, message: addressFormRegexFailMent[name], status: "FAIL" };
+				}
 			}
 		}
-		if (failMent) {
-			setAddressFormFailAlert((prev) => ({
-				...prev,
-				[name]: failMent,
-			}));
-		}
+		setAddressFormAlarm(changeAlarm);
 		setAddressForm((prev) => ({
 			...prev,
-			[name]: trimValue,
+			[name]: changeVal,
 		}));
 	};
 	const addressSetSubmit = (e: FormEvent) => {
 		console.log("addressSetSubmit");
 		e.preventDefault();
-
-		let alertOn = "";
-		const alertKeys = Object.keys(initAddressFormAlert) as AddressFormInputKeys[];
-
+		if (addressFormAlarm?.status === "FAIL") {
+			addressFormInputRefs.current[addressFormAlarm.name]?.focus();
+			return;
+		}
+		let changeAlarm: AddressFormAlarm | null = null;
+		const alertKeys = Object.keys(addressForm) as AddressFormInputKeys[];
 		for (const key of alertKeys) {
-			// for (let i = 0; i < keys.length; i++) {
-			// const key = keys[i];
+			if (!addressFormInputRefs.current[key]) continue;
 			const value = addressForm[key];
-			alertOn = addressFormFailAlert[key];
 			// 알람없을 때 처음 누를 때
-			if (!alertOn) {
-				if (!value) {
-					alertOn = "해당 내용을 입력해주세요.";
+			if (!value) {
+				changeAlarm = { name: key, message: "해당 내용을 입력해주세요.", status: "FAIL" };
+			}
+			// 정규표현식 검사
+			else if (addressFormRegex[key]) {
+				if (!addressFormRegex[key].test(value)) {
+					changeAlarm = { name: key, message: addressFormRegexFailMent[key], status: "FAIL" };
 				}
 			}
-			// 알람있을 때 또 눌렀으면
-			if (alertOn) {
-				setAddressFormFailAlert((prev) => ({
-					...prev,
-					[key]: alertOn,
-				}));
-				addressFormInputRefs.current[key]?.focus();
-				break;
-			}
+			if (changeAlarm) break;
 		}
-		console.log(alertOn);
-		if (alertOn) return;
+		if (changeAlarm) {
+			setAddressFormAlarm(changeAlarm);
+			return;
+		}
 		resolveModal({
 			action: "ADDRESS_SET",
 			payload: addressForm,
@@ -142,7 +131,7 @@ export const AddressModal = ({ onClose, address }: AddressModalProps) => {
 	/* -------------------- */
 	// 주소API 팝업 띄우기
 	const addressPopup = () => {
-		new window.daum.Postcode({
+		new window.kakao.Postcode({
 			oncomplete: (data) => {
 				if (!data) return;
 				const fullAddress = data.roadAddress || data.jibunAddress;
@@ -196,7 +185,7 @@ export const AddressModal = ({ onClose, address }: AddressModalProps) => {
 						value={addressForm.addressName}
 						onChange={changeAddressForm}
 						onBlur={validateAddressForm}
-						failMessage={addressFormFailAlert.addressName}
+						alarm={addressFormAlarm}
 						ref={(el) => {
 							addressFormInputRefs.current.addressName = el;
 						}}
@@ -208,7 +197,7 @@ export const AddressModal = ({ onClose, address }: AddressModalProps) => {
 						value={addressForm.recipientName}
 						onChange={changeAddressForm}
 						onBlur={validateAddressForm}
-						failMessage={addressFormFailAlert.recipientName}
+						alarm={addressFormAlarm}
 						ref={(el) => {
 							addressFormInputRefs.current.recipientName = el;
 						}}
@@ -221,7 +210,7 @@ export const AddressModal = ({ onClose, address }: AddressModalProps) => {
 						value={addressForm.addressPhone}
 						onChange={changeAddressForm}
 						onBlur={validateAddressForm}
-						failMessage={addressFormFailAlert.addressPhone}
+						alarm={addressFormAlarm}
 						inputMode="numeric"
 						pattern="[0-9]*"
 						maxLength={11}
@@ -229,12 +218,28 @@ export const AddressModal = ({ onClose, address }: AddressModalProps) => {
 							addressFormInputRefs.current.addressPhone = el;
 						}}
 					/>
+					<AddressSection
+						form={addressForm}
+						alarm={addressFormAlarm}
+						setAddress={(result) => {
+							setAddressForm((prev) => ({
+								...prev,
+								zonecode: result.zonecode,
+								address: result.address,
+							}));
+						}}
+						changeForm={changeAddressForm}
+						validateForm={validateAddressForm}
+						setFormRef={(el) => {
+							addressFormInputRefs.current.addressDetail = el;
+						}}
+					/>
 					<FormInput
 						name="address"
 						label="주소"
 						placeholder="주소를 입력해주세요."
 						value={addressForm.address}
-						failMessage={addressFormFailAlert.address}
+						alarm={addressFormAlarm}
 						readOnly
 						onClick={addressPopup}
 						searchBtn={{ txt: "검색", fnc: addressPopup }}
@@ -244,7 +249,7 @@ export const AddressModal = ({ onClose, address }: AddressModalProps) => {
 						label="상세주소"
 						placeholder="상세주소를 입력해주세요."
 						value={addressForm.addressDetail}
-						failMessage={addressFormFailAlert.addressDetail}
+						alarm={addressFormAlarm}
 						onChange={changeAddressForm}
 						onBlur={validateAddressForm}
 						ref={(el) => {
@@ -271,10 +276,7 @@ export const AddressModal = ({ onClose, address }: AddressModalProps) => {
 										...prev,
 										memo,
 									}));
-									setAddressFormFailAlert((prev) => ({
-										...prev,
-										memo: "",
-									}));
+									setAddressFormAlarm(null);
 								}}
 							/>
 						</span>
@@ -286,7 +288,7 @@ export const AddressModal = ({ onClose, address }: AddressModalProps) => {
 								label="직접입력"
 								placeholder="메모를 입력해주세요."
 								value={addressForm.memo}
-								failMessage={addressFormFailAlert.memo}
+								alarm={addressFormAlarm}
 								onChange={changeAddressForm}
 								onBlur={validateAddressForm}
 								ref={(el) => {

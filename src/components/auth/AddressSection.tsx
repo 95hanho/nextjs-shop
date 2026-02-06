@@ -2,8 +2,6 @@ import { FormInput } from "@/components/auth/FormInput";
 import { ChangeFunction } from "@/types/event";
 import { FormInputAlarm, SetFormRef } from "@/types/form";
 
-export type AddressResult = { zonecode: string; address: string };
-
 type AddressForm = {
 	address: string;
 	addressDetail: string;

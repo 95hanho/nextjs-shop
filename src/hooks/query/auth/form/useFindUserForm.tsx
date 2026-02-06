@@ -49,7 +49,7 @@ export function useFindUserForm() {
 				phone: findUserForm.phone,
 			}),
 		onSuccess(data) {
-			setAuthNumberView(true);
+			setPhoneAuthView(true);
 			setPhoneAuthToken(data.phoneAuthToken);
 			setPhoneAuthComplete(false);
 			setFindUserFormAlarm({
@@ -90,7 +90,7 @@ export function useFindUserForm() {
 					message: "인증시간이 만료되었습니다.",
 					status: "FAIL",
 				});
-				setAuthNumberView(false);
+				setPhoneAuthView(false);
 			}
 			if (err.message === "INVALID_VERIFICATION_CODE") {
 				setFindUserFormAlarm({
@@ -109,7 +109,7 @@ export function useFindUserForm() {
 	// 비번변경 input들 HTMLInputElement
 	const findUserFormInputRefs = useRef<Partial<FindUserFormInputRefs>>({});
 	// 인증번호 화면 띄울지
-	const [phoneAuthView, setAuthNumberView] = useState<boolean>(false);
+	const [phoneAuthView, setPhoneAuthView] = useState<boolean>(false);
 	// 인증번호 토큰
 	const [phoneAuthToken, setPhoneAuthToken] = useState<string | null>(null);
 	// 인증번호 인증완료
@@ -127,6 +127,7 @@ export function useFindUserForm() {
 
 		if (name === "phone") {
 			changeValue = value.replace(/[^0-9]/g, "").slice(0, 13); // 예: 13자리 인증번호
+			setPhoneAuthView(false);
 			setPhoneAuthComplete(false);
 		}
 		if (name === "phoneAuth") {
@@ -134,7 +135,7 @@ export function useFindUserForm() {
 		}
 		setFindUserForm((prev) => ({
 			...prev,
-			[name]: changeValue as FindUserForm[typeof name],
+			[name]: changeValue,
 		}));
 	};
 	// 유효성 확인 ex) 아이디 중복확인, 정규표현식 확인
@@ -145,13 +146,14 @@ export function useFindUserForm() {
 		};
 		const changeVal = value.trim();
 		let changeAlarm: FindUserFormAlarm | null = null;
-		if (name === "phone") {
-			if (changeVal && !phoneRegex.test(changeVal)) {
+		if (!changeVal) return;
+		if (changeVal) {
+			if (name === "phone" && !phoneRegex.test(changeVal)) {
 				changeAlarm = { name: "phone", message: phoneRegexFailMent, status: "FAIL" };
-			}
-		} else if (name === "phoneAuth") {
-			if (changeVal.length < 6) {
-				changeAlarm = { name: "phoneAuth", message: "인증번호 6자리를 입력해주세요.", status: "FAIL" };
+			} else if (name === "phoneAuth") {
+				if (changeVal.length < 6) {
+					changeAlarm = { name: "phoneAuth", message: "인증번호 6자리를 입력해주세요.", status: "FAIL" };
+				}
 			}
 		}
 		setFindUserFormAlarm(changeAlarm);
@@ -178,6 +180,12 @@ export function useFindUserForm() {
 				changeAlarm = { name: key, message: "해당 내용을 입력해주세요.", status: "FAIL" };
 				findUserFormInputRefs.current[key]?.focus();
 			}
+			// 정규표현식 검사
+			else if (key === "phone" && !phoneRegex.test(value)) {
+				changeAlarm = { name: "phone", message: phoneRegexFailMent, status: "FAIL" };
+			}
+
+			if (changeAlarm) break;
 		}
 		if (changeAlarm) {
 			setFindUserFormAlarm(changeAlarm);
@@ -208,7 +216,12 @@ export function useFindUserForm() {
 	};
 	// 휴대폰 인증확인 버튼
 	const clickCheckPhoneAuth = () => {
-		if (findUserFormAlarm?.name === "phoneAuth") {
+		if (findUserFormAlarm?.name === "phoneAuth" && findUserFormAlarm.status === "FAIL") {
+			findUserFormInputRefs.current.phoneAuth?.focus();
+			return;
+		}
+		if (findUserForm.phoneAuth.length < 6) {
+			setFindUserFormAlarm({ name: "phoneAuth", message: "인증번호 6자리를 입력해주세요.", status: "FAIL" });
 			findUserFormInputRefs.current.phoneAuth?.focus();
 			return;
 		}

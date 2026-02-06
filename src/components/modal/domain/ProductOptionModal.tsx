@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import { OptionSelector } from "../../ui/OptionSelector";
 import { FiMinus, FiPlus } from "react-icons/fi";

@@ -1,5 +1,3 @@
-"use client";
-
 import { usePathname } from "next/navigation";
 import { AuthProvider } from "@/providers/auth/AuthProvider";
 import { SellerProvider } from "@/providers/auth/SellerProvider";

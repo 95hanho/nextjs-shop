@@ -120,15 +120,17 @@ export function usePasswordChangeForm({ mode }: usePasswordChangeFormProps) {
 			value: string;
 		};
 
+		let changeAlarm: PasswordChangeAlarm | null = null;
 		if (name == "newPasswordCheck") {
 			if (pwdChangeForm.newPassword && pwdChangeForm.newPasswordCheck != value) {
-				setPwdChangeAlarm({
+				changeAlarm = {
 					name,
 					message: "비밀번호와 일치하지 않습니다.",
 					status: "FAIL",
-				});
+				};
 			}
 		}
+		setPwdChangeAlarm(changeAlarm);
 		setPwdChangeForm((prev) => ({
 			...prev,
 			[name]: value,
@@ -142,12 +144,19 @@ export function usePasswordChangeForm({ mode }: usePasswordChangeFormProps) {
 		};
 		const changeVal = value.trim();
 		let changeAlarm: PasswordChangeAlarm | null = null;
-		if (name === "newPassword" && changeVal && !passwordRegex.test(changeVal)) {
-			changeAlarm = { name, message: passwordRegexFailMent, status: "FAIL" };
-		} else if (["curPassword", "newPassword"].includes(name) && changeVal && pwdChangeForm.curPassword === pwdChangeForm.newPassword) {
-			changeAlarm = { name: "newPassword", message: "현재비밀번호와 같습니다.", status: "FAIL" };
-		} else if (["newPassword", "newPasswordCheck"].includes(name) && changeVal && pwdChangeForm.newPassword !== pwdChangeForm.newPasswordCheck) {
-			changeAlarm = { name: "newPasswordCheck", message: "새로운 비밀번호와 일치하지 않습니다.", status: "FAIL" };
+		if (!changeVal) return;
+		if (changeVal) {
+			if (name === "newPassword" && !passwordRegex.test(changeVal)) {
+				changeAlarm = { name, message: passwordRegexFailMent, status: "FAIL" };
+			} else if (
+				pwdChangeFormInputRefs.current["curPassword"] &&
+				["curPassword", "newPassword"].includes(name) &&
+				pwdChangeForm.curPassword === pwdChangeForm.newPassword
+			) {
+				changeAlarm = { name: "newPassword", message: "현재비밀번호와 같습니다.", status: "FAIL" };
+			} else if (["newPassword", "newPasswordCheck"].includes(name) && pwdChangeForm.newPassword !== pwdChangeForm.newPasswordCheck) {
+				changeAlarm = { name: "newPasswordCheck", message: "새로운 비밀번호와 일치하지 않습니다.", status: "FAIL" };
+			}
 		}
 		setPwdChangeAlarm(changeAlarm);
 		setPwdChangeForm((prev) => ({
@@ -163,22 +172,33 @@ export function usePasswordChangeForm({ mode }: usePasswordChangeFormProps) {
 			pwdChangeFormInputRefs.current[pwdChangeAlarm.name]?.focus();
 		}
 		let changeAlarm: PasswordChangeAlarm | null = null;
-		const alertKeys = Object.keys(pwdChangeForm).filter((v) => v !== "curPassword") as PasswordChangeFormInputKeys[];
+		const alertKeys = Object.keys(pwdChangeForm) as PasswordChangeFormInputKeys[];
 		for (const key of alertKeys) {
+			if (!pwdChangeFormInputRefs.current[key]) continue;
 			const value = pwdChangeForm[key];
 			// 알람없을 때 처음 누를 때
 			if (!value) {
 				changeAlarm = { name: key, message: "해당 내용을 입력해주세요.", status: "FAIL" };
 				pwdChangeFormInputRefs.current[key]?.focus();
 			}
+			// 정규표현식 검사
+			else if (key === "newPassword" && !passwordRegex.test(value)) {
+				changeAlarm = { name: key, message: passwordRegexFailMent, status: "FAIL" };
+			} else if (["curPassword", "newPassword"].includes(key) && pwdChangeForm.curPassword === pwdChangeForm.newPassword) {
+				changeAlarm = { name: "newPassword", message: "현재비밀번호와 같습니다.", status: "FAIL" };
+			} else if (["newPassword", "newPasswordCheck"].includes(key) && pwdChangeForm.newPassword !== pwdChangeForm.newPasswordCheck) {
+				changeAlarm = { name: "newPasswordCheck", message: "새로운 비밀번호와 일치하지 않습니다.", status: "FAIL" };
+			}
+
+			if (changeAlarm) break;
 		}
 		if (changeAlarm) {
 			setPwdChangeAlarm(changeAlarm);
 			return;
 		}
 		//
-		console.log("pwdChangeSubmit");
-		handlePasswordChange.mutate();
+		console.log("비밀번호변경 완료");
+		// handlePasswordChange.mutate();
 	};
 
 	return {

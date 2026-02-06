@@ -1,5 +1,3 @@
-"use client";
-
 import { ModalFrame } from "../frame/ModalFrame";
 
 interface AlertModalProps {

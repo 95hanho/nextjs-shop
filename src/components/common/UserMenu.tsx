@@ -1,5 +1,3 @@
-"use client";
-
 import styles from "./UserMenu.module.scss";
 import React from "react";
 import Link from "next/link";

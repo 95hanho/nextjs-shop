@@ -1,5 +1,3 @@
-"use client";
-
 import { ModalFrame } from "@/components/modal/frame/ModalFrame";
 import { useModalStore } from "@/store/modal.store";
 import { ModalResultMap } from "@/store/modal.type";

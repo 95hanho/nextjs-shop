@@ -62,7 +62,7 @@ export default function FindUserClient() {
 							findUserFormInputRefs.current.phoneAuth = el;
 						}}
 						clickPhoneAuth={clickPhoneAuth}
-						authNumberView={phoneAuthView}
+						phoneAuthView={phoneAuthView}
 						clickCheckPhoneAuth={clickCheckPhoneAuth}
 					/>
 				</form>
