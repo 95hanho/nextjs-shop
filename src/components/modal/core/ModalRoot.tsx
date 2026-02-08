@@ -87,7 +87,7 @@ export const ModalRoot = () => {
 		case "ADDRESSSET":
 			const { address } = modalProps as { address: UserAddressListItem };
 
-			childrenModal = <AddressModal onClose={handleClose} address={address} />;
+			childrenModal = <AddressModal onClose={handleClose} prevAddress={address} />;
 			break;
 		default:
 			return null;

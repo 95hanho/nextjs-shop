@@ -13,7 +13,7 @@
 			width: 100%;
 			border: 1px solid #ccc;
 			font-size: 1em;
-			padding: 0.8em 1.1em;
+			padding: 0.7em 1.1em 0.8em;
 			vertical-align: baseline;
 			background-color: #fff;
 			cursor: pointer;
@@ -26,6 +26,10 @@
 			font-size: 1.5em;
 			align-content: center;
 		}
+	}
+	&.addressModal .optionSelectBox input {
+		border-color: #aaa;
+		border-radius: 5px;
 	}
 	.optionList {
 		position: absolute;

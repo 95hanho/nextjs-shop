@@ -2,12 +2,6 @@ import styles from "./ProductItem.module.scss";
 import { WishButton } from "@/components/product/WishButton";
 import { ImageFill } from "@/components/common/ImageFill";
 import { FaHeart, FaStar } from "react-icons/fa";
-import { useMutation } from "@tanstack/react-query";
-import { postJson } from "@/api/fetchFilter";
-import { BaseResponse } from "@/types/common";
-import { getApiUrl } from "@/lib/getBaseUrl";
-import API_URL from "@/api/endpoints";
-import { useAuth } from "@/hooks/useAuth";
 import { discountPercent, money } from "@/lib/format";
 import Link from "next/link";
 
@@ -26,21 +20,6 @@ interface ProductItemProps {
 }
 
 export const ProductItem = ({ product }: ProductItemProps) => {
-	// const { user } = useAuth();
-
-	const handleProductWish = useMutation({
-		mutationFn: () =>
-			postJson<BaseResponse>(getApiUrl(API_URL.PRODUCT_WISH), {
-				productId: product.productId,
-			}),
-		onSuccess(data) {
-			console.log(data);
-		},
-		onError(err) {
-			console.log(err);
-		},
-	});
-
 	return (
 		<Link href={`/product/detail/${product.productId}`} className={styles.productItem}>
 			{/* 이미지 */}
@@ -48,10 +27,7 @@ export const ProductItem = ({ product }: ProductItemProps) => {
 				<ImageFill src={product.filePath} fill={true} className={styles.productImg} />
 
 				{/* WishButton 내부에서 className을 못 받는 구조면 유지, 받을 수 있으면 아래 주석처럼 */}
-				<WishButton
-					clickFnc={() => handleProductWish.mutate()}
-					/* className={styles.productWishBtn} */
-				/>
+				<WishButton productId={product.productId} initWishOn={true} right={2} bottom={2} />
 			</div>
 
 			{/* 하단 상품설명 */}

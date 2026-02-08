@@ -9,7 +9,6 @@ import { IoIosArrowDown, IoIosArrowUp, IoIosClose } from "react-icons/io";
 import { BsExclamationCircle } from "react-icons/bs";
 import { deleteNormal, getNormal, postJson, putJson } from "@/api/fetchFilter";
 import { money } from "@/lib/format";
-import Cart{ WishButton } from "./CartWishButton";
 import { BaseResponse } from "@/types/common";
 import React, { useEffect, useMemo, useState } from "react";
 import { LodingWrap } from "@/components/common/LodingWrap";
@@ -17,11 +16,13 @@ import { useModalStore } from "@/store/modal.store";
 import { ModalResultMap } from "@/store/modal.type";
 import Error from "next/error";
 import { ImageFill } from "@/components/common/ImageFill";
+import styles from "./CartClient.module.scss";
+import { WishButton } from "@/components/product/WishButton";
 
 type BrandGroupEntry = [sellerName: string, items: CartItem[]];
 
 export default function CartClient() {
-	const { user } = useAuth();
+	const { loginOn } = useAuth();
 	const queryClient = useQueryClient();
 	const { openModal, modalResult, clearModalResult } = useModalStore();
 
@@ -32,7 +33,7 @@ export default function CartClient() {
 		isLoading,
 		isFetching,
 	} = useQuery<GetCartResponse, Error, BrandGroupEntry[]>({
-		queryKey: ["cartList", user?.userId],
+		queryKey: ["cartList"],
 		queryFn: async () => await getNormal(getApiUrl(API_URL.MY_CART)),
 		select: (data) => {
 			const brandGroup: Record<string, CartItem[]> = {};
@@ -44,7 +45,7 @@ export default function CartClient() {
 			});
 			return Object.entries(brandGroup);
 		},
-		enabled: !!user?.userId,
+		enabled: loginOn,
 	});
 	// 장바구니 제품 옵션/수량 변경
 	const handleChangeQuantity = useMutation<BaseResponse, Error, UpdateCartRequest>({
@@ -153,22 +154,23 @@ export default function CartClient() {
 		}
 		// ✅ 한 번 처리했으면 비워주기 (중복 처리 방지)
 		clearModalResult();
-	}, [modalResult, clearModalResult]);
+	}, [modalResult, clearModalResult, deletingCartIdList, handleCartProductDelete, handleChangeQuantity, queryClient]);
 
 	return (
-		<main id="cart" className="cart">
-			<div className="cart-frame">
-				<h1 className="cart__title">장바구니</h1>
-				<div className="cart-wrap">
+		<main id="cart" className={styles.cart}>
+			<div className={styles.cartFrame}>
+				<h1 className={`${styles.cartTitle} py-3`}>장바구니</h1>
+
+				<div className={styles.cartWrap}>
 					{(isLoading || isFetching) && <LodingWrap />}
 
 					{/* 2열 레이아웃 컨테이너 (grid는 CSS에서) */}
 					{/* 좌측: 상품 영역 */}
-					<section className="product-wrap" aria-label="상품 영역">
-						<div className="product-outline">
+					<section className={styles.productWrap} aria-label="상품 영역">
+						<div className={styles.productOutline}>
 							{/* 상단 툴바 */}
-							<div className="product-toolbar">
-								<label className="product-toolbar__select" htmlFor="selectAll">
+							<div className={styles.productToolbar}>
+								<label className={styles.productToolbarSelect} htmlFor="selectAll">
 									<input
 										id="selectAll"
 										type="checkbox"
@@ -181,6 +183,7 @@ export default function CartClient() {
 									/>
 									<span>전체 선택</span>
 								</label>
+
 								<button
 									className="btn btn--text"
 									data-action="removeSelected"
@@ -194,7 +197,7 @@ export default function CartClient() {
 								</button>
 							</div>
 
-							<hr className="product-outline__divider" />
+							<hr className={styles.productOutlineDivider} />
 
 							{/* 브랜드 그룹 */}
 							{brandGroupList?.map((brandGroup, brandGroupIdx) => {
@@ -206,11 +209,12 @@ export default function CartClient() {
 
 								return (
 									<React.Fragment key={"cartBrand-" + brandName}>
-										{brandGroupIdx > 0 && <hr className="product-brand__divider" />}
-										<article className="brand-group" aria-labelledby="brand-denmade">
-											<h2 className="brand-group__header">
-												<span className="brand-group-left">
-													<span className="brand-group__check">
+										{brandGroupIdx > 0 && <hr className={styles.productBrandDivider} />}
+
+										<article className={styles.brandGroup} aria-labelledby="brand-denmade">
+											<h2 className={styles.brandGroupHeader}>
+												<span className={styles.brandGroupLeft}>
+													<span className={styles.brandGroupCheck}>
 														<input
 															id="group-denmade"
 															type="checkbox"
@@ -225,30 +229,32 @@ export default function CartClient() {
 															}}
 														/>
 													</span>
-													<label className="brand-group__title" id="brand-denmade" htmlFor="group-denmade">
+
+													<label className={styles.brandGroupTitle} id="brand-denmade" htmlFor="group-denmade">
 														{brandName}
 													</label>
 												</span>
 
-												<a href="#" className="brand-group__link">
+												<a href="#" className={styles.brandGroupLink}>
 													브랜드숍
 												</a>
 											</h2>
 
 											{/* 상품 리스트 */}
-											<ul className="product-list">
+											<ul className={styles.productList}>
 												{/* 상품 하나 */}
-												{productList.map((product, productIdx) => {
-													// console.log("productId", product.productId);
+												{productList.map((product) => {
 													const selectDisabled = product.stock < product.quantity;
+
 													let productAlarm = "";
 													if (product.stock !== 0 && selectDisabled) {
 														productAlarm = "재고가 부족합니다. 옵션을 변경하시면 선택이 가능합니다.";
 													}
+
 													return (
-														<li key={"cartBrandItem-" + product.cartId} className="product-item" data-sku="DEN0861">
+														<li key={"cartBrandItem-" + product.cartId} className={styles.productItem} data-sku="DEN0861">
 															{/* 상품 체크 */}
-															<div className="product-item__check">
+															<div className={styles.productItemCheck}>
 																<input
 																	id="item-DEN0861"
 																	type="checkbox"
@@ -256,7 +262,6 @@ export default function CartClient() {
 																	checked={product.selected}
 																	disabled={selectDisabled}
 																	onChange={async () => {
-																		// console.log(112331);
 																		await handleChangeSelected.mutateAsync({
 																			cartIdList: [product.cartId],
 																			selected: !product.selected,
@@ -265,63 +270,76 @@ export default function CartClient() {
 																	}}
 																/>
 															</div>
-															<div className="product-item__section">
-																<div className="product-item__overview">
-																	<div className="product-item__media">
-																		<a href="" className="product-item__thumb">
+
+															<div className={styles.productItemSection}>
+																<div className={styles.productItemOverview}>
+																	<div className={styles.productItemMedia}>
+																		<a href="" className={styles.productItemThumb}>
 																			<ImageFill src={product.filePath} alt={product.fileName} />
+
 																			{selectDisabled && (
-																				<div className="product-outofstock__cover">
-																					<span className="product-outofstock__sticker">
+																				<div className={styles.productOutOfStockCover}>
+																					<span className={styles.productOutOfStockSticker}>
 																						{product.stock === 0 && "품절"}
 																						{product.stock !== 0 && selectDisabled && "재고부족"}
 																					</span>
 																				</div>
 																			)}
 																		</a>
-																		<CartWishButton product={product} />
+
+																		<WishButton
+																			productId={product.productId}
+																			initWishOn={product.wishId !== null}
+																		/>
 																	</div>
-																	<div className="product-item__content">
-																		<div className="product-item__info">
-																			<a href="" className="product-item__name">
+
+																	<div className={styles.productItemContent}>
+																		<div className={styles.productItemInfo}>
+																			<a href="" className={styles.productItemName}>
 																				{product.productName}
 																			</a>
-																			<p className="product-item__option">
+
+																			<p className={styles.productItemOption}>
 																				{product.size} / {product.quantity}개
 																			</p>
+
 																			{/* 10개 이하 시에 표시 */}
 																			{product.stock < 10 && (
-																				<div className="product-item__warning">
+																				<div className={styles.productItemWarning}>
 																					<span>품절임박 {product.stock}개 남음</span>
 																				</div>
 																			)}
-																			<div className="product-item__prices">
-																				<h5 className="price price--sale">
+
+																			<div className={styles.productItemPrices}>
+																				<h5 className={`${styles.price} ${styles.priceSale}`}>
 																					<del>129,000원</del>
 																				</h5>
-																				<h5 className="price price--origin">
-																					<span>{money(product.price)}원</span>
+																				<h5 className={`${styles.price} ${styles.priceOrigin}`}>
+																					<span>{money(product.finalPrice)}원</span>
 																				</h5>
 																			</div>
 																		</div>
 																	</div>
 																</div>
-																{productAlarm && <p className="product-alert">* {productAlarm}</p>}
 
-																<h5 className="product-item__delivery">
+																{productAlarm && <p className={styles.productAlert}>* {productAlarm}</p>}
+
+																<h5 className={styles.productItemDelivery}>
 																	<b>10.02(목) 도착 예정</b>
 																	<span>
 																		<BsExclamationCircle />
 																	</span>
 																</h5>
-																<div className="product-item__actions">
+
+																<div className={styles.productItemActions}>
 																	<button className="btn btn--ghost" onClick={() => openOptionChangeModal(product)}>
 																		옵션 변경
 																	</button>
 																	<button className="btn btn--ghost">쿠폰 사용</button>
 																</div>
 															</div>
-															<div className="product-item__delete">
+
+															<div className={styles.productItemDelete}>
 																<button
 																	onClick={() => {
 																		setDeletingCartIdList([product.cartId]);
@@ -332,7 +350,6 @@ export default function CartClient() {
 																</button>
 															</div>
 														</li>
-														/* ...다른 상품 li 반복 */
 													);
 												})}
 											</ul>
@@ -344,26 +361,29 @@ export default function CartClient() {
 					</section>
 
 					{/* 우측: 요약/혜택/유의사항/CTA */}
-					<aside className="price-wrap" aria-label="주문 요약">
-						<div className="price-outline summary-card">
-							<div className="price-count summary-card__section">
-								<div className="title summary-card__title">구매금액</div>
+					<aside className={styles.priceWrap} aria-label="주문 요약">
+						<div className={`${styles.priceOutline} ${styles.summaryCard}`}>
+							<div className={`${styles.priceCount} ${styles.summaryCardSection}`}>
+								<div className={`${styles.title} ${styles.summaryCardTitle}`}>구매금액</div>
 
-								<div className="price-line">
-									<div className="info-name">상품 금액</div>
-									<div className="price-num" data-field="subtotal">
+								<div className={styles.priceLine}>
+									<div className={styles.infoName}>상품 금액</div>
+									<div className={styles.priceNum} data-field="subtotal">
 										185,000원
 									</div>
 								</div>
-								<div className="price-line">
+
+								<div className={styles.priceLine}>
 									<div>할인 금액</div>
 									<div className="text-blue-700">-39,960원</div>
 								</div>
-								<div className="price-line">
+
+								<div className={styles.priceLine}>
 									<div>배송비</div>
 									<div className="text-blue-700">무료배송</div>
 								</div>
-								<div className="mt-4 font-bold price-line price-line--total">
+
+								<div className={`mt-4 font-bold ${styles.priceLine} ${styles.priceLineTotal}`}>
 									<div>총 구매 금액</div>
 									<div aria-live="polite">
 										<span className="mr-2 text-red-500 align-baseline summary__badge">22%</span>
@@ -372,62 +392,68 @@ export default function CartClient() {
 										</span>
 									</div>
 								</div>
-								<div className="price-line">
+
+								<div className={styles.priceLine}>
 									<div>적립혜택 예상</div>
 									<div>최대 5,120</div>
 								</div>
 							</div>
 
-							<hr className="summary-card__divider" />
+							<hr className={styles.summaryCardDivider} />
 
-							<div className="price-benefit benefit" aria-label="결제 혜택">
-								<div className="title benefit__header">
-									<div className="benefit__title">결제 혜택</div>
-									<div className="text-sm benefit__more">
+							<div className={`${styles.priceBenefit} ${styles.benefit}`} aria-label="결제 혜택">
+								<div className={`${styles.title} ${styles.benefitHeader}`}>
+									<div className={styles.benefitTitle}>결제 혜택</div>
+									<div className={`text-sm ${styles.benefitMore}`}>
 										<a href="#" className="text-gray-600 underline">
 											더보기
 										</a>
 									</div>
 								</div>
-								<div className="benefit__body">
-									<h3 className="benefit__subtitle">즉시 할인</h3>
-									<div className="benefit__item kakaopay">
-										<i className="benefit__icon">
+
+								<div className={styles.benefitBody}>
+									<h3 className={styles.benefitSubtitle}>즉시 할인</h3>
+
+									<div className={`${styles.benefitItem} ${styles.kakaopay}`}>
+										<i className={styles.benefitIcon}>
 											<img src="/images/kakaopay-seeklogo.png" alt="카카오페이이미지" />
 										</i>
-										<span className="benefit__text">
+										<span className={styles.benefitText}>
 											카카오페이 × 페이머니 <span>8만원 이상 결제 시 4천원 즉시 할인</span>
 										</span>
 									</div>
-									<div className="benefit__item samsungpay">
-										<i className="benefit__icon">
+
+									<div className={`${styles.benefitItem} ${styles.samsungpay}`}>
+										<i className={styles.benefitIcon}>
 											<img src="/images/Samsung Pay_2025_hor_rev_RGB.png" alt="삼성페이이미지" />
 										</i>
-										<span className="benefit__text">
+										<span className={styles.benefitText}>
 											삼성페이 x 삼성카드 <span>3만원 이상 결제시 3천원 즉시 할인</span>
 										</span>
 									</div>
-									<div className="benefit__item">
-										<i className="benefit__icon">
+
+									<div className={styles.benefitItem}>
+										<i className={styles.benefitIcon}>
 											<img src="/images/btn_Vertical-cr_napygr.svg" alt="네이버페이이미지" />
 										</i>
-										<span className="benefit__text">
+										<span className={styles.benefitText}>
 											네이버페이 x 신한카드 <span>2만원 이상 결제시 2천원 즉시 할인</span>
 										</span>
 									</div>
 								</div>
 							</div>
 
-							<hr className="summary-card__divider" />
+							<hr className={styles.summaryCardDivider} />
 
-							<div className="summary-card__notice">
-								<button className="notice__toggle" type="button">
+							<div className={styles.summaryCardNotice}>
+								<button className={styles.noticeToggle} type="button">
 									유의사항 {true ? <IoIosArrowDown /> : <IoIosArrowUp />}
 								</button>
 							</div>
 						</div>
-						<div className="notice-wrap">
-							<ul className="notice-list">
+
+						<div className={styles.noticeWrap}>
+							<ul className={`${styles.noticeList} text-xs`}>
 								<li>무신사는 제주/도서산간 지역 제외 전 지역, 전 상품 무료 배송입니다.</li>
 								<li>주문완료 후 출고 전 배송지 변경은 동일 권역(일반, 제주, 제주 외 도서산간 지역) 내에서만 가능합니다.</li>
 								<li>2개 이상의 브랜드를 주문하신 경우, 개별 배송됩니다.</li>
@@ -438,8 +464,9 @@ export default function CartClient() {
 								<li>장바구니에는 최대 100개의 상품을 보관할 수 있으며, 주문당 한번에 주문 가능한 상품수는 100개로 제한됩니다.</li>
 							</ul>
 						</div>
-						<div className="summary-card__cta">
-							<button className="btn btn--primary btn--xl">145,040원 구매하기 ({selectedCount}개)</button>
+
+						<div>
+							<button className="w-full px-5 py-3 btn--black">145,040원 구매하기 ({selectedCount}개)</button>
 						</div>
 					</aside>
 				</div>

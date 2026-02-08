@@ -1,0 +1,422 @@
+.cart {
+	height: 2000px;
+	background-color: #fafafa;
+
+	* {
+		font-family: "NotoSansKR";
+	}
+}
+
+// 제목
+.cartFrame {
+	max-width: 1000px;
+	min-width: 780px;
+	margin: 0 auto;
+
+	.cartTitle {
+		padding: 10px 0;
+	}
+
+	.cartWrap {
+		display: flex;
+		gap: 30px;
+		justify-content: center;
+		position: relative;
+		background-color: #f5f5f5;
+
+		// 좌측: 상품 영역
+		.productWrap {
+			width: 70%;
+			background-color: #fff;
+			box-sizing: border-box;
+			min-width: 404px;
+			max-width: 600px;
+
+			:global(.checkbox) {
+				accent-color: rgb(39, 24, 247);
+				width: 18px;
+				height: 18px;
+			}
+
+			.productOutline {
+				.productToolbar {
+					background-color: var(--white);
+					z-index: 100;
+					justify-content: space-between;
+					align-items: center;
+					padding: 12px 16px;
+					font-size: 14px;
+					font-weight: 500;
+					line-height: 20px;
+					display: flex;
+					position: sticky;
+
+					.productToolbarSelect {
+						span {
+							margin-left: 9px;
+						}
+					}
+
+					> button {
+						border: 1px solid #cdcdcd;
+						box-sizing: border-box;
+						border-radius: 4px;
+						padding: 3px 6px;
+						font-size: 13px;
+						font-weight: 500;
+						line-height: 18px;
+					}
+				}
+
+				.productOutlineDivider {
+					border-color: #ffffff;
+					width: calc(100% - 32px);
+					display: block;
+					justify-self: center;
+					background: #e5e5e5;
+					border: 0;
+					height: 1px;
+				}
+
+				.productBrandDivider {
+					border-color: #fff;
+					width: calc(100% - 65px);
+					display: block;
+					justify-self: right;
+					margin-right: 20px;
+					background: #e5e5e5;
+					border: 0;
+					height: 1px;
+				}
+
+				// 브랜드 그룹
+				.brandGroup {
+					// 브랜드 헤더
+					.brandGroupHeader {
+						padding: 14px 16px 12px;
+						font-size: 14px;
+						font-weight: 500;
+						display: flex;
+						justify-content: space-between;
+						align-items: center;
+
+						.brandGroupLeft {
+							.brandGroupCheck {
+							}
+
+							.brandGroupTitle {
+								margin-left: 10px;
+								font-size: 16px;
+							}
+						}
+
+						.brandGroupLink {
+							text-underline-offset: 2px;
+							color: #9b9b9b;
+							margin-left: 8px;
+							font-size: 13px;
+							font-weight: 400;
+							line-height: 18px;
+							text-decoration-line: underline;
+						}
+					}
+
+					// 상품 리스트
+					.productList {
+						// 상품 하나
+						.productItem {
+							position: relative;
+							padding: 5px 0 13px;
+							display: flex;
+
+							// 상품 체크
+							.productItemCheck {
+								width: 40px;
+								text-align: right;
+
+								input[type="checkbox"] {
+									margin-right: 6px;
+								}
+							}
+
+							// 상품 정보
+							.productItemSection {
+								width: calc(100% - 40px);
+								padding: 0 20px 0 5px;
+
+								.productItemOverview {
+									display: flex;
+									padding-bottom: 8px;
+
+									.productItemMedia {
+										border-radius: 4px;
+										flex-shrink: 0;
+										width: 72px;
+										height: 86px;
+										overflow: hidden;
+										background-color: #ccc;
+										position: relative;
+
+										.productItemThumb {
+											.productOutOfStockCover {
+												position: absolute;
+												width: 100%;
+												height: 100%;
+												background-color: rgba(0, 0, 0, 0.3);
+												top: 0;
+												left: 0;
+
+												.productOutOfStockSticker {
+													background-color: #4a4a4a;
+													color: #fff;
+													position: absolute;
+													left: 3px;
+													bottom: 3px;
+													font-size: 11px;
+													padding: 1px 2px;
+													border-radius: 2px;
+												}
+											}
+										}
+
+										.productItmeWish {
+											position: absolute;
+											bottom: 5px;
+											right: 5px;
+											z-index: 10;
+										}
+									}
+
+									.productItemContent {
+										padding: 0 21px 0 12px;
+										width: 100%;
+
+										.productItemName {
+											display: block;
+											font-size: 13px;
+											font-weight: 400;
+											margin-bottom: 2px;
+										}
+
+										.productItemOption {
+											font-size: 13px;
+											color: #777;
+										}
+
+										.productItemWarning {
+											span {
+												color: #f00;
+												background: #fdd2d2;
+												padding: 1px 3px;
+												font-size: 12px;
+											}
+										}
+
+										.productItemPrices {
+											.priceSale {
+												color: #cbcbcb;
+												padding: 3px 0 0px;
+											}
+
+											.priceOrigin {
+											}
+										}
+									}
+								}
+
+								.productAlert {
+									color: #f00;
+									font-size: 13px;
+									padding: 0 0 10px 16px;
+								}
+
+								.productItemDelivery {
+									background-color: #f5f5f5;
+									display: flex;
+									justify-content: center;
+									align-items: center;
+									padding: 5px 0;
+									border-radius: 5px;
+									margin-bottom: 8px;
+
+									b {
+										font-size: 10px;
+										font-weight: 500;
+									}
+
+									span {
+										font-size: 12px;
+									}
+								}
+
+								.productItemActions {
+									display: flex;
+									gap: 5px;
+
+									button {
+										width: 50%;
+										border: 1.5px solid #cdcccc;
+										border-radius: 5px;
+										padding: 7px 0;
+									}
+								}
+							}
+
+							// 장바구니 제거
+							.productItemDelete {
+								position: absolute;
+								right: 15px;
+								top: 0px;
+
+								button {
+									font-size: 26px;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		// 우측: 요약/혜택/유의사항/CTA
+		.priceWrap {
+			box-sizing: border-box;
+			min-width: 300px;
+			max-width: 344px;
+			margin-top: -1px;
+			margin-left: 16px;
+			width: 350px;
+			position: sticky;
+			top: 50px;
+
+			.priceOutline {
+				padding: 15px;
+				border: 1px solid #000;
+				background-color: #fff;
+
+				.title {
+					font-size: 18px;
+					margin-bottom: 10px;
+					display: flex;
+					justify-content: space-between;
+					align-items: center;
+				}
+
+				.priceLine {
+					display: flex;
+					justify-content: space-between;
+					margin-bottom: 5px;
+					font-size: 15px;
+				}
+
+				.priceLineTotal {
+				}
+
+				.summaryCardDivider {
+					margin: 14px 0 13px;
+					/* border-color: #ffffff; */
+					height: 1px;
+					border: 0;
+					background: #e5e5e5;
+				}
+
+				.priceBenefit {
+					.benefitHeader {
+						.benefitTitle {
+						}
+
+						.benefitMore {
+						}
+					}
+
+					.benefitBody {
+						.benefitSubtitle {
+							font-size: 15px;
+							font-weight: 500;
+						}
+
+						.benefitItem {
+							padding-top: 5px;
+							white-space: nowrap;
+							text-overflow: ellipsis;
+							overflow: hidden;
+
+							.benefitIcon {
+								display: inline-flex;
+								width: 25px;
+								height: 25px;
+								align-items: center;
+							}
+
+							&.kakaopay {
+								.benefitIcon {
+									padding: 4px;
+									background: #f7f728;
+									border-radius: 50px;
+
+									img {
+										width: 24px;
+										height: 11.7px;
+										margin-top: 2.5px;
+									}
+								}
+							}
+
+							&.samsungpay {
+								.benefitIcon {
+									padding: 4px;
+									background: #1d1ae6;
+									border-radius: 50px;
+
+									img {
+										width: 26px;
+										height: 13.3px;
+										position: absolute;
+										left: 14.2px;
+									}
+								}
+							}
+
+							.benefitText {
+								span {
+									font-weight: 300;
+									vertical-align: baseline;
+								}
+							}
+						}
+					}
+				}
+
+				.summaryCardNotice {
+					.noticeToggle {
+						font-size: 14.3px;
+					}
+				}
+			}
+
+			.noticeWrap {
+				padding: 15px 11px;
+
+				.noticeList {
+					font-size: 12px;
+
+					li {
+						list-style: inside;
+						color: #8a8a8a;
+						padding-bottom: 7px;
+					}
+				}
+			}
+
+			.summaryCardCta {
+				.btnPrimary {
+					background: #000;
+					color: #fff;
+					padding: 10px 20px;
+					width: 100%;
+					border-radius: 5px;
+				}
+			}
+		}
+	}
+}

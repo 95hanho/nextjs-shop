@@ -3,9 +3,13 @@
 	max-height: calc(100vh - 353px);
 	overflow: auto;
 	padding-right: 5px;
+	margin-bottom: 11px;
 }
 .defaultMark {
-	padding: 2px 9px 3px;
+	position: absolute;
+	right: 0;
+	top: -3px;
+	padding: 0 9px;
 	font-size: 12px;
 	background-color: #5f85e7;
 	border-radius: 5px;
@@ -30,5 +34,24 @@
 	/* 배송 메모 */
 	.memo {
 		font-family: NanumPenScript;
+	}
+}
+.addressActions {
+	margin-top: 5px;
+	text-align: right;
+	button {
+		font-size: 19px;
+		&:nth-last-child(n + 2) {
+			margin-right: 8px;
+		}
+	}
+}
+.addressAdd {
+	button {
+		font-size: 20px;
+		width: 100%;
+		border-radius: 0 0 5px 5px;
+		padding: 1px 0;
+		background: #ffd484;
 	}
 }
