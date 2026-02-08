@@ -88,7 +88,10 @@ export default function UserJoinClient() {
 					}}
 					changeForm={changeJoinForm}
 					validateForm={validateJoinForm}
-					setFormRef={(el) => {
+					setAddressRef={(el) => {
+						joinFormInputRefs.current.address = el;
+					}}
+					setAddressDetailRef={(el) => {
 						joinFormInputRefs.current.addressDetail = el;
 					}}
 				/>

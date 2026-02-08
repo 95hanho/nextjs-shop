@@ -13,10 +13,19 @@ interface AddressSectionProps<K extends string> {
 	setAddress: ({ zonecode, address }: { zonecode: string; address: string }) => void;
 	changeForm: ChangeFunction;
 	validateForm: ChangeFunction;
-	setFormRef: SetFormRef;
+	setAddressRef: SetFormRef;
+	setAddressDetailRef: SetFormRef;
 }
 
-export const AddressSection = <K extends string>({ form, alarm, setAddress, changeForm, validateForm, setFormRef }: AddressSectionProps<K>) => {
+export const AddressSection = <K extends string>({
+	form,
+	alarm,
+	setAddress,
+	changeForm,
+	validateForm,
+	setAddressRef,
+	setAddressDetailRef,
+}: AddressSectionProps<K>) => {
 	// 주소API 팝업 띄우기
 	const addressPopup = () => {
 		new kakao.Postcode({
@@ -43,6 +52,9 @@ export const AddressSection = <K extends string>({ form, alarm, setAddress, chan
 				readOnly
 				onClick={addressPopup}
 				onBlur={validateForm}
+				ref={(el) => {
+					setAddressRef(el);
+				}}
 				searchBtn={{ txt: "검색", fnc: addressPopup }}
 			/>
 			<FormInput
@@ -54,7 +66,7 @@ export const AddressSection = <K extends string>({ form, alarm, setAddress, chan
 				onChange={changeForm}
 				onBlur={validateForm}
 				ref={(el) => {
-					setFormRef(el);
+					setAddressDetailRef(el);
 				}}
 			/>
 		</>

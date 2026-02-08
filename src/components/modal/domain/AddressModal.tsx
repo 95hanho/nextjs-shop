@@ -10,11 +10,6 @@ import { FormInputAlarm, FormInputRefs } from "@/types/form";
 import { AddressSection } from "@/components/auth/AddressSection";
 import clsx from "clsx";
 
-interface AddressModalProps {
-	onClose: () => void;
-	address?: UserAddressListItem;
-}
-
 export type AddressForm = {
 	addressName: string;
 	recipientName: string;
@@ -53,7 +48,12 @@ const addressFormRegexFailMent: { [key: string]: string } = {
 	addressPhone: "휴대폰 번호 형식에 일치하지 않습니다.",
 };
 
-export const AddressModal = ({ onClose, address }: AddressModalProps) => {
+interface AddressModalProps {
+	onClose: () => void;
+	prevAddress?: UserAddressListItem;
+}
+
+export const AddressModal = ({ onClose, prevAddress }: AddressModalProps) => {
 	const { resolveModal } = useModalStore();
 
 	const [addressForm, setAddressForm] = useState<AddressForm>(initAddressForm);
@@ -132,18 +132,18 @@ export const AddressModal = ({ onClose, address }: AddressModalProps) => {
 	/* -------------------- */
 	// 처음 들어올 때
 	useEffect(() => {
-		if (address) {
+		if (prevAddress) {
 			setAddressForm((prev) => ({
 				...prev,
-				addressName: address.addressName,
-				recipientName: address.recipientName,
-				addressPhone: address.addressPhone,
-				zonecode: address.zonecode,
-				address: address.address,
-				addressDetail: address.addressDetail,
-				memo: address.memo,
+				addressName: prevAddress.addressName,
+				recipientName: prevAddress.recipientName,
+				addressPhone: prevAddress.addressPhone,
+				zonecode: prevAddress.zonecode,
+				address: prevAddress.address,
+				addressDetail: prevAddress.addressDetail,
+				memo: prevAddress.memo,
 			}));
-			const findIndex = memoOptionList.slice(0, 4).findIndex((v) => v.val === address.memo);
+			const findIndex = memoOptionList.slice(0, 4).findIndex((v) => v.val === prevAddress.memo);
 			if (findIndex === -1) {
 				setMemoPickidx(4);
 				setMemoOptionInit(memoOptionList[4]);
@@ -152,11 +152,11 @@ export const AddressModal = ({ onClose, address }: AddressModalProps) => {
 				setMemoOptionInit(memoOptionList[findIndex]);
 			}
 		}
-	}, [address]);
+	}, [prevAddress]);
 
 	if (!addressForm) return null;
 	return (
-		<ModalFrame title={!address ? "배송지 추가" : "배송지 수정"} onClose={onClose} contentVariant="address">
+		<ModalFrame title={!prevAddress ? "배송지 추가" : "배송지 수정"} onClose={onClose} contentVariant="address">
 			<form onSubmit={addressSetSubmit}>
 				<div className={styles.addressInput}>
 					<FormInput
@@ -211,7 +211,10 @@ export const AddressModal = ({ onClose, address }: AddressModalProps) => {
 						}}
 						changeForm={changeAddressForm}
 						validateForm={validateAddressForm}
-						setFormRef={(el) => {
+						setAddressRef={(el) => {
+							addressFormInputRefs.current.address = el;
+						}}
+						setAddressDetailRef={(el) => {
 							addressFormInputRefs.current.addressDetail = el;
 						}}
 					/>
@@ -264,7 +267,7 @@ export const AddressModal = ({ onClose, address }: AddressModalProps) => {
 						취소
 					</button>
 					<button type="submit" className={`option-actions__submit`}>
-						{!address ? "완료" : "변경하기"}
+						{!prevAddress ? "완료" : "변경하기"}
 					</button>
 				</div>
 			</form>

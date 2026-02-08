@@ -1,7 +1,7 @@
 "use client";
 
 import API_URL from "@/api/endpoints";
-import { deleteNormal, getNormal, postJson } from "@/api/fetchFilter";
+import { deleteNormal, getNormal, postJson, putJson } from "@/api/fetchFilter";
 import { FormPageShell } from "@/components/auth/FormPageShell";
 import { LodingWrap } from "@/components/common/LodingWrap";
 import { AddressForm } from "@/components/modal/domain/AddressModal";
@@ -29,9 +29,9 @@ export default function MyAddressClient() {
 	});
 	// 유저 배송지 추가
 	const handleAddressAdd = useMutation({
-		mutationFn: () =>
+		mutationFn: (address: setUserAddressRequest) =>
 			postJson<BaseResponse, setUserAddressRequest>(getApiUrl(API_URL.MY_ADDRESS), {
-				...changeAddress,
+				...address,
 			}),
 		onSuccess(data) {
 			console.log(data);
@@ -40,11 +40,11 @@ export default function MyAddressClient() {
 			console.log(err);
 		},
 	});
-	// 유저 배송지 수정 -> 여기서는 기본주소 변경도 같이
+	// 유저 배송지 수정/ 기본주소 변경
 	const handleAddressUpdate = useMutation({
-		mutationFn: () =>
-			postJson<BaseResponse, setUserAddressRequest>(getApiUrl(API_URL.MY_ADDRESS), {
-				...changeAddress,
+		mutationFn: (address: setUserAddressRequest) =>
+			putJson<BaseResponse, setUserAddressRequest>(getApiUrl(API_URL.MY_ADDRESS), {
+				...address,
 			}),
 		onSuccess(data) {
 			console.log(data);
@@ -81,8 +81,10 @@ export default function MyAddressClient() {
 			// 기본값 변경
 			if (payload?.result === "ADDRESS_DEFAULT_CHANGE") {
 				const changing = async () => {
-					await handleAddressAdd.mutateAsync();
-					queryClient.invalidateQueries({ queryKey: ["userAddressList"] });
+					if (changeAddress) {
+						await handleAddressUpdate.mutateAsync(changeAddress);
+						queryClient.invalidateQueries({ queryKey: ["userAddressList"] });
+					}
 				};
 				changing();
 			}
@@ -92,20 +94,22 @@ export default function MyAddressClient() {
 					await handleAddressDelete.mutateAsync();
 					queryClient.invalidateQueries({ queryKey: ["userAddressList"] });
 				};
+				console.log("삭제가 된다구??");
 				deleting();
 			}
 		}
 		// 주소 추가
 		if (modalResult?.action === "ADDRESS_SET") {
 			const payload = modalResult.payload as AddressForm;
-			console.log(payload);
+			console.log("payload", payload);
+			// console.log("changeAddress", changeAddress);
 			const addressUpdating = async () => {
-				setChangeAddress((prev) => {
-					const address = prev as UserAddressListItem;
-					return { ...address, ...payload };
-				});
-				await handleAddressAdd.mutateAsync();
-				queryClient.invalidateQueries({ queryKey: ["userAddressList"] });
+				const nextAddress = { ...changeAddress, ...payload };
+				if (nextAddress) {
+					if (!nextAddress?.addressId) await handleAddressAdd.mutateAsync(nextAddress);
+					else await handleAddressUpdate.mutateAsync(nextAddress);
+					queryClient.invalidateQueries({ queryKey: ["userAddressList"] });
+				}
 			};
 			addressUpdating();
 		}
@@ -183,9 +187,7 @@ export default function MyAddressClient() {
 									)}
 									<button
 										onClick={() => {
-											setChangeAddress((prev) => {
-												return { ...userAddress };
-											});
+											setChangeAddress({ ...userAddress });
 											openModal("ADDRESSSET", {
 												address: userAddress,
 												disableOverlayClose: true,

@@ -146,4 +146,11 @@
    - 어디서든 붙여 쓸 수 있는, 너만의 공통 클래스
 =============================== */
 @layer utilities {
+	.btn--black {
+		background: #000;
+		color: #fff;
+		/* padding: 10px 20px; */
+		/* width: 100%; */
+		border-radius: 5px;
+	}
 }

@@ -43,7 +43,10 @@ export default function UserInfoUpdate() {
 						}}
 						changeForm={changeUserUpdateForm}
 						validateForm={validateUserUpdateForm}
-						setFormRef={(el) => {
+						setAddressRef={(el) => {
+							userUpdateFormInputRefs.current.address = el;
+						}}
+						setAddressDetailRef={(el) => {
 							userUpdateFormInputRefs.current.addressDetail = el;
 						}}
 					/>
