@@ -27,7 +27,7 @@ export const ProductItem = ({ product }: ProductItemProps) => {
 				<ImageFill src={product.filePath} fill={true} className={styles.productImg} />
 
 				{/* WishButton 내부에서 className을 못 받는 구조면 유지, 받을 수 있으면 아래 주석처럼 */}
-				<WishButton productId={product.productId} initWishOn={true} right={2} bottom={2} />
+				<WishButton productId={product.productId} initWishOn={true} right={6} bottom={6} />
 			</div>
 
 			{/* 하단 상품설명 */}

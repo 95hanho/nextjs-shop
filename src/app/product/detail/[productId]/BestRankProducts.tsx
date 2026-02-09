@@ -1,7 +1,7 @@
 "use client";
 
 import { ImageFill } from "@/components/common/ImageFill";
-import ImageSlide, { ImageSlideHandle } from "@/components/product/ImageSlide";
+import { ImageSlide, ImageSlideHandle } from "@/components/product/ImageSlide";
 import { money } from "@/lib/format";
 import { Product } from "@/types/product";
 import Link from "next/link";
@@ -19,7 +19,8 @@ export default function BestRankProducts() {
 			productId: 1,
 			name: "W CLASSIC LOGO TEE (7color)",
 			colorName: "123",
-			price: 128000,
+			originPrice: 135000,
+			finalPrice: 128000,
 			createdAt: new Date().toString(),
 			likeCount: 123,
 			viewCount: 123,
@@ -29,7 +30,8 @@ export default function BestRankProducts() {
 			productId: 1,
 			name: "W CLASSIC LOGO TEE (7color)",
 			colorName: "123",
-			price: 128000,
+			originPrice: 135000,
+			finalPrice: 128000,
 			createdAt: new Date().toString(),
 			likeCount: 123,
 			viewCount: 123,
@@ -39,7 +41,8 @@ export default function BestRankProducts() {
 			productId: 1,
 			name: "W CLASSIC LOGO TEE (7color)",
 			colorName: "123",
-			price: 128000,
+			originPrice: 135000,
+			finalPrice: 128000,
 			createdAt: new Date().toString(),
 			likeCount: 123,
 			viewCount: 123,
@@ -49,7 +52,8 @@ export default function BestRankProducts() {
 			productId: 1,
 			name: "W CLASSIC LOGO TEE (7color)",
 			colorName: "123",
-			price: 128000,
+			originPrice: 135000,
+			finalPrice: 128000,
 			createdAt: new Date().toString(),
 			likeCount: 123,
 			viewCount: 123,
@@ -59,7 +63,8 @@ export default function BestRankProducts() {
 			productId: 1,
 			name: "W CLASSIC LOGO TEE (7color)",
 			colorName: "123",
-			price: 128000,
+			originPrice: 135000,
+			finalPrice: 128000,
 			createdAt: new Date().toString(),
 			likeCount: 123,
 			viewCount: 123,
@@ -69,7 +74,8 @@ export default function BestRankProducts() {
 			productId: 1,
 			name: "W CLASSIC LOGO TEE (7color)",
 			colorName: "123",
-			price: 128000,
+			originPrice: 135000,
+			finalPrice: 128000,
 			createdAt: new Date().toString(),
 			likeCount: 123,
 			viewCount: 123,
@@ -79,7 +85,8 @@ export default function BestRankProducts() {
 			productId: 1,
 			name: "W CLASSIC LOGO TEE (7color)",
 			colorName: "123",
-			price: 128000,
+			originPrice: 135000,
+			finalPrice: 128000,
 			createdAt: new Date().toString(),
 			likeCount: 123,
 			viewCount: 123,
@@ -89,7 +96,8 @@ export default function BestRankProducts() {
 			productId: 1,
 			name: "W CLASSIC LOGO TEE (7color)",
 			colorName: "123",
-			price: 128000,
+			originPrice: 135000,
+			finalPrice: 128000,
 			createdAt: new Date().toString(),
 			likeCount: 123,
 			viewCount: 123,
@@ -99,7 +107,8 @@ export default function BestRankProducts() {
 			productId: 1,
 			name: "W CLASSIC LOGO TEE (7color)",
 			colorName: "123",
-			price: 128000,
+			originPrice: 135000,
+			finalPrice: 128000,
 			createdAt: new Date().toString(),
 			likeCount: 123,
 			viewCount: 123,
@@ -109,7 +118,8 @@ export default function BestRankProducts() {
 			productId: 1,
 			name: "W CLASSIC LOGO TEE (7color)",
 			colorName: "123",
-			price: 128000,
+			originPrice: 135000,
+			finalPrice: 128000,
 			createdAt: new Date().toString(),
 			likeCount: 123,
 			viewCount: 123,
@@ -147,7 +157,7 @@ export default function BestRankProducts() {
 							</div>
 							<h5>
 								<b>15%</b>
-								<span>{money(item.price)}</span>
+								<span>{money(item.finalPrice)}</span>
 							</h5>
 						</div>
 					);

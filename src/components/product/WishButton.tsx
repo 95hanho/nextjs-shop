@@ -8,6 +8,50 @@ import { useMutation } from "@tanstack/react-query";
 import { MouseEvent, useState } from "react";
 import { FaStar } from "react-icons/fa";
 import { FiStar } from "react-icons/fi";
+import styled from "@emotion/styled";
+
+const WishALink = styled.a<{ bottom: number; right: number; size: number; zIndex: number }>`
+	position: absolute;
+	bottom: ${(props) => props.bottom}px;
+	right: ${(props) => props.right}px;
+	z-index: ${(props) => props.zIndex};
+	font-size: ${(props) => props.size}px;
+	color: #e79278;
+
+	/* 아이콘 위로 올리기 */
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+
+	/* 텍스트 아이콘 자체 그림자 */
+	filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
+
+	/* 뒤에 깔리는 배경 */
+	&::before {
+		content: "";
+		position: absolute;
+		inset: -0.1px;
+		border-radius: 9999px;
+		background: rgba(0, 0, 0, 0.01);
+		-webkit-backdrop-filter: blur(2px);
+		backdrop-filter: blur(2px);
+		z-index: -1;
+		pointer-events: none;
+	}
+
+	/* 호버 시 강조 */
+	&:hover {
+		color: #fd9171;
+	}
+	&:hover::before {
+		display: none;
+	}
+
+	/* 클릭 시 눌리는 느낌 */
+	&:active {
+		transform: scale(0.95);
+	}
+`;
 
 interface WishButtonProps {
 	initWishOn: boolean;
@@ -45,9 +89,16 @@ export const WishButton = ({ initWishOn, productId, bottom = 1, right = 1, size 
 		handleProductWish.mutate();
 	};
 
+	const wishALinkProps = {
+		bottom,
+		right,
+		size,
+		zIndex,
+	};
+
 	return (
-		<a href="" className={`absolute z-${zIndex} bottom-${bottom} right-${right} text-[#e79278] text-[${size}px] `} onClick={changeWish}>
+		<WishALink href="#" onClick={changeWish} {...wishALinkProps}>
 			{wishOn ? <FaStar /> : <FiStar />}
-		</a>
+		</WishALink>
 	);
 };

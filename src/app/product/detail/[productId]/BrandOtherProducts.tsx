@@ -1,7 +1,7 @@
 "use client";
 
 import { ImageFill } from "@/components/common/ImageFill";
-import ImageSlide, { ImageSlideHandle } from "@/components/product/ImageSlide";
+import { ImageSlide, ImageSlideHandle } from "@/components/product/ImageSlide";
 import { money } from "@/lib/format";
 import { Product } from "@/types/product";
 import Link from "next/link";
@@ -9,7 +9,7 @@ import { useRef, useState } from "react";
 import { FiHeart } from "react-icons/fi";
 import { RiArrowLeftSLine, RiArrowRightSLine } from "react-icons/ri";
 
-interface BrandOtherProductsProps {}
+// interface BrandOtherProductsProps {}
 
 export default function BrandOtherProducts() {
 	const slideHandleRef = useRef<ImageSlideHandle | null>(null);
@@ -20,7 +20,8 @@ export default function BrandOtherProducts() {
 			productId: 1,
 			name: "Waist String Wide Pants VW5ML470_3color",
 			colorName: "123",
-			price: 128000,
+			originPrice: 135000,
+			finalPrice: 128000,
 			createdAt: new Date().toString(),
 			likeCount: 123,
 			viewCount: 123,
@@ -30,7 +31,8 @@ export default function BrandOtherProducts() {
 			productId: 1,
 			name: "Waist String Wide Pants VW5ML470_3color",
 			colorName: "123",
-			price: 128000,
+			originPrice: 135000,
+			finalPrice: 128000,
 			createdAt: new Date().toString(),
 			likeCount: 123,
 			viewCount: 123,
@@ -40,7 +42,8 @@ export default function BrandOtherProducts() {
 			productId: 1,
 			name: "Waist String Wide Pants VW5ML470_3color",
 			colorName: "123",
-			price: 128000,
+			originPrice: 135000,
+			finalPrice: 128000,
 			createdAt: new Date().toString(),
 			likeCount: 123,
 			viewCount: 123,
@@ -50,7 +53,8 @@ export default function BrandOtherProducts() {
 			productId: 1,
 			name: "Waist String Wide Pants VW5ML470_3color",
 			colorName: "123",
-			price: 128000,
+			originPrice: 135000,
+			finalPrice: 128000,
 			createdAt: new Date().toString(),
 			likeCount: 123,
 			viewCount: 123,
@@ -60,7 +64,8 @@ export default function BrandOtherProducts() {
 			productId: 1,
 			name: "Waist String Wide Pants VW5ML470_3color",
 			colorName: "123",
-			price: 128000,
+			originPrice: 135000,
+			finalPrice: 128000,
 			createdAt: new Date().toString(),
 			likeCount: 123,
 			viewCount: 123,
@@ -70,7 +75,8 @@ export default function BrandOtherProducts() {
 			productId: 1,
 			name: "Waist String Wide Pants VW5ML470_3color",
 			colorName: "123",
-			price: 128000,
+			originPrice: 135000,
+			finalPrice: 128000,
 			createdAt: new Date().toString(),
 			likeCount: 123,
 			viewCount: 123,
@@ -80,7 +86,8 @@ export default function BrandOtherProducts() {
 			productId: 1,
 			name: "Waist String Wide Pants VW5ML470_3color",
 			colorName: "123",
-			price: 128000,
+			originPrice: 135000,
+			finalPrice: 128000,
 			createdAt: new Date().toString(),
 			likeCount: 123,
 			viewCount: 123,
@@ -90,7 +97,8 @@ export default function BrandOtherProducts() {
 			productId: 1,
 			name: "Waist String Wide Pants VW5ML470_3color",
 			colorName: "123",
-			price: 128000,
+			originPrice: 135000,
+			finalPrice: 128000,
 			createdAt: new Date().toString(),
 			likeCount: 123,
 			viewCount: 123,
@@ -100,7 +108,8 @@ export default function BrandOtherProducts() {
 			productId: 1,
 			name: "Waist String Wide Pants VW5ML470_3color",
 			colorName: "123",
-			price: 128000,
+			originPrice: 135000,
+			finalPrice: 128000,
 			createdAt: new Date().toString(),
 			likeCount: 123,
 			viewCount: 123,
@@ -110,7 +119,8 @@ export default function BrandOtherProducts() {
 			productId: 1,
 			name: "Waist String Wide Pants VW5ML470_3color",
 			colorName: "123",
-			price: 128000,
+			originPrice: 130000,
+			finalPrice: 128000,
 			createdAt: new Date().toString(),
 			likeCount: 123,
 			viewCount: 123,
@@ -148,7 +158,7 @@ export default function BrandOtherProducts() {
 							</div>
 							<h5>
 								<b>10%</b>
-								<span>{money(item.price)}</span>
+								<span>{money(item.finalPrice)}</span>
 							</h5>
 						</div>
 					);
