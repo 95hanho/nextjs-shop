@@ -1,7 +1,7 @@
 "use client";
 
 import { ReviewStar } from "@/components/product/ReviewStar";
-import { TestImage } from "@/components/test/TestImage";
+import TestImage from "@/components/test/TestImage";
 import { OptionSelector } from "@/components/ui/OptionSelector";
 import Link from "next/link";
 import { FaHeart } from "react-icons/fa";

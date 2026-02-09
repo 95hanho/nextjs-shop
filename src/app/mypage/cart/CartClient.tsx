@@ -46,6 +46,7 @@ export default function CartClient() {
 			return Object.entries(brandGroup);
 		},
 		enabled: loginOn,
+		refetchOnWindowFocus: false,
 	});
 	// 장바구니 제품 옵션/수량 변경
 	const handleChangeQuantity = useMutation<BaseResponse, Error, UpdateCartRequest>({
