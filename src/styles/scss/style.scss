@@ -340,10 +340,10 @@ body {
 	}
 }
 /* 제품상세보기 */
-main#productDetail * {
+.productDetail * {
 	font-family: "notoSansKR";
 }
-main#productDetail {
+.productDetail {
 	position: relative;
 	min-width: 900px;
 	max-width: 1200px;

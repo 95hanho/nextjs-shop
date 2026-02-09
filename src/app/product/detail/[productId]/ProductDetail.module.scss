@@ -1,0 +1,712 @@
+.productDetail {
+	* {
+		font-family: "notoSansKR";
+	}
+
+	position: relative;
+	min-width: 900px;
+	max-width: 1200px;
+	padding: 0 30px;
+	margin: 0 auto;
+	margin-bottom: 100px;
+	/* 상품 사진 및 가격배송 정보 */
+	section#product-visual-info {
+		display: flex;
+		padding: 30px 0;
+
+		.productImageArea {
+			position: relative;
+			width: 50%;
+
+			img {
+			}
+		}
+
+		.productTextInfo {
+			width: 50%;
+			border-top: 2px solid #000;
+			margin-left: 30px;
+			width: 45%;
+
+			.productMetaInfo {
+				.productTitleWishlist {
+					display: flex;
+					justify-content: space-between;
+
+					.productName {
+						font-size: 20px;
+						font-weight: bold;
+						padding: 20px 0;
+					}
+
+					.productWishlist {
+						padding: 20px 0;
+						width: 80px;
+						text-align: center;
+						font-size: 25px;
+						border-left: 1px solid #e4e4e4;
+					}
+				}
+
+				.productReviewSection {
+					display: flex;
+					font-size: 11px;
+					align-items: center;
+
+					a {
+						margin-left: 10px;
+						color: #494949;
+						text-decoration: underline;
+					}
+				}
+
+				.productPriceInfo {
+					margin-top: 8px;
+
+					.originalPrice {
+						font-size: 12px;
+						font-weight: 500;
+						text-decoration: line-through;
+						color: #adadad;
+					}
+
+					.firstPurchaseLabel {
+						color: #f35b1f;
+						font-weight: bold;
+						font-size: 12px;
+					}
+
+					.priceDiscount {
+						.priceBox {
+							display: inline-block;
+							font-size: 19px;
+
+							b {
+								color: #f35b1f;
+								margin-right: 5px;
+							}
+						}
+
+						.tooltipBtn {
+							font-size: 20px;
+							color: #9f9f9f;
+							margin: 0 5px;
+						}
+					}
+
+					.myPrice {
+						margin-top: 15px;
+						padding: 11px 15px;
+						font-size: 18px;
+						font-weight: bold;
+						background-color: #f3f3f3;
+						display: flex;
+						justify-content: space-between;
+						border-radius: 5px;
+						margin-bottom: 10px;
+
+						> div {
+							b {
+								color: #f35b1f;
+								margin-right: 7px;
+							}
+
+							b,
+							strong {
+								display: inline-block;
+								vertical-align: baseline;
+							}
+						}
+
+						button {
+							font-size: 13px;
+							color: #535353;
+
+							svg {
+								font-size: 20px;
+								margin-left: 5px;
+							}
+						}
+					}
+				}
+			}
+
+			.productAdditionalInfo {
+				border-top: 1px solid #e4e4e4;
+				padding: 20px 0;
+				font-size: 13px;
+				font-weight: 500;
+
+				> div {
+					padding: 5px 0;
+
+					> b {
+						display: inline-block;
+						width: 120px;
+					}
+				}
+
+				.productMileage {
+					margin-bottom: 5px;
+				}
+
+				.installmentInfo {
+					margin-bottom: 5px;
+
+					b {
+						margin-top: 5px;
+						vertical-align: top;
+						display: inline-block;
+						-ms-flex-negative: 0;
+						-webkit-align-self: flex-start;
+						-ms-flex-item-align: flex-start;
+						align-self: flex-start;
+					}
+
+					div {
+						display: inline-block;
+
+						p {
+							vertical-align: text-top;
+						}
+
+						> div {
+							button {
+								text-decoration: underline;
+								font-size: 16px;
+								vertical-align: text-top;
+							}
+						}
+					}
+				}
+
+				.deliveryInfo {
+					margin-bottom: 5px;
+
+					> b {
+						button {
+							margin-left: 5px;
+							font-size: 16px;
+						}
+					}
+
+					span {
+						span {
+							color: #2656cf;
+							text-decoration: none;
+						}
+					}
+				}
+
+				.deliveryFeeInfo {
+					b {
+						margin-top: 5px;
+						vertical-align: top;
+					}
+
+					div {
+						display: inline-block;
+
+						p {
+							&:first-child {
+								color: #2656cf;
+							}
+						}
+					}
+				}
+			}
+
+			.productOptionBuy {
+				margin-top: 20px;
+				font-size: 13px;
+
+				.productOptionSelect {
+					margin-bottom: 20px;
+				}
+
+				.actionButtons {
+					border: 1px solid #ccc;
+
+					button {
+						padding: 10px 15px;
+						font-size: 18px;
+					}
+
+					.btnCart {
+						width: 50%;
+					}
+
+					.btnBuy {
+						width: 50%;
+						background-color: #000;
+						color: #fff;
+
+						&:hover {
+							background-color: #eb5449;
+						}
+					}
+				}
+			}
+		}
+	}
+	/* 업체등록 상품 상세 블로그 */
+	section#product-description {
+		.descriptionToggle {
+			border-bottom: 1px solid #e4e4e4;
+
+			button {
+				position: relative;
+				width: 100%;
+				text-align: left;
+				padding: 10px 20px;
+
+				h2 {
+				}
+
+				span {
+					display: inline-block;
+					position: absolute;
+					top: 0;
+					right: 0;
+					width: 32.9px;
+					height: 100%;
+					font-size: 20px;
+					align-content: center;
+				}
+			}
+
+			h3.productNumber {
+				font-size: 14px;
+				padding: 10px 20px;
+
+				strong {
+					font-weight: 600;
+				}
+
+				span {
+					font-weight: 100;
+				}
+			}
+		}
+
+		.advertisementImage {
+			background-color: #eee;
+			min-height: 150px;
+		}
+
+		.productBlog {
+			margin-top: 30px;
+			padding: 0 80px;
+			font-size: 15px;
+			position: relative;
+			width: 100%;
+
+			.productBlogWrap {
+				padding: 0 60px;
+
+				.productBlogImagesWrap {
+					place-items: center;
+					margin: 20px 0;
+					width: 100%;
+
+					.productBlogImages {
+						position: relative;
+						width: 100%;
+						height: auto;
+					}
+				}
+			}
+
+			.descriptionMoreBtn {
+				border: 1px solid #000;
+				text-align: center;
+				padding: 10px;
+				position: relative;
+				box-sizing: border-box;
+				font-size: 15px;
+				font-weight: bold;
+				width: 100%;
+
+				> div {
+					display: flex;
+					align-items: center;
+					justify-content: center;
+
+					span {
+						height: 100%;
+						display: inline-block;
+					}
+
+					.moreIcon {
+						margin-left: 5px;
+
+						svg {
+							display: inline;
+						}
+					}
+				}
+
+				&::after {
+					position: absolute;
+					left: 0px;
+					right: 0px;
+					bottom: calc(100% + 1px);
+					height: 160px;
+					background: linear-gradient(rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 100%);
+					content: "";
+				}
+			}
+		}
+	}
+	/* 상품정보 보기, 판매자 정보 */
+	section#product-info-section {
+		margin-top: 50px;
+		padding: 0 80px;
+		.productSpecTable {
+			h2 {
+				font-size: 20px;
+				padding: 15px 0;
+			}
+		}
+
+		.sellerInfoSection {
+			margin-top: 20px;
+
+			h2 {
+				font-size: 20px;
+				padding: 15px 0;
+			}
+		}
+
+		table {
+			width: 100%;
+			border-collapse: collapse;
+			border-top: 4px solid #000;
+
+			tbody {
+				th,
+				td {
+					border: 1px solid #ccc;
+					padding: 20px 20px;
+					text-align: left;
+					font-size: 15px;
+				}
+
+				tr {
+					th {
+						width: 25%;
+					}
+
+					td {
+						width: 75%;
+					}
+				}
+			}
+		}
+
+		.relatedBrandProducts {
+			margin-top: 50px;
+
+			.brandThumbnail {
+				position: relative;
+				height: 500px;
+
+				img {
+					width: 100%;
+					height: 100%;
+				}
+
+				.brandLike {
+					position: absolute;
+					left: 50px;
+					bottom: calc(50% - 30px);
+					color: #fff;
+
+					> div {
+						font-size: 30px;
+					}
+
+					p {
+						font-size: 15px;
+					}
+				}
+
+				.brandHomeLink {
+					position: absolute;
+					left: 50px;
+					bottom: calc(50% - 150px);
+					border: 1px solid #fff;
+					font-weight: 600;
+					padding: 8px 14px 8px 20px;
+					background-color: #fff;
+					color: #000;
+					font-weight: 600;
+					border-radius: 5px;
+
+					.clear {
+						background-color: transparent;
+						color: #fff;
+					}
+
+					.brandHomeLinkTitle {
+						font-size: 15px;
+					}
+
+					.brandHomeLinkArrow {
+						font-size: 17px;
+						margin-left: 5px;
+						display: inline-flex;
+
+						svg {
+							display: inline;
+						}
+					}
+				}
+			}
+		}
+
+		.brandOtherProducts {
+			h3 {
+				margin-top: 30px;
+				font-size: 18px;
+			}
+
+			.imageSlide {
+				margin-top: 20px;
+
+				.sliderItem {
+					position: relative;
+
+					a {
+						position: absolute;
+						width: 100%;
+						height: 100%;
+					}
+
+					.imageBox {
+						position: relative;
+						width: 100%;
+						aspect-ratio: 1 / 1; // width와 height를 같게 설정
+
+						img {
+							width: 100%;
+							height: 100%;
+							display: block;
+						}
+
+						button {
+							position: absolute;
+							top: 5px;
+							right: 10px;
+							font-size: 20px;
+							color: #fff;
+						}
+					}
+
+					.slideProductName {
+						padding: 5px 5px;
+
+						p {
+							white-space: nowrap;
+							overflow: hidden;
+							text-overflow: ellipsis;
+							font-size: 12px;
+						}
+					}
+
+					h5 {
+						font-size: 14px;
+						padding: 0 5px;
+
+						b {
+							color: #f35b1f;
+							vertical-align: middle;
+						}
+
+						span {
+							margin-left: 5px;
+						}
+					}
+				}
+
+				.sliderPagination {
+					padding: 15px 0;
+					text-align: center;
+					font-size: 30px;
+					font-weight: 100;
+					color: #ccc;
+					font-style: italic;
+
+					button {
+						padding: 0 20px;
+						vertical-align: baseline;
+						font-size: 40px;
+					}
+
+					strong {
+						vertical-align: baseline;
+						color: #555;
+					}
+				}
+			}
+		}
+	}
+
+	/* 상품리뷰 뷰 */
+	section#review-info-section {
+	}
+
+	/* 상품 QnA */
+	section#qna-info-section {
+	}
+
+	/* 배송정보, 교환, 환불, A/S안내, 같은 카테고리 추천 */
+	section#etc-info-section {
+		margin-top: 70px;
+		padding: 0 80px;
+
+		.shippingGuide,
+		.refundGuide {
+			h2 {
+				padding: 10px 0;
+				border-bottom: 4px solid;
+				font-size: 20px;
+			}
+
+			p {
+				position: relative;
+				font-size: 15px;
+				padding: 1.8px 20px;
+				margin: 10px;
+
+				&::before {
+					position: absolute;
+					top: 11px;
+					left: 0px;
+					width: 3px;
+					height: 3px;
+					border-radius: 100%;
+					background-color: rgb(48, 48, 51);
+					content: "";
+				}
+			}
+		}
+
+		.refundGuide {
+			margin-top: 50px;
+		}
+
+		.bestShortSleeveSection {
+			margin-top: 50px;
+
+			h2 {
+				padding: 10px 0;
+				font-size: 20px;
+			}
+
+			.rankTabs {
+				padding: 5px 0 10px;
+
+				button {
+					padding: 5px 15px;
+					border: 1px solid #bbb;
+					border-radius: 30px;
+					margin-right: 5px;
+
+					&.on {
+						color: #fff;
+						background-color: #000;
+						border: none;
+					}
+				}
+			}
+
+			.imageSlide {
+				margin-top: 20px;
+
+				.sliderItem {
+					position: relative;
+
+					a {
+						position: absolute;
+						width: 100%;
+						height: 100%;
+					}
+
+					.imageBox {
+						position: relative;
+						width: 100%;
+						aspect-ratio: 1 / 1; // width와 height를 같게 설정
+
+						img {
+							width: 100%;
+							height: 100%;
+							display: block;
+						}
+
+						mark {
+							position: absolute;
+							background-color: #000;
+							color: #fff;
+							padding: 0 6.1px;
+							font-size: 14px;
+						}
+
+						button {
+							position: absolute;
+							top: 5px;
+							right: 10px;
+							font-size: 20px;
+							color: #fff;
+						}
+					}
+
+					.slideProductName {
+						padding: 5px 5px;
+
+						p {
+							white-space: nowrap;
+							overflow: hidden;
+							text-overflow: ellipsis;
+							font-size: 12px;
+						}
+					}
+
+					h5 {
+						font-size: 14px;
+						padding: 0 5px;
+
+						b {
+							color: #f35b1f;
+							vertical-align: middle;
+						}
+
+						span {
+							margin-left: 5px;
+						}
+					}
+				}
+
+				.sliderPagination {
+					padding: 15px 0;
+					text-align: center;
+					font-size: 30px;
+					font-weight: 100;
+					color: #ccc;
+					font-style: italic;
+
+					button {
+						padding: 0 20px;
+						vertical-align: baseline;
+						font-size: 40px;
+					}
+
+					strong {
+						vertical-align: baseline;
+						color: #555;
+					}
+				}
+			}
+		}
+	}
+}

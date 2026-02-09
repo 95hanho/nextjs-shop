@@ -333,10 +333,8 @@ export default function CartClient() {
 																</h5>
 
 																<div className={styles.productItemActions}>
-																	<button className="btn btn--ghost" onClick={() => openOptionChangeModal(product)}>
-																		옵션 변경
-																	</button>
-																	<button className="btn btn--ghost">쿠폰 사용</button>
+																	<button onClick={() => openOptionChangeModal(product)}>옵션 변경</button>
+																	<button>쿠폰 사용</button>
 																</div>
 															</div>
 

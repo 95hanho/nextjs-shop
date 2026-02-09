@@ -2,6 +2,7 @@
 "use client";
 
 import { AddressSection } from "@/components/auth/AddressSection";
+import { AuthActionButton } from "@/components/auth/AuthActionButton";
 import { FormInput } from "@/components/auth/FormInput";
 import { InfoMark } from "@/components/auth/InfoMark";
 import { PhoneAuthSection } from "@/components/auth/PhoneAuthSection";
@@ -79,9 +80,7 @@ export default function UserInfoUpdate() {
 							userUpdateFormInputRefs.current.email = el;
 						}}
 					/>
-					<div className="submit-wrap info">
-						<input type="submit" className="" value={"완료"} />
-					</div>
+					<AuthActionButton title="완료" type="info" />
 				</form>
 			</div>
 		</main>

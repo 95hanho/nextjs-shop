@@ -1,6 +1,6 @@
 import { BsChevronRight } from "react-icons/bs";
 
-// 제품 qna
+// 상품 QnA
 export default function QuestionAnswer() {
 	return (
 		<section id="qna-info-section">

@@ -119,7 +119,6 @@ export default function MyAddressClient() {
 
 	// if (isLoading && !userAddressList.length) return null;
 	return (
-		// <div className="user-info delivery-address">
 		<FormPageShell title="배송지 관리" formWidth={430} wrapMinHeight={100}>
 			{isLoading || !userAddressList.length ? (
 				<div className="relative h-40">

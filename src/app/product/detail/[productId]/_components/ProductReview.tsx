@@ -1,9 +1,8 @@
-// 제품 리뷰
-"use client";
-
 import { ReviewStar } from "@/components/product/ReviewStar";
 import { money } from "@/lib/format";
+import styles from "../ProductDetail.module.scss";
 
+// 상품 리뷰
 export default function ProductReview() {
 	return (
 		<section id="review-info-section">
