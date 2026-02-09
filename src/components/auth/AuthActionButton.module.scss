@@ -1,0 +1,39 @@
+.submitWrap {
+	margin: 20px 0;
+	input {
+		width: 200px;
+		height: 50px;
+		border: 1px solid #aaa;
+		border-radius: 12px;
+		font-size: 35px;
+		font-weight: bold;
+		background-color: rgb(174, 179, 169);
+		color: #fff;
+		cursor: pointer;
+		box-shadow: 0px 0px 5px #aaa;
+		&:hover {
+			background-color: rgb(155, 158, 153);
+			color: #eee;
+			font-size: 40px;
+			transition: all 0.3s;
+		}
+		&:active {
+			box-shadow: none;
+			transition: all 0s;
+			transform: translate(1px, 1px);
+			background-color: rgb(20, 196, 20);
+			border-color: #fff;
+		}
+	}
+	&.info {
+		input {
+			background-color: rgb(61 203 119);
+			&:hover {
+				background-color: rgb(55, 184, 109);
+			}
+			&:active {
+				background-color: rgb(20, 196, 20);
+			}
+		}
+	}
+}

@@ -1,6 +1,7 @@
 "use client";
 
 import { AddressSection } from "@/components/auth/AddressSection";
+import { AuthActionButton } from "@/components/auth/AuthActionButton";
 import { FormInput } from "@/components/auth/FormInput";
 import { FormPageShell } from "@/components/auth/FormPageShell";
 import { PhoneAuthSection } from "@/components/auth/PhoneAuthSection";
@@ -137,9 +138,7 @@ export default function UserJoinClient() {
 						joinFormInputRefs.current.email = el;
 					}}
 				/>
-				<div className="submit-wrap">
-					<input type="submit" value={"회원가입"} />
-				</div>
+				<AuthActionButton title="회원가입" />
 			</form>
 		</FormPageShell>
 	);

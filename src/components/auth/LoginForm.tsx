@@ -10,6 +10,7 @@ import { FormEvent } from "@/types/event";
 import { LoginFormData } from "@/types/auth";
 import styles from "./LoginForm.module.scss";
 import clsx from "clsx";
+import { AuthActionButton } from "@/components/auth/AuthActionButton";
 
 export const LoginForm = () => {
 	const router = useRouter();
@@ -135,9 +136,7 @@ export const LoginForm = () => {
 				)}
 			</div>
 			{alarmMessage && <p>* {alarmMessage}</p>}
-			<div className="submit-wrap">
-				<input type="submit" value={"로그인"} />
-			</div>
+			<AuthActionButton title="로그인" />
 		</form>
 	);
 };

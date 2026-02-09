@@ -1,6 +1,7 @@
 /* 비밀번호바꾸기 클라 */
 "use client";
 
+import { AuthActionButton } from "@/components/auth/AuthActionButton";
 import { FormInput } from "@/components/auth/FormInput";
 import { FormPageShell } from "@/components/auth/FormPageShell";
 import { usePasswordChangeForm } from "@/hooks/query/auth/form/usePasswordChangeForm";
@@ -62,9 +63,7 @@ export default function PasswordChangeClient({ mode }: PasswordChangeClientProps
 					}}
 					inputWidthFill={true}
 				/>
-				<div className="submit-wrap info">
-					<input type="submit" value={"완료"} />
-				</div>
+				<AuthActionButton title="완료" type="info" />
 			</form>
 		</FormPageShell>
 	);

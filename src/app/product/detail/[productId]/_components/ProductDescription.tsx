@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
+import styles from "../ProductDetail.module.scss";
 
 export default function ProductDescription() {
 	const [openDescription, setOpenDescription] = useState(false);
 
 	return (
-		<article className="description-toggle">
+		<article className={styles.descriptionToggle}>
 			<button
 				onClick={() => {
 					setOpenDescription(!openDescription);
