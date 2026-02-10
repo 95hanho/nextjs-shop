@@ -42,11 +42,13 @@ export default async function RootLayout({
 	return (
 		<html lang="ko">
 			<body className={`${inter.variable} ${robotoMono.variable} antialiased`}>
-				<Providers>
-					<Header menuList={menuList} />
-					{children}
-					<ModalRoot />
-				</Providers>
+				<div className="wrap">
+					<Providers>
+						<Header menuList={menuList} />
+						{children}
+						<ModalRoot />
+					</Providers>
+				</div>
 			</body>
 		</html>
 	);

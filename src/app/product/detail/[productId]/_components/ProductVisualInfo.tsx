@@ -1,20 +1,20 @@
 "use client";
 
 import { ReviewStar } from "@/components/product/ReviewStar";
-import TestImage from "@/components/test/TestImage";
 import { OptionSelector } from "@/components/ui/OptionSelector";
 import Link from "next/link";
 import { FaHeart } from "react-icons/fa";
 import { GoQuestion } from "react-icons/go";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import styles from "../ProductDetail.module.scss";
+import { ImageFill } from "@/components/common/ImageFill";
 
 // 상품 사진 및 가격배송 정보
 export default function ProductVisualInfo() {
 	return (
 		<section id="product-visual-info">
 			<div className={styles.productImageArea}>
-				<TestImage />
+				<ImageFill />
 			</div>
 
 			<div className={styles.productTextInfo}>

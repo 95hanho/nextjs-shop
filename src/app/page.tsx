@@ -17,7 +17,7 @@ export default async function Home() {
 
 	return (
 		<main id="main">
-			<div className="product-wrap">
+			<div>
 				<ProductSlider productList={productList} />
 				<ProductSlider productList={productList} right={true} />
 				<ProductSlider productList={productList} />

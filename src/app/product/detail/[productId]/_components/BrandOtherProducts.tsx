@@ -8,6 +8,7 @@ import Link from "next/link";
 import { useRef, useState } from "react";
 import { FiHeart } from "react-icons/fi";
 import { RiArrowLeftSLine, RiArrowRightSLine } from "react-icons/ri";
+import styles from "../ProductDetail.module.scss";
 
 // interface BrandOtherProductsProps {}
 
@@ -129,50 +130,53 @@ export default function BrandOtherProducts() {
 	];
 
 	return (
-		<>
-			{/* 슬라이드 벨트 */}
-			<ImageSlide
-				slideItemKey="purchasedTogether"
-				onPageChange={({ page, totalPages }) => {
-					setPageInfo({ page, totalPages });
-				}}
-				items={purchasedTogetherProducts}
-				renderItem={(item, index) => {
-					/* 슬라이드 요소 */
-					return (
-						<div className="slider-item">
-							{/* 전체 링크 */}
-							<Link href={`/product/detail/${item.productId}`}></Link>
-							{/* 이미지 */}
-							<div className="image-box">
-								<ImageFill />
-								<button>
-									{/* <FaHeart /> */}
-									<FiHeart />
-								</button>
+		<div className={styles.brandOtherProducts}>
+			<h3>판매자 다른 상품</h3>
+			<div className={styles.imageSlide}>
+				{/* 슬라이드 벨트 */}
+				<ImageSlide
+					slideItemKey="purchasedTogether"
+					onPageChange={({ page, totalPages }) => {
+						setPageInfo({ page, totalPages });
+					}}
+					items={purchasedTogetherProducts}
+					renderItem={(item, index) => {
+						/* 슬라이드 요소 */
+						return (
+							<div className={styles.sliderItem}>
+								{/* 전체 링크 */}
+								<Link href={`/product/detail/${item.productId}`}></Link>
+								{/* 이미지 */}
+								<div className={styles.imageBox}>
+									<ImageFill />
+									<button>
+										{/* <FaHeart /> */}
+										<FiHeart />
+									</button>
+								</div>
+								<div className={styles.slideProductName}>
+									<p>
+										{index}-{item.name}
+									</p>
+								</div>
+								<h5>
+									<b>10%</b>
+									<span>{money(item.finalPrice)}</span>
+								</h5>
 							</div>
-							<div className="slide-product-name">
-								<p>
-									{index}-{item.name}
-								</p>
-							</div>
-							<h5>
-								<b>10%</b>
-								<span>{money(item.finalPrice)}</span>
-							</h5>
-						</div>
-					);
-				}}
-			/>
-			<div className="slider-pagination">
-				<button onClick={() => slideHandleRef.current?.slidePrev()}>
-					<RiArrowLeftSLine />
-				</button>{" "}
-				<strong>{pageInfo.page}</strong> / {pageInfo.totalPages}{" "}
-				<button onClick={() => slideHandleRef.current?.slideNext()}>
-					<RiArrowRightSLine />
-				</button>
+						);
+					}}
+				/>
+				<div className={styles.sliderPagination}>
+					<button onClick={() => slideHandleRef.current?.slidePrev()}>
+						<RiArrowLeftSLine />
+					</button>{" "}
+					<strong>{pageInfo.page}</strong> / {pageInfo.totalPages}{" "}
+					<button onClick={() => slideHandleRef.current?.slideNext()}>
+						<RiArrowRightSLine />
+					</button>
+				</div>
 			</div>
-		</>
+		</div>
 	);
 }

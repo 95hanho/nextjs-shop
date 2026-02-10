@@ -34,7 +34,7 @@ export default async function CategoryProductList({
 
 	return (
 		<main id="productList">
-			<div className="product-wrap"></div>
+			<div></div>
 		</main>
 	);
 }
@@ -73,11 +73,11 @@ export default function ClientProductList({ menuSubId, sort, initialList, isLogg
 
 	if (!list) {
 		// ✅ 로그인 상태: 공용 리스트를 아예 안 보여주고 스켈레톤만
-		return <div className="product-wrap">로딩중...</div>;
+		return <div>로딩중...</div>;
 	}
 
 	return (
-		<div className="product-wrap">
+		<div>
 			{/* list 렌더 */}
 			{isLoading && shouldFetchPersonalized ? <div>로딩중...</div> : null}
 		</div>

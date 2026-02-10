@@ -54,13 +54,8 @@ export default function SellerInfoSection() {
 				</div>
 			</div>
 
-			<div className={styles.brandOtherProducts}>
-				<h3>판매자 다른 상품</h3>
-				<div className={styles.imageSlide}>
-					{/* 슬라이드 */}
-					<BrandOtherProducts />
-				</div>
-			</div>
+			{/* 판매자 다른 상품 */}
+			<BrandOtherProducts />
 		</article>
 	);
 }

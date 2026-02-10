@@ -4,6 +4,7 @@ import Link from "next/link";
 import { SiKakaotalk, SiNaver } from "react-icons/si";
 import styles from "./LoginClient.module.scss";
 import { LoginForm } from "@/components/auth/LoginForm";
+import clsx from "clsx";
 
 export default function LoginClient() {
 	return (
@@ -25,13 +26,13 @@ export default function LoginClient() {
 					</Link>
 				</div>
 				<div className="my-3">
-					<button className={[styles.snsButton, styles.naverLogin].join(" ")}>
+					<button className={clsx(styles.snsButton, styles.naverLogin)}>
 						<SiNaver size={24} />
 						<span>네이버 로그인</span>
 					</button>
 				</div>
 				<div className="my-3">
-					<button className={[styles.snsButton, styles.kakaoLogin].join(" ")}>
+					<button className={clsx(styles.snsButton, styles.kakaoLogin)}>
 						<SiKakaotalk size={24} />
 						<span>카카오 로그인</span>
 					</button>

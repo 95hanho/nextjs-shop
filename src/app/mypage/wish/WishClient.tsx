@@ -10,6 +10,8 @@ import { useQuery } from "@tanstack/react-query";
 import { OnOffButton } from "@/components/ui/OnOffButton";
 import { ProductItem } from "@/components/product/ProductItem";
 import { ProductGrid } from "@/components/product/ProductGrid";
+import styles from "./WishClient.module.scss";
+import clsx from "clsx";
 
 export default function WishClient() {
 	const { loginOn } = useAuth();
@@ -31,38 +33,37 @@ export default function WishClient() {
 	if (isLoading) return <h1>로딩중....</h1>;
 
 	return (
-		<main id="wish" className="wish">
+		<>
 			{/* 상단 선택메뉴 */}
-			<header className="wish__header">
-				<div className="wish__title">
-					<span>좋아요</span>
+			<header>
+				<div className="px-4 py-3 font-semibold">
+					<span className="text-xl">좋아요</span>
 				</div>
-				<nav className="wish__nav">
-					<div className="wish__tabs wish__tabs--category">
-						<ul className="tab__list">
-							<li className="tab__item on">상품 4</li>
-							<li className="tab__item">브랜드 2</li>
+				<nav>
+					<div className="px-2 pb-3">
+						<ul className={clsx(styles.tabList, styles.brandTabList)}>
+							<li className="on">상품 4</li>
+							<li>브랜드 2</li>
 						</ul>
 					</div>
 
-					<div className="wish__tabs wish__tabs--filter">
-						<ul className="tab__list">
-							<li className="tab__item on">전체</li>
-							<li className="tab__item">신발</li>
-							<li className="tab__item">바지</li>
+					<div className="px-[9px] py-3 bg-gray-200">
+						<ul className={clsx(styles.tabList, styles.categoryTabList)}>
+							<li className="on">전체</li>
+							<li>신발</li>
+							<li>바지</li>
 						</ul>
 					</div>
 				</nav>
 			</header>
 			{/* 상품들 */}
-			<section className="wish__content">
+			<section>
 				{/* 상품 필터 on/off 버튼 */}
 				{/* <div className="wish__filters">
 					<OnOffButton text="세일중" checked={false} />
 					<OnOffButton text="판매 중 상품만 보기" checked={true} />
 				</div> */}
 				{/* 상품 리스트 */}
-				{/* <div className="grid grid-cols-6 gap-4 wish__list"> */}
 				<ProductGrid>
 					{/* 각 상품들 */}
 					{wishListData?.wishlistItems.map((wishItem) => {
@@ -85,6 +86,6 @@ export default function WishClient() {
 					})}
 				</ProductGrid>
 			</section>
-		</main>
+		</>
 	);
 }

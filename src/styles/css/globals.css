@@ -37,6 +37,11 @@
 		color: rgba(0, 0, 0, 0.85);
 	}
 
+	.wrap {
+		background-color: #ffffff;
+		min-width: 800px;
+	}
+
 	/* 기본 폰트 */
 	body,
 	h1,

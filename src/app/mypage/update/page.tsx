@@ -2,5 +2,9 @@ import UserUpdateClient from "./UserUpdateClient";
 
 /* 마이페이지 - 수정 */
 export default function UserUpdatePage() {
-	return <UserUpdateClient />;
+	return (
+		<main id="userUpdate">
+			<UserUpdateClient />
+		</main>
+	);
 }

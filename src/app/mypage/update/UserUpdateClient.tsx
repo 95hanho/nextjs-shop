@@ -4,6 +4,7 @@
 import { AddressSection } from "@/components/auth/AddressSection";
 import { AuthActionButton } from "@/components/auth/AuthActionButton";
 import { FormInput } from "@/components/auth/FormInput";
+import { FormPageShell } from "@/components/auth/FormPageShell";
 import { InfoMark } from "@/components/auth/InfoMark";
 import { PhoneAuthSection } from "@/components/auth/PhoneAuthSection";
 import { useUserUpdateForm } from "@/hooks/query/auth/form/useUserUpdateForm";
@@ -27,10 +28,9 @@ export default function UserInfoUpdate() {
 
 	if (!user.name) return null;
 	return (
-		<main id="myPageInfo" className="user-info">
-			<div id="userInfo" className="form-wrap update">
-				<form onSubmit={userUpdateSubmit}>
-					<h2>내 정보 수정</h2>
+		<FormPageShell title={"내 정보 수정"} formWidth={500} wrapMinHeight={100}>
+			<form onSubmit={userUpdateSubmit}>
+				<div>
 					<InfoMark title="아이디" infoVal={<span>{userIdData?.userId}</span>} />
 					<AddressSection
 						form={userUpdateForm}
@@ -81,8 +81,8 @@ export default function UserInfoUpdate() {
 						}}
 					/>
 					<AuthActionButton title="완료" type="info" />
-				</form>
-			</div>
-		</main>
+				</div>
+			</form>
+		</FormPageShell>
 	);
 }

@@ -64,7 +64,7 @@ export default function UserJoinClient() {
 						joinFormInputRefs.current.passwordCheck = el;
 					}}
 				/>
-				<div className="join-space"></div>
+				<div className="h-7"></div>
 				<FormInput
 					name="name"
 					label="이름"
@@ -108,7 +108,7 @@ export default function UserJoinClient() {
 						joinFormInputRefs.current.birthday = el;
 					}}
 				/>
-				<div className="join-space"></div>
+				<div className="h-7"></div>
 				<PhoneAuthSection
 					form={joinForm}
 					alarm={joinAlarm}

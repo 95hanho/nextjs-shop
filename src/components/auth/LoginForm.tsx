@@ -97,7 +97,7 @@ export const LoginForm = () => {
 						setAlarmMessage("");
 					}}
 				/>
-				<label className="content-center">아이디</label>
+				<label>아이디</label>
 			</div>
 			<div
 				className={clsx(pwdFocus && styles.labelFocus, styles.loginInput)}
@@ -128,7 +128,7 @@ export const LoginForm = () => {
 						setAlarmMessage("");
 					}}
 				/>
-				<label className="content-center">비밀번호</label>
+				<label>비밀번호</label>
 				{pwdFocus && loginForm.password && (
 					<button className={styles.showPwd} type="button" onClick={() => setShowPassword(!showPassword)}>
 						{showPassword ? <FiEyeOff /> : <FiEye />}

@@ -1,0 +1,85 @@
+.productSlider {
+	user-select: none;
+}
+
+.marqueeContainer {
+	overflow: hidden;
+	width: 100%;
+
+	// 마우스 호버 시 일시정지
+	&:hover .marqueeTrack {
+		animation-play-state: paused;
+	}
+}
+
+// 상태 기반 일시정지
+.paused {
+	.marqueeTrack {
+		animation-play-state: paused !important;
+	}
+}
+
+.marqueeTrack {
+	display: flex;
+	width: max-content;
+	animation: scrollLeft 30s linear infinite;
+}
+
+.right {
+	animation: scrollRight 30s linear infinite;
+}
+
+@keyframes scrollLeft {
+	0% {
+		transform: translateX(0);
+	}
+	100% {
+		transform: translateX(-50%);
+	}
+}
+
+@keyframes scrollRight {
+	0% {
+		transform: translateX(-50%);
+	}
+	100% {
+		transform: translateX(0);
+	}
+}
+
+.productItem {
+	position: relative;
+	flex: 0 0 auto;
+	margin-right: 20px;
+	height: 300px;
+
+	img {
+		height: 100%;
+		width: auto;
+		object-fit: contain;
+		display: block;
+	}
+}
+
+.copyright {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	padding: 0 5px;
+	font-size: 12px;
+	color: #fff;
+
+	&:hover {
+		text-decoration: underline;
+	}
+}
+
+.marqueeToggleBtn {
+	margin-top: 10px;
+	padding: 6px 12px;
+	background-color: #444;
+	color: white;
+	border: none;
+	border-radius: 6px;
+	cursor: pointer;
+}
