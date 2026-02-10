@@ -4,7 +4,7 @@ import styles from "../ProductDetail.module.scss";
 // 배송정보, 교환, 환불, A/S안내, 같은 카테고리 추천
 export default function ProductEtcInfoSection() {
 	return (
-		<section id="etc-info-section">
+		<section className={styles.etcInfoSection}>
 			<div className={styles.shippingGuide}>
 				<h2>배송정보</h2>
 				<p>브랜드 업체발송은 상품설명에 별도로 기입된 브랜드 알림 배송공지 기준으로 출고되고 브랜드마다 개별 배송비가 부여됩니다.</p>

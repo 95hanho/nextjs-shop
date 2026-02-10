@@ -263,12 +263,10 @@ export const AddressModal = ({ onClose, prevAddress }: AddressModalProps) => {
 				</div>
 				{/* 버튼 */}
 				<div className={styles.optionActions}>
-					<button type="button" className="option-actions__cancel" onClick={onClose}>
+					<button type="button" onClick={onClose}>
 						취소
 					</button>
-					<button type="submit" className={`option-actions__submit`}>
-						{!prevAddress ? "완료" : "변경하기"}
-					</button>
+					<button type="submit">{!prevAddress ? "완료" : "변경하기"}</button>
 				</div>
 			</form>
 		</ModalFrame>

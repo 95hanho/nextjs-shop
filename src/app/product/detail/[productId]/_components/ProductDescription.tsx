@@ -18,7 +18,7 @@ export default function ProductDescription() {
 				<span>{openDescription ? <IoIosArrowUp /> : <IoIosArrowDown />}</span>
 			</button>
 			{openDescription && (
-				<h3 className="product-number">
+				<h3 className={styles.productNumber}>
 					<strong>상품번호 : </strong>
 					<span>3167608</span>
 				</h3>

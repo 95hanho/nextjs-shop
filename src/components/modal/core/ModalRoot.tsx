@@ -34,8 +34,8 @@ export const ModalRoot = () => {
 	// 새 모달 열릴 때는 isClosing 초기화
 	// body scroll lock
 	useEffect(() => {
-		console.log("modalType", modalType);
 		if (modalType) {
+			console.log("modalType", modalType);
 			setIsOpen(true);
 			setIsClosing(false);
 			document.body.style.overflow = "hidden";

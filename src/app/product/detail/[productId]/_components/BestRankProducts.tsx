@@ -9,6 +9,7 @@ import { useRef, useState } from "react";
 import { FaHeart } from "react-icons/fa";
 import { FiHeart } from "react-icons/fi";
 import { RiArrowLeftSLine, RiArrowRightSLine } from "react-icons/ri";
+import styles from "../ProductDetail.module.scss";
 
 export default function BestRankProducts() {
 	const slideHandleRef = useRef<ImageSlideHandle | null>(null);
@@ -138,18 +139,18 @@ export default function BestRankProducts() {
 				renderItem={(item, index) => {
 					/* 슬라이드 요소 */
 					return (
-						<div className="slider-item">
+						<div className={styles.sliderItem}>
 							{/* 전체 링크 */}
 							<Link href={`/product/detail/${item.productId}`}></Link>
-							<div className="image-box">
-								<ImageFill />
+							<div className={styles.imageBox}>
+								{/* <ImageFill /> */}
 								<mark>{index + 1}</mark>
 								<button>
 									{/* <FaHeart /> */}
 									<FaHeart />
 								</button>
 							</div>
-							<div className="slide-product-name">
+							<div className={styles.slideProductName}>
 								<h6>마리떼 프랑소와 저버</h6>
 								<p>
 									{index}-{item.name}
@@ -163,7 +164,7 @@ export default function BestRankProducts() {
 					);
 				}}
 			/>
-			<div className="slider-pagination">
+			<div className={styles.sliderPagination}>
 				<button onClick={() => slideHandleRef.current?.slidePrev()}>
 					<RiArrowLeftSLine />
 				</button>{" "}

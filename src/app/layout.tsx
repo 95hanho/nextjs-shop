@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Inter, Roboto_Mono } from "next/font/google";
-import "@/styles/css/style.css";
 import "@/styles/css/globals.css";
 import { MenuResponse } from "@/types/main";
 import API_URL from "@/api/endpoints";
@@ -9,7 +8,7 @@ import { getApiUrl, getBackendUrl } from "@/lib/getBaseUrl";
 import { getServerSession } from "@/lib/auth";
 import { UserInfo } from "@/types/auth";
 import { redirect } from "next/navigation";
-import { cookies } from "next/he.aders";
+import { cookies } from "next/headers";
 import { ModalRoot } from "@/components/modal/core/ModalRoot";
 import Providers from "@/app/Providers";
 import { Header } from "@/app/Header";
@@ -42,11 +41,13 @@ export default async function RootLayout({
 	return (
 		<html lang="ko">
 			<body className={`${inter.variable} ${robotoMono.variable} antialiased`}>
-				<Providers>
-					<Header menuList={menuList} />
-					{children}
-					<ModalRoot />
-				</Providers>
+				<div className="wrap">
+					<Providers>
+						<Header menuList={menuList} />
+						{children}
+						<ModalRoot />
+					</Providers>
+				</div>
 			</body>
 		</html>
 	);

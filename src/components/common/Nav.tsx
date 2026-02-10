@@ -2,6 +2,7 @@ import { Menu } from "@/types/main";
 import Link from "next/link";
 import { useState, useEffect, useMemo } from "react";
 import styles from "./Nav.module.scss";
+import clsx from "clsx";
 
 export const Nav = ({ menuList }: { menuList: Menu[] }) => {
 	const maleMenuList = menuList.filter((menu) => menu.gender === "M");
@@ -27,7 +28,7 @@ export const Nav = ({ menuList }: { menuList: Menu[] }) => {
 					{["M", "F"].map((gender) => (
 						<button
 							key={"menu-gender-" + gender}
-							className={[styles.genderBtn, `${activeGender === gender ? "active" : ""}`].join(" ")}
+							className={clsx(styles.genderBtn, `${activeGender === gender ? "active" : ""}`)}
 							onClick={() => {
 								setActiveGender(gender);
 							}}
@@ -36,7 +37,7 @@ export const Nav = ({ menuList }: { menuList: Menu[] }) => {
 						</button>
 					))}
 				</div>
-				<div className={[styles.navMenu, "absolute flex items-center content-center -translate-x-1/2 left-1/2"].join(" ")}>
+				<div className={clsx(styles.navMenu, "absolute flex items-center -translate-x-1/2 left-1/2")}>
 					<a href="#">NEW</a>
 					<a href="#">BEST</a>
 					<a href="#">KIDS</a>
@@ -46,11 +47,11 @@ export const Nav = ({ menuList }: { menuList: Menu[] }) => {
 			{showMenu && (
 				<div className="absolute bg-white z-[1] shadow-md">
 					<div className="mb-4 ml-10 mr-6">
-						<ul className={[styles.menuListUi].join(" ")}>
+						<ul className={styles.menuListUi}>
 							{showMenuList.map((menu) => {
 								const overMenuCount = menu.menuSubList.length > 10;
 								return (
-									<li key={"menu" + menu.menuTopId} className={[styles.menuListLi, `${overMenuCount ? " over" : ""}`].join(" ")}>
+									<li key={"menu" + menu.menuTopId} className={clsx(styles.menuListLi, `${overMenuCount ? " over" : ""}`)}>
 										<div>
 											<Link href={`/product/category/${menu.menuTopId}/1`} onClick={clickMenuLink}>
 												{menu.menuName}

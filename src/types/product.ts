@@ -62,7 +62,7 @@ export type ProductItem = Product & {
 	productImageList: FileInfo[];
 };
 
-export interface GetProductListResponse {
+export interface GetProductListResponse extends BaseResponse {
 	productList: ProductItem[];
 }
 /* 장바구니 넣기 */
@@ -71,12 +71,16 @@ export interface AddCartRequest {
 	quantity: number;
 }
 /* 제품 상세보기 조회 */
-export interface GetProductDetailResponse {
+export interface GetProductDetailResponse extends BaseResponse {
 	productDetail: Product &
 		ProductDetail & {
 			productImageList: (FileInfo & { productId: number })[];
 		};
 	productOptionList: ProductOption[];
+	productReviewSummary: {
+		avgRating: number;
+		reviewCount: number;
+	};
 	availableProductCoupon: Coupon &
 		UserCoupon & {
 			couponId: number;

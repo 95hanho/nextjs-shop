@@ -1,5 +1,7 @@
 import { MainProduct } from "@/types/main";
 import { useRef, useState } from "react";
+import styles from "./ProductSlider.module.scss";
+import clsx from "clsx";
 
 export const ProductSlider = ({ productList, right }: { productList: MainProduct[]; right?: boolean }) => {
 	const [isPaused, setIsPaused] = useState(false);
@@ -36,9 +38,9 @@ export const ProductSlider = ({ productList, right }: { productList: MainProduct
 	};
 
 	return (
-		<div className="product-slider">
+		<div className={styles.productSlider}>
 			<div
-				className={`marquee-container${isPaused ? " paused" : ""} mx-auto`}
+				className={clsx(styles.marqueeContainer, isPaused && styles.paused, "mx-auto")}
 				ref={marqueeRef}
 				onMouseDown={handleMouseDown}
 				onMouseMove={handleMouseMove}
@@ -48,18 +50,19 @@ export const ProductSlider = ({ productList, right }: { productList: MainProduct
 				onTouchMove={(e) => handleMouseMove(e as any)}
 				onTouchEnd={handleMouseUp}
 			>
-				<div className={`marquee-track ${right ? "right" : ""}`}>
+				<div className={clsx(styles.marqueeTrack, right && styles.right)}>
 					{[...productList, ...productList].map((product, idx) => (
-						<div className="product-item" key={idx}>
+						<div className={styles.productItem} key={idx}>
 							<img src={product.imgPath} alt={`Product ${product.productId}`} />
-							<a href={product.copyrightUrl} target="_blank" className="copyright">
+							<a href={product.copyrightUrl} target="_blank" className={styles.copyright}>
 								{product.copyright}
 							</a>
 						</div>
 					))}
 				</div>
 			</div>
-			<button className="marquee-toggle-btn" onClick={togglePlay}>
+
+			<button className={styles.marqueeToggleBtn} onClick={togglePlay}>
 				{isPaused ? "▶️ 재생" : "⏸️ 멈춤"}
 			</button>
 		</div>

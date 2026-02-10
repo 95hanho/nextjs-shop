@@ -1,6 +1,6 @@
-import TestImage from "@/components/test/TestImage";
 import { FaSearch } from "react-icons/fa";
 import styles from "./OrderHistoryClient.module.scss";
+import { ImageFill } from "@/components/common/ImageFill";
 
 export default function OrderHistoryClient() {
 	return (
@@ -58,9 +58,7 @@ export default function OrderHistoryClient() {
 
 								{/* 상품 정보 */}
 								<div className={styles.orderHistoryProduct}>
-									<div className={styles.orderHistoryThumb}>
-										<TestImage />
-									</div>
+									<div className={styles.orderHistoryThumb}>{/* <ImageFill /> */}</div>
 
 									<div className={styles.orderHistoryInfo}>
 										<h4 className={styles.orderHistoryBrand}>굿라이프웍스</h4>
@@ -82,9 +80,7 @@ export default function OrderHistoryClient() {
 
 								{/* 상품 정보 */}
 								<div className={styles.orderHistoryProduct}>
-									<div className={styles.orderHistoryThumb}>
-										<TestImage />
-									</div>
+									<div className={styles.orderHistoryThumb}>{/* <ImageFill /> */}</div>
 
 									<div className={styles.orderHistoryInfo}>
 										<h4 className={styles.orderHistoryBrand}>굿라이프웍스</h4>
@@ -106,9 +102,7 @@ export default function OrderHistoryClient() {
 
 								{/* 상품 정보 */}
 								<div className={styles.orderHistoryProduct}>
-									<div className={styles.orderHistoryThumb}>
-										<TestImage />
-									</div>
+									<div className={styles.orderHistoryThumb}>{/* <ImageFill /> */}</div>
 
 									<div className={styles.orderHistoryInfo}>
 										<h4 className={styles.orderHistoryBrand}>굿라이프웍스</h4>
@@ -142,9 +136,7 @@ export default function OrderHistoryClient() {
 
 								{/* 상품 정보 */}
 								<div className={styles.orderHistoryProduct}>
-									<div className={styles.orderHistoryThumb}>
-										<TestImage />
-									</div>
+									<div className={styles.orderHistoryThumb}>{/* <ImageFill /> */}</div>
 
 									<div className={styles.orderHistoryInfo}>
 										<h4 className={styles.orderHistoryBrand}>굿라이프웍스</h4>
@@ -166,9 +158,7 @@ export default function OrderHistoryClient() {
 
 								{/* 상품 정보 */}
 								<div className={styles.orderHistoryProduct}>
-									<div className={styles.orderHistoryThumb}>
-										<TestImage />
-									</div>
+									<div className={styles.orderHistoryThumb}>{/* <ImageFill /> */}</div>
 
 									<div className={styles.orderHistoryInfo}>
 										<h4 className={styles.orderHistoryBrand}>굿라이프웍스</h4>
