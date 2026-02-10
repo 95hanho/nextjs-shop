@@ -1,9 +1,10 @@
 import { BsChevronRight } from "react-icons/bs";
+import styles from "../ProductDetail.module.scss";
 
 // 상품 QnA
 export default function QuestionAnswer() {
 	return (
-		<section id="qna-info-section">
+		<section className={styles.qnaInfoSection}>
 			<header className="flex justify-between pb-1">
 				<span className="text-2xl font-extrabold">상품 Q&A</span>
 				<button className="flex items-center gap-1 pr-1">

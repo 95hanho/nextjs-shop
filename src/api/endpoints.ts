@@ -91,7 +91,7 @@ const API_URL = {
 	/** 장바구니 넣기 */
 	PRODUCT_CART: "/product/cart",
 	/** 제품상세보기 조회 */
-	PRODUCT_DETAIL: "/product/:productId",
+	PRODUCT_DETAIL: "/product/detail/:productId",
 	/** 제품 리뷰 조회 */
 	PRODUCT_REVIEW: "/product/review",
 	/** 제품 상품 Q&A 조회 */

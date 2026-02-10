@@ -1,5 +1,3 @@
-"use client";
-
 import { ReviewStar } from "@/components/product/ReviewStar";
 import { OptionSelector } from "@/components/ui/OptionSelector";
 import Link from "next/link";
@@ -8,11 +6,42 @@ import { GoQuestion } from "react-icons/go";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import styles from "../ProductDetail.module.scss";
 import { ImageFill } from "@/components/common/ImageFill";
+import { calculateMileage, discountPercent, money } from "@/lib/format";
+import { ProductOption } from "@/types/product";
+import { useMemo, useState } from "react";
+
+interface ProductVisualInfoProps {
+	productDetail: {
+		name: string;
+		originPrice: number;
+		finalPrice: number;
+	};
+	reviewCount: number;
+	reviewRate: number;
+	productOptionList: ProductOption[];
+}
 
 // 상품 사진 및 가격배송 정보
-export default function ProductVisualInfo() {
+export default function ProductVisualInfo({ productDetail, reviewCount, reviewRate, productOptionList }: ProductVisualInfoProps) {
+	// 제품 옵션 선택index
+	const [pickIdx, setPickIdx] = useState(0);
+	// 제품 옵션 들어갈 꺼
+	const { optionInitData, optionSelectList } = useMemo(() => {
+		const first = productOptionList[0];
+		return {
+			optionInitData: {
+				id: first.productOptionId,
+				val: first.size,
+			},
+			optionSelectList: productOptionList.map((v) => ({
+				id: v.productOptionId,
+				val: v.size,
+			})),
+		};
+	}, [productOptionList]);
+
 	return (
-		<section id="product-visual-info">
+		<section className={styles.productVisualInfo}>
 			<div className={styles.productImageArea}>
 				<ImageFill />
 			</div>
@@ -20,32 +49,32 @@ export default function ProductVisualInfo() {
 			<div className={styles.productTextInfo}>
 				<div className={styles.productMetaInfo}>
 					<div className={styles.productTitleWishlist}>
-						<div className={styles.productName}>Crown Raive Graphic T-shirt VW5ME601_3color</div>
+						<div className={styles.productName}>{productDetail.name}</div>
 						<button className={styles.productWishlist}>
 							<FaHeart />
 						</button>
 					</div>
 
 					<div className={styles.productReviewSection}>
-						<ReviewStar rate={3.5} size={15} />
-						<Link href="">274개 리뷰보기</Link>
+						<ReviewStar rate={reviewRate} size={15} />
+						<Link href="">{reviewCount}개 리뷰보기</Link>
 					</div>
 
 					<div className={styles.productPriceInfo}>
-						<h6 className={styles.originalPrice}>58,000원</h6>
+						{/* 상품 자체 할인가격 */}
+						<h6 className={styles.originalPrice}>{money(productDetail.originPrice)}원</h6>
 						<p className={styles.firstPurchaseLabel}>첫 구매가</p>
-
 						<div className={styles.priceDiscount}>
 							<div className={styles.priceBox}>
-								<b>10%</b>
-								<strong>52,200원</strong>
+								<b>{discountPercent(productDetail.originPrice, productDetail.finalPrice)}%</b>
+								<strong>{money(productDetail.finalPrice)}원</strong>
 							</div>
 
 							<button className={styles.tooltipBtn}>
 								<GoQuestion />
 							</button>
 						</div>
-
+						{/* 쿠폰 적용가 */}
 						<div className={styles.myPrice}>
 							<div>
 								<b>10%</b>
@@ -62,7 +91,7 @@ export default function ProductVisualInfo() {
 				<div className={styles.productAdditionalInfo}>
 					<div className={styles.productMileage}>
 						<b>구매 적립금</b>
-						<span>최대 580 마일리지 적립 예정</span>
+						<span>최대 {calculateMileage(productDetail.finalPrice)} 마일리지 적립 예정</span>
 					</div>
 
 					<div className={styles.installmentInfo}>
@@ -101,14 +130,12 @@ export default function ProductVisualInfo() {
 					<div className={styles.productOptionSelect}>
 						<OptionSelector
 							optionSelectorName="productVisualOption"
-							pickIdx={0}
-							initData={{ id: 1, val: "COLOR:SIZE" }}
-							optionList={[
-								{ id: 1, val: "COLOR:SIZE" },
-								{ id: 2, val: "WHITE:0S" },
-								{ id: 3, val: "WHITE:01S" },
-							]}
-							changeOption={(idx, id) => {}}
+							pickIdx={pickIdx}
+							initData={optionInitData}
+							optionList={optionSelectList}
+							changeOption={(idx) => {
+								setPickIdx(idx);
+							}}
 						/>
 					</div>
 

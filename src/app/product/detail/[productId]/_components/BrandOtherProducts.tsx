@@ -148,7 +148,7 @@ export default function BrandOtherProducts() {
 								<Link href={`/product/detail/${item.productId}`}></Link>
 								{/* 이미지 */}
 								<div className={styles.imageBox}>
-									<ImageFill />
+									{/* <ImageFill /> */}
 									<button>
 										{/* <FaHeart /> */}
 										<FiHeart />

@@ -36,7 +36,7 @@ export default function SellerInfoSection() {
 
 			<div className={styles.relatedBrandProducts}>
 				<div className={styles.brandThumbnail}>
-					<ImageFill />
+					{/* <ImageFill fill /> */}
 
 					<button className={styles.brandLike}>
 						<div>

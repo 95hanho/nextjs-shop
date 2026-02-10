@@ -5,7 +5,7 @@ import styles from "../ProductDetail.module.scss";
 // 업체등록 상품 상세 블로그
 export default function ProductDescriptionSection() {
 	return (
-		<section id="product-description">
+		<section className={styles.productDescription}>
 			<ProductDescription />
 			{/* 광고이미지 */}
 			<div className={styles.advertisementImage}>

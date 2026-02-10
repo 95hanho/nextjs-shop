@@ -9,6 +9,7 @@ import { NextResponse } from "next/server";
 // 제품 리뷰 조회
 export const GET = withOptionalAuth(async ({ accessToken, nextRequest }) => {
 	try {
+		console.log("제품 리뷰 조회");
 		const productId = nextRequest.nextUrl.searchParams.get("productId");
 		if (!productId) return NextResponse.json({ message: "productId is required" }, { status: 400 });
 

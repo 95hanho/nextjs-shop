@@ -5,7 +5,7 @@ import styles from "../ProductDetail.module.scss";
 // 상품 리뷰
 export default function ProductReview() {
 	return (
-		<section id="review-info-section">
+		<section className={styles.reviewInfoSection}>
 			<h2>
 				<span>리뷰({money(13250)}개)</span>
 				<span>

@@ -2,7 +2,6 @@
 	* {
 		font-family: "notoSansKR";
 	}
-
 	position: relative;
 	min-width: 900px;
 	max-width: 1200px;
@@ -10,7 +9,7 @@
 	margin: 0 auto;
 	margin-bottom: 100px;
 	/* 상품 사진 및 가격배송 정보 */
-	section#product-visual-info {
+	section.productVisualInfo {
 		display: flex;
 		padding: 30px 0;
 
@@ -225,7 +224,8 @@
 				}
 
 				.actionButtons {
-					border: 1px solid #ccc;
+					display: flex;
+					gap: 5px;
 
 					button {
 						padding: 10px 15px;
@@ -234,6 +234,7 @@
 
 					.btnCart {
 						width: 50%;
+						border: 1px solid #ccc;
 					}
 
 					.btnBuy {
@@ -250,7 +251,7 @@
 		}
 	}
 	/* 업체등록 상품 상세 블로그 */
-	section#product-description {
+	section.productDescription {
 		.descriptionToggle {
 			border-bottom: 1px solid #e4e4e4;
 
@@ -359,7 +360,7 @@
 		}
 	}
 	/* 상품정보 보기, 판매자 정보 */
-	section#product-info-section {
+	section.productInfoSection {
 		margin-top: 50px;
 		padding: 0 80px;
 		.productSpecTable {
@@ -553,15 +554,15 @@
 	}
 
 	/* 상품리뷰 뷰 */
-	section#review-info-section {
+	section.reviewInfoSection {
 	}
 
 	/* 상품 QnA */
-	section#qna-info-section {
+	section.qnaInfoSection {
 	}
 
 	/* 배송정보, 교환, 환불, A/S안내, 같은 카테고리 추천 */
-	section#etc-info-section {
+	section.etcInfoSection {
 		margin-top: 70px;
 		padding: 0 80px;
 

@@ -143,7 +143,7 @@ export default function BestRankProducts() {
 							{/* 전체 링크 */}
 							<Link href={`/product/detail/${item.productId}`}></Link>
 							<div className={styles.imageBox}>
-								<ImageFill />
+								{/* <ImageFill /> */}
 								<mark>{index + 1}</mark>
 								<button>
 									{/* <FaHeart /> */}
