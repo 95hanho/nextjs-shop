@@ -92,10 +92,12 @@ const API_URL = {
 	PRODUCT_CART: "/product/cart",
 	/** 제품상세보기 조회 */
 	PRODUCT_DETAIL: "/product/detail/:productId",
+	/** 제품 사용가능 쿠폰 조회 */
+	PRODUCT_DETAIL_COUPON: "/product/detail/:productId/coupon",
 	/** 제품 리뷰 조회 */
-	PRODUCT_REVIEW: "/product/review",
+	PRODUCT_DETAIL_REVIEW: "/product/detail/:productId/review",
 	/** 제품 상품 Q&A 조회 */
-	PRODUCT_QNA: "/product/qna",
+	PRODUCT_DETAIL_QNA: "/product/detail/:productId/qna",
 
 	// 판매자 ----------------------------------
 	/** 판매자 정보조회, 로그인 */

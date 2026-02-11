@@ -1,38 +1,70 @@
 import { ReviewStar } from "@/components/product/ReviewStar";
 import { money } from "@/lib/format";
 import styles from "../ProductDetail.module.scss";
+import { useQuery } from "@tanstack/react-query";
+import { GetProductDetailReviewResponse } from "@/types/product";
+import { getNormal } from "@/api/fetchFilter";
+import { getApiUrl } from "@/lib/getBaseUrl";
+import API_URL from "@/api/endpoints";
+
+interface ProductReviewProps {
+	productId: number;
+}
 
 // 상품 리뷰
-export default function ProductReview() {
+export default function ProductReview({ productId }: ProductReviewProps) {
+	// 리뷰 조회
+	const {
+		data: reviewResponse,
+		isSuccess,
+		isError,
+		isFetching,
+	} = useQuery<GetProductDetailReviewResponse>({
+		queryKey: ["productReviewList", productId],
+		queryFn: () => getNormal(getApiUrl(API_URL.PRODUCT_DETAIL_REVIEW), { productId }),
+		enabled: !!productId,
+		refetchOnWindowFocus: false,
+		select(data) {
+			// console.log({ reviewResponse: data });
+			return data;
+		},
+	});
+
 	return (
-		<section className={styles.reviewInfoSection}>
-			<h2>
-				<span>리뷰({money(13250)}개)</span>
-				<span>
-					<ReviewStar rate={3.5} />
-				</span>
-			</h2>
-			{/* 사진 모음 */}
-			<div className="">
-				<div>
-					<img src="" alt="" />
-				</div>
-				<div>
-					<img src="" alt="" />
-				</div>
-				<div>
-					<img src="" alt="" />
-				</div>
-				<div>
-					<img src="" alt="" />
-				</div>
-			</div>
-			{/* 리뷰리스트 : 사진, 별점, 아이디(필터링), 내용, 작성날짜 */}
-			<div className=""></div>
-			{/* 리뷰 페이지네이션 */}
-			<div className="review-pagination">
-				<button></button>
-			</div>
-		</section>
+		<>
+			{isFetching && <div>리뷰 불러오는 중...</div>}
+			{isError && <div>리뷰를 불러오지 못했어요.</div>}
+			{isSuccess && (
+				<section className={styles.reviewInfoSection}>
+					<h2>
+						<span>리뷰({money(13250)}개)</span>
+						<span>
+							<ReviewStar rate={3.5} />
+						</span>
+					</h2>
+					{/* 사진 모음 */}
+					<div className="">
+						<div>
+							<img src="" alt="" />
+						</div>
+						<div>
+							<img src="" alt="" />
+						</div>
+						<div>
+							<img src="" alt="" />
+						</div>
+						<div>
+							<img src="" alt="" />
+						</div>
+					</div>
+					{/* 리뷰리스트 : 사진, 별점, 아이디(필터링), 내용, 작성날짜 */}
+					<div className=""></div>
+					{/* 리뷰 페이지네이션 */}
+					<div className="review-pagination">
+						<button></button>
+					</div>
+				</section>
+			)}
+		</>
 	);
 }

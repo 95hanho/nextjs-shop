@@ -3,19 +3,20 @@ import { toErrorResponse } from "@/api/error";
 import { getNormal, RequestHeaders } from "@/api/fetchFilter";
 import { withOptionalAuth } from "@/lib/auth";
 import { getBackendUrl } from "@/lib/getBaseUrl";
-import { ProductQnaResponse } from "@/types/product";
+import { GetProductDetailReviewResponse } from "@/types/product";
 import { NextResponse } from "next/server";
 
-// 제품 상품 Q&A 조회
-export const GET = withOptionalAuth(async ({ accessToken, nextRequest }) => {
+// 제품 상세조회 리뷰 조회
+export const GET = withOptionalAuth<{ productId: string }>(async ({ accessToken, params }) => {
 	try {
-		const productId = nextRequest.nextUrl.searchParams.get("productId");
-		if (!productId) return NextResponse.json({ message: "productId is required" }, { status: 400 });
+		console.log("제품 리뷰 조회");
+		const productId = Number(params.productId);
+		if (!productId || !Number.isInteger(productId)) return NextResponse.json({ message: "productId is required" }, { status: 400 });
 
 		const headers: RequestHeaders = {};
 		if (accessToken) headers.Authorization = `Bearer ${accessToken}`;
 
-		const data = await getNormal<ProductQnaResponse>(getBackendUrl(API_URL.PRODUCT_QNA), { productId }, headers);
+		const data = await getNormal<GetProductDetailReviewResponse>(getBackendUrl(API_URL.PRODUCT_DETAIL_REVIEW), { productId }, headers);
 		console.log("data", data);
 
 		return NextResponse.json({ ...data }, { status: 200 });

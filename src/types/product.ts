@@ -75,27 +75,37 @@ export interface GetProductDetailResponse extends BaseResponse {
 	productDetail: Product &
 		ProductDetail & {
 			productImageList: (FileInfo & { productId: number })[];
+		} & {
+			baseShippingFee: number; // 기본 배송비
+			freeShippingMinAmount: number; // 무료배송 최소 주문금액
+			extraShippingFee: number; // 제주/도서산간 추가 배송비
+			shippingType: "IMMEDIATE" | "RESERVED"; // 출고 방식('IMMEDIATE','RESERVED')
+			shippingDueDate: string; // 출고 예정일
+			shippingNote: string; // 출고 관련 추가 안내 문구
 		};
 	productOptionList: ProductOption[];
 	productReviewSummary: {
 		avgRating: number;
 		reviewCount: number;
 	};
+}
+/* 제품 상세보기 쿠폰 조회 */
+export interface GetProductDetailCouponResponse extends BaseResponse {
 	availableProductCoupon: Coupon &
 		UserCoupon & {
 			couponId: number;
 			sellerName: string;
 		};
 }
-/* 제품 리뷰 조회 */
-export interface ProductReviewResponse extends BaseResponse {
+/* 제품 상세보기 리뷰 조회 */
+export interface GetProductDetailReviewResponse extends BaseResponse {
 	productReviewList: (Review & { userName: string })[];
 }
-/* 제품 상품 Q&A 조회 */
+/* 제품 상세보기 Q&A 조회 */
 type ProductQnaItem = ProductQna & {
 	productQnaTypeName: string;
 	userName: string;
 };
-export interface ProductQnaResponse extends BaseResponse {
+export interface GetProductDetailQnaResponse extends BaseResponse {
 	ProductQnaList: ProductQnaItem[];
 }

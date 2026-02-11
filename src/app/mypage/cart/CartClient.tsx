@@ -15,7 +15,7 @@ import { LodingWrap } from "@/components/common/LodingWrap";
 import { useModalStore } from "@/store/modal.store";
 import { ModalResultMap } from "@/store/modal.type";
 import Error from "next/error";
-import { ImageFill } from "@/components/common/ImageFill";
+import { ImageFill } from "@/components/common/SmartImage";
 import styles from "./CartClient.module.scss";
 import { WishButton } from "@/components/product/WishButton";
 
