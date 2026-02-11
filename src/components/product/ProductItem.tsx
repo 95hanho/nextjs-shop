@@ -1,6 +1,6 @@
 import styles from "./ProductItem.module.scss";
 import { WishButton } from "@/components/product/WishButton";
-import { ImageFill } from "@/components/common/ImageFill";
+import { ImageFill } from "@/components/common/SmartImage";
 import { FaHeart, FaStar } from "react-icons/fa";
 import { discountPercent, money } from "@/lib/format";
 import Link from "next/link";
@@ -37,9 +37,11 @@ export const ProductItem = ({ product }: ProductItemProps) => {
 
 				<div className={styles.productPrice}>
 					<div aria-live="polite">
-						<span className={`${styles.summaryBadge} mr-1 text-red-500`}>
-							{discountPercent(product.originPrice, product.finalPrice)}%
-						</span>
+						{product.originPrice !== product.finalPrice && (
+							<span className={`${styles.summaryBadge} mr-1 text-red-500`}>
+								{discountPercent(product.originPrice, product.finalPrice)}%
+							</span>
+						)}
 						<span className={styles.summaryPrice}>{money(product.finalPrice)}</span>
 					</div>
 				</div>

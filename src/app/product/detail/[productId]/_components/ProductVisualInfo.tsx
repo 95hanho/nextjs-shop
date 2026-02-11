@@ -5,16 +5,30 @@ import { FaHeart } from "react-icons/fa";
 import { GoQuestion } from "react-icons/go";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import styles from "../ProductDetail.module.scss";
-import { ImageFill } from "@/components/common/ImageFill";
+import { SmartImage } from "@/components/common/SmartImage";
 import { calculateMileage, discountPercent, money } from "@/lib/format";
 import { ProductOption } from "@/types/product";
 import { useMemo, useState } from "react";
+import { GetProductDetailCouponResponse } from "@/types/product";
+import { useQuery } from "@tanstack/react-query";
+import { getNormal } from "@/api/fetchFilter";
+import API_URL from "@/api/endpoints";
+import { getApiUrl } from "@/lib/getBaseUrl";
+import { useAuth } from "@/hooks/useAuth";
+import moment from "moment";
 
 interface ProductVisualInfoProps {
+	productId: number;
 	productDetail: {
 		name: string;
 		originPrice: number;
 		finalPrice: number;
+		baseShippingFee: number; // 기본 배송비
+		freeShippingMinAmount: number; // 무료배송 최소 주문금액
+		extraShippingFee: number; // 제주/도서산간 추가 배송비
+		shippingType: "IMMEDIATE" | "RESERVED"; // 출고 방식('IMMEDIATE','RESERVED')
+		shippingDueDate: string; // 출고 예정일
+		shippingNote: string; // 출고 관련 추가 안내 문구
 	};
 	reviewCount: number;
 	reviewRate: number;
@@ -22,7 +36,30 @@ interface ProductVisualInfoProps {
 }
 
 // 상품 사진 및 가격배송 정보
-export default function ProductVisualInfo({ productDetail, reviewCount, reviewRate, productOptionList }: ProductVisualInfoProps) {
+export default function ProductVisualInfo({ productId, productDetail, reviewCount, reviewRate, productOptionList }: ProductVisualInfoProps) {
+	const { loginOn } = useAuth();
+
+	/* ----- Query ------------------------------------------------------ */
+
+	// 이용가능쿠폰 조회
+	const {
+		data: availableCouponResponse,
+		isSuccess,
+		isError,
+		isFetching,
+	} = useQuery<GetProductDetailCouponResponse>({
+		queryKey: ["productReviewList", productId],
+		queryFn: () => getNormal(getApiUrl(API_URL.PRODUCT_DETAIL_COUPON), { productId }),
+		enabled: loginOn,
+		refetchOnWindowFocus: false,
+		select(data) {
+			console.log({ availableCouponResponse: data });
+			return data;
+		},
+	});
+
+	/* ------------------------------------------------------------------ */
+
 	// 제품 옵션 선택index
 	const [pickIdx, setPickIdx] = useState(0);
 	// 제품 옵션 들어갈 꺼
@@ -31,11 +68,11 @@ export default function ProductVisualInfo({ productDetail, reviewCount, reviewRa
 		return {
 			optionInitData: {
 				id: first.productOptionId,
-				val: first.size,
+				val: first.size + (first.addPrice > 0 ? `(+ ${money(first.addPrice)})` : ""),
 			},
 			optionSelectList: productOptionList.map((v) => ({
 				id: v.productOptionId,
-				val: v.size,
+				val: v.size + (v.addPrice > 0 ? `(+ ${money(v.addPrice)})` : ""),
 			})),
 		};
 	}, [productOptionList]);
@@ -43,7 +80,7 @@ export default function ProductVisualInfo({ productDetail, reviewCount, reviewRa
 	return (
 		<section className={styles.productVisualInfo}>
 			<div className={styles.productImageArea}>
-				<ImageFill />
+				<SmartImage width={900} height={900} objectFit="contain" />
 			</div>
 
 			<div className={styles.productTextInfo}>
@@ -62,11 +99,15 @@ export default function ProductVisualInfo({ productDetail, reviewCount, reviewRa
 
 					<div className={styles.productPriceInfo}>
 						{/* 상품 자체 할인가격 */}
-						<h6 className={styles.originalPrice}>{money(productDetail.originPrice)}원</h6>
-						<p className={styles.firstPurchaseLabel}>첫 구매가</p>
+						{productDetail.originPrice !== productDetail.finalPrice && (
+							<h6 className={styles.originalPrice}>{money(productDetail.originPrice)}원</h6>
+						)}
+						{/* <p className={styles.firstPurchaseLabel}>첫 구매가</p> */}
 						<div className={styles.priceDiscount}>
 							<div className={styles.priceBox}>
-								<b>{discountPercent(productDetail.originPrice, productDetail.finalPrice)}%</b>
+								{productDetail.originPrice !== productDetail.finalPrice && (
+									<b>{discountPercent(productDetail.originPrice, productDetail.finalPrice)}%</b>
+								)}
 								<strong>{money(productDetail.finalPrice)}원</strong>
 							</div>
 
@@ -112,16 +153,24 @@ export default function ProductVisualInfo({ productDetail, reviewCount, reviewRa
 							</button>
 						</b>
 						<span>
-							예약 출고 <span>2025.05.30 이내 출고</span>
+							{productDetail.shippingType === "IMMEDIATE" && "즉시 출고"}
+							{productDetail.shippingType === "RESERVED" && "예약 출고"}
+							{productDetail.shippingDueDate && <span>{moment(productDetail.shippingDueDate).format("YYYY.MM.DD")} 이내 출고</span>}
+							{productDetail.shippingNote && (
+								<>
+									<br />
+									<mark>{productDetail.shippingNote}</mark>
+								</>
+							)}
 						</span>
 					</div>
 
 					<div className={styles.deliveryFeeInfo}>
 						<b>배송비</b>
 						<div>
-							<p>2,500원</p>
-							<p>30,000원 이상 구매시 무료배송</p>
-							<p>제주/도서산간 3,000원 추가</p>
+							<p>{productDetail.baseShippingFee === 0 ? `무료 배송` : `${money(productDetail.baseShippingFee)}원`}</p>
+							{productDetail.baseShippingFee > 0 && <p>{money(productDetail.freeShippingMinAmount)}원 이상 구매시 무료배송</p>}
+							{productDetail.extraShippingFee && <p>제주/도서산간 {money(productDetail.extraShippingFee)}원 추가</p>}
 						</div>
 					</div>
 				</div>
