@@ -98,36 +98,97 @@
 					}
 
 					.myPrice {
-						margin-top: 15px;
-						padding: 11px 15px;
-						font-size: 18px;
-						font-weight: bold;
 						background-color: #f3f3f3;
-						display: flex;
-						justify-content: space-between;
-						border-radius: 5px;
 						margin-bottom: 10px;
+						.myPriceToggle {
+							margin-top: 15px;
+							padding: 11px 15px;
+							font-size: 18px;
+							font-weight: bold;
+							display: flex;
+							justify-content: space-between;
+							border-radius: 5px;
+							> div {
+								b {
+									color: #f35b1f;
+									margin-right: 7px;
+								}
 
-						> div {
-							b {
-								color: #f35b1f;
-								margin-right: 7px;
+								b,
+								strong {
+									display: inline-block;
+									vertical-align: baseline;
+								}
 							}
 
-							b,
-							strong {
-								display: inline-block;
-								vertical-align: baseline;
+							button {
+								font-size: 13px;
+								color: #535353;
+
+								svg {
+									font-size: 20px;
+									margin-left: 5px;
+								}
 							}
 						}
-
-						button {
-							font-size: 13px;
-							color: #535353;
-
-							svg {
-								font-size: 20px;
-								margin-left: 5px;
+						.myPriceDetails {
+							padding: 0 15px 10px;
+							font-size: 12px;
+							border-radius: 5px;
+							> div {
+								border-top: 1px solid #e4e4e4;
+								padding: 8px 4px;
+								&:last-child {
+									margin-bottom: 0;
+								}
+								h4 {
+									margin-bottom: 5px;
+									color: #474747;
+								}
+								.myPriceCheckboxTooltip {
+									display: flex;
+									align-items: center;
+									justify-content: space-between;
+									padding: 4px 0;
+									.checkbox {
+										input[type="checkbox"] {
+											margin-right: 5px;
+											width: 16px;
+											height: 16px;
+											accent-color: #000;
+										}
+										span {
+											font-weight: 600;
+											text-overflow: ellipsis;
+											white-space: nowrap;
+											overflow: hidden;
+											display: inline-block;
+											max-width: 100px;
+											font-size: 0.95em;
+										}
+										mark {
+											color: rgb(255 102 102);
+											background-color: rgb(243 213 193);
+											font-weight: 500;
+											font-size: 0.85em;
+											padding: 1px 4px;
+											margin-left: 5px;
+										}
+									}
+									.discountInfo {
+										strong {
+											color: #f35b1f;
+										}
+										button {
+											margin-left: 5px;
+											color: #fff;
+											background-color: #000;
+											border-radius: 10px;
+											font-size: 0.8em;
+											padding: 2px 5px 2px 7px;
+										}
+									}
+								}
 							}
 						}
 					}

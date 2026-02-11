@@ -16,6 +16,7 @@ import API_URL from "@/api/endpoints";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { useAuth } from "@/hooks/useAuth";
 import moment from "moment";
+import MyPriceCheckboxTooltip from "@/app/product/detail/[productId]/_components/MyPriceCheckboxTooltip";
 
 interface ProductVisualInfoProps {
 	productId: number;
@@ -117,14 +118,45 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 						</div>
 						{/* 쿠폰 적용가 */}
 						<div className={styles.myPrice}>
-							<div>
-								<b>10%</b>
-								<strong>52,200원</strong>
+							<div className={styles.myPriceToggle}>
+								<div>
+									<b>10%</b>
+									<strong>52,200원</strong>
+								</div>
+								<button>
+									나의 구매 가능 가격
+									{true ? <IoIosArrowDown /> : <IoIosArrowUp />}
+								</button>
 							</div>
-							<button>
-								나의 구매 가능 가격
-								{true ? <IoIosArrowDown /> : <IoIosArrowUp />}
-							</button>
+							<div className={styles.myPriceDetails}>
+								<div>
+									<h4>상품 할인</h4>
+									<MyPriceCheckboxTooltip title="기본할인 2%기본할인 2%기본할인 2%기본할인 2%기본할인 2%기본할인 2%기본할인 2%기본할인 2%" />
+									<MyPriceCheckboxTooltip title="기본할인 2%" />
+								</div>
+								<div>
+									<h4>상품 쿠폰 할인</h4>
+									<MyPriceCheckboxTooltip title="기본할인 2%" />
+									<MyPriceCheckboxTooltip title="기본할인 2%" />
+									<MyPriceCheckboxTooltip title="기본할인 2%" />
+								</div>
+								<div>
+									<h4>장바구니 쿠폰 할인</h4>
+									<MyPriceCheckboxTooltip title="기본할인 2%" />
+									<MyPriceCheckboxTooltip title="기본할인 2%" />
+								</div>
+								<div>
+									<h4>적립금 사용</h4>
+									<MyPriceCheckboxTooltip title="기본할인 2%" />
+								</div>
+								<div>
+									<p>
+										결제수단 할인과 보유 적립금 할인, 적립 혜택을 선택하면
+										<br />
+										다른 상품 화면의 &apos;나의 구매 가능 가격&apos;에도 기본 적용됩니다.
+									</p>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
