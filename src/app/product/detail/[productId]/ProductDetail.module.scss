@@ -65,7 +65,7 @@
 
 				.productPriceInfo {
 					margin-top: 8px;
-
+					margin-bottom: 10px;
 					.originalPrice {
 						font-size: 12px;
 						font-weight: 500;
@@ -99,7 +99,6 @@
 
 					.myPrice {
 						background-color: #f3f3f3;
-						margin-bottom: 10px;
 						.myPriceToggle {
 							margin-top: 15px;
 							padding: 11px 15px;
@@ -179,13 +178,30 @@
 										strong {
 											color: #f35b1f;
 										}
-										button {
+										.couponDownloadBtn {
 											margin-left: 5px;
 											color: #fff;
 											background-color: #000;
 											border-radius: 10px;
 											font-size: 0.8em;
 											padding: 2px 5px 2px 7px;
+											&.have {
+												background-color: #ccc;
+											}
+										}
+										span {
+											font-weight: 600;
+											margin-left: 5px;
+										}
+									}
+									&.disabled {
+										.checkbox {
+											input[type="checkbox"] {
+												accent-color: #ccc;
+											}
+											span {
+												color: #aaa;
+											}
 										}
 									}
 								}

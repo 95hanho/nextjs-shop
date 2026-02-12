@@ -91,11 +91,11 @@ export interface GetProductDetailResponse extends BaseResponse {
 }
 /* 제품 상세보기 쿠폰 조회 */
 export interface GetProductDetailCouponResponse extends BaseResponse {
-	availableProductCoupon: Coupon &
+	availableProductCoupon: (Coupon &
 		UserCoupon & {
 			couponId: number;
 			sellerName: string;
-		};
+		})[];
 }
 /* 제품 상세보기 리뷰 조회 */
 export interface GetProductDetailReviewResponse extends BaseResponse {

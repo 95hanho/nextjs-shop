@@ -38,7 +38,7 @@ interface ProductVisualInfoProps {
 
 // 상품 사진 및 가격배송 정보
 export default function ProductVisualInfo({ productId, productDetail, reviewCount, reviewRate, productOptionList }: ProductVisualInfoProps) {
-	const { loginOn } = useAuth();
+	const { loginOn, user } = useAuth();
 
 	/* ----- Query ------------------------------------------------------ */
 
@@ -77,6 +77,28 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 			})),
 		};
 	}, [productOptionList]);
+	const { productCoupon, cartCoupon } = useMemo(() => {
+		const productCoupon: GetProductDetailCouponResponse["availableProductCoupon"] = [];
+		const cartCoupon: GetProductDetailCouponResponse["availableProductCoupon"] = [];
+		if (availableCouponResponse?.availableProductCoupon) {
+			availableCouponResponse.availableProductCoupon.forEach((coupon) => {
+				if (coupon.sellerName) {
+					productCoupon.push(coupon);
+				} else {
+					cartCoupon.push(coupon);
+				}
+			});
+		}
+		console.log({ productCoupon, cartCoupon });
+		return { productCoupon, cartCoupon };
+	}, [availableCouponResponse]);
+
+	/*  */
+
+	const myPriceCheckboxCommonProps = {
+		originPrice: productDetail.originPrice,
+		finalPrice: productDetail.finalPrice,
+	};
 
 	return (
 		<section className={styles.productVisualInfo}>
@@ -117,47 +139,61 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 							</button>
 						</div>
 						{/* 쿠폰 적용가 */}
-						<div className={styles.myPrice}>
-							<div className={styles.myPriceToggle}>
-								<div>
-									<b>10%</b>
-									<strong>52,200원</strong>
+						{availableCouponResponse && (
+							<div className={styles.myPrice}>
+								<div className={styles.myPriceToggle}>
+									<div>
+										<b>10%</b>
+										<strong>52,200원</strong>
+									</div>
+									<button>
+										나의 구매 가능 가격
+										{true ? <IoIosArrowDown /> : <IoIosArrowUp />}
+									</button>
 								</div>
-								<button>
-									나의 구매 가능 가격
-									{true ? <IoIosArrowDown /> : <IoIosArrowUp />}
-								</button>
+								<div className={styles.myPriceDetails}>
+									{productDetail.originPrice !== productDetail.finalPrice && (
+										<div>
+											<h4>상품 할인</h4>
+											<MyPriceCheckboxTooltip type="BASE" title="기본할인" {...myPriceCheckboxCommonProps} />
+										</div>
+									)}
+									<div>
+										<h4>상품 쿠폰 할인</h4>
+										{productCoupon.map((coupon) => (
+											<MyPriceCheckboxTooltip
+												type="COUPON"
+												key={coupon.couponId}
+												{...myPriceCheckboxCommonProps}
+												coupon={coupon}
+											/>
+										))}
+									</div>
+									<div>
+										<h4>장바구니 쿠폰 할인</h4>
+										{cartCoupon.map((coupon) => (
+											<MyPriceCheckboxTooltip
+												type="COUPON"
+												key={coupon.couponId}
+												{...myPriceCheckboxCommonProps}
+												coupon={coupon}
+											/>
+										))}
+									</div>
+									<div>
+										<h4>적립금 사용</h4>
+										<MyPriceCheckboxTooltip type="MILEAGE" mileage={user.mileage} {...myPriceCheckboxCommonProps} />
+									</div>
+									<div>
+										<p>
+											결제수단 할인과 보유 적립금 할인, 적립 혜택을 선택하면
+											<br />
+											다른 상품 화면의 &apos;나의 구매 가능 가격&apos;에도 기본 적용됩니다.
+										</p>
+									</div>
+								</div>
 							</div>
-							<div className={styles.myPriceDetails}>
-								<div>
-									<h4>상품 할인</h4>
-									<MyPriceCheckboxTooltip title="기본할인 2%기본할인 2%기본할인 2%기본할인 2%기본할인 2%기본할인 2%기본할인 2%기본할인 2%" />
-									<MyPriceCheckboxTooltip title="기본할인 2%" />
-								</div>
-								<div>
-									<h4>상품 쿠폰 할인</h4>
-									<MyPriceCheckboxTooltip title="기본할인 2%" />
-									<MyPriceCheckboxTooltip title="기본할인 2%" />
-									<MyPriceCheckboxTooltip title="기본할인 2%" />
-								</div>
-								<div>
-									<h4>장바구니 쿠폰 할인</h4>
-									<MyPriceCheckboxTooltip title="기본할인 2%" />
-									<MyPriceCheckboxTooltip title="기본할인 2%" />
-								</div>
-								<div>
-									<h4>적립금 사용</h4>
-									<MyPriceCheckboxTooltip title="기본할인 2%" />
-								</div>
-								<div>
-									<p>
-										결제수단 할인과 보유 적립금 할인, 적립 혜택을 선택하면
-										<br />
-										다른 상품 화면의 &apos;나의 구매 가능 가격&apos;에도 기본 적용됩니다.
-									</p>
-								</div>
-							</div>
-						</div>
+						)}
 					</div>
 				</div>
 
