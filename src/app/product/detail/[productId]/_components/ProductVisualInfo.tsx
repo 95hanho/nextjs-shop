@@ -17,6 +17,7 @@ import { getApiUrl } from "@/lib/getBaseUrl";
 import { useAuth } from "@/hooks/useAuth";
 import moment from "moment";
 import MyPriceCheckboxTooltip from "@/app/product/detail/[productId]/_components/MyPriceCheckboxTooltip";
+import { useRouter } from "next/navigation";
 
 interface ProductVisualInfoProps {
 	productId: number;
@@ -39,6 +40,7 @@ interface ProductVisualInfoProps {
 // 상품 사진 및 가격배송 정보
 export default function ProductVisualInfo({ productId, productDetail, reviewCount, reviewRate, productOptionList }: ProductVisualInfoProps) {
 	const { loginOn, user } = useAuth();
+	const { push } = useRouter();
 
 	/* ----- Query ------------------------------------------------------ */
 
@@ -258,7 +260,14 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 
 					<div className={styles.actionButtons}>
 						<button className={styles.btnCart}>장바구니 담기</button>
-						<button className={styles.btnBuy}>바로 구매하기</button>
+						<button
+							className={styles.btnBuy}
+							onClick={() => {
+								push(`/buy`);
+							}}
+						>
+							바로 구매하기
+						</button>
 					</div>
 				</div>
 			</div>
