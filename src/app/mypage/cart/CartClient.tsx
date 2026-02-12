@@ -15,7 +15,7 @@ import { LodingWrap } from "@/components/common/LodingWrap";
 import { useModalStore } from "@/store/modal.store";
 import { ModalResultMap } from "@/store/modal.type";
 import Error from "next/error";
-import { ImageFill } from "@/components/common/SmartImage";
+import { ImageFill, SmartImage } from "@/components/common/SmartImage";
 import styles from "./CartClient.module.scss";
 import { WishButton } from "@/components/product/WishButton";
 
@@ -276,7 +276,7 @@ export default function CartClient() {
 																<div className={styles.productItemOverview}>
 																	<div className={styles.productItemMedia}>
 																		<a href="" className={styles.productItemThumb}>
-																			<ImageFill src={product.filePath} alt={product.fileName} />
+																			<SmartImage src={product.filePath} alt={product.fileName} fill={true} />
 
 																			{selectDisabled && (
 																				<div className={styles.productOutOfStockCover}>

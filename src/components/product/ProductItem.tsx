@@ -1,6 +1,6 @@
 import styles from "./ProductItem.module.scss";
 import { WishButton } from "@/components/product/WishButton";
-import { ImageFill } from "@/components/common/SmartImage";
+import { SmartImage } from "@/components/common/SmartImage";
 import { FaHeart, FaStar } from "react-icons/fa";
 import { discountPercent, money } from "@/lib/format";
 import Link from "next/link";
@@ -24,7 +24,7 @@ export const ProductItem = ({ product }: ProductItemProps) => {
 		<Link href={`/product/detail/${product.productId}`} className={styles.productItem}>
 			{/* 이미지 */}
 			<div className={styles.productThumb}>
-				<ImageFill src={product.filePath} fill={true} className={styles.productImg} />
+				<SmartImage src={product.filePath} fill={true} className={styles.productImg} />
 
 				{/* WishButton 내부에서 className을 못 받는 구조면 유지, 받을 수 있으면 아래 주석처럼 */}
 				<WishButton productId={product.productId} initWishOn={true} right={6} bottom={6} />
