@@ -1,0 +1,28 @@
+import API_URL from "@/api/endpoints";
+import { toErrorResponse } from "@/api/error";
+import { postUrlFormData } from "@/api/fetchFilter";
+import { withAuth } from "@/lib/auth";
+import { getBackendUrl } from "@/lib/getBaseUrl";
+import { BaseResponse } from "@/types/common";
+import { NextResponse } from "next/server";
+
+// 쿠폰 다운로드
+export const POST = withAuth(async ({ nextRequest, accessToken }) => {
+	try {
+		const { couponId } = await nextRequest.json();
+		if (!couponId) return NextResponse.json({ message: "쿠폰 ID를 입력해주세요." }, { status: 400 });
+		const data = await postUrlFormData<BaseResponse>(
+			getBackendUrl(API_URL.PRODUCT_COUPON_DOWNLOAD),
+			{ couponId },
+			{
+				Authorization: `Bearer ${accessToken}`,
+			},
+		);
+		console.log("data", data);
+
+		return NextResponse.json({ message: data.message }, { status: 200 });
+	} catch (err: unknown) {
+		const { status, payload } = toErrorResponse(err);
+		return NextResponse.json(payload, { status });
+	}
+});

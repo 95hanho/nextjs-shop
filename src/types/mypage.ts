@@ -3,18 +3,22 @@ import { FileInfo } from "./file";
 import { ProductOption } from "./product";
 // 쿠폰
 export type Coupon = {
+	couponId: number;
 	description: string;
 	couponCode: string;
 	discountType: "percentage" | "fixed_amount";
 	discountValue: number;
 	maxDiscount: number;
 	minimumOrderBeforeAmount: number;
-	status: "ACTIVE" | "SUSPENDED" | "DELETED";
 	isStackable: boolean;
 	isProductRestricted: boolean;
 	amount: number;
 	startDate: string;
 	endDate: string;
+	issueMethod: string;
+};
+export type AdminCoupon = {
+	status: "ACTIVE" | "SUSPENDED" | "DELETED";
 	createdAt: string;
 	updatedAt: string;
 };

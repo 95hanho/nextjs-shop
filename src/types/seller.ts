@@ -1,5 +1,5 @@
 import { BaseResponse } from "./common";
-import { Coupon } from "./mypage";
+import { AdminCoupon, Coupon } from "./mypage";
 import { ProductDetail, ProductOption } from "./product";
 
 /* -- FE -------------------------------------------------------- */
@@ -94,9 +94,7 @@ export interface UpdateSellerProductOption {
 }
 /* 쿠폰 조회 */
 export interface GetSellerCouponListResponse extends BaseResponse {
-	couponList: (Coupon & {
-		couponId: number;
-	})[];
+	couponList: (Coupon & AdminCoupon)[];
 }
 /* 쿠폰 등록 */
 export interface AddCouponRequest {

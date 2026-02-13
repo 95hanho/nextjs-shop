@@ -10,7 +10,7 @@ import { calculateMileage, discountPercent, money } from "@/lib/format";
 import { ProductOption } from "@/types/product";
 import { useMemo, useState } from "react";
 import { GetProductDetailCouponResponse } from "@/types/product";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { getNormal } from "@/api/fetchFilter";
 import API_URL from "@/api/endpoints";
 import { getApiUrl } from "@/lib/getBaseUrl";
@@ -51,7 +51,7 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 		isError,
 		isFetching,
 	} = useQuery<GetProductDetailCouponResponse>({
-		queryKey: ["productReviewList", productId],
+		queryKey: ["productCouponList", productId],
 		queryFn: () => getNormal(getApiUrl(API_URL.PRODUCT_DETAIL_COUPON), { productId }),
 		enabled: loginOn,
 		refetchOnWindowFocus: false,
@@ -100,6 +100,7 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 	const myPriceCheckboxCommonProps = {
 		originPrice: productDetail.originPrice,
 		finalPrice: productDetail.finalPrice,
+		productId,
 	};
 
 	return (
@@ -157,7 +158,7 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 									{productDetail.originPrice !== productDetail.finalPrice && (
 										<div>
 											<h4>상품 할인</h4>
-											<MyPriceCheckboxTooltip type="BASE" title="기본할인" {...myPriceCheckboxCommonProps} />
+											<MyPriceCheckboxTooltip type="BASE" {...myPriceCheckboxCommonProps} />
 										</div>
 									)}
 									<div>

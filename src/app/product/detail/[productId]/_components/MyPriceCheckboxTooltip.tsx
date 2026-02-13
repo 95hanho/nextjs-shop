@@ -3,10 +3,16 @@ import styles from "../ProductDetail.module.scss";
 import clsx from "clsx";
 import { GetProductDetailCouponResponse } from "@/types/product";
 import { discountPercent, money } from "@/lib/format";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { postJson } from "@/api/fetchFilter";
+import { getApiUrl } from "@/lib/getBaseUrl";
+import API_URL from "@/api/endpoints";
+import { BaseResponse } from "@/types/common";
 
 type CommonProps = {
 	originPrice: number;
 	finalPrice: number;
+	productId: number;
 };
 
 type MyPriceCheckboxTooltipProps =
@@ -18,7 +24,21 @@ type MyPriceCheckboxTooltipProps =
 	| (CommonProps & { type: "MILEAGE"; mileage: number });
 
 export default function MyPriceCheckboxTooltip(props: MyPriceCheckboxTooltipProps) {
-	const { type, originPrice, finalPrice } = props;
+	const { type, originPrice, finalPrice, productId } = props;
+	const queryClient = useQueryClient();
+
+	// 쿠폰 다운로드
+	const couponDownload = useMutation({
+		mutationFn: (couponId: number) => postJson<BaseResponse>(getApiUrl(API_URL.PRODUCT_COUPON_DOWNLOAD), { couponId }),
+		onSuccess(data) {
+			console.log("couponDownload data", data);
+			queryClient.invalidateQueries({ queryKey: ["productCouponList", productId] });
+		},
+		onError(err) {
+			console.log("couponDownload err", err);
+		},
+	});
+
 	if (type === "BASE") {
 		return (
 			<div className={styles.myPriceCheckboxTooltip}>
@@ -44,11 +64,19 @@ export default function MyPriceCheckboxTooltip(props: MyPriceCheckboxTooltipProp
 				</div>
 				<div className={styles.discountInfo}>
 					<strong>-1,160원</strong>
-					{/* <button>
-					받기
-					<IoMdDownload />
-				</button> */}
-					<span className={clsx(styles.couponDownloadBtn, styles.have)}>보유중</span>
+					{coupon.userCouponId ? (
+						<span className={clsx(styles.couponDownloadBtn, styles.have)}>보유중</span>
+					) : (
+						<button
+							className={clsx(styles.couponDownloadBtn)}
+							onClick={() => {
+								couponDownload.mutate(coupon.couponId);
+							}}
+						>
+							받기
+							<IoMdDownload />
+						</button>
+					)}
 				</div>
 			</div>
 		);
