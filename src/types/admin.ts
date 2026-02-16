@@ -1,6 +1,6 @@
 import { User } from "@/types/auth";
 import { BaseResponse } from "@/types/common";
-import { Coupon } from "@/types/mypage";
+import { AdminCoupon, Coupon } from "@/types/mypage";
 import { SellerInfo } from "@/types/seller";
 
 // 로그인폼 데이터
@@ -82,11 +82,11 @@ export interface UserWithdrawalStatusRequest {
 }
 /* 공용 쿠폰 조회 */
 export interface GetCommonCouponListResponse extends BaseResponse {
-	commonCouponList: Coupon & {
-		couponId: number;
-		adminNo: number;
-		isDeleted: boolean;
-	};
+	commonCouponList: Coupon &
+		AdminCoupon & {
+			adminNo: number;
+			isDeleted: boolean;
+		};
 }
 /* 공용 쿠폰 등록 */
 export interface AddCommonCouponRequest {

@@ -1,4 +1,4 @@
-import { Coupon, Review, UserCoupon } from "@/types/mypage";
+import { Coupon, Review } from "@/types/mypage";
 import { FileInfo } from "./file";
 import { BaseResponse } from "@/types/common";
 
@@ -91,11 +91,12 @@ export interface GetProductDetailResponse extends BaseResponse {
 }
 /* 제품 상세보기 쿠폰 조회 */
 export interface GetProductDetailCouponResponse extends BaseResponse {
-	availableProductCoupon: (Coupon &
-		UserCoupon & {
-			couponId: number;
-			sellerName: string;
-		})[];
+	availableProductCoupon: (Coupon & {
+		issueMethod: string;
+		couponAllowedId: number | null;
+		userCouponId: number | null;
+		sellerName: string | null;
+	})[];
 }
 /* 제품 상세보기 리뷰 조회 */
 export interface GetProductDetailReviewResponse extends BaseResponse {
