@@ -1,0 +1,565 @@
+/* =========================
+   PAGE LAYOUT
+========================= */
+
+.page {
+	padding: 32px 40px;
+	background: #fff;
+}
+
+.pageTitle {
+	font-size: 30px;
+	font-weight: 700;
+	margin-bottom: 28px;
+}
+
+.layout {
+	display: flex;
+	align-items: flex-start;
+	gap: 40px;
+}
+
+.main {
+	flex: 1;
+	position: relative;
+	width: 55%;
+	min-width: 530px;
+}
+
+.aside {
+	width: 360px;
+	position: sticky;
+	top: 100px;
+}
+
+/* =========================
+   BLOCK (공통 섹션)
+========================= */
+
+.block {
+	border-top: 2px solid #000;
+	padding: 24px 0;
+}
+
+.block + .block {
+	margin-top: 32px;
+}
+
+.blockHeader {
+	margin-bottom: 18px;
+}
+
+.blockTitleRow {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.blockTitle {
+	font-size: 20px;
+	font-weight: 700;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.requiredInfo {
+	font-size: 14px;
+	color: #888;
+	display: flex;
+	align-items: center;
+	gap: 4px;
+}
+
+.requiredMark {
+	color: #e60023;
+	background: transparent;
+	font-weight: 700;
+}
+
+/* =========================
+   TABS
+========================= */
+
+.tabs {
+	display: flex;
+	margin-top: 16px;
+	border-bottom: 1px solid #e5e5e5;
+}
+
+.tab {
+	width: 160px;
+	height: 48px;
+	border: 1px solid #e5e5e5;
+	border-bottom: none;
+	background: #f5f5f5;
+	font-size: 16px;
+	cursor: pointer;
+}
+
+.active {
+	background: #fff;
+	font-weight: 600;
+	position: relative;
+}
+
+.active::after {
+	content: "";
+	position: absolute;
+	left: 0;
+	bottom: -1px;
+	width: 100%;
+	height: 2px;
+	background: #fff;
+}
+
+/* =========================
+   FORM
+========================= */
+
+.form {
+	display: flex;
+	flex-direction: column;
+	gap: 18px;
+}
+
+.formRow {
+	display: flex;
+	align-items: flex-start;
+	gap: 24px;
+}
+
+.formLabel {
+	width: 120px;
+	font-size: 16px;
+	padding-top: 12px;
+	color: #222;
+}
+
+.formField {
+	flex: 1;
+}
+
+.input {
+	width: 100%;
+	height: 44px;
+	border: 1px solid #ddd;
+	padding: 0 12px;
+	font-size: 16px;
+	border-radius: 4px;
+	background: #fff;
+}
+
+.inlineBetween {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 12px;
+}
+
+.link {
+	font-size: 15px;
+	color: #555;
+	text-decoration: underline;
+	white-space: nowrap;
+}
+
+/* 주소 */
+.addressGroup {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.addressTop {
+	display: flex;
+	gap: 10px;
+}
+
+.postcode {
+	width: 160px;
+	height: 44px;
+	border: 1px solid #ddd;
+	display: flex;
+	align-items: center;
+	padding: 0 12px;
+	background: #fafafa;
+}
+
+.grayBtn {
+	height: 44px;
+	padding: 0 16px;
+	border: 1px solid #ddd;
+	background: #f3f3f3;
+	cursor: pointer;
+}
+
+.addressLine {
+	height: 44px;
+	display: flex;
+	align-items: center;
+	padding: 0 12px;
+	border: 1px solid #ddd;
+	background: #fafafa;
+}
+
+/* 전화 */
+.phoneGroup {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.phoneInput {
+	width: 80px;
+	height: 44px;
+	border: 1px solid #ddd;
+	padding: 0 8px;
+	border-radius: 4px;
+}
+
+.hyphen {
+	color: #bbb;
+}
+
+.helperText {
+	font-size: 14px;
+	color: #777;
+	margin-top: 6px;
+}
+
+/* select */
+.selectRow {
+	margin-top: 10px;
+}
+
+.selectLikeBtn {
+	width: 100%;
+	height: 44px;
+	border: 1px solid #ddd;
+	background: #f8f8f8;
+	text-align: left;
+	padding: 0 12px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	cursor: pointer;
+}
+
+.chev {
+	font-size: 14px;
+	color: #999;
+}
+
+/* =========================
+   COUPON SECTION
+========================= */
+
+.couponBanner {
+	background: #f6eae6;
+	padding: 12px 16px;
+	margin-bottom: 20px;
+	font-size: 15px;
+	color: #e04a2a;
+}
+
+.productCard {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
+.productRow {
+	display: flex;
+	gap: 20px;
+}
+
+.thumb {
+	width: 120px;
+	height: 120px;
+	background: #eee;
+	border: 1px solid #ddd;
+}
+
+.productInfo {
+	flex: 1;
+}
+
+.brandLink {
+	font-size: 15px;
+	text-decoration: underline;
+	color: #111;
+}
+
+.productName {
+	font-size: 18px;
+	font-weight: 700;
+	margin: 6px 0;
+}
+
+.productPriceRow {
+	display: flex;
+	gap: 10px;
+	font-size: 15px;
+}
+
+.productApplied {
+	color: #ff4800;
+	font-weight: 600;
+	background: transparent;
+}
+
+.couponBox {
+	background: #f5f5f5;
+	padding: 12px;
+	margin-top: 14px;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	border-radius: 4px;
+}
+
+.couponLine {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	font-size: 15px;
+}
+
+.couponLabel {
+	width: 90px;
+	font-weight: 600;
+}
+
+.couponDesc {
+	flex: 1;
+	color: #777;
+}
+
+.couponPrice {
+	font-weight: 700;
+}
+
+.couponSummary {
+	border-top: 1px solid #eee;
+	padding-top: 16px;
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+}
+
+.summaryRow {
+	display: flex;
+	justify-content: space-between;
+	font-weight: 600;
+}
+
+.summaryValueMinus {
+	color: #ff4800;
+	font-weight: 700;
+}
+
+.outlineBtn {
+	height: 52px;
+	border: 1px solid #ddd;
+	background: #fff;
+	cursor: pointer;
+	font-weight: 600;
+}
+
+/* =========================
+   POINT
+========================= */
+
+.pointRow {
+	display: flex;
+	gap: 24px;
+}
+
+.pointLabel {
+	width: 120px;
+	padding-top: 12px;
+	font-size: 16px;
+}
+
+.pointInputRow {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.pointInput {
+	width: 200px;
+	height: 44px;
+	border: 1px solid #ddd;
+	padding: 0 12px;
+	background: #f5f5f5;
+}
+
+.disabledBtn {
+	height: 44px;
+	padding: 0 14px;
+	border: 1px solid #ddd;
+	background: #f0f0f0;
+	color: #aaa;
+	cursor: not-allowed;
+}
+
+.pointText {
+	font-size: 14px;
+	color: #777;
+}
+
+/* =========================
+   PAYMENT METHOD
+========================= */
+
+.payList {
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+}
+
+.payItem {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	font-size: 16px;
+	cursor: pointer;
+}
+
+/* =========================
+   ASIDE
+========================= */
+
+.asideBox {
+	border: 2px solid #000;
+	padding: 28px 24px;
+}
+
+.asideTitle {
+	font-size: 18px;
+	font-weight: 700;
+	margin-bottom: 14px;
+}
+
+.asideDivider {
+	height: 1px;
+	background: #eee;
+	margin: 14px 0;
+}
+
+.asideDividerBold {
+	height: 2px;
+	background: #000;
+	margin: 20px 0;
+}
+
+.priceList {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	font-size: 16px;
+}
+
+.priceRow {
+	display: flex;
+	justify-content: space-between;
+	color: #444;
+}
+
+.priceRowTotal {
+	display: flex;
+	justify-content: space-between;
+	margin-top: 10px;
+	font-size: 18px;
+	font-weight: 700;
+}
+
+.totalPrice {
+	font-size: 24px;
+	color: #ff4800;
+}
+
+.minus {
+	color: #ff4800;
+	display: flex;
+	align-items: center;
+	gap: 4px;
+}
+
+.rewardRow {
+	display: flex;
+	justify-content: space-between;
+	font-weight: 600;
+}
+
+.agreeBox {
+	font-size: 14px;
+	color: #666;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.agreeTitle {
+	font-size: 15px;
+	color: #111;
+}
+
+.agreeLink {
+	text-align: left;
+	background: none;
+	border: none;
+	padding: 0;
+	color: #555;
+	cursor: pointer;
+	text-decoration: underline;
+	font-size: 14px;
+}
+
+.noticeText {
+	font-size: 13px;
+	color: #999;
+}
+
+.brandMark {
+	background: transparent;
+	color: #ff4800;
+}
+
+.benefitRow {
+	display: flex;
+	justify-content: space-between;
+	margin-top: 16px;
+	font-size: 15px;
+}
+
+.benefitValue {
+	font-weight: 600;
+}
+
+.payButton {
+	width: 100%;
+	height: 56px;
+	background: #000;
+	color: #fff;
+	border: none;
+	margin-top: 18px;
+	font-size: 18px;
+	font-weight: 700;
+	cursor: pointer;
+}
+
+.iconCircle {
+	font-size: 14px;
+	color: #888;
+	border: 1px solid #ccc;
+	border-radius: 50%;
+	padding: 2px 4px;
+}
+
+.iconMuted {
+	font-size: 16px;
+	color: #aaa;
+}
