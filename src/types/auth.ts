@@ -23,8 +23,9 @@ export type UserAdd = {
 /* ---- FE --------------------------------------------- */
 
 /* 로그인 */
-export type LoginFormData = {
-	userId: string;
+export type LoginFormData<T extends string = "userId"> = {
+	[key in T]: string;
+} & {
 	password: string;
 };
 
