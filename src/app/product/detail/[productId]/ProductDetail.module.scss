@@ -15,7 +15,6 @@
 
 		.productImageArea {
 			position: relative;
-			width: 50%;
 			max-width: 550px;
 
 			img {
@@ -30,6 +29,7 @@
 			border-top: 2px solid #000;
 			margin-left: 30px;
 			width: 45%;
+			min-width: 325px;
 
 			.productMetaInfo {
 				.productTitleWishlist {

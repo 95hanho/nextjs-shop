@@ -8,6 +8,9 @@ import { postJson } from "@/api/fetchFilter";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import API_URL from "@/api/endpoints";
 import { BaseResponse } from "@/types/common";
+import { calculateDiscount } from "@/lib/price";
+import { FaQuestion } from "react-icons/fa";
+import { TooltipIcon } from "@/components/ui/TooltipIcon";
 
 type CommonProps = {
 	originPrice: number;
@@ -47,7 +50,7 @@ export default function MyPriceCheckboxTooltip(props: MyPriceCheckboxTooltipProp
 					<span>기본 할인 {discountPercent(originPrice, finalPrice)}%</span>
 				</div>
 				<div className={styles.discountInfo}>
-					<strong>{originPrice - finalPrice}원</strong>
+					<strong>{`-${money(originPrice - finalPrice)}원`}</strong>
 				</div>
 			</div>
 		);
@@ -55,15 +58,24 @@ export default function MyPriceCheckboxTooltip(props: MyPriceCheckboxTooltipProp
 	if (type === "COUPON") {
 		const { coupon } = props;
 
+		const isDiscountApplied = calculateDiscount(finalPrice, coupon);
+
 		return (
-			<div className={clsx(styles.myPriceCheckboxTooltip, styles.disabled)}>
+			<div className={clsx(styles.myPriceCheckboxTooltip, isDiscountApplied ? "" : styles.disabled)}>
 				<div className={styles.checkbox}>
-					<input type="checkbox" />
+					<input type="checkbox" disabled={!isDiscountApplied || !coupon.userCouponId} />
 					<span>{coupon.description}</span>
 					{!coupon.isStackable && <mark>중복불가</mark>}
 				</div>
 				<div className={styles.discountInfo}>
-					<strong>-1,160원</strong>
+					{isDiscountApplied ? (
+						<strong>-{money(isDiscountApplied)}</strong>
+					) : (
+						<span className="inline-flex items-center w-100px">
+							<strong className="text-[10px] text-red-500">적용불가</strong>
+							<TooltipIcon tooltipText="수량을 늘리거나, 같은 판매자 상품을 함께 구매하면 적용될 수 있어요." />
+						</span>
+					)}
 					{coupon.userCouponId ? (
 						<span className={clsx(styles.couponDownloadBtn, styles.have)}>보유중</span>
 					) : (

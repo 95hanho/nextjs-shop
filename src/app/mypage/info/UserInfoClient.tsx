@@ -3,7 +3,7 @@
 import API_URL from "@/api/endpoints";
 import { getNormal, postJson } from "@/api/fetchFilter";
 import { InfoMark } from "@/components/auth/InfoMark";
-import { NormalButton } from "@/components/common/NormalButton";
+import { NormalButton } from "@/components/ui/NormalButton";
 import { useAuth } from "@/hooks/useAuth";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { BaseResponse } from "@/types/common";

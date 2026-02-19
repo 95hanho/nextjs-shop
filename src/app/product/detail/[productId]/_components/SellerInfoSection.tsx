@@ -1,5 +1,5 @@
 import BrandOtherProducts from "@/app/product/detail/[productId]/_components/BrandOtherProducts";
-import { ImageFill } from "@/components/common/SmartImage";
+import { ImageFill } from "@/components/ui/SmartImage";
 import { BsChevronRight } from "react-icons/bs";
 import { FiHeart } from "react-icons/fi";
 import styles from "../ProductDetail.module.scss";

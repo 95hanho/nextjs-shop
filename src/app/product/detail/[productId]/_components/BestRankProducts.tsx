@@ -1,6 +1,6 @@
 "use client";
 
-import { ImageFill } from "@/components/common/SmartImage";
+import { ImageFill } from "@/components/ui/SmartImage";
 import { ImageSlide, ImageSlideHandle } from "@/components/product/ImageSlide";
 import { money } from "@/lib/format";
 import { Product } from "@/types/product";

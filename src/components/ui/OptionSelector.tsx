@@ -11,9 +11,18 @@ interface OptionSelectorProps {
 	optionList?: { id: number; val: string; description?: string }[];
 	changeOption?: (pickIdx: number, id: number) => void;
 	variant?: "default" | "addressModal";
+	inputColor?: string;
 }
 
-export const OptionSelector = ({ optionSelectorName, initData, pickIdx = 0, optionList, changeOption, variant = "default" }: OptionSelectorProps) => {
+export const OptionSelector = ({
+	optionSelectorName,
+	initData,
+	pickIdx = 0,
+	optionList,
+	changeOption,
+	variant = "default",
+	inputColor,
+}: OptionSelectorProps) => {
 	const optionSelectorRef = useRef<HTMLDivElement>(null);
 	const [openOptionList, setOpenOptionList] = useState<boolean>(false);
 
@@ -43,13 +52,21 @@ export const OptionSelector = ({ optionSelectorName, initData, pickIdx = 0, opti
 					if (optionList) setOpenOptionList(!openOptionList);
 				}}
 			>
-				<input type="text" value={optionList ? optionList[pickIdx].val : initData.val} readOnly />
+				<input
+					type="text"
+					value={optionList ? optionList[pickIdx].val : initData.val}
+					readOnly
+					style={{
+						color: inputColor || "#000",
+					}}
+				/>
 				<span>{openOptionList ? <IoIosArrowUp /> : <IoIosArrowDown />}</span>
 			</div>
 			{openOptionList && (
 				<ul className={styles.optionList}>
 					{optionList &&
 						optionList.map((option, optionIdx) => {
+							if (option.id === 0) return null; // 초기값은 옵션에서 제외
 							return (
 								<li
 									key={optionSelectorName + "-optionItem" + optionIdx}
