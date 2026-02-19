@@ -5,8 +5,8 @@ import { FaHeart } from "react-icons/fa";
 import { GoQuestion } from "react-icons/go";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import styles from "../ProductDetail.module.scss";
-import { SmartImage } from "@/components/common/SmartImage";
-import { calculateMileage, discountPercent, money } from "@/lib/format";
+import { SmartImage } from "@/components/ui/SmartImage";
+import { discountPercent, money } from "@/lib/format";
 import { ProductOption } from "@/types/product";
 import { useMemo, useState } from "react";
 import { GetProductDetailCouponResponse } from "@/types/product";
@@ -18,6 +18,7 @@ import { useAuth } from "@/hooks/useAuth";
 import moment from "moment";
 import MyPriceCheckboxTooltip from "@/app/product/detail/[productId]/_components/MyPriceCheckboxTooltip";
 import { useRouter } from "next/navigation";
+import { calculateMileage } from "@/lib/price";
 
 interface ProductVisualInfoProps {
 	productId: number;
@@ -63,22 +64,28 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 
 	/* ------------------------------------------------------------------ */
 
-	// 제품 옵션 선택index
-	const [pickIdx, setPickIdx] = useState(0);
+	const [totalPrice, setTotalPrice] = useState(productDetail.finalPrice);
+
 	// 제품 옵션 들어갈 꺼
 	const { optionInitData, optionSelectList } = useMemo(() => {
-		const first = productOptionList[0];
-		return {
-			optionInitData: {
-				id: first.productOptionId,
-				val: first.size + (first.addPrice > 0 ? `(+ ${money(first.addPrice)})` : ""),
-			},
-			optionSelectList: productOptionList.map((v) => ({
+		const optionInitData = {
+			id: 0,
+			val: "사이즈",
+		};
+		const optionSelectList = [];
+		optionSelectList.push(optionInitData);
+		optionSelectList.push(
+			...productOptionList.map((v) => ({
 				id: v.productOptionId,
 				val: v.size + (v.addPrice > 0 ? `(+ ${money(v.addPrice)})` : ""),
 			})),
+		);
+		return {
+			optionInitData,
+			optionSelectList,
 		};
 	}, [productOptionList]);
+
 	const { productCoupon, cartCoupon } = useMemo(() => {
 		const productCoupon: GetProductDetailCouponResponse["availableProductCoupon"] = [];
 		const cartCoupon: GetProductDetailCouponResponse["availableProductCoupon"] = [];
@@ -142,18 +149,19 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 							</button>
 						</div>
 						{/* 쿠폰 적용가 */}
-						{availableCouponResponse && (
-							<div className={styles.myPrice}>
-								<div className={styles.myPriceToggle}>
-									<div>
-										<b>10%</b>
-										<strong>52,200원</strong>
-									</div>
-									<button>
-										나의 구매 가능 가격
-										{true ? <IoIosArrowDown /> : <IoIosArrowUp />}
-									</button>
+
+						<div className={styles.myPrice}>
+							<div className={styles.myPriceToggle}>
+								<div>
+									<b>10%</b>
+									<strong>{money(totalPrice)}원</strong>
 								</div>
+								<button>
+									나의 구매 가능 가격
+									{true ? <IoIosArrowDown /> : <IoIosArrowUp />}
+								</button>
+							</div>
+							{availableCouponResponse && (
 								<div className={styles.myPriceDetails}>
 									{productDetail.originPrice !== productDetail.finalPrice && (
 										<div>
@@ -195,8 +203,8 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 										</p>
 									</div>
 								</div>
-							</div>
-						)}
+							)}
+						</div>
 					</div>
 				</div>
 
@@ -239,9 +247,15 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 					<div className={styles.deliveryFeeInfo}>
 						<b>배송비</b>
 						<div>
-							<p>{productDetail.baseShippingFee === 0 ? `무료 배송` : `${money(productDetail.baseShippingFee)}원`}</p>
-							{productDetail.baseShippingFee > 0 && <p>{money(productDetail.freeShippingMinAmount)}원 이상 구매시 무료배송</p>}
-							{productDetail.extraShippingFee && <p>제주/도서산간 {money(productDetail.extraShippingFee)}원 추가</p>}
+							{productDetail.freeShippingMinAmount < productDetail.finalPrice || productDetail.baseShippingFee === 0 ? (
+								<p>무료 배송</p>
+							) : (
+								<>
+									<p>{money(productDetail.baseShippingFee)}원</p>
+									{productDetail.baseShippingFee > 0 && <p>{money(productDetail.freeShippingMinAmount)}원 이상 구매시 무료배송</p>}
+									{productDetail.extraShippingFee && <p>제주/도서산간 {money(productDetail.extraShippingFee)}원 추가</p>}
+								</>
+							)}
 						</div>
 					</div>
 				</div>
@@ -250,12 +264,11 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 					<div className={styles.productOptionSelect}>
 						<OptionSelector
 							optionSelectorName="productVisualOption"
-							pickIdx={pickIdx}
+							pickIdx={0}
 							initData={optionInitData}
 							optionList={optionSelectList}
-							changeOption={(idx) => {
-								setPickIdx(idx);
-							}}
+							changeOption={() => {}}
+							inputColor="rgb(75 70 70)"
 						/>
 					</div>
 

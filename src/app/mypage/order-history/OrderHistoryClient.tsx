@@ -1,6 +1,6 @@
 import { FaSearch } from "react-icons/fa";
 import styles from "./OrderHistoryClient.module.scss";
-import { ImageFill } from "@/components/common/SmartImage";
+import { ImageFill } from "@/components/ui/SmartImage";
 
 export default function OrderHistoryClient() {
 	return (

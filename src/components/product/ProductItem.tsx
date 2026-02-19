@@ -1,6 +1,6 @@
 import styles from "./ProductItem.module.scss";
 import { WishButton } from "@/components/product/WishButton";
-import { SmartImage } from "@/components/common/SmartImage";
+import { SmartImage } from "@/components/ui/SmartImage";
 import { FaHeart, FaStar } from "react-icons/fa";
 import { discountPercent, money } from "@/lib/format";
 import Link from "next/link";
