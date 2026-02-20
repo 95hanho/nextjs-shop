@@ -16,7 +16,11 @@ export const calculateDiscount = (price: number, coupon: GetProductDetailCouponR
 		return coupon.discountValue;
 	}
 	if (coupon.discountType === "percentage") {
-		return Math.floor(price * (coupon.discountValue / 100));
+		const discount = Math.floor(price * (coupon.discountValue / 100));
+		if (discount > coupon.maxDiscount) {
+			return coupon.maxDiscount;
+		}
+		return discount;
 	}
 	return null;
 };
