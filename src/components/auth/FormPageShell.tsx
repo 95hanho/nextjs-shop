@@ -31,7 +31,7 @@ export const FormPageShell = ({ title, children, wrapMinHeight, formWidth }: For
 	return (
 		<FormWrapper minPx={wrapMinHeight}>
 			<FormWrap formWidth={formWidth}>
-				<h2 className="py-4 text-5xl">{title}</h2>
+				<h2 className="py-4 text-5xl tracking-wider">{title}</h2>
 				{children}
 			</FormWrap>
 		</FormWrapper>
