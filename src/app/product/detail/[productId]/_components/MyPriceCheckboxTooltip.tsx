@@ -23,8 +23,10 @@ type MyPriceCheckboxTooltipProps =
 	| (CommonProps & {
 			type: "COUPON";
 			coupon: GetProductDetailCouponResponse["availableProductCoupon"][number];
+			setAppliedProductCoupon: (isAdd: boolean) => void;
+			couponChecked: boolean;
 	  })
-	| (CommonProps & { type: "MILEAGE"; mileage: number });
+	| (CommonProps & { type: "MILEAGE"; mileage: number; setMileageUse: () => void; couponChecked: boolean; useMileage: number });
 
 export default function MyPriceCheckboxTooltip(props: MyPriceCheckboxTooltipProps) {
 	const { type, originPrice, finalPrice, productId } = props;
@@ -56,14 +58,21 @@ export default function MyPriceCheckboxTooltip(props: MyPriceCheckboxTooltipProp
 		);
 	}
 	if (type === "COUPON") {
-		const { coupon } = props;
+		const { coupon, setAppliedProductCoupon, couponChecked } = props;
 
 		const isDiscountApplied = calculateDiscount(finalPrice, coupon);
 
 		return (
 			<div className={clsx(styles.myPriceCheckboxTooltip, isDiscountApplied ? "" : styles.disabled)}>
 				<div className={styles.checkbox}>
-					<input type="checkbox" disabled={!isDiscountApplied || !coupon.userCouponId} />
+					<input
+						type="checkbox"
+						disabled={!isDiscountApplied}
+						checked={couponChecked}
+						onChange={() => {
+							setAppliedProductCoupon(!couponChecked);
+						}}
+					/>
 					<span>{coupon.description}</span>
 					{!coupon.isStackable && <mark>중복불가</mark>}
 				</div>
@@ -94,17 +103,31 @@ export default function MyPriceCheckboxTooltip(props: MyPriceCheckboxTooltipProp
 		);
 	}
 	if (type === "MILEAGE") {
-		const { mileage } = props;
+		const { mileage, setMileageUse, couponChecked, useMileage } = props;
 
 		return (
 			<div className={clsx(styles.myPriceCheckboxTooltip, mileage === 0 && styles.disabled)}>
 				<div className={styles.checkbox}>
-					<input type="checkbox" disabled={mileage === 0} />
+					<input type="checkbox" disabled={mileage === 0} checked={couponChecked && mileage > 0} onChange={setMileageUse} />
 					<span>보유 적립금 사용</span>
 				</div>
 				<div className={styles.discountInfo}>
 					{/* <strong>-1,160원</strong> */}
-					<span>{money(mileage)}</span>
+					{couponChecked ? (
+						<span className={styles.mileageUsed}>
+							<span>-{money(useMileage)}</span>
+						</span>
+					) : (
+						<span>
+							{mileage > 0 ? (
+								<>
+									<span>{money(mileage)}</span> <span className="text-[10px] text-gray-700">보유중</span>
+								</>
+							) : (
+								<span className="text-[10px] text-gray-500">보유 적립금 없음</span>
+							)}
+						</span>
+					)}
 				</div>
 			</div>
 		);
