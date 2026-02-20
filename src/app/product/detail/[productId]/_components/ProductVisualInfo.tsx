@@ -7,7 +7,7 @@ import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import styles from "../ProductDetail.module.scss";
 import { SmartImage } from "@/components/ui/SmartImage";
 import { discountPercent, money } from "@/lib/format";
-import { ProductOption } from "@/types/product";
+import { AvailableProductCoupon, ProductOption } from "@/types/product";
 import { useEffect, useMemo, useState } from "react";
 import { GetProductDetailCouponResponse } from "@/types/product";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -20,9 +20,11 @@ import MyPriceCheckboxTooltip from "@/app/product/detail/[productId]/_components
 import { useRouter } from "next/navigation";
 import { calculateDiscount, calculateMileage } from "@/lib/price";
 
-export type AppliedCoupon = {
-	couponId: number;
+export type ProductCouponWithDiscount = AvailableProductCoupon & {
 	discountAmount: number;
+};
+export type GetProductDetailCouponWithDiscountResponse = Omit<GetProductDetailCouponResponse, "availableProductCoupon"> & {
+	availableProductCoupon: ProductCouponWithDiscount[];
 };
 
 interface ProductVisualInfoProps {
@@ -56,14 +58,18 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 		isSuccess,
 		isError,
 		isFetching,
-	} = useQuery<GetProductDetailCouponResponse>({
+	} = useQuery<GetProductDetailCouponResponse, Error, GetProductDetailCouponWithDiscountResponse>({
 		queryKey: ["productCouponList", productId],
 		queryFn: () => getNormal(getApiUrl(API_URL.PRODUCT_DETAIL_COUPON), { productId }),
 		enabled: loginOn,
 		refetchOnWindowFocus: false,
-		select(data) {
-			return data;
-		},
+		select: (data) => ({
+			...data,
+			availableProductCoupon: data.availableProductCoupon.map((coupon) => ({
+				...coupon,
+				discountAmount: calculateDiscount(productDetail.finalPrice, coupon) || 0,
+			})),
+		}),
 	});
 
 	/* ------------------------------------------------------------------ */
@@ -74,18 +80,12 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 	const [showMyPriceDetail, setShowMyPriceDetail] = useState(true);
 	// 적용된 쿠폰
 	const [appliedProductCoupon, setAppliedProductCoupon] = useState<{
-		unStackable: AppliedCoupon | null;
-		stackable: AppliedCoupon[];
+		unStackable: ProductCouponWithDiscount | null;
+		stackable: ProductCouponWithDiscount[];
 	}>({
 		unStackable: null,
 		stackable: [],
 	});
-	const getAppliedCoupon = (coupon: GetProductDetailCouponResponse["availableProductCoupon"][number]): AppliedCoupon => {
-		return {
-			couponId: coupon.couponId,
-			discountAmount: calculateDiscount(productDetail.finalPrice, coupon) || 0,
-		};
-	};
 	// 적립금 사용 여부
 	const [mileageUsed, setMileageUsed] = useState(false);
 	// 사용한 적립금
@@ -131,8 +131,8 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 	// 쿠폰 리스트에서 상품쿠폰과 장바구니 쿠폰 분류
 	const { productCoupon, cartCoupon } = useMemo(() => {
 		if (!availableCouponResponse) return { productCoupon: [], cartCoupon: [] };
-		const productCoupon: GetProductDetailCouponResponse["availableProductCoupon"] = [];
-		const cartCoupon: GetProductDetailCouponResponse["availableProductCoupon"] = [];
+		const productCoupon: ProductCouponWithDiscount[] = [];
+		const cartCoupon: ProductCouponWithDiscount[] = [];
 		if (availableCouponResponse?.availableProductCoupon) {
 			availableCouponResponse.availableProductCoupon.forEach((coupon) => {
 				if (coupon.sellerName) {
@@ -142,7 +142,6 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 				}
 			});
 		}
-		console.log({ productCoupon, cartCoupon });
 		return { productCoupon, cartCoupon };
 	}, [availableCouponResponse]);
 
@@ -232,13 +231,13 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 																if (!coupon.isStackable) {
 																	setAppliedProductCoupon((prev) => ({
 																		...prev,
-																		unStackable: isAdd ? getAppliedCoupon(coupon) : null,
+																		unStackable: isAdd ? coupon : null,
 																	}));
 																} else {
 																	setAppliedProductCoupon((prev) => ({
 																		...prev,
 																		stackable: isAdd
-																			? [...prev.stackable, getAppliedCoupon(coupon)]
+																			? [...prev.stackable, coupon]
 																			: prev.stackable.filter((c) => c.couponId !== coupon.couponId),
 																	}));
 																}
@@ -264,13 +263,13 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 															if (!coupon.isStackable) {
 																setAppliedProductCoupon((prev) => ({
 																	...prev,
-																	unStackable: isAdd ? getAppliedCoupon(coupon) : null,
+																	unStackable: isAdd ? coupon : null,
 																}));
 															} else {
 																setAppliedProductCoupon((prev) => ({
 																	...prev,
 																	stackable: isAdd
-																		? [...prev.stackable, getAppliedCoupon(coupon)]
+																		? [...prev.stackable, coupon]
 																		: prev.stackable.filter((c) => c.couponId !== coupon.couponId),
 																}));
 															}

@@ -11,6 +11,7 @@ import { BaseResponse } from "@/types/common";
 import { calculateDiscount } from "@/lib/price";
 import { FaQuestion } from "react-icons/fa";
 import { TooltipIcon } from "@/components/ui/TooltipIcon";
+import { ProductCouponWithDiscount } from "@/app/product/detail/[productId]/_components/ProductVisualInfo";
 
 type CommonProps = {
 	originPrice: number;
@@ -22,7 +23,7 @@ type MyPriceCheckboxTooltipProps =
 	| (CommonProps & { type: "BASE" })
 	| (CommonProps & {
 			type: "COUPON";
-			coupon: GetProductDetailCouponResponse["availableProductCoupon"][number];
+			coupon: ProductCouponWithDiscount;
 			setAppliedProductCoupon: (isAdd: boolean) => void;
 			couponChecked: boolean;
 	  })
