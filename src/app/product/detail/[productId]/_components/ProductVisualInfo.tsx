@@ -149,7 +149,6 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 							</button>
 						</div>
 						{/* 쿠폰 적용가 */}
-
 						<div className={styles.myPrice}>
 							<div className={styles.myPriceToggle}>
 								<div>
