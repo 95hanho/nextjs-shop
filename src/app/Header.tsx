@@ -6,17 +6,19 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Menu } from "@/types/main";
-import { UserMenu } from "../components/common/UserMenu";
+import { HeaderMenu } from "../components/common/HeaderMenu";
 import { Nav } from "../components/common/Nav";
 import { useGetUserInfo } from "@/hooks/query/auth/useGetUserInfo";
+import { useAuth } from "@/hooks/useAuth";
 
 interface HeaderProps {
 	menuList: Menu[];
 }
 
-export const Header = ({ menuList }: HeaderProps) => {
+export default function Header({ menuList }: HeaderProps) {
 	const pathname = usePathname();
 	const { data: user } = useGetUserInfo();
+	const { logout } = useAuth();
 
 	const headerRef = useRef<HTMLInputElement | null>(null);
 	const [isOpen, set_isOpen] = useState<boolean>(false);
@@ -51,7 +53,28 @@ export const Header = ({ menuList }: HeaderProps) => {
 						{user.name && `${user.name}님`}
 						<button onClick={() => set_isOpen(!isOpen)}>
 							<FiUser />
-							<UserMenu isOpen={isOpen} />
+							<HeaderMenu
+								isOpen={isOpen}
+								nodes={[
+									<Link key="info" href="/mypage/info" prefetch>
+										내정보
+									</Link>,
+									<>
+										{!user.name ? (
+											<Link key="login" href="/user">
+												로그인
+											</Link>
+										) : (
+											<div key="logout" onClick={logout}>
+												로그아웃
+											</div>
+										)}
+									</>,
+									<Link key="order-history" href="/mypage/order-history" prefetch>
+										주문/배송내역
+									</Link>,
+								]}
+							/>
 						</button>
 						<Link href={"/mypage/wish"} prefetch>
 							<FiStar />
@@ -65,4 +88,4 @@ export const Header = ({ menuList }: HeaderProps) => {
 			{!pathname?.startsWith("/user") && <Nav menuList={menuList} />}
 		</>
 	);
-};
+}

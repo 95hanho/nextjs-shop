@@ -6,12 +6,11 @@ import API_URL from "@/api/endpoints";
 import { getNormal } from "@/api/fetchFilter";
 import { getApiUrl, getBackendUrl } from "@/lib/getBaseUrl";
 import { getServerSession } from "@/lib/auth";
-import { UserInfo } from "@/types/auth";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { ModalRoot } from "@/components/modal/core/ModalRoot";
 import Providers from "@/app/Providers";
-import { Header } from "@/app/Header";
+import DynamicHeader from "@/app/DynamicHeader";
 
 const inter = Inter({
 	subsets: ["latin"],
@@ -43,7 +42,7 @@ export default async function RootLayout({
 			<body className={`${inter.variable} ${robotoMono.variable} antialiased`}>
 				<div className="wrap">
 					<Providers>
-						<Header menuList={menuList} />
+						<DynamicHeader menuList={menuList} />
 						{children}
 						<ModalRoot />
 					</Providers>

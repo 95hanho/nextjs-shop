@@ -35,7 +35,7 @@ export interface SellerLoginResponse extends BaseResponse {
 	sellerNo: number;
 }
 /* 회원정보 조회 */
-export interface SellerResponse extends BaseResponse {
+export interface GetSellerInfoResponse extends BaseResponse {
 	seller: SellerInfo;
 }
 /* 판매자 등록요청 */

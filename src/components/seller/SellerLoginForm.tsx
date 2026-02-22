@@ -1,5 +1,5 @@
 import API_URL from "@/api/endpoints";
-import { CommonLoginForm } from "./CommonLoginForm";
+import { CommonLoginForm } from "../auth/CommonLoginForm";
 import { getApiUrl } from "@/lib/getBaseUrl";
 
 export const SellerLoginForm = () => {

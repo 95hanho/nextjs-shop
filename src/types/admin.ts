@@ -16,7 +16,7 @@ export type AdminInfo = {
 /* ------------------------------------------------------------- */
 
 /* 관리자정보 조회 */
-export interface AdminResponse extends BaseResponse {
+export interface GetAdminInfoResponse extends BaseResponse {
 	admin: AdminInfo;
 }
 /* 로그인 */

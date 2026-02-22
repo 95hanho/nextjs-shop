@@ -8,7 +8,7 @@ import { withSellerAuth } from "@/lib/seller/auth";
 import { generateSellerToken } from "@/lib/seller/jwt";
 import { REFRESH_TOKEN_COOKIE_AGE, SELLER_TOKEN_COOKIE_AGE } from "@/lib/tokenTime";
 import { BaseResponse } from "@/types/common";
-import { SellerLoginForm, SellerLoginResponse, SellerResponse } from "@/types/seller";
+import { SellerLoginForm, SellerLoginResponse, GetSellerInfoResponse } from "@/types/seller";
 import { NextRequest, NextResponse } from "next/server";
 
 // 판매자 정보조회
@@ -16,7 +16,7 @@ import { NextRequest, NextResponse } from "next/server";
 // 할 때 바로 가져올 수 있게 useQuery 실행함.
 export const GET = withSellerAuth(async ({ sellerToken }) => {
 	try {
-		const data = await getNormal<SellerResponse>(getBackendUrl(API_URL.AUTH), {
+		const data = await getNormal<GetSellerInfoResponse>(getBackendUrl(API_URL.AUTH), {
 			Authorization: `Bearer ${sellerToken}`,
 		});
 		return NextResponse.json({ ...data }, { status: 200 });
