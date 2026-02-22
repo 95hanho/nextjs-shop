@@ -10,7 +10,7 @@ import { isProd } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { generateRefreshToken } from "@/lib/jwt";
 import { ADMIN_TOKEN_COOKIE_AGE, REFRESH_TOKEN_COOKIE_AGE } from "@/lib/tokenTime";
-import { AdminLoginForm, AdminLoginResponse, AdminResponse } from "@/types/admin";
+import { AdminLoginForm, AdminLoginResponse, GetAdminInfoResponse } from "@/types/admin";
 import { BaseResponse } from "@/types/common";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -19,7 +19,7 @@ import { NextRequest, NextResponse } from "next/server";
 // 할 때 바로 가져올 수 있게 useQuery 실행함.
 export const GET = withAdminAuth(async ({ adminToken }) => {
 	try {
-		const data = await getNormal<AdminResponse>(getBackendUrl(API_URL.ADMIN), {
+		const data = await getNormal<GetAdminInfoResponse>(getBackendUrl(API_URL.ADMIN), {
 			Authorization: `Bearer ${adminToken}`,
 		});
 		return NextResponse.json({ ...data }, { status: 200 });

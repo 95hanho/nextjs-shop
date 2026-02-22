@@ -9,14 +9,28 @@ interface SellerProviderProps {
 	children: React.ReactNode;
 }
 
+const initSeller = {
+	sellerName: "",
+	sellerNameEn: "",
+	extensionNumber: "",
+	mobileNumber: "",
+	email: "",
+	businessRegistrationNumber: "",
+	telecomSalesNumber: "",
+	representativeName: "",
+	businessZipcode: "",
+	businessAddress: "",
+	businessAddressDetail: "",
+};
+
 export const SellerProvider = ({ children }: SellerProviderProps) => {
-	const [loginOn, setLoginOn] = useState<boolean>(false);
-	const [seller, setSeller] = useState<SellerInfo | null>(null);
+	const [seller, setSeller] = useState<SellerInfo>(initSeller);
+
+	const loginOn = !!seller;
 
 	const logout = async () => {
 		console.log("로그아웃");
-		setLoginOn(false);
-		setSeller(null);
+		setSeller(initSeller);
 		await postJson(getApiUrl(API_URL.SELLER_LOGOUT));
 		location.reload();
 	};

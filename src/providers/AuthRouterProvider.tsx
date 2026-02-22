@@ -6,6 +6,7 @@ import { AdminProvider } from "@/providers/auth/AdminProvider";
 export const AuthRouterProvider = ({ children }: { children: React.ReactNode }) => {
 	const pathname = usePathname();
 
+	console.log("pathname", pathname);
 	if (pathname.startsWith("/seller")) {
 		return <SellerProvider>{children}</SellerProvider>;
 	}
