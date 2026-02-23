@@ -5,18 +5,18 @@ import { postJson } from "@/api/fetchFilter";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { BaseResponse } from "@/types/common";
 import { useMutation } from "@tanstack/react-query";
-import { MouseEvent, useState } from "react";
+import { useState } from "react";
 import { FaStar } from "react-icons/fa";
 import { FiStar } from "react-icons/fi";
 import styled from "@emotion/styled";
 
-const WishALink = styled.a<{ bottom: number; right: number; size: number; zIndex: number }>`
+const WishALink = styled.button<{ bottom: number; right: number; size: number; zIndex: number }>`
 	position: absolute;
 	bottom: ${(props) => props.bottom}px;
 	right: ${(props) => props.right}px;
 	z-index: ${(props) => props.zIndex};
 	font-size: ${(props) => props.size}px;
-	color: #e79278;
+	color: #ffe142;
 
 	/* 아이콘 위로 올리기 */
 	display: inline-flex;
@@ -32,7 +32,8 @@ const WishALink = styled.a<{ bottom: number; right: number; size: number; zIndex
 		position: absolute;
 		inset: -0.1px;
 		border-radius: 9999px;
-		background: rgba(0, 0, 0, 0.01);
+		background: rgb(235 231 36 / 10%);
+		-webkit-backdrop-filter: blur(2px);
 		-webkit-backdrop-filter: blur(2px);
 		backdrop-filter: blur(2px);
 		z-index: -1;
@@ -83,8 +84,7 @@ export const WishButton = ({ initWishOn, productId, bottom = 1, right = 1, size 
 	});
 
 	// 위시 선택변경
-	const changeWish = (e: MouseEvent<HTMLAnchorElement>) => {
-		e.preventDefault();
+	const changeWish = () => {
 		setWishOn(!wishOn);
 		handleProductWish.mutate();
 	};
@@ -97,7 +97,7 @@ export const WishButton = ({ initWishOn, productId, bottom = 1, right = 1, size 
 	};
 
 	return (
-		<WishALink href="#" onClick={changeWish} {...wishALinkProps}>
+		<WishALink onClick={changeWish} {...wishALinkProps}>
 			{wishOn ? <FaStar /> : <FiStar />}
 		</WishALink>
 	);

@@ -12,7 +12,7 @@ export const GET = withAuth(async ({ accessToken }) => {
 		const data = await getNormal<GetWishListResponse>(getBackendUrl(API_URL.MY_WISH), undefined, {
 			Authorization: `Bearer ${accessToken}`,
 		});
-		console.log("data", data);
+		// console.log("data", data);
 
 		return NextResponse.json({ ...data }, { status: 200 });
 	} catch (err: unknown) {

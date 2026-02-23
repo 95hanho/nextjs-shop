@@ -24,8 +24,6 @@ export default function WishClient() {
 		enabled: loginOn,
 		refetchOnWindowFocus: false,
 		select: (data) => {
-			console.log("-----------");
-			console.log(data);
 			return data;
 		},
 	});

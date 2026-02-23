@@ -10,7 +10,7 @@ import { discountPercent, money } from "@/lib/format";
 import { AvailableProductCoupon, ProductOption } from "@/types/product";
 import { useEffect, useMemo, useState } from "react";
 import { GetProductDetailCouponResponse } from "@/types/product";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { getNormal } from "@/api/fetchFilter";
 import API_URL from "@/api/endpoints";
 import { getApiUrl } from "@/lib/getBaseUrl";
@@ -63,13 +63,15 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 		queryFn: () => getNormal(getApiUrl(API_URL.PRODUCT_DETAIL_COUPON), { productId }),
 		enabled: loginOn,
 		refetchOnWindowFocus: false,
-		select: (data) => ({
-			...data,
-			availableProductCoupon: data.availableProductCoupon.map((coupon) => ({
-				...coupon,
-				discountAmount: calculateDiscount(productDetail.finalPrice, coupon) || 0,
-			})),
-		}),
+		select: (data) => {
+			return {
+				...data,
+				availableProductCoupon: data.availableProductCoupon.map((coupon) => ({
+					...coupon,
+					discountAmount: calculateDiscount(productDetail.finalPrice, coupon) || 0,
+				})),
+			};
+		},
 	});
 
 	/* ------------------------------------------------------------------ */
@@ -77,7 +79,7 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 	// 나의 가격 구매 가능 가격
 	const [totalPrice, setTotalPrice] = useState(productDetail.finalPrice);
 	// 나의 가격 상세 보기 토글
-	const [showMyPriceDetail, setShowMyPriceDetail] = useState(true);
+	const [showMyPriceDetail, setShowMyPriceDetail] = useState(false);
 	// 적용된 쿠폰
 	const [appliedProductCoupon, setAppliedProductCoupon] = useState<{
 		unStackable: ProductCouponWithDiscount | null;
@@ -86,11 +88,13 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 		unStackable: null,
 		stackable: [],
 	});
+	// 쿠폰 자동 적용 완료 여부
+	const [isInitialCouponApplied, setIsInitialCouponApplied] = useState(false);
 	// 적립금 사용 여부
-	const [mileageUsed, setMileageUsed] = useState(false);
+	const [mileageUsed, setMileageUsed] = useState(true);
 	// 사용한 적립금
 	const [useMileage, setUseMileage] = useState(0);
-
+	// 나의 가격 상세 정보 계산
 	useEffect(() => {
 		let totalPrice = productDetail.finalPrice;
 		if (appliedProductCoupon.unStackable) {
@@ -102,13 +106,12 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 			});
 		}
 		if (mileageUsed) {
-			totalPrice = Math.max(0, totalPrice - user.mileage);
-			setUseMileage(Math.max(user.mileage, user.mileage - totalPrice));
-		}
+			setUseMileage(user.mileage > totalPrice ? totalPrice : user.mileage);
 
+			totalPrice = Math.max(0, totalPrice - user.mileage);
+		}
 		setTotalPrice(totalPrice);
 	}, [appliedProductCoupon, mileageUsed, productDetail, user]);
-
 	// 제품 옵션 들어갈 꺼
 	const { optionInitData, optionSelectList } = useMemo(() => {
 		const optionInitData = {
@@ -144,6 +147,34 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 		}
 		return { productCoupon, cartCoupon };
 	}, [availableCouponResponse]);
+
+	// 쿠폰 데이터 로드 시 최대 할인 쿠폰 자동 적용
+	useEffect(() => {
+		if (!availableCouponResponse || isInitialCouponApplied) {
+			return; // 이미 초기화했으면 다시 실행 안 함
+		}
+
+		// 쿠폰 적용한 쿠폰 filter
+		const availableCouponsWithDiscount = availableCouponResponse.availableProductCoupon.filter(
+			(coupon) => calculateDiscount(productDetail.finalPrice, coupon) !== null,
+		);
+
+		// 중복 불가 쿠폰 중 최대 할인 쿠폰 찾기
+		const unStackableCoupons = availableCouponsWithDiscount.filter((c) => !c.isStackable);
+		const maxUnStackable = unStackableCoupons.reduce(
+			(max, coupon) => (coupon.discountAmount > (max?.discountAmount || 0) ? coupon : max),
+			null as ProductCouponWithDiscount | null,
+		);
+
+		// 중복 가능 쿠폰들 (모두 적용)
+		const stackableCoupons = availableCouponsWithDiscount.filter((c) => c.isStackable);
+
+		setAppliedProductCoupon({
+			unStackable: maxUnStackable,
+			stackable: stackableCoupons,
+		});
+		setIsInitialCouponApplied(true); //	 초기화 완료 표시
+	}, [availableCouponResponse, isInitialCouponApplied, productDetail.finalPrice]);
 
 	/*  */
 

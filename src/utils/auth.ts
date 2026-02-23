@@ -1,4 +1,4 @@
-const authRequiredPaths = ["/board", "/notice", "/api/board"]; // 로그인 필요한 경로들
+const authRequiredPaths = ["/board", "/notice"]; // 로그인 필요한 경로들
 
 //
 /**

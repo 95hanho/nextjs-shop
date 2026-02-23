@@ -150,31 +150,42 @@
 									justify-content: space-between;
 									padding: 4px 0;
 									.checkbox {
+										width: calc(100% - 110px);
 										input[type="checkbox"] {
 											margin-right: 5px;
 											width: 16px;
 											height: 16px;
 											accent-color: #000;
 										}
-										span {
-											font-weight: 600;
-											text-overflow: ellipsis;
-											white-space: nowrap;
-											overflow: hidden;
+										label {
 											display: inline-block;
-											max-width: 100px;
-											font-size: 0.95em;
-										}
-										mark {
-											color: rgb(255 102 102);
-											background-color: rgb(243 213 193);
-											font-weight: 500;
-											font-size: 0.85em;
-											padding: 1px 4px;
-											margin-left: 5px;
+											width: calc(100% - 21px);
+											> span {
+												font-weight: 600;
+												text-overflow: ellipsis;
+												white-space: nowrap;
+												overflow: hidden;
+												display: inline-block;
+												max-width: calc(100% - 55px);
+												font-size: 0.95em;
+												&.isStackable {
+													max-width: 100%;
+												}
+											}
+											mark {
+												display: inline-block;
+												color: rgb(255 102 102);
+												background-color: rgb(243 213 193);
+												font-weight: 500;
+												font-size: 0.85em;
+												padding: 1px 4px;
+												margin-left: 5px;
+											}
 										}
 									}
 									.discountInfo {
+										max-width: 110px;
+										text-align: right;
 										strong {
 											color: #f35b1f;
 										}

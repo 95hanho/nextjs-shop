@@ -51,7 +51,7 @@ type AutoRefreshResult =
 const authFromTokens = async (nextRequest: NextRequest): Promise<AutoRefreshResult> => {
 	const accessToken = nextRequest.cookies.get("accessToken")?.value || nextRequest.headers.get("accessToken") || undefined;
 	const refreshToken = nextRequest.cookies.get("refreshToken")?.value || nextRequest.headers.get("refreshToken") || undefined;
-	console.log("authFromTokens -----------", accessToken?.slice(-10), refreshToken?.slice(-10));
+	// console.log("authFromTokens -----------", accessToken?.slice(-10), refreshToken?.slice(-10));
 
 	// 1) accessToken 유효하면 그대로 통과
 	if (accessToken?.trim()) {
@@ -104,7 +104,7 @@ const authFromTokens = async (nextRequest: NextRequest): Promise<AutoRefreshResu
 			["x-forwarded-for"]: ip,
 		},
 	);
-	console.log("reTokenData", reTokenData);
+	console.log("토큰재생성 데이터", reTokenData);
 
 	const newAccessToken = generateAccessToken({ userNo: reTokenData.userNo });
 	console.log("newAccessToken", newAccessToken.slice(-10), "newRefreshToken", newRefreshToken.slice(-10));
@@ -155,7 +155,6 @@ export const withAuth =
 
 		// ✅ “이번 요청에서 Spring에 보낼 accessToken” 결정
 		const accessToken = auth.newAccessToken ?? nextRequest.cookies.get("accessToken")?.value;
-		console.log("accessToken 여기냐?", accessToken);
 
 		if (!accessToken || !auth.userNo) {
 			return NextResponse.json({ message: "UNAUTHORIZED" }, { status: 401 });
@@ -188,13 +187,7 @@ export const withAuth =
 				path: "/",
 				maxAge: REFRESH_TOKEN_COOKIE_AGE,
 			});
-			console.log("토큰 다시 세팅 !!!! ---------------------", nextRequest.url);
 		}
-		console.log(
-			"accessToken11111",
-			auth.newAccessToken || nextRequest.cookies.get("accessToken")?.value || response.cookies.get("accessToken")?.value,
-		);
-
 		return response;
 	};
 
@@ -208,8 +201,8 @@ export type OptionalAuthHandler<TParams extends Record<string, string> = Record<
 //
 type AuthMode = "optional" | "required";
 const getAuthMode = (nextRequest: NextRequest): AuthMode => {
-	// "x-auth-mode": "required", // or "optional" 이렇게 FE에서 던지면됨.
-	console.log('nextRequest.headers.get("x-auth-mode")', nextRequest.headers.get("x-auth-mode"));
+	// api요청시 header에 "x-auth-mode": "required", // or "optional" 이렇게 FE에서 던지면됨.
+	// console.log('nextRequest.headers.get("x-auth-mode")', nextRequest.headers.get("x-auth-mode"));
 	const v = (nextRequest.headers.get("x-auth-mode") || "").toLowerCase();
 	return v === "required" ? "required" : "optional";
 };
@@ -220,7 +213,7 @@ export const withOptionalAuth =
 		const authMode = getAuthMode(nextRequest);
 		const auth = await authFromTokens(nextRequest);
 
-		console.log("auth", auth);
+		// console.log("auth", auth);
 		if (authMode === "required" && auth.ok && !auth.userNo) {
 			// 이건 테스트 해봐야곘는데~~
 			const response = NextResponse.json({ message: "SESSION_EXPIRED" }, { status: 401 });
@@ -262,7 +255,6 @@ export const withOptionalAuth =
 
 		// ✅ “이번 요청에서 Spring에 보낼 accessToken” 결정
 		const accessToken = auth.newAccessToken ?? nextRequest.cookies.get("accessToken")?.value ?? null;
-		console.log("accessToken 여기냐?", accessToken);
 		const userNo = auth.userNo ?? null;
 
 		// if (!accessToken || !auth.userNo) {
@@ -296,12 +288,12 @@ export const withOptionalAuth =
 				path: "/",
 				maxAge: REFRESH_TOKEN_COOKIE_AGE,
 			});
-			console.log("토큰 다시 세팅 !!!! ---------------------", nextRequest.url);
+			// console.log("토큰 다시 세팅 !!!! ---------------------", nextRequest.url);
 		}
-		console.log(
-			"accessToken11111",
-			auth.newAccessToken || nextRequest.cookies.get("accessToken")?.value || response.cookies.get("accessToken")?.value,
-		);
+		// console.log(
+		// 	"accessToken11111",
+		// 	auth.newAccessToken || nextRequest.cookies.get("accessToken")?.value || response.cookies.get("accessToken")?.value,
+		// );
 
 		return response;
 	};
