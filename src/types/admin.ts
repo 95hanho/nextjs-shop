@@ -1,7 +1,7 @@
-import { User } from "@/types/auth";
 import { BaseResponse } from "@/types/common";
 import { AdminCoupon, Coupon } from "@/types/mypage";
 import { SellerInfo } from "@/types/seller";
+import { User } from "@/types/user";
 
 // 로그인폼 데이터
 export type AdminLoginForm = {

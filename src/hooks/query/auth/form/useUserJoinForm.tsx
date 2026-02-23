@@ -5,10 +5,11 @@ import { postJson } from "@/api/fetchFilter";
 import { BaseResponse } from "@/types/common";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import API_URL from "@/api/endpoints";
-import { JoinRequest, LoginFormData, PhoneAuthCheckRequest, PhoneAuthRequest, User } from "@/types/auth";
+import { JoinRequest, LoginFormData, PhoneAuthCheckRequest, PhoneAuthRequest } from "@/types/auth";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, FormEvent } from "@/types/event";
 import { FormInputAlarm, FormInputRefs } from "@/types/form";
+import { User } from "@/types/user";
 
 export interface JoinForm extends LoginFormData, User {
 	phoneAuth: string;

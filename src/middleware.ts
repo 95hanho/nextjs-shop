@@ -30,7 +30,7 @@ const handleAuthCheck = async (nextRequest: NextRequest, isApi: boolean) => {
 			? new NextResponse(JSON.stringify({ error: "Unauthorized" }), {
 					status: 401,
 					headers: { "Content-Type": "application/json" },
-			  })
+				})
 			: NextResponse.redirect(new URL(logoutUrl, nextRequest.url));
 	}
 	console.log("rToken", rToken);
@@ -55,23 +55,16 @@ const handleAuthCheck = async (nextRequest: NextRequest, isApi: boolean) => {
 
 // middleware는 Edge Runtime에서 동작
 export async function middleware(nextRequest: NextRequest) {
-	const isApi = nextRequest.nextUrl.pathname.startsWith("/api");
+	const pathname = nextRequest.nextUrl.pathname;
+	const isApi = pathname.startsWith("/api");
 	// nextRequest.url : 쿼리 포함 path
-	// const pathname = nextRequest.nextUrl.pathname; // 쿼리제외 path
 	const searchParams = nextRequest.nextUrl.searchParams;
 	// const cookieStore = await cookies(); // middleware.ts나 route handler 밖의 util함수에서 가져올 때, 안되는거 같은데...
 	// console.log("middleware", nextRequest.url, "---------------------------------------------------------------------------------------------------");
+
+	// api는 withAuth로 개별적으로 체크하기 때문에, 여기서는 페이지 이동 요청에 대해서만 체크하도록 함.
 	if (isApi) {
-		// console.log(
-		// 	"middleware token -----",
-		// 	nextRequest.cookies.get("accessToken")?.value.slice(-10) || "a토큰없음",
-		// 	nextRequest.cookies.get("refreshToken")?.value.slice(-10) || "r토큰없음"
-		// );
-		// console.log(
-		// 	"cookies() token",
-		// 	cookieStore.get("accessToken")?.value.slice(-10) || "a토큰없음",
-		// 	cookieStore.get("refreshToken")?.value.slice(-10) || "r토큰없음"
-		// );
+		return NextResponse.next();
 	}
 
 	// 이미 로그아웃이면 아무것도 안함.
@@ -84,15 +77,22 @@ export async function middleware(nextRequest: NextRequest) {
 	// 	nextRequest.url,
 	// 	", method :",
 	// 	nextRequest.method,
-	// 	", nextRequest.nextUrl.pathname :",
-	// 	nextRequest.nextUrl.pathname
+	// 	", pathname :",
+	// 	pathname
 	// );
 
-	const needsAuth = isAuthRequiredPath(nextRequest.nextUrl.pathname);
-	if (!needsAuth) return NextResponse.next();
+	// 개발자 도구나 브라우저 내부 요청 필터링
+	if (pathname.startsWith("/.well-known/") || pathname.startsWith("/favicon.")) {
+		return NextResponse.next();
+	}
 
-	// if (isApi) console.log("API요청 ====================>");
-	// else console.log("페이지이동 요청 ====================>");
+	// ex) /mypage/wish
+	console.log("API요청아닌거 어서오고", "pathname", pathname, "===============================");
+
+	// 로그인이 필요한 페이지인지 체크
+	const needsAuth = isAuthRequiredPath(pathname);
+
+	if (!needsAuth) return NextResponse.next();
 
 	return handleAuthCheck(nextRequest, isApi);
 }
