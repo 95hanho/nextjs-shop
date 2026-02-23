@@ -1,7 +1,6 @@
 import { IoMdDownload } from "react-icons/io";
 import styles from "../ProductDetail.module.scss";
 import clsx from "clsx";
-import { GetProductDetailCouponResponse } from "@/types/product";
 import { discountPercent, money } from "@/lib/format";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { postJson } from "@/api/fetchFilter";
@@ -67,6 +66,7 @@ export default function MyPriceCheckboxTooltip(props: MyPriceCheckboxTooltipProp
 			<div className={clsx(styles.myPriceCheckboxTooltip, isDiscountApplied ? "" : styles.disabled)}>
 				<div className={styles.checkbox}>
 					<input
+						id={"coupon-" + coupon.couponId}
 						type="checkbox"
 						disabled={!isDiscountApplied}
 						checked={couponChecked}
@@ -74,8 +74,10 @@ export default function MyPriceCheckboxTooltip(props: MyPriceCheckboxTooltipProp
 							setAppliedProductCoupon(!couponChecked);
 						}}
 					/>
-					<span>{coupon.description}</span>
-					{!coupon.isStackable && <mark>중복불가</mark>}
+					<label htmlFor={"coupon-" + coupon.couponId} title={coupon.description}>
+						<span className={coupon.isStackable ? styles.isStackable : ""}>{coupon.description}</span>
+						{!coupon.isStackable && <mark>중복불가</mark>}
+					</label>
 				</div>
 				<div className={styles.discountInfo}>
 					{isDiscountApplied ? (

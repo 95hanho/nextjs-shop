@@ -1,13 +1,24 @@
 import clsx from "clsx";
 import { useEffect, useRef, useState } from "react";
-import { FaQuestion } from "react-icons/fa";
+import { FaRegQuestionCircle } from "react-icons/fa";
+import styled from "@emotion/styled";
+
+const StyledIcon = styled.i<{ size?: number; marginLeft?: string }>`
+	position: relative;
+	display: inline-block;
+	margin-left: ${(props) => props.marginLeft || "0.25rem"};
+	font-size: ${(props) => props.size || 12}px;
+	color: #717171;
+`;
 
 interface TooltipIconProps {
 	className?: string;
 	tooltipText: string;
+	size?: number;
+	marginLeft?: string;
 }
 
-export const TooltipIcon = ({ className, tooltipText }: TooltipIconProps) => {
+export const TooltipIcon = ({ className, tooltipText, size, marginLeft }: TooltipIconProps) => {
 	const [showTooltip, setShowTooltip] = useState(false);
 	const tooltipRef = useRef<HTMLParagraphElement | null>(null);
 
@@ -50,15 +61,14 @@ export const TooltipIcon = ({ className, tooltipText }: TooltipIconProps) => {
 	}, [showTooltip]);
 
 	return (
-		<i
-			className={clsx(
-				"relative inline-block p-[2px] ml-1 text-[6px] border border-solid border-gray-400 rounded-full text-gray-800 cursor-pointer",
-				className,
-			)}
+		<StyledIcon
+			size={size}
+			marginLeft={marginLeft}
+			className={clsx(className)}
 			onMouseEnter={() => setShowTooltip(true)}
 			onMouseLeave={() => setShowTooltip(false)}
 		>
-			<FaQuestion />
+			<FaRegQuestionCircle />
 			{showTooltip && (
 				<p
 					ref={tooltipRef}
@@ -67,6 +77,6 @@ export const TooltipIcon = ({ className, tooltipText }: TooltipIconProps) => {
 					{tooltipText}
 				</p>
 			)}
-		</i>
+		</StyledIcon>
 	);
 };

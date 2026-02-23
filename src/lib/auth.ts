@@ -51,6 +51,7 @@ type AutoRefreshResult =
 const authFromTokens = async (nextRequest: NextRequest): Promise<AutoRefreshResult> => {
 	const accessToken = nextRequest.cookies.get("accessToken")?.value || nextRequest.headers.get("accessToken") || undefined;
 	const refreshToken = nextRequest.cookies.get("refreshToken")?.value || nextRequest.headers.get("refreshToken") || undefined;
+	console.log("작동확인1", nextRequest.url);
 	console.log("authFromTokens -----------", accessToken?.slice(-10), refreshToken?.slice(-10));
 
 	// 1) accessToken 유효하면 그대로 통과

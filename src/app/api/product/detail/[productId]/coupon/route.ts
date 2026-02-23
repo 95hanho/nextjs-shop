@@ -10,7 +10,9 @@ import { NextResponse } from "next/server";
 export const GET = withAuth<{ productId: string }>(async ({ accessToken, params }) => {
 	try {
 		const productId = Number(params.productId);
-		if (!productId || !Number.isInteger(productId)) return NextResponse.json({ message: "productId is required" }, { status: 400 });
+		if (!productId || !Number.isInteger(productId)) {
+			return NextResponse.json({ message: "productId is required" }, { status: 400 });
+		}
 
 		const data = await getNormal<GetProductDetailCouponResponse>(
 			getBackendUrl(API_URL.PRODUCT_DETAIL_COUPON),
