@@ -9,7 +9,7 @@ import { getServerSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { ModalRoot } from "@/components/modal/core/ModalRoot";
-import Providers from "@/app/Providers";
+import RootProviders from "@/app/RootProviders";
 import DynamicHeader from "@/app/DynamicHeader";
 
 const inter = Inter({
@@ -41,11 +41,11 @@ export default async function RootLayout({
 		<html lang="ko">
 			<body className={`${inter.variable} ${robotoMono.variable} antialiased`}>
 				<div className="wrap">
-					<Providers>
+					<RootProviders>
 						<DynamicHeader menuList={menuList} />
 						{children}
 						<ModalRoot />
-					</Providers>
+					</RootProviders>
 				</div>
 			</body>
 		</html>
