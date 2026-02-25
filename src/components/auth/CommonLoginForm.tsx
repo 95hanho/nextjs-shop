@@ -59,10 +59,19 @@ export const CommonLoginForm = ({ apiUrl, redirectTo, invalidateKeys, loginIdFie
 
 	const userIdRef = useRef<HTMLInputElement>(null);
 	const pwdRef = useRef<HTMLInputElement>(null);
-	const [loginForm, setLoginForm] = useState<LoginFormData<typeof loginIdField>>({
-		[loginIdField]: "hoseongs",
+	const testUser = {
+		userId: "hoseongs",
 		password: "aaaaaa1!",
+	};
+	const testSeller = {
+		sellerId: "seller01",
+		password: "a123456!!",
+	};
+	const [loginForm, setLoginForm] = useState<LoginFormData<typeof loginIdField>>({
+		[loginIdField]: testSeller.sellerId,
+		password: testSeller.password,
 	} as LoginFormData);
+
 	const [userIdFocus, setUserIdFocus] = useState<boolean>(false);
 	const [pwdFocus, setPwdFocus] = useState<boolean>(false);
 	const [showPassword, setShowPassword] = useState<boolean>(false);

@@ -1,11 +1,11 @@
 "use client";
 
 import { toErrorResponse } from "@/api/error";
-import { AuthRouterProvider } from "@/providers/AuthRouterProvider";
+import { SellerProvider } from "@/providers/auth/SellerProvider";
 import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactNode, useState } from "react";
 
-interface ProvidersProps {
+interface SellerRootProviderProps {
 	children: ReactNode;
 }
 
@@ -39,7 +39,7 @@ function handleGlobalError(error: unknown) {
 	}
 }
 
-export default function Providers({ children }: ProvidersProps) {
+export default function SellerRootProvider({ children }: SellerRootProviderProps) {
 	const [queryClient] = useState(
 		() =>
 			new QueryClient({
@@ -78,7 +78,7 @@ export default function Providers({ children }: ProvidersProps) {
 
 	return (
 		<QueryClientProvider client={queryClient}>
-			<AuthRouterProvider>{children}</AuthRouterProvider>
+			<SellerProvider>{children}</SellerProvider>
 		</QueryClientProvider>
 	);
 }
