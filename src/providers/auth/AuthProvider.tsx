@@ -29,7 +29,7 @@ const initUser = {
 export const AuthProvider = ({ children }: AuthProviderProps) => {
 	const queryClient = useQueryClient();
 	const pathname = usePathname();
-	const { replace, refresh } = useRouter();
+	const { refresh } = useRouter();
 	const [user, setUser] = useState<UserInfo>(initUser);
 
 	const loginOn = !!user;
@@ -48,7 +48,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 			// ✅ 보호 페이지에서 로그아웃이면 캐시 꼬임 방지 위해 강제 문서 이동
 			window.location.assign("/");
 			return;
-			replace("/");
 		}
 
 		// ✅ 로그아웃 반영(서버 컴포넌트/RSC 캐시 갱신)

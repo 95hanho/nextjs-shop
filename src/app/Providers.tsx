@@ -1,5 +1,6 @@
 "use client";
 
+import { toErrorResponse } from "@/api/error";
 import { AuthRouterProvider } from "@/providers/AuthRouterProvider";
 import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactNode, useState } from "react";
@@ -9,9 +10,11 @@ interface ProvidersProps {
 }
 
 // 공통 에러 핸들러 (전역 모달/토스트 등)
-function handleGlobalError(error: any) {
+function handleGlobalError(error: unknown) {
+	const { payload } = toErrorResponse(error);
+
 	// 표준화된 서버 에러 바디 { message, code }도 고려
-	const message = error?.message || "";
+	const message = payload?.message || "";
 	switch (message) {
 		case "UNAUTHORIZED":
 		case "SESSION_EXPIRED":
@@ -57,8 +60,9 @@ export default function Providers({ children }: ProvidersProps) {
 					mutations: {
 						networkMode: "always",
 						// 재시도 규칙: 네트워크/타임아웃만 1회 재시도, 그 외는 재시도 안 함
-						retry: (failureCount, error: any) => {
-							const m = error?.message || error?.msg;
+						retry: (failureCount, error: unknown) => {
+							const { payload } = toErrorResponse(error);
+							const m = payload?.message || payload?.msg;
 							const retriable = m === "NETWORK_ERROR" || m === "REQUEST_TIMEOUT";
 							if (!retriable) return false;
 							return failureCount < 1; // 최대 1회 재시도
