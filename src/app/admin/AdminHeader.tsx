@@ -41,12 +41,12 @@ export default function AdminHeader() {
 						<HeaderMenu
 							isOpen={isOpen}
 							nodes={[
-								<Link key="info" href="/admin/mypage/info" prefetch>
+								<Link key="info" href="/admin/mypage/info" prefetch={false}>
 									내정보
 								</Link>,
 								<>
 									{!admin?.adminName ? (
-										<Link key="login" href="/admin/login" prefetch>
+										<Link key="login" href="/admin/login" prefetch={false}>
 											로그인
 										</Link>
 									) : (

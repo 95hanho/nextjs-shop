@@ -6,8 +6,9 @@ export const isProd = process.env.NODE_ENV === "production";
 export const BASIC_NO_IMAGE = process.env.NEXT_PUBLIC_BASIC_NO_IMAGE || "";
 /* JWT 인증키 */
 export const REFRESH_JWT_SECRET_KEY = process.env.NEXT_PUBLIC_REFRESH_SECRET || "your-secret";
+export const MIDDLEWARE_REFRESH_JWT_SECRET_KEY = new TextEncoder().encode(process.env.NEXT_PUBLIC_REFRESH_SECRET || "your-secret");
 export const JWT_SECRET_KEY = process.env.NEXT_PUBLIC_JWT_SECRET || "your-secret";
-export const MIDDLEWARE_JWT_SECRET_KEY = new TextEncoder().encode(process.env.NEXT_PUBLIC_JWT_SECRET);
+export const MIDDLEWARE_JWT_SECRET_KEY = new TextEncoder().encode(process.env.NEXT_PUBLIC_JWT_SECRET || "your-secret");
 export const PHONE_AUTH_KEY = process.env.NEXT_PUBLIC_PHONE_AUTH || "your-secret";
 export const PHONE_AUTH_COMPLETE_KEY = process.env.NEXT_PUBLIC_PHONE_AUTH_COMPLETE || "your-secret";
 export const PWD_CHANGE_KEY = process.env.NEXT_PUBLIC_PWD_CHANGE || "your-secret";

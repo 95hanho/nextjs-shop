@@ -41,12 +41,12 @@ export default function SellerHeader() {
 						<HeaderMenu
 							isOpen={isOpen}
 							nodes={[
-								<Link key="info" href="/seller/mypage/info" prefetch>
+								<Link key="info" href="/seller/mypage/info" prefetch={false}>
 									내정보
 								</Link>,
 								<>
 									{!seller?.sellerName ? (
-										<Link key="login" href="/seller/login" prefetch>
+										<Link key="login" href="/seller/login" prefetch={false}>
 											로그인
 										</Link>
 									) : (

@@ -1,10 +1,11 @@
 /* 각 상품들 */
 .productItem {
+	position: relative;
 }
-
 /* 이미지 */
 .productThumb {
 	position: relative;
+	display: block;
 	aspect-ratio: 5 / 6;
 }
 

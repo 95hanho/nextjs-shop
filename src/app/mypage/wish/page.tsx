@@ -4,6 +4,7 @@ import WishClient from "./WishClient";
 export default function Wish() {
 	return (
 		<main id="wish">
+			{/* <h1>위시에서 테스트중...</h1> */}
 			<WishClient />
 		</main>
 	);
