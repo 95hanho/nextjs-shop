@@ -8,8 +8,8 @@ import { useEffect, useRef, useState } from "react";
 import { Menu } from "@/types/main";
 import { HeaderMenu } from "../components/common/HeaderMenu";
 import { Nav } from "../components/common/Nav";
-import { useGetUserInfo } from "@/hooks/query/auth/useGetUserInfo";
 import { useAuth } from "@/hooks/useAuth";
+import { useGetUserInfo } from "@/hooks/query/auth/useGetUserInfo";
 
 interface HeaderProps {
 	menuList: Menu[];
@@ -44,7 +44,7 @@ export default function Header({ menuList }: HeaderProps) {
 		<>
 			<header ref={headerRef} className="flex items-center justify-center py-5 bg-slate-50 z-[1000] h-12 sticky top-0">
 				<h1 className={styles.title}>
-					<Link href={"/"} className="text-3xl">
+					<Link href={"/"} className="text-3xl" prefetch={false}>
 						NEXTJS-SHOP
 					</Link>
 				</h1>
@@ -56,12 +56,12 @@ export default function Header({ menuList }: HeaderProps) {
 							<HeaderMenu
 								isOpen={isOpen}
 								nodes={[
-									<Link key="info" href="/mypage/info" prefetch>
+									<Link key="info" href="/mypage/info" prefetch={false}>
 										내정보
 									</Link>,
 									<>
 										{!user.name ? (
-											<Link key="login" href="/user">
+											<Link key="login" href="/user" prefetch={false}>
 												로그인
 											</Link>
 										) : (
@@ -70,16 +70,16 @@ export default function Header({ menuList }: HeaderProps) {
 											</div>
 										)}
 									</>,
-									<Link key="order-history" href="/mypage/order-history" prefetch>
+									<Link key="order-history" href="/mypage/order-history" prefetch={false}>
 										주문/배송내역
 									</Link>,
 								]}
 							/>
 						</button>
-						<Link href={"/mypage/wish"} prefetch>
+						<Link href={"/mypage/wish"} prefetch={false}>
 							<FiStar />
 						</Link>
-						<Link href={"/mypage/cart"} prefetch>
+						<Link href={"/mypage/cart"} prefetch={false}>
 							<FiShoppingCart />
 						</Link>
 					</div>

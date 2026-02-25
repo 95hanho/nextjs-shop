@@ -9,6 +9,7 @@ import { useState } from "react";
 import { FaStar } from "react-icons/fa";
 import { FiStar } from "react-icons/fi";
 import styled from "@emotion/styled";
+import { MouseEvent } from "@/types/event";
 
 const WishALink = styled.button<{ bottom: number; right: number; size: number; zIndex: number }>`
 	position: absolute;
@@ -84,7 +85,9 @@ export const WishButton = ({ initWishOn, productId, bottom = 1, right = 1, size 
 	});
 
 	// 위시 선택변경
-	const changeWish = () => {
+	const changeWish = (e: MouseEvent) => {
+		e.stopPropagation(); // 클릭 이벤트가 부모 요소로 전파되는 것을 방지
+		e.preventDefault();
 		setWishOn(!wishOn);
 		handleProductWish.mutate();
 	};

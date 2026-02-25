@@ -4,7 +4,7 @@ import { getApiUrl, getBackendUrl } from "./getBaseUrl";
 import API_URL from "@/api/endpoints";
 import { GetUserResponse } from "@/types/auth";
 import { NextRequest, NextResponse } from "next/server";
-import { generateAccessToken, generateRefreshToken, verifyRefreshToken, verifyToken } from "./jwt";
+import { generateAccessToken, generateRefreshToken, verifyRefreshToken, verifyAccessToken } from "./jwt";
 import { BaseResponse } from "@/types/common";
 import { isProd } from "./env";
 import { ACCESS_TOKEN_COOKIE_AGE, REFRESH_TOKEN_COOKIE_AGE } from "./tokenTime";
@@ -31,6 +31,39 @@ export const addLogoutQuery = (originUrl: string): string => {
 	url.searchParams.set("logout", "1");
 	return url.pathname + (url.search ? url.search : "");
 };
+
+/**
+ * 토큰 갱신 중복 방지를 위한 인메모리 Lock
+ */
+class TokenRefreshLock {
+	private locks = new Map<string, Promise<unknown>>();
+
+	async acquireOrWait<T>(key: string, task: () => Promise<T>): Promise<T> {
+		// 이미 진행 중인 갱신 작업이 있으면 그 결과를 기다림
+		const existing = this.locks.get(key);
+		if (existing) {
+			console.log(`[TokenLock] 이미 토큰 갱신 중... 대기: ${key}`);
+			return existing as Promise<T>;
+		}
+
+		// 새로운 갱신 작업 시작
+		const promise = task().finally(() => {
+			// 작업 완료 후 lock 해제
+			this.locks.delete(key);
+		});
+
+		this.locks.set(key, promise);
+		return promise;
+	}
+
+	clear(key: string) {
+		this.locks.delete(key);
+	}
+}
+
+export const tokenRefreshLock = new TokenRefreshLock();
+
+// withAuth에서 사용할 함수들
 type AutoRefreshResult =
 	| {
 			ok: true;
@@ -56,11 +89,11 @@ const authFromTokens = async (nextRequest: NextRequest): Promise<AutoRefreshResu
 	// 1) accessToken 유효하면 그대로 통과
 	if (accessToken?.trim()) {
 		try {
-			const token: Token = verifyToken(accessToken);
+			const token: Token = verifyAccessToken(accessToken);
 			return { ok: true, userNo: token.userNo };
 		} catch {
 			// accessToken 만료 → 아래에서 refreshToken으로 처리
-			console.warn("만료됨!!!");
+			console.warn("accessToken 만료됨!!!");
 		}
 	}
 
@@ -84,37 +117,40 @@ const authFromTokens = async (nextRequest: NextRequest): Promise<AutoRefreshResu
 			clearCookies: true,
 		};
 	}
-	// 4) refreshToken 유효 → 백엔드에 토큰 갱신 요청
-	const newRefreshToken = generateRefreshToken();
-	const xffHeader = nextRequest.headers.get("x-forwarded-for");
-	const ip =
-		xffHeader?.split(",")[0]?.trim() ??
-		// 일부 환경에서는 Cloudflare나 Reverse Proxy 헤더 사용
-		nextRequest.headers.get("x-real-ip") ??
-		"unknown";
 
-	const reTokenData = await postUrlFormData<BaseResponse & { userNo: number }>(
-		getBackendUrl(API_URL.AUTH_TOKEN_REFRESH),
-		{
-			beforeToken: refreshToken,
-			refreshToken: newRefreshToken,
-		},
-		{
-			userAgent: nextRequest.headers.get("user-agent") || "",
-			["x-forwarded-for"]: ip,
-		},
-	);
-	console.log("토큰재생성 데이터", reTokenData);
+	// 4) ✅ Lock을 사용하여 중복 갱신 방지
+	const lockKey = `refresh:${refreshToken.slice(-10)}`; // refreshToken 뒷부분으로 key 생성
 
-	const newAccessToken = generateAccessToken({ userNo: reTokenData.userNo });
-	console.log("newAccessToken", newAccessToken.slice(-10), "newRefreshToken", newRefreshToken.slice(-10));
+	return tokenRefreshLock.acquireOrWait(lockKey, async () => {
+		console.log(`[API TokenRefresh] 토큰 갱신 시작: ${lockKey}`);
 
-	return {
-		ok: true,
-		userNo: reTokenData.userNo,
-		newAccessToken,
-		newRefreshToken,
-	};
+		const newRefreshToken = generateRefreshToken();
+		const xffHeader = nextRequest.headers.get("x-forwarded-for");
+		const ip = xffHeader?.split(",")[0]?.trim() ?? nextRequest.headers.get("x-real-ip") ?? "unknown";
+
+		const reTokenData = await postUrlFormData<BaseResponse & { userNo: number }>(
+			getBackendUrl(API_URL.AUTH_TOKEN_REFRESH),
+			{
+				beforeToken: refreshToken,
+				refreshToken: newRefreshToken,
+			},
+			{
+				userAgent: nextRequest.headers.get("user-agent") || "",
+				["x-forwarded-for"]: ip,
+			},
+		);
+		console.log("[API TokenRefresh] 토큰 재생성 완료", reTokenData);
+
+		const newAccessToken = generateAccessToken({ userNo: reTokenData.userNo });
+		console.log("[API TokenRefresh] newAccessToken", newAccessToken.slice(-10) + "...", "newRefreshToken", newRefreshToken.slice(-10) + "...");
+
+		return {
+			ok: true,
+			userNo: reTokenData.userNo,
+			newAccessToken,
+			newRefreshToken,
+		};
+	});
 };
 //
 export type AuthHandler<TParams extends Record<string, string> = Record<string, never>> = (ctx: {

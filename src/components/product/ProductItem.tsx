@@ -21,17 +21,16 @@ interface ProductItemProps {
 
 export const ProductItem = ({ product }: ProductItemProps) => {
 	return (
-		<Link href={`/product/detail/${product.productId}`} className={styles.productItem}>
-			{/* 이미지 */}
-			<div className={styles.productThumb}>
+		<div className={styles.productItem}>
+			<Link href={`/product/detail/${product.productId}`} className={styles.productThumb}>
 				<SmartImage src={product.filePath} fill={true} className={styles.productImg} />
 
 				{/* WishButton 내부에서 className을 못 받는 구조면 유지, 받을 수 있으면 아래 주석처럼 */}
 				<WishButton productId={product.productId} initWishOn={true} right={6} bottom={6} />
-			</div>
+			</Link>
 
 			{/* 하단 상품설명 */}
-			<div className={styles.productInfo}>
+			<Link href={`/product/detail/${product.productId}`} className={styles.productInfo}>
 				<h4 className={styles.productBrand}>{product.sellerName}</h4>
 				<h5 className={styles.productName}>{product.productName}</h5>
 
@@ -61,7 +60,7 @@ export const ProductItem = ({ product }: ProductItemProps) => {
 						<span className={styles.metaCount}>{product.wishCount}</span>
 					</div>
 				</div>
-			</div>
-		</Link>
+			</Link>
+		</div>
 	);
 };
