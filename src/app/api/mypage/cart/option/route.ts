@@ -13,7 +13,7 @@ export const GET = withAuth(async ({ nextRequest, accessToken }) => {
 		const productId = nextRequest.nextUrl.searchParams.get("productId");
 		if (!productId) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
 		const data = await getNormal<GetCartOtherOptionListResponse>(
-			getBackendUrl(API_URL.MY_CART_OPTION_PRODUCT_DETAIL),
+			getBackendUrl(API_URL.MY_CART_PRODUCT_OPTION),
 			{ productId },
 			{
 				Authorization: `Bearer ${accessToken}`,

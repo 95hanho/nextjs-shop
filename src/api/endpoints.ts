@@ -70,8 +70,8 @@ const API_URL = {
 	MY_REVIEW: "/mypage/review",
 	/** 장바구니 조회, 장바구니 제품 수량 변경, 장바구니 선택여부 변경, 장바구니 제품 삭제 */
 	MY_CART: "/mypage/cart",
-	/** 장바구니 제품 삭제 */
-	MY_CART_OPTION_PRODUCT_DETAIL: "/mypage/cart/option/product-option",
+	/** 장바구니 제품 다른 option조회 */
+	MY_CART_PRODUCT_OPTION: "/mypage/cart/option",
 	/** 위시리스트 조회 */
 	MY_WISH: "/mypage/wish",
 	/** 위시리스트 삭제 */
