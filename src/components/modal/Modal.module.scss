@@ -52,6 +52,12 @@
 			cursor: not-allowed;
 		}
 	}
+	&.hideCancel {
+		justify-content: center;
+		button {
+			width: 80%;
+		}
+	}
 }
 // =========================
 // AddressModal.tsx

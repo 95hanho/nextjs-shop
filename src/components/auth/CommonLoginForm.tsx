@@ -60,16 +60,16 @@ export const CommonLoginForm = ({ apiUrl, redirectTo, invalidateKeys, loginIdFie
 	const userIdRef = useRef<HTMLInputElement>(null);
 	const pwdRef = useRef<HTMLInputElement>(null);
 	const testUser = {
-		userId: "hoseongs",
+		id: "hoseongs",
 		password: "aaaaaa1!",
 	};
 	const testSeller = {
-		sellerId: "seller01",
+		id: "seller01",
 		password: "a123456!!",
 	};
 	const [loginForm, setLoginForm] = useState<LoginFormData<typeof loginIdField>>({
-		[loginIdField]: testSeller.sellerId,
-		password: testSeller.password,
+		[loginIdField]: testUser.id,
+		password: testUser.password,
 	} as LoginFormData);
 
 	const [userIdFocus, setUserIdFocus] = useState<boolean>(false);
@@ -95,7 +95,7 @@ export const CommonLoginForm = ({ apiUrl, redirectTo, invalidateKeys, loginIdFie
 
 	useEffect(() => {
 		// message query가 있을 때만 모달 띄우고
-		if (message) {
+		if (message === "need_login") {
 			// ✅ returnUrl을 state에 저장 (로그인 후 사용)
 			const url = searchParams.get("returnUrl");
 			if (url) {

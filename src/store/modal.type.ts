@@ -6,6 +6,7 @@ export type ModalType = "ALERT" | "CONFIRM" | "PRODUCTOPTION" | "ADDRESSSET" | n
 type ModalCommon = {
 	disableOverlayClose?: boolean;
 	disableEscClose?: boolean;
+	closeResult?: string;
 };
 // modal이 열릴 떄 요구되는 옵션
 /** modalType별로 요구하는 modalProps를 정확히 매핑 */
@@ -21,6 +22,7 @@ export type ModalPropsMap = {
 		okResult?: string;
 		cancelText?: string;
 		cancelResult?: string;
+		hideCancel?: boolean;
 	};
 	PRODUCTOPTION: ModalCommon & {
 		product: CartItem;
@@ -30,7 +32,7 @@ export type ModalPropsMap = {
 	};
 };
 
-export type ModalProps<T extends ModalType = ModalType> = T extends null ? {} : ModalPropsMap[Exclude<T, null>];
+export type ModalProps<T extends ModalType = ModalType> = T extends null ? Record<string, never> : ModalPropsMap[Exclude<T, null>];
 // 모달이 닫힐 때 “무슨 동작이었는지”에 따른 “전달할 데이터”
 export type ModalResultMap = {
 	PRODUCTOPTION_CHANGED: {
@@ -53,7 +55,11 @@ export type ModalResultMap = {
 				result: string;
 		  };
 	ALERT_OK: undefined;
-	CLOSE: undefined;
+	CLOSE:
+		| undefined
+		| {
+				result: string;
+		  };
 };
 
 export type ModalResult<K extends keyof ModalResultMap = keyof ModalResultMap> = {

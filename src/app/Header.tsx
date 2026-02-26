@@ -2,7 +2,7 @@
 
 import styles from "./Header.module.scss";
 import { FiShoppingCart, FiStar, FiUser } from "react-icons/fi";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Menu } from "@/types/main";
@@ -10,6 +10,7 @@ import { HeaderMenu } from "../components/common/HeaderMenu";
 import { Nav } from "../components/common/Nav";
 import { useAuth } from "@/hooks/useAuth";
 import { useGetUserInfo } from "@/hooks/query/auth/useGetUserInfo";
+import { isAuthRequiredPath } from "@/utils/auth";
 
 interface HeaderProps {
 	menuList: Menu[];
@@ -19,6 +20,7 @@ export default function Header({ menuList }: HeaderProps) {
 	const pathname = usePathname();
 	const { data: user } = useGetUserInfo();
 	const { logout } = useAuth();
+	const { refresh } = useRouter();
 
 	const headerRef = useRef<HTMLInputElement | null>(null);
 	const [isOpen, set_isOpen] = useState<boolean>(false);
@@ -26,7 +28,6 @@ export default function Header({ menuList }: HeaderProps) {
 	const menuMouseleave = () => {
 		set_isOpen(false);
 	};
-
 	useEffect(() => {
 		if (isOpen) {
 			setTimeout(() => {
@@ -34,6 +35,22 @@ export default function Header({ menuList }: HeaderProps) {
 			}, 300);
 		} else headerRef.current?.removeEventListener("mouseleave", menuMouseleave);
 	}, [isOpen]);
+	//
+	const logoutButton = async () => {
+		const needsAuth = isAuthRequiredPath(pathname);
+
+		await logout();
+
+		// 로그인 필요 페이지였으면 메인으로 이동.
+		if (needsAuth) {
+			// ✅ 보호 페이지에서 로그아웃이면 캐시 꼬임 방지 위해 강제 문서 이동
+			window.location.assign("/");
+			return;
+		}
+
+		// ✅ 로그아웃 반영(서버 컴포넌트/RSC 캐시 갱신)
+		refresh();
+	};
 
 	useEffect(() => {
 		// console.log("페이지 바껴서 토큰체크 실행됨");
@@ -65,7 +82,7 @@ export default function Header({ menuList }: HeaderProps) {
 												로그인
 											</Link>
 										) : (
-											<div key="logout" onClick={logout}>
+											<div key="logout" onClick={logoutButton}>
 												로그아웃
 											</div>
 										)}

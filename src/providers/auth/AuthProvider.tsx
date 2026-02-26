@@ -28,30 +28,16 @@ const initUser = {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
 	const queryClient = useQueryClient();
-	const pathname = usePathname();
-	const { refresh } = useRouter();
 	const [user, setUser] = useState<UserInfo>(initUser);
 
-	const loginOn = !!user;
+	const loginOn = !!user?.name;
 
 	const logout = async () => {
 		console.log("로그아웃");
-		console.log("pathname", pathname);
-		const needsAuth = isAuthRequiredPath(pathname);
 		setUser(initUser);
 		// React Query 캐시 무효화
 		queryClient.setQueryData(["me"], initUser); // 직접 캐시 업데이트
 		await postJson(getApiUrl(API_URL.AUTH_LOGOUT));
-
-		// 로그인 필요 페이지였으면 메인으로 이동.
-		if (needsAuth) {
-			// ✅ 보호 페이지에서 로그아웃이면 캐시 꼬임 방지 위해 강제 문서 이동
-			window.location.assign("/");
-			return;
-		}
-
-		// ✅ 로그아웃 반영(서버 컴포넌트/RSC 캐시 갱신)
-		refresh();
 	};
 
 	return <authContext.Provider value={{ loginOn, logout, user, setUser }}>{children}</authContext.Provider>;
