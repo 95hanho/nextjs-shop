@@ -15,6 +15,7 @@ import styles from "../Modal.module.scss";
 type ModalCommon = {
 	disableOverlayClose?: boolean;
 	disableEscClose?: boolean;
+	closeResult?: string;
 };
 
 export const ModalRoot = () => {
@@ -26,6 +27,7 @@ export const ModalRoot = () => {
 	const common = (modalProps ?? {}) as ModalCommon;
 	const overlayCloseAllowed = !common.disableOverlayClose;
 	const escCloseAllowed = !common.disableEscClose;
+	const closeResult = common.closeResult;
 
 	// Next SSR 때문에 portal은 클라이언트에서만
 	useEffect(() => {
@@ -35,7 +37,6 @@ export const ModalRoot = () => {
 	// body scroll lock
 	useEffect(() => {
 		if (modalType) {
-			console.log("modalType", modalType);
 			setIsOpen(true);
 			setIsClosing(false);
 			document.body.style.overflow = "hidden";
@@ -48,9 +49,9 @@ export const ModalRoot = () => {
 		setIsClosing(true);
 		setTimeout(() => {
 			setIsOpen(false);
-			closeModal();
+			closeModal(closeResult);
 		}, 400); // 애니메이션 시간과 맞추기
-	}, [closeModal]);
+	}, [closeModal, closeResult]);
 
 	// ESC 눌러서 닫기
 	useEffect(() => {

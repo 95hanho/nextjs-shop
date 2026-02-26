@@ -4,13 +4,14 @@ import "@/styles/css/globals.css";
 import { MenuResponse } from "@/types/main";
 import API_URL from "@/api/endpoints";
 import { getNormal } from "@/api/fetchFilter";
-import { getApiUrl, getBackendUrl } from "@/lib/getBaseUrl";
-import { getServerSession } from "@/lib/auth";
-import { redirect } from "next/navigation";
-import { cookies } from "next/headers";
 import { ModalRoot } from "@/components/modal/core/ModalRoot";
 import RootProviders from "@/app/RootProviders";
 import DynamicHeader from "@/app/DynamicHeader";
+import { getBackendUrl } from "@/lib/getBaseUrl";
+import { getServerSession } from "@/lib/auth";
+import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
+import { ModalTest } from "@/components/modal/ModalTest";
 
 const inter = Inter({
 	subsets: ["latin"],
@@ -45,6 +46,8 @@ export default async function RootLayout({
 						<DynamicHeader menuList={menuList} />
 						{children}
 						<ModalRoot />
+						{/* 모달테스트용 */}
+						{/* <ModalTest /> */}
 					</RootProviders>
 				</div>
 			</body>

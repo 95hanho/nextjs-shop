@@ -214,7 +214,7 @@ const handleAuthCheck = async (nextRequest: NextRequest, baseResponse: NextRespo
 		console.log("[Middleware] refreshToken 유효");
 	} catch {
 		console.error("[Middleware] refreshToken 만료 → 로그인 페이지로 리다이렉트");
-		return redirectToLogin(nextRequest, "token_expired");
+		return redirectToLogin(nextRequest, "need_login");
 	}
 
 	// 여기부터는 refreshToken이 "존재 + 유효"인 상태
