@@ -317,32 +317,39 @@
 			.productOptionBuy {
 				margin-top: 20px;
 				font-size: 13px;
-
-				.productOptionSelect {
-					margin-bottom: 20px;
+				.soldOut {
+					font-size: 20px;
+					font-weight: bold;
+					color: #f35b1f;
+					text-align: center;
 				}
-
-				.actionButtons {
-					display: flex;
-					gap: 5px;
-
-					button {
-						padding: 10px 15px;
-						font-size: 18px;
+				.productOptionBuyArea {
+					.productOptionSelect {
+						margin-bottom: 20px;
 					}
 
-					.btnCart {
-						width: 50%;
-						border: 1px solid #ccc;
-					}
+					.actionButtons {
+						display: flex;
+						gap: 5px;
 
-					.btnBuy {
-						width: 50%;
-						background-color: #000;
-						color: #fff;
+						button {
+							padding: 10px 15px;
+							font-size: 18px;
+						}
 
-						&:hover {
-							background-color: #eb5449;
+						.btnCart {
+							width: 50%;
+							border: 1px solid #ccc;
+						}
+
+						.btnBuy {
+							width: 50%;
+							background-color: #000;
+							color: #fff;
+
+							&:hover {
+								background-color: #eb5449;
+							}
 						}
 					}
 				}

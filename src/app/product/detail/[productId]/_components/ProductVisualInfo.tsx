@@ -8,7 +8,7 @@ import styles from "../ProductDetail.module.scss";
 import { SmartImage } from "@/components/ui/SmartImage";
 import { discountPercent, money } from "@/lib/format";
 import { AvailableProductCoupon, ProductOption } from "@/types/product";
-import { useEffect, useMemo, useState } from "react";
+import { use, useEffect, useMemo, useState } from "react";
 import { GetProductDetailCouponResponse } from "@/types/product";
 import { useQuery } from "@tanstack/react-query";
 import { getNormal } from "@/api/fetchFilter";
@@ -114,23 +114,43 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 	}, [appliedProductCoupon, mileageUsed, productDetail, user]);
 	// 제품 옵션 들어갈 꺼
 	const { optionInitData, optionSelectList } = useMemo(() => {
-		const optionInitData = {
+		const oid = {
 			id: 0,
 			val: "사이즈",
 		};
-		const optionSelectList = [];
-		optionSelectList.push(optionInitData);
-		optionSelectList.push(
-			...productOptionList.map((v) => ({
-				id: v.productOptionId,
-				val: v.size + (v.addPrice > 0 ? `(+ ${money(v.addPrice)})` : ""),
-			})),
+		const osl = [];
+		osl.push(oid);
+		osl.push(
+			...productOptionList.map((v) => {
+				console.log(v);
+				return {
+					id: v.productOptionId,
+					val: v.size + (v.addPrice > 0 ? `(+ ${money(v.addPrice)})` : "") + (v.stock <= 10 ? ` - [${v.stock}개 남음]` : ""),
+				};
+			}),
 		);
 		return {
-			optionInitData,
-			optionSelectList,
+			optionInitData: oid,
+			optionSelectList: osl,
 		};
 	}, [productOptionList]);
+	// 제품 옵션 선택
+	const optionSelectHandler = (optionIdx: number) => {
+		// console.log("선택된 옵션 id index", optionIdx, productOptionList[optionIdx - 1]);
+		const productOption = productOptionList[optionIdx - 1];
+		if (productOption) {
+			setProductSelectList((prev) => {
+				const newList = [...prev];
+				const existingIdx = newList.findIndex((option) => option.productOptionId === productOption.productOptionId);
+				if (existingIdx === -1 && productOption.stock > 0) {
+					newList.push({ ...productOption, quantity: 1 });
+				} else if (existingIdx !== -1 && newList[existingIdx].quantity < productOption.stock) {
+					newList[existingIdx] = { ...newList[existingIdx], quantity: newList[existingIdx].quantity + 1 };
+				}
+				return newList;
+			});
+		}
+	};
 	// 쿠폰 리스트에서 상품쿠폰과 장바구니 쿠폰 분류
 	const { productCoupon, cartCoupon } = useMemo(() => {
 		if (!availableCouponResponse) return { productCoupon: [], cartCoupon: [] };
@@ -147,7 +167,6 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 		}
 		return { productCoupon, cartCoupon };
 	}, [availableCouponResponse]);
-
 	// 쿠폰 데이터 로드 시 최대 할인 쿠폰 자동 적용
 	useEffect(() => {
 		if (!availableCouponResponse || isInitialCouponApplied) {
@@ -176,7 +195,13 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 		setIsInitialCouponApplied(true); //	 초기화 완료 표시
 	}, [availableCouponResponse, isInitialCouponApplied, productDetail.finalPrice]);
 
-	/*  */
+	// 상품 선택리스트
+	const [productSelectList, setProductSelectList] = useState<(ProductOption & { quantity: number })[]>([]);
+	useEffect(() => {
+		if (productSelectList.length === 0) return;
+		console.log({ productSelectList });
+	}, [productSelectList]);
+	/* ------------------------------------------------------------------ */
 
 	const myPriceCheckboxCommonProps = {
 		originPrice: productDetail.originPrice,
@@ -391,28 +416,46 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 				</div>
 
 				<div className={styles.productOptionBuy}>
-					<div className={styles.productOptionSelect}>
-						<OptionSelector
-							optionSelectorName="productVisualOption"
-							pickIdx={0}
-							initData={optionInitData}
-							optionList={optionSelectList}
-							changeOption={() => {}}
-							inputColor="rgb(75 70 70)"
-						/>
-					</div>
-
-					<div className={styles.actionButtons}>
-						<button className={styles.btnCart}>장바구니 담기</button>
-						<button
-							className={styles.btnBuy}
-							onClick={() => {
-								push(`/buy`);
-							}}
-						>
-							바로 구매하기
-						</button>
-					</div>
+					{productOptionList.every((option) => option.stock === 0) ? (
+						<p className={styles.soldOut}>품절 상품</p>
+					) : (
+						<div className={styles.productOptionBuyArea}>
+							<div className={styles.productOptionSelect}>
+								<OptionSelector
+									optionSelectorName="productVisualOption"
+									pickIdx={0}
+									initData={optionInitData}
+									optionList={optionSelectList}
+									changeOption={optionSelectHandler}
+									inputColor="rgb(75 70 70)"
+								/>
+							</div>
+							{/* 선택된 옵션과 수량 보여주는 영역 */}
+							{productSelectList.length > 0 && (
+								<div className={styles.selectedOptions}>
+									{productSelectList.map((option) => (
+										<div key={option.productOptionId} className={styles.selectedOptionItem}>
+											<span>
+												{option.size} {option.addPrice > 0 && `(추가금 ${money(option.addPrice)})`}
+											</span>
+											<span>수량: {option.quantity}</span>
+										</div>
+									))}
+								</div>
+							)}
+							<div className={styles.actionButtons}>
+								<button className={styles.btnCart}>장바구니 담기</button>
+								<button
+									className={styles.btnBuy}
+									onClick={() => {
+										push(`/buy`);
+									}}
+								>
+									바로 구매하기
+								</button>
+							</div>
+						</div>
+					)}
 				</div>
 			</div>
 		</section>
