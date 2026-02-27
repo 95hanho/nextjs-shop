@@ -2,7 +2,7 @@
 
 import styles from "./Header.module.scss";
 import { FiShoppingCart, FiStar, FiUser } from "react-icons/fi";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Menu } from "@/types/main";
@@ -18,6 +18,7 @@ interface HeaderProps {
 
 export default function Header({ menuList }: HeaderProps) {
 	const pathname = usePathname();
+	const searchParams = useSearchParams();
 	const { data: user } = useGetUserInfo();
 	const { logout } = useAuth();
 	const { refresh } = useRouter();
@@ -54,8 +55,8 @@ export default function Header({ menuList }: HeaderProps) {
 
 	useEffect(() => {
 		// console.log("페이지 바껴서 토큰체크 실행됨");
-		// tokenCheck();
-	}, [pathname]);
+		// console.log("경로체크", pathname, searchParams.toString());
+	}, [pathname, searchParams]);
 
 	return (
 		<>
@@ -78,7 +79,11 @@ export default function Header({ menuList }: HeaderProps) {
 									</Link>,
 									<>
 										{!user.name ? (
-											<Link key="login" href="/user" prefetch={false}>
+											<Link
+												key="login"
+												href={`/user${pathname !== "/" ? `?returnUrl=${encodeURIComponent(pathname + `?${searchParams.toString()}`)}` : ""}`}
+												prefetch={false}
+											>
 												로그인
 											</Link>
 										) : (

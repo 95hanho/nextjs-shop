@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { OptionSelector } from "../../ui/OptionSelector";
 import { FiMinus, FiPlus } from "react-icons/fi";
-import { CartItem, GetCartOptionProductOptionListResponse } from "@/types/mypage";
+import { CartItem, GetCartOtherOptionListResponse } from "@/types/mypage";
 import { useQuery } from "@tanstack/react-query";
 import API_URL from "@/api/endpoints";
 import { getApiUrl } from "@/lib/getBaseUrl";
@@ -21,9 +21,9 @@ export const ProductOptionModal = ({ onClose, product }: ProductOptionModalProps
 	const { resolveModal } = useModalStore();
 	// 제품상세옵션 리스트
 	// invalidateQueries(["cartOptionProductOptionList"])
-	const { data: optionResponse, isLoading } = useQuery<GetCartOptionProductOptionListResponse>({
+	const { data: optionResponse, isLoading } = useQuery<GetCartOtherOptionListResponse>({
 		queryKey: ["cartOptionProductOptionList", product.productId],
-		queryFn: () => getNormal(getApiUrl(API_URL.MY_CART_OPTION_PRODUCT_DETAIL), { productId: product.productId }),
+		queryFn: () => getNormal(getApiUrl(API_URL.MY_CART_PRODUCT_OPTION), { productId: product.productId }),
 		enabled: !!product?.productId,
 	});
 

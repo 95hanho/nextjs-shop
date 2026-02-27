@@ -94,19 +94,19 @@ export const CommonLoginForm = ({ apiUrl, redirectTo, invalidateKeys, loginIdFie
 	};
 
 	useEffect(() => {
-		// message query가 있을 때만 모달 띄우고
+		const url = searchParams.get("returnUrl");
+		const params = new URLSearchParams(searchParams);
+		// 로그인 필요 페이지 접근 시
 		if (message === "need_login") {
 			// ✅ returnUrl을 state에 저장 (로그인 후 사용)
-			const url = searchParams.get("returnUrl");
-			if (url) {
-				setReturnUrl(url);
-			}
-
 			openModal("ALERT", { content: "로그인이 필요한 서비스입니다." });
 
 			// ✅ query parameter 제거 (페이지 새로고침 시 모달 안 띄워짐)
-			const params = new URLSearchParams(searchParams);
 			params.delete("message");
+		}
+		// returnUrl이 있을 때 state에 저장하고 query에서 제거 (로그인 후 리디렉션 시 사용)
+		if (url) {
+			setReturnUrl(url);
 			params.delete("returnUrl");
 
 			const newUrl = params.toString() ? `?${params.toString()}` : window.location.pathname;

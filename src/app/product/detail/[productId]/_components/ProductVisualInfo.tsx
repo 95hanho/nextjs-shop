@@ -8,7 +8,7 @@ import styles from "../ProductDetail.module.scss";
 import { SmartImage } from "@/components/ui/SmartImage";
 import { discountPercent, money } from "@/lib/format";
 import { AvailableProductCoupon, ProductOption } from "@/types/product";
-import { use, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { GetProductDetailCouponResponse } from "@/types/product";
 import { useQuery } from "@tanstack/react-query";
 import { getNormal } from "@/api/fetchFilter";
