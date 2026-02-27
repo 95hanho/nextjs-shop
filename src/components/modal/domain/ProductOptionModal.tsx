@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { OptionSelector } from "../../ui/OptionSelector";
-import { FiMinus, FiPlus } from "react-icons/fi";
 import { CartItem, GetCartOtherOptionListResponse } from "@/types/mypage";
 import { useQuery } from "@tanstack/react-query";
 import API_URL from "@/api/endpoints";
@@ -10,7 +9,7 @@ import { useModalStore } from "@/store/modal.store";
 import { ModalFrame } from "@/components/modal/frame/ModalFrame";
 import styles from "../Modal.module.scss";
 import { ConfirmButton } from "@/components/modal/frame/ConfirmButton";
-import clsx from "clsx";
+import { ProductCounter } from "@/components/ui/ProductCounter";
 
 interface ProductOptionModalProps {
 	onClose: () => void;
@@ -43,14 +42,14 @@ export const ProductOptionModal = ({ onClose, product }: ProductOptionModalProps
 
 	const optionSelectorEle = () => {
 		// 1) 로딩 중(최초)
-		const addPriceMark = product.addPrice > 0 ? `(+${product.addPrice})` : "";
+		const addPriceMark = product.addPrice > 0 ? ` (+${product.addPrice})` : "";
 		if (isLoading) {
 			return (
 				<OptionSelector
 					optionSelectorName="productVisualOption"
 					initData={{
 						id: product.productOptionId,
-						val: `${product.size}(+${product.addPrice})`,
+						val: `${product.size} (+${product.addPrice})`,
 					}}
 				/>
 			);
@@ -64,7 +63,7 @@ export const ProductOptionModal = ({ onClose, product }: ProductOptionModalProps
 					optionSelectorName="productVisualOption"
 					initData={{
 						id: product.productOptionId,
-						val: `${product.size}(+${product.addPrice})`,
+						val: `${product.size} (+${product.addPrice})`,
 					}}
 				/>
 			);
@@ -72,7 +71,7 @@ export const ProductOptionModal = ({ onClose, product }: ProductOptionModalProps
 
 		// 3) 정상 데이터
 		const optionList = productOptionList.map((detail) => {
-			const addPriceMark = detail.addPrice > 0 ? `(+${detail.addPrice})` : "";
+			const addPriceMark = detail.addPrice > 0 ? ` (+${detail.addPrice})` : "";
 			return {
 				id: detail.productOptionId,
 				val: `${detail.size}${addPriceMark}`,
@@ -111,25 +110,7 @@ export const ProductOptionModal = ({ onClose, product }: ProductOptionModalProps
 			<div className={styles.optionBlock}>{optionSelectorEle()}</div>
 			{/* 수량/금액 */}
 			<div className={styles.optionSummary}>
-				<div className={styles.optionSummaryCounter}>
-					<button
-						className={clsx([styles.optionSummaryBtn, `${productCount === 1 && styles.off}`])}
-						onClick={() => {
-							if (productCount > 1) setProductCount(productCount - 1);
-						}}
-					>
-						<FiMinus />
-					</button>
-					<span className={styles.optionSummaryQty}>{productCount}</span>
-					<button
-						className={clsx([styles.optionSummaryBtn, `${productCount === product.stock && styles.off}`])}
-						onClick={() => {
-							if (productCount < product.stock) setProductCount(productCount + 1);
-						}}
-					>
-						<FiPlus />
-					</button>
-				</div>
+				<ProductCounter count={productCount} setCount={(count) => setProductCount(count)} stock={product.stock} />
 				<b className={styles.optionSummaryPrice}>62,100원</b>
 			</div>
 			{/* 버튼 */}
