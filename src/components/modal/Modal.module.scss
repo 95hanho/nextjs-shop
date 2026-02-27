@@ -124,42 +124,6 @@
 	align-items: center;
 	padding: 11px;
 
-	.optionSummaryCounter {
-		display: inline-flex;
-
-		.optionSummaryBtn {
-			font-size: 15px;
-			padding: 5px 7px;
-			color: #080808;
-			background: #fff;
-			overflow: hidden;
-			border: 1px solid #cfcfcf;
-
-			&:first-child {
-				border-right: none;
-				border-radius: 4px 0 0 4px;
-			}
-			&:last-child {
-				border-left: none;
-				border-radius: 0 4px 4px 0;
-			}
-
-			&.off {
-				background-color: transparent;
-				color: #cfcfcf;
-				cursor: not-allowed;
-			}
-		}
-
-		.optionSummaryQty {
-			background-color: #fff;
-			padding: 0 13px;
-			font-size: 11px;
-			align-content: center;
-			border: 1px solid #cfcfcf;
-		}
-	}
-
 	.optionSummaryPrice {
 		font-size: 14px;
 	}
