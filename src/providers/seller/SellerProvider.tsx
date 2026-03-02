@@ -2,7 +2,10 @@ import API_URL from "@/api/endpoints";
 import { postJson } from "@/api/fetchFilter";
 import { sellerAuthContext } from "@/context/authContext";
 import { getApiUrl } from "@/lib/getBaseUrl";
+import { useModalStore } from "@/store/modal.store";
 import { SellerInfo } from "@/types/seller";
+import { useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 interface SellerProviderProps {
@@ -24,15 +27,26 @@ const initSeller = {
 };
 
 export const SellerProvider = ({ children }: SellerProviderProps) => {
+	const queryClient = useQueryClient();
 	const [seller, setSeller] = useState<SellerInfo>(initSeller);
+	const { replace, refresh } = useRouter();
+	const { openModal } = useModalStore();
 
 	const loginOn = !!seller;
 
 	const logout = async () => {
 		console.log("로그아웃");
 		setSeller(initSeller);
+		queryClient.setQueryData(["sellerInfo"], initSeller); // 직접 캐시 업데이트
 		await postJson(getApiUrl(API_URL.SELLER_LOGOUT));
-		location.reload();
+		replace("/seller/login"); // 로그아웃 후 로그인 페이지로 이동
+		openModal("ALERT", { content: "로그아웃 되었습니다." });
+
+		// replace가 완료되기 전에 refresh가 섞이는 걸 피함
+		setTimeout(
+			() => refresh(), // ✅ RSC 캐시 갱신 (로그인 페이지에서 최신 로그인 상태 반영 위해)
+			0,
+		);
 	};
 
 	return <sellerAuthContext.Provider value={{ loginOn, logout, seller, setSeller }}>{children}</sellerAuthContext.Provider>;

@@ -116,7 +116,7 @@ export const ProductOptionModal = ({ onClose, product }: ProductOptionModalProps
 			{/* 버튼 */}
 			<ConfirmButton
 				{...{
-					confirmText: "변경하기",
+					okText: "변경하기",
 					onCancel: () => {
 						onClose();
 					},

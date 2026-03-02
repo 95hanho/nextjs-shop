@@ -3,15 +3,15 @@ import { OptionSelector } from "@/components/ui/OptionSelector";
 import Link from "next/link";
 import { FaHeart } from "react-icons/fa";
 import { GoQuestion } from "react-icons/go";
-import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
+import { IoIosArrowDown, IoIosArrowUp, IoIosClose } from "react-icons/io";
 import styles from "../ProductDetail.module.scss";
 import { SmartImage } from "@/components/ui/SmartImage";
 import { discountPercent, money } from "@/lib/format";
-import { AvailableProductCoupon, ProductOption } from "@/types/product";
+import { AddCartRequest, AvailableProductCoupon, ProductOption } from "@/types/product";
 import { useEffect, useMemo, useState } from "react";
 import { GetProductDetailCouponResponse } from "@/types/product";
-import { useQuery } from "@tanstack/react-query";
-import { getNormal } from "@/api/fetchFilter";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { getNormal, postJson } from "@/api/fetchFilter";
 import API_URL from "@/api/endpoints";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { useAuth } from "@/hooks/useAuth";
@@ -19,11 +19,16 @@ import moment from "moment";
 import MyPriceCheckboxTooltip from "@/app/product/detail/[productId]/_components/MyPriceCheckboxTooltip";
 import { useRouter } from "next/navigation";
 import { calculateDiscount, calculateMileage } from "@/lib/price";
+import { ProductCounter } from "@/components/ui/ProductCounter";
+import { BaseResponse } from "@/types/common";
+import { useModalStore } from "@/store/modal.store";
+import { ModalResultMap } from "@/store/modal.type";
+import clsx from "clsx";
 
 export type ProductCouponWithDiscount = AvailableProductCoupon & {
 	discountAmount: number;
 };
-export type GetProductDetailCouponWithDiscountResponse = Omit<GetProductDetailCouponResponse, "availableProductCoupon"> & {
+export type GetProductDetailCouponWithDiscountData = Omit<GetProductDetailCouponResponse, "availableProductCoupon"> & {
 	availableProductCoupon: ProductCouponWithDiscount[];
 };
 
@@ -47,8 +52,10 @@ interface ProductVisualInfoProps {
 
 // 상품 사진 및 가격배송 정보
 export default function ProductVisualInfo({ productId, productDetail, reviewCount, reviewRate, productOptionList }: ProductVisualInfoProps) {
-	const { loginOn, user } = useAuth();
+	const { loginOn, user, isAuthLoading } = useAuth();
 	const { push } = useRouter();
+	const { openModal, modalResult, clearModalResult } = useModalStore();
+	const queryClient = useQueryClient();
 
 	/* ----- Query ------------------------------------------------------ */
 
@@ -58,7 +65,7 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 		isSuccess,
 		isError,
 		isFetching,
-	} = useQuery<GetProductDetailCouponResponse, Error, GetProductDetailCouponWithDiscountResponse>({
+	} = useQuery<GetProductDetailCouponResponse, Error, GetProductDetailCouponWithDiscountData>({
 		queryKey: ["productCouponList", productId],
 		queryFn: () => getNormal(getApiUrl(API_URL.PRODUCT_DETAIL_COUPON), { productId }),
 		enabled: loginOn,
@@ -72,6 +79,49 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 				})),
 			};
 		},
+	});
+	// 현재 제품 장바구니 확인
+	const { data: hasCart } = useQuery<BaseResponse & { hasCart: boolean }, Error, boolean>({
+		queryKey: ["productCartCheck", productId],
+		queryFn: () => getNormal(getApiUrl(API_URL.PRODUCT_CART), { productId }),
+		enabled: loginOn,
+		refetchOnWindowFocus: false,
+		select: (data) => {
+			return data.hasCart;
+		},
+	});
+	// 장바구니 담기
+	const { mutate: addCartMutate } = useMutation({
+		mutationKey: ["productDetailAddCart", productId],
+		mutationFn: () =>
+			postJson<BaseResponse, AddCartRequest>(getApiUrl(API_URL.PRODUCT_CART), {
+				addCartList: productSelectList.map((option) => ({
+					productOptionId: option.productOptionId,
+					quantity: option.quantity,
+				})),
+				productId,
+			}),
+		onSuccess: (data) => {
+			setCartPopupOpen(true);
+			setCartPopupClose(false);
+			queryClient.invalidateQueries({ queryKey: ["productCartCheck", productId] });
+			if (data.message === "CART_ADD_PARTIAL_SUCCESS") {
+				openModal("ALERT", {
+					content:
+						"재고 수량보다 많은 수량이 선택된 옵션이 있습니다.<br /> 재고가 있는 수량만 장바구니에 담겼습니다.<br /> 옵션과 수량을 확인해주세요.",
+				});
+			}
+		},
+		onError: (err) => {
+			console.error("장바구니 담기 실패", err);
+			if (err.message === "CART_ADD_OUT_OF_STOCK") {
+				openModal("ALERT", { content: "재고 수량보다 많은 수량이 선택되었습니다.<br /> 옵션과 수량을 확인해주세요." });
+			}
+		},
+		onSettled: () => {
+			setProductSelectList([]);
+			queryClient.invalidateQueries({ queryKey: ["productOptions", productId] });
+		}
 	});
 
 	/* ------------------------------------------------------------------ */
@@ -122,7 +172,6 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 		osl.push(oid);
 		osl.push(
 			...productOptionList.map((v) => {
-				console.log(v);
 				return {
 					id: v.productOptionId,
 					val: v.size + (v.addPrice > 0 ? `(+ ${money(v.addPrice)})` : "") + (v.stock <= 10 ? ` - [${v.stock}개 남음]` : ""),
@@ -201,6 +250,48 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 		if (productSelectList.length === 0) return;
 		console.log({ productSelectList });
 	}, [productSelectList]);
+	// 장바구니 담기 팝업
+	const [cartPopupOpen, setCartPopupOpen] = useState(false);
+	const [cartPopupClose, setCartPopupClose] = useState(false);
+	// 장바구니 담기 버튼
+	const handleAddCart = () => {
+		if (productSelectList.length === 0) {
+			openModal("ALERT", { content: "옵션을 선택해주세요." });
+			return;
+		}
+		if (hasCart) {
+			openModal("CONFIRM", {
+				content: "이미 장바구니에 담긴 상품입니다. 추가로 담으시겠습니까?",
+				okText: "추가 담기",
+				okResult: "ADDCART",
+				reverse: true,
+			});
+			return;
+		}
+		addCartMutate();
+	};
+	//
+	useEffect(() => {
+		if (modalResult?.action === "CONFIRM_OK") {
+			const payload = modalResult.payload as ModalResultMap["CONFIRM_OK"];
+			if (payload?.result === "ADDCART") {
+				addCartMutate();
+			}
+		}
+		clearModalResult();
+	}, [modalResult, clearModalResult, addCartMutate]);
+	// 장바구니 담기 팝업 애니메이션 및 자동 닫힘
+	useEffect(() => {
+		if (cartPopupOpen) {
+			setTimeout(() => {
+				setCartPopupClose(true);
+			}, 2000);
+			setTimeout(() => {
+				setCartPopupOpen(false);
+			}, 2400);
+		}
+	}, [cartPopupOpen]);
+
 	/* ------------------------------------------------------------------ */
 
 	const myPriceCheckboxCommonProps = {
@@ -208,6 +299,12 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 		finalPrice: productDetail.finalPrice,
 		productId,
 	};
+	// 로그인 상태에 가져온 후
+	useEffect(() => {
+		if (!isAuthLoading) {
+			setShowMyPriceDetail(true);
+		}
+	}, [isAuthLoading]);
 
 	return (
 		<section className={styles.productVisualInfo}>
@@ -261,101 +358,109 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 							</div>
 							{showMyPriceDetail && (
 								<>
-									{productCoupon.length > 0 && cartCoupon.length > 0 ? (
-										<div className={styles.myPriceDetails}>
-											{productDetail.originPrice !== productDetail.finalPrice && (
-												<div>
-													<h4>상품 할인</h4>
-													<MyPriceCheckboxTooltip type="BASE" {...myPriceCheckboxCommonProps} />
-												</div>
-											)}
-											<div>
-												<h4>상품 쿠폰 할인</h4>
-												{productCoupon.map((coupon) => {
-													return (
-														<MyPriceCheckboxTooltip
-															type="COUPON"
-															key={coupon.couponId}
-															{...myPriceCheckboxCommonProps}
-															coupon={coupon}
-															couponChecked={
-																(coupon.isStackable
-																	? appliedProductCoupon.stackable.some((c) => c.couponId === coupon.couponId)
-																	: appliedProductCoupon.unStackable?.couponId === coupon.couponId) || false
-															}
-															setAppliedProductCoupon={(isAdd) => {
-																if (!coupon.isStackable) {
-																	setAppliedProductCoupon((prev) => ({
-																		...prev,
-																		unStackable: isAdd ? coupon : null,
-																	}));
-																} else {
-																	setAppliedProductCoupon((prev) => ({
-																		...prev,
-																		stackable: isAdd
-																			? [...prev.stackable, coupon]
-																			: prev.stackable.filter((c) => c.couponId !== coupon.couponId),
-																	}));
+									{loginOn ? (
+										<>
+											{productCoupon.length > 0 && cartCoupon.length > 0 ? (
+												<div className={styles.myPriceDetails}>
+													{productDetail.originPrice !== productDetail.finalPrice && (
+														<div>
+															<h4>상품 할인</h4>
+															<MyPriceCheckboxTooltip type="BASE" {...myPriceCheckboxCommonProps} />
+														</div>
+													)}
+													<div>
+														<h4>상품 쿠폰 할인</h4>
+														{productCoupon.map((coupon) => {
+															return (
+																<MyPriceCheckboxTooltip
+																	type="COUPON"
+																	key={coupon.couponId}
+																	{...myPriceCheckboxCommonProps}
+																	coupon={coupon}
+																	couponChecked={
+																		(coupon.isStackable
+																			? appliedProductCoupon.stackable.some(
+																					(c) => c.couponId === coupon.couponId,
+																				)
+																			: appliedProductCoupon.unStackable?.couponId === coupon.couponId) || false
+																	}
+																	setAppliedProductCoupon={(isAdd) => {
+																		if (!coupon.isStackable) {
+																			setAppliedProductCoupon((prev) => ({
+																				...prev,
+																				unStackable: isAdd ? coupon : null,
+																			}));
+																		} else {
+																			setAppliedProductCoupon((prev) => ({
+																				...prev,
+																				stackable: isAdd
+																					? [...prev.stackable, coupon]
+																					: prev.stackable.filter((c) => c.couponId !== coupon.couponId),
+																			}));
+																		}
+																	}}
+																/>
+															);
+														})}
+													</div>
+													<div>
+														<h4>장바구니 쿠폰 할인</h4>
+														{cartCoupon.map((coupon) => (
+															<MyPriceCheckboxTooltip
+																type="COUPON"
+																key={coupon.couponId}
+																{...myPriceCheckboxCommonProps}
+																coupon={coupon}
+																couponChecked={
+																	(coupon.isStackable
+																		? appliedProductCoupon.stackable.some((c) => c.couponId === coupon.couponId)
+																		: appliedProductCoupon.unStackable?.couponId === coupon.couponId) || false
 																}
+																setAppliedProductCoupon={(isAdd) => {
+																	if (!coupon.isStackable) {
+																		setAppliedProductCoupon((prev) => ({
+																			...prev,
+																			unStackable: isAdd ? coupon : null,
+																		}));
+																	} else {
+																		setAppliedProductCoupon((prev) => ({
+																			...prev,
+																			stackable: isAdd
+																				? [...prev.stackable, coupon]
+																				: prev.stackable.filter((c) => c.couponId !== coupon.couponId),
+																		}));
+																	}
+																}}
+															/>
+														))}
+													</div>
+													<div>
+														<h4>적립금 사용</h4>
+														<MyPriceCheckboxTooltip
+															type="MILEAGE"
+															mileage={user.mileage}
+															{...myPriceCheckboxCommonProps}
+															setMileageUse={() => {
+																setMileageUsed(!mileageUsed);
 															}}
+															couponChecked={mileageUsed}
+															useMileage={useMileage}
 														/>
-													);
-												})}
-											</div>
-											<div>
-												<h4>장바구니 쿠폰 할인</h4>
-												{cartCoupon.map((coupon) => (
-													<MyPriceCheckboxTooltip
-														type="COUPON"
-														key={coupon.couponId}
-														{...myPriceCheckboxCommonProps}
-														coupon={coupon}
-														couponChecked={
-															(coupon.isStackable
-																? appliedProductCoupon.stackable.some((c) => c.couponId === coupon.couponId)
-																: appliedProductCoupon.unStackable?.couponId === coupon.couponId) || false
-														}
-														setAppliedProductCoupon={(isAdd) => {
-															if (!coupon.isStackable) {
-																setAppliedProductCoupon((prev) => ({
-																	...prev,
-																	unStackable: isAdd ? coupon : null,
-																}));
-															} else {
-																setAppliedProductCoupon((prev) => ({
-																	...prev,
-																	stackable: isAdd
-																		? [...prev.stackable, coupon]
-																		: prev.stackable.filter((c) => c.couponId !== coupon.couponId),
-																}));
-															}
-														}}
-													/>
-												))}
-											</div>
-											<div>
-												<h4>적립금 사용</h4>
-												<MyPriceCheckboxTooltip
-													type="MILEAGE"
-													mileage={user.mileage}
-													{...myPriceCheckboxCommonProps}
-													setMileageUse={() => {
-														setMileageUsed(!mileageUsed);
-													}}
-													couponChecked={mileageUsed}
-													useMileage={useMileage}
-												/>
-											</div>
-											<div>
-												<p>
-													결제수단 할인과 보유 적립금 할인, 적립 혜택을 선택하면
-													<br />
-													다른 상품 화면의 &apos;나의 구매 가능 가격&apos;에도 기본 적용됩니다.
-												</p>
-											</div>
-										</div>
+													</div>
+													<div>
+														<p>
+															결제수단 할인과 보유 적립금 할인, 적립 혜택을 선택하면
+															<br />
+															다른 상품 화면의 &apos;나의 구매 가능 가격&apos;에도 기본 적용됩니다.
+														</p>
+													</div>
+												</div>
+											) : (
+												<p className="px-4 py-3 text-sm">나의 구매 가능 가격 계산중...</p>
+											)}
+										</>
 									) : (
-										<p className="px-4 py-3 text-sm">나의 구매 가능 가격 계산중...</p>
+										<p className="px-4 py-3 text-sm">로그인 후 나의 구매 가격을 확인하세요!</p>
 									)}
 								</>
 							)}
@@ -414,49 +519,96 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 						</div>
 					</div>
 				</div>
-
-				<div className={styles.productOptionBuy}>
-					{productOptionList.every((option) => option.stock === 0) ? (
-						<p className={styles.soldOut}>품절 상품</p>
-					) : (
-						<div className={styles.productOptionBuyArea}>
-							<div className={styles.productOptionSelect}>
-								<OptionSelector
-									optionSelectorName="productVisualOption"
-									pickIdx={0}
-									initData={optionInitData}
-									optionList={optionSelectList}
-									changeOption={optionSelectHandler}
-									inputColor="rgb(75 70 70)"
-								/>
-							</div>
-							{/* 선택된 옵션과 수량 보여주는 영역 */}
-							{productSelectList.length > 0 && (
-								<div className={styles.selectedOptions}>
-									{productSelectList.map((option) => (
-										<div key={option.productOptionId} className={styles.selectedOptionItem}>
-											<span>
-												{option.size} {option.addPrice > 0 && `(추가금 ${money(option.addPrice)})`}
-											</span>
-											<span>수량: {option.quantity}</span>
+				{!isAuthLoading && (
+					<div className={styles.productOptionBuy}>
+						{productOptionList.every((option) => option.stock === 0) ? (
+							<p className={styles.soldOut}>품절 상품</p>
+						) : (
+							<>
+								{loginOn ? (
+									<div className={styles.productOptionBuyArea}>
+										<div className={styles.productOptionSelect}>
+											<OptionSelector
+												optionSelectorName="productVisualOption"
+												pickIdx={0}
+												initData={optionInitData}
+												optionList={optionSelectList}
+												changeOption={optionSelectHandler}
+												inputColor="rgb(75 70 70)"
+											/>
 										</div>
-									))}
-								</div>
-							)}
-							<div className={styles.actionButtons}>
-								<button className={styles.btnCart}>장바구니 담기</button>
-								<button
-									className={styles.btnBuy}
-									onClick={() => {
-										push(`/buy`);
-									}}
-								>
-									바로 구매하기
-								</button>
+										{/* 선택된 옵션과 수량 보여주는 영역 */}
+										{productSelectList.length > 0 && (
+											<div className={styles.selectedOptions}>
+												{productSelectList.map((option) => (
+													<div key={option.productOptionId} className={styles.selectedOptionItem}>
+														<span className={styles.selectedOptionName}>
+															{option.size} {option.addPrice > 0 && `(추가금 ${money(option.addPrice)})`}
+														</span>
+														<div className="flex items-center">
+															<span>
+																<ProductCounter
+																	count={option.quantity}
+																	setCount={(count) => {
+																		setProductSelectList((prev) => {
+																			const newList = [...prev];
+																			const existingIdx = newList.findIndex(
+																				(o) => o.productOptionId === option.productOptionId,
+																			);
+																			if (existingIdx !== -1) {
+																				newList[existingIdx].quantity = count;
+																			}
+																			return newList;
+																		});
+																	}}
+																	stock={option.stock}
+																/>
+															</span>
+															<button
+																className="inline-flex ml-2 text-3xl"
+																onClick={() => {
+																	setProductSelectList((prev) =>
+																		prev.filter((o) => o.productOptionId !== option.productOptionId),
+																	);
+																}}
+															>
+																<IoIosClose />
+															</button>
+														</div>
+													</div>
+												))}
+											</div>
+										)}
+										<div className={styles.actionButtons}>
+											<button className={styles.btnCart} onClick={handleAddCart}>
+												장바구니 담기
+											</button>
+											<button
+												className={styles.btnBuy}
+												onClick={() => {
+													push(`/buy`);
+												}}
+											>
+												바로 구매하기
+											</button>
+										</div>
+									</div>
+								) : (
+									<p>로그인 후 구매 가능합니다.</p>
+								)}
+							</>
+						)}
+						{cartPopupOpen && (
+							<div className={clsx(styles.addCartPopup, cartPopupClose && "animateFadeOut")}>
+								<p>
+									장바구니에
+									<br />
+									담겼습니다.
+								</p>
 							</div>
-						</div>
-					)}
-				</div>
+						)}
+					</div>
+				)}
 			</div>
 		</section>
 	);

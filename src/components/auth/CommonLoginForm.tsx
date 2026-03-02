@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import clsx from "clsx";
 import { AuthActionButton } from "@/components/auth/AuthActionButton";
 import styles from "./LoginForm.module.scss";
@@ -23,6 +23,7 @@ export const CommonLoginForm = ({ apiUrl, redirectTo, invalidateKeys, loginIdFie
 	const queryClient = useQueryClient();
 	const searchParams = useSearchParams();
 	const { openModal } = useModalStore();
+	const pathname = usePathname();
 
 	const message = searchParams.get("message");
 
@@ -67,9 +68,22 @@ export const CommonLoginForm = ({ apiUrl, redirectTo, invalidateKeys, loginIdFie
 		id: "seller01",
 		password: "a123456!!",
 	};
+	const testAdmin = {
+		id: "admin",
+		password: "a123456!!",
+	};
+	const loginData = { ...testUser }; // 기본은 일반 사용자 로그인 데이터로 설정
+	if (pathname.startsWith("/seller")) {
+		loginData.id = testSeller.id;
+		loginData.password = testSeller.password;
+	}
+	if (pathname.startsWith("/admin")) {
+		loginData.id = testAdmin.id;
+		loginData.password = testAdmin.password;
+	}
 	const [loginForm, setLoginForm] = useState<LoginFormData<typeof loginIdField>>({
-		[loginIdField]: testUser.id,
-		password: testUser.password,
+		[loginIdField]: loginData.id,
+		password: loginData.password,
 	} as LoginFormData);
 
 	const [userIdFocus, setUserIdFocus] = useState<boolean>(false);

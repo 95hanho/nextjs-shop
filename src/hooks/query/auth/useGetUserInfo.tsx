@@ -7,7 +7,7 @@ import { GetUserResponse } from "@/types/auth";
 import { useQuery } from "@tanstack/react-query";
 
 export function useGetUserInfo() {
-	const { user: initialUser, setUser } = useAuth();
+	const { user: initialUser, setUser, setIsAuthLoading } = useAuth();
 
 	return useQuery({
 		queryKey: ["me"],
@@ -29,6 +29,8 @@ export function useGetUserInfo() {
 
 				// 그 외만 진짜 에러로 던짐 (전역 에러 핸들러가 처리)
 				throw err;
+			} finally {
+				setIsAuthLoading(false);
 			}
 		},
 		initialData: initialUser ?? null,
@@ -39,7 +41,7 @@ export function useGetUserInfo() {
 		// retry: 1, // 재시도 한 번만
 
 		// =========================================
-		// 로그인, 로그아웃, 로그아웃 시에만 수동으로 다시가져올꺼.
+		// 처음 새로고침 시 + 로그인, 로그아웃시 수동으로만 다시가져올꺼.
 		// =========================================
 		retry: false,
 		staleTime: Infinity,

@@ -8,7 +8,7 @@ interface AlertModalProps {
 export const AlertModal = ({ content, onClose }: AlertModalProps) => {
 	return (
 		<ModalFrame title="알림창" onClose={onClose}>
-			{content}
+			<p dangerouslySetInnerHTML={{ __html: content }}></p>
 		</ModalFrame>
 	);
 };

@@ -1,16 +1,18 @@
 "use client";
 
 import { toErrorResponse } from "@/api/error";
-import { SellerProvider } from "@/providers/auth/SellerProvider";
+import { SellerGlobalEffects } from "@/providers/seller/SellerGlobalEffects";
+import { SellerProvider } from "@/providers/seller/SellerProvider";
+import { OpenModal, useModalStore } from "@/store/modal.store";
 import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 
 interface SellerRootProviderProps {
 	children: ReactNode;
 }
 
 // 공통 에러 핸들러 (전역 모달/토스트 등)
-function handleGlobalError(error: unknown) {
+function handleGlobalError(error: unknown, errorHandlers: { openModal: OpenModal }) {
 	const { payload } = toErrorResponse(error);
 
 	// 표준화된 서버 에러 바디 { message, code }도 고려
@@ -18,7 +20,11 @@ function handleGlobalError(error: unknown) {
 	switch (message) {
 		case "UNAUTHORIZED":
 		case "SESSION_EXPIRED":
-			console.log("로그아웃 처리해야할듯??");
+		case "REFRESH_UNAUTHORIZED":
+			errorHandlers.openModal("ALERT", {
+				content: "로그아웃 되었습니다. 다시 로그인해주세요.",
+				closeResult: "SELLER_LOGOUT",
+			});
 			break;
 		case "NETWORK_ERROR":
 			console.log("네트워크 연결이 끊겼습니다.\n다시 시도해주세요.");
@@ -40,19 +46,27 @@ function handleGlobalError(error: unknown) {
 }
 
 export default function SellerRootProvider({ children }: SellerRootProviderProps) {
+	const { openModal } = useModalStore();
+
+	// ✅ QueryClient 내부 onError에서 stale closure 방지
+	const handlersRef = useRef<{ openModal: OpenModal }>({ openModal });
+	useEffect(() => {
+		handlersRef.current = { openModal };
+	}, [openModal]);
+
 	const [queryClient] = useState(
 		() =>
 			new QueryClient({
 				// ✅ Query(조회) 전역 에러
 				queryCache: new QueryCache({
 					onError: (error) => {
-						handleGlobalError(error);
+						handleGlobalError(error, handlersRef.current);
 					},
 				}),
 				// ✅ 전역 공통 에러 처리: 모든 mutation 에러에 대해 항상 호출
 				mutationCache: new MutationCache({
 					onError: (error) => {
-						handleGlobalError(error);
+						handleGlobalError(error, handlersRef.current);
 					},
 				}),
 				// ✅ 기본 옵션: 재시도/네트워크 동작 등 "기본 동작" 정의
@@ -78,7 +92,10 @@ export default function SellerRootProvider({ children }: SellerRootProviderProps
 
 	return (
 		<QueryClientProvider client={queryClient}>
-			<SellerProvider>{children}</SellerProvider>
+			<SellerProvider>
+				<SellerGlobalEffects />
+				{children}
+			</SellerProvider>
 		</QueryClientProvider>
 	);
 }
