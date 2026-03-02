@@ -114,8 +114,7 @@ export default function MyAddressClient() {
 			addressUpdating();
 		}
 		clearModalResult();
-	}, [modalResult]);
-	// }, [modalResult, clearModalResult, handleAddressAdd, handleAddressDelete, queryClient]);
+	}, [modalResult, clearModalResult, handleAddressAdd, handleAddressDelete, handleAddressUpdate, queryClient, changeAddress]);
 
 	// if (isLoading && !userAddressList.length) return null;
 	return (

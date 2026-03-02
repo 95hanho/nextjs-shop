@@ -88,7 +88,7 @@ const API_URL = {
 	PRODUCT_LIKE: "/product/like",
 	/** 위시 등록/해제 */
 	PRODUCT_WISH: "/product/wish",
-	/** 장바구니 넣기 */
+	/** 장바구니 확인, 장바구니 넣기 */
 	PRODUCT_CART: "/product/cart",
 	/** 제품상세보기 조회 */
 	PRODUCT_DETAIL: "/product/detail/:productId",

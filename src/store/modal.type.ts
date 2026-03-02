@@ -18,11 +18,12 @@ export type ModalPropsMap = {
 	CONFIRM: ModalCommon & {
 		content: string;
 		title?: string;
-		confirmText?: string;
+		okText?: string;
 		okResult?: string;
 		cancelText?: string;
 		cancelResult?: string;
 		hideCancel?: boolean;
+		reverse?: boolean;
 	};
 	PRODUCTOPTION: ModalCommon & {
 		product: CartItem;

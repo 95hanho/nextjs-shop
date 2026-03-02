@@ -10,7 +10,7 @@ import { ProductOptionModal } from "../domain/ProductOptionModal";
 import { AddressModal } from "../domain/AddressModal";
 import { CartItem, UserAddressListItem } from "@/types/mypage";
 import { ModalPropsMap } from "@/store/modal.type";
-import styles from "../Modal.module.scss";
+import clsx from "clsx";
 
 type ModalCommon = {
 	disableOverlayClose?: boolean;
@@ -100,23 +100,16 @@ export const ModalRoot = () => {
 	return createPortal(
 		<div
 			id="modalRoot"
-			className={`
-        fixed inset-0 z-[1000] flex items-center justify-center 
-        bg-black/50
-        ${isClosing ? styles.animateFadeOut : styles.animateFadeIn}
-      `}
+			className={clsx(`fixed inset-0 z-[1000] flex items-center justify-center bg-black/50`, {
+				animateFadeOut: isClosing,
+				animateFadeIn: !isClosing,
+			})}
 			onClick={() => {
 				if (!overlayCloseAllowed) return;
 				handleClose();
 			}}
 		>
-			<div
-				className={`
-          relative z-[1001]
-          ${isClosing ? styles.animatePopOut : styles.animatePopIn}
-        `}
-				onClick={(e) => e.stopPropagation()}
-			>
+			<div className={clsx(`relative z-[1001]`, { animatePopOut: isClosing, animatePopIn: !isClosing })} onClick={(e) => e.stopPropagation()}>
 				{childrenModal}
 			</div>
 		</div>,

@@ -28,7 +28,7 @@ function handleGlobalError(error: unknown, errorHandlers: { openModal: OpenModal
 				title: "인증 오류",
 				content: "인증이 만료되었거나 권한이 없습니다.\n다시 로그인해주세요.",
 				hideCancel: true,
-				confirmText: "로그인 하러가기",
+				okText: "로그인 하러가기",
 				okResult: "NEED_LOGIN",
 				closeResult: "NEED_LOGIN_CANCEL",
 				disableOverlayClose: true,

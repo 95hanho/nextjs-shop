@@ -9,18 +9,19 @@ interface ConfirmModalProps {
 	title?: string;
 	content: string;
 	cancelText?: string;
-	confirmText?: string;
+	okText?: string;
 	okResult?: string;
 	cancelResult?: string;
 	hideCancel?: boolean;
+	reverse?: boolean;
 }
 
-export const ConfirmModal = ({ onClose, title, content, cancelText, confirmText, okResult, cancelResult, hideCancel }: ConfirmModalProps) => {
+export const ConfirmModal = ({ onClose, title, content, cancelText, okText, okResult, cancelResult, hideCancel, reverse }: ConfirmModalProps) => {
 	const { resolveModal } = useModalStore();
 
 	const confirmModalProps = {
 		cancelText,
-		confirmText,
+		okText,
 		onCancel: () => {
 			if (cancelResult) {
 				resolveModal({
@@ -44,6 +45,7 @@ export const ConfirmModal = ({ onClose, title, content, cancelText, confirmText,
 			});
 		},
 		hideCancel,
+		reverse,
 	};
 	return (
 		<ModalFrame title={title} onClose={onClose}>

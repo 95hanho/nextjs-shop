@@ -7,7 +7,7 @@ import { GetUserResponse } from "@/types/auth";
 import { useQuery } from "@tanstack/react-query";
 
 export function useGetUserInfo() {
-	const { user: initialUser, setUser } = useAuth();
+	const { user: initialUser, setUser, setIsAuthLoading } = useAuth();
 
 	return useQuery({
 		queryKey: ["me"],
@@ -29,6 +29,8 @@ export function useGetUserInfo() {
 
 				// 그 외만 진짜 에러로 던짐 (전역 에러 핸들러가 처리)
 				throw err;
+			} finally {
+				setIsAuthLoading(false);
 			}
 		},
 		initialData: initialUser ?? null,

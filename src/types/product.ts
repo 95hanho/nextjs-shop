@@ -67,8 +67,11 @@ export interface GetProductListResponse extends BaseResponse {
 }
 /* 장바구니 넣기 */
 export interface AddCartRequest {
-	productOptionId: number;
-	quantity: number;
+	addCartList: {
+		productOptionId: number;
+		quantity: number;
+	}[];
+	productId: number;
 }
 /* 제품 상세보기 조회 */
 export interface GetProductDetailResponse extends BaseResponse {

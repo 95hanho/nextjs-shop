@@ -7,19 +7,34 @@ import ProductVisualInfo from "@/app/product/detail/[productId]/_components/Prod
 import ProductEtcInfoSection from "@/app/product/detail/[productId]/_components/ProductEtcInfoSection";
 import ProductDescriptionSection from "@/app/product/detail/[productId]/_components/ProductDescriptionSection";
 import ProductInfoSection from "@/app/product/detail/[productId]/_components/ProductInfoSection";
-import { GetProductDetailResponse } from "@/types/product";
+import { GetProductDetailResponse, ProductOption } from "@/types/product";
+import { getNormal } from "@/api/fetchFilter";
+import { getApiUrl } from "@/lib/getBaseUrl";
+import API_URL from "@/api/endpoints";
+import { useQuery } from "@tanstack/react-query";
+import { GetCartOtherOptionListResponse } from "@/types/mypage";
 interface ProductDetailClientProps {
 	productDetailResponse: GetProductDetailResponse;
 }
 
 export default function ProductDetailClient({ productDetailResponse }: ProductDetailClientProps) {
-	console.log(productDetailResponse);
+	// console.log(productDetailResponse);
 
 	// SSR 데이터 정리
 	const productId = productDetailResponse.productDetail.productId;
 	const productDetailData = productDetailResponse.productDetail;
 	const productReviewSummary = productDetailResponse.productReviewSummary;
 	const productOptionList = productDetailResponse.productOptionList;
+
+	const { data: optionList = productOptionList } = useQuery<GetCartOtherOptionListResponse, Error, ProductOption[]>({
+		queryKey: ["productOptions", productId],
+		queryFn: () => getNormal(getApiUrl(API_URL.MY_CART_PRODUCT_OPTION), { productId }),
+		initialData: { cartOptionProductOptionList: productOptionList, message: "SUCCESS" },
+		staleTime: 30_000,
+		select: (data) => {
+			return data.cartOptionProductOptionList;
+		},
+	});
 
 	//
 	const productVisualInfoProps = {
@@ -38,7 +53,7 @@ export default function ProductDetailClient({ productDetailResponse }: ProductDe
 		},
 		reviewCount: productReviewSummary.reviewCount,
 		reviewRate: productReviewSummary.avgRating,
-		productOptionList,
+		productOptionList: optionList,
 	};
 
 	return (

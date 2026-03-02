@@ -8,6 +8,8 @@ interface AuthContextType {
 	logout: () => void;
 	user: UserInfo;
 	setUser: Dispatch<SetStateAction<UserInfo>>;
+	isAuthLoading: boolean;
+	setIsAuthLoading: Dispatch<SetStateAction<boolean>>;
 }
 
 interface SellerAuthContextType {
