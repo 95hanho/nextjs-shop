@@ -36,7 +36,7 @@ export default function Header({ menuList }: HeaderProps) {
 			}, 300);
 		} else headerRef.current?.removeEventListener("mouseleave", menuMouseleave);
 	}, [isOpen]);
-	//
+	// 로그아웃 버튼 클릭
 	const logoutButton = async () => {
 		const needsAuth = isAuthRequiredPath(pathname);
 
@@ -87,9 +87,9 @@ export default function Header({ menuList }: HeaderProps) {
 												로그인
 											</Link>
 										) : (
-											<div key="logout" onClick={logoutButton}>
+											<button key="logout" onClick={logoutButton}>
 												로그아웃
-											</div>
+											</button>
 										)}
 									</>,
 									<Link key="order-history" href="/mypage/order-history" prefetch={false}>

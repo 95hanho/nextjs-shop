@@ -100,7 +100,7 @@ export default function RootProviders({ children }: RootProvidersProps) {
 			}),
 	);
 
-	if (pathname.startsWith("/seller") || pathname.startsWith("/admin")) return null;
+	if (pathname.startsWith("/seller") || pathname.startsWith("/admin")) return <>{children}</>;
 	return (
 		<QueryClientProvider client={queryClient}>
 			<AuthProvider>

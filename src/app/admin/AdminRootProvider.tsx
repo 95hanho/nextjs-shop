@@ -1,7 +1,7 @@
 "use client";
 
 import { toErrorResponse } from "@/api/error";
-import { AdminProvider } from "@/providers/auth/AdminProvider";
+import { AdminProvider } from "@/providers/admin/AdminProvider";
 import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactNode, useState } from "react";
 
