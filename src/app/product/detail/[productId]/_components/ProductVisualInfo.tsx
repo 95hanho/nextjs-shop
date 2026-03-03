@@ -121,7 +121,7 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 		onSettled: () => {
 			setProductSelectList([]);
 			queryClient.invalidateQueries({ queryKey: ["productOptions", productId] });
-		}
+		},
 	});
 
 	/* ------------------------------------------------------------------ */
