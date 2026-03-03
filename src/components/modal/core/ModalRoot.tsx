@@ -47,11 +47,7 @@ export const ModalRoot = () => {
 
 	const handleClose = useCallback(() => {
 		setIsClosing(true);
-		setTimeout(() => {
-			setIsOpen(false);
-			closeModal(closeResult);
-		}, 400); // 애니메이션 시간과 맞추기
-	}, [closeModal, closeResult]);
+	}, []);
 
 	// ESC 눌러서 닫기
 	useEffect(() => {
@@ -107,6 +103,11 @@ export const ModalRoot = () => {
 			onClick={() => {
 				if (!overlayCloseAllowed) return;
 				handleClose();
+			}}
+			onAnimationEnd={() => {
+				if (!isClosing) return;
+				setIsOpen(false);
+				closeModal(closeResult);
 			}}
 		>
 			<div className={clsx(`relative z-[1001]`, { animatePopOut: isClosing, animatePopIn: !isClosing })} onClick={(e) => e.stopPropagation()}>

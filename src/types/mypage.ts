@@ -1,6 +1,6 @@
 import { BaseResponse } from "./common";
 import { FileInfo } from "./file";
-import { ProductOption } from "./product";
+import { AvailableProductCoupon, ProductOption } from "./product";
 // 쿠폰
 export type Coupon = {
 	couponId: number;
@@ -192,8 +192,12 @@ export type CartItem = Cart & {
 } & FileInfo & {
 		sellerName: string;
 	};
+
+export type AvailableProductForProduct = AvailableProductCoupon & { productId: number };
 export interface GetCartResponse extends BaseResponse {
 	cartList: CartItem[];
+	availableCouponsAtCart: AvailableProductCoupon[];
+	availableCouponsForProduct: AvailableProductForProduct[];
 }
 /* 장바구니 제품 옵션/수량 변경 */
 export interface UpdateCartRequest {

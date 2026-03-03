@@ -5,19 +5,19 @@ import { postJson } from "@/api/fetchFilter";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { BaseResponse } from "@/types/common";
 import { useMutation } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaStar } from "react-icons/fa";
 import { FiStar } from "react-icons/fi";
 import styled from "@emotion/styled";
 import { MouseEvent } from "@/types/event";
 
-const WishALink = styled.button<{ bottom: number; right: number; size: number; zIndex: number }>`
+const WishALink = styled.button<{ bottom: number; right: number; size: number; zIndex: number; wishOn: boolean }>`
 	position: absolute;
 	bottom: ${(props) => props.bottom}px;
 	right: ${(props) => props.right}px;
 	z-index: ${(props) => props.zIndex};
 	font-size: ${(props) => props.size}px;
-	color: #ffe142;
+	color: ${(props) => (props.wishOn ? "#faff31" : "#636363")};
 
 	/* 아이콘 위로 올리기 */
 	display: inline-flex;
@@ -33,7 +33,7 @@ const WishALink = styled.button<{ bottom: number; right: number; size: number; z
 		position: absolute;
 		inset: -0.1px;
 		border-radius: 9999px;
-		background: rgb(235 231 36 / 10%);
+		background: ${(props) => (props.wishOn ? "rgb(183 183 183 / 10%)" : "rgb(255 255 255 / 10%)")};
 		-webkit-backdrop-filter: blur(2px);
 		-webkit-backdrop-filter: blur(2px);
 		backdrop-filter: blur(2px);
@@ -62,10 +62,14 @@ interface WishButtonProps {
 	right?: number;
 	size?: number;
 	zIndex?: number;
+	clickHandler?: () => void;
 }
 
-export const WishButton = ({ initWishOn, productId, bottom = 1, right = 1, size = 16, zIndex = 10 }: WishButtonProps) => {
+export const WishButton = ({ initWishOn, productId, bottom = 1, right = 1, size = 16, zIndex = 10, clickHandler }: WishButtonProps) => {
 	const [wishOn, setWishOn] = useState(initWishOn);
+	useEffect(() => {
+		setWishOn(initWishOn);
+	}, [initWishOn]);
 
 	// 위시 여부 변경
 	const handleProductWish = useMutation({
@@ -90,6 +94,9 @@ export const WishButton = ({ initWishOn, productId, bottom = 1, right = 1, size 
 		e.preventDefault();
 		setWishOn(!wishOn);
 		handleProductWish.mutate();
+		if (clickHandler) {
+			clickHandler();
+		}
 	};
 
 	const wishALinkProps = {
@@ -97,6 +104,7 @@ export const WishButton = ({ initWishOn, productId, bottom = 1, right = 1, size 
 		right,
 		size,
 		zIndex,
+		wishOn,
 	};
 
 	return (
