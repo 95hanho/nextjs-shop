@@ -1,11 +1,11 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { postUrlFormData } from "@/api/fetchFilter";
-import { withOptionalAuth } from "@/lib/auth";
+import { withOptionalAuth } from "@/lib/auth/index";
 import { isProd, WRONG_REQUEST_MESSAGE } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
-import { generatePhoneAuthCompleteToken, generatePwdResetToken, verifyPhoneAuthToken } from "@/lib/jwt";
-import { PHONE_AUTH_COMPLETE_COOKIE_AGE, PWD_CHANGE_COOKIE_AGE } from "@/lib/tokenTime";
+import { generatePhoneAuthCompleteToken, generatePwdResetToken, verifyPhoneAuthToken } from "@/lib/auth/utils/token";
+import { PHONE_AUTH_COMPLETE_COOKIE_AGE, PWD_CHANGE_COOKIE_AGE } from "@/lib/auth/utils/tokenTime";
 import { PhoneAuthCheckRequest, PhoneAuthCheckResponse } from "@/types/auth";
 import { NextResponse } from "next/server";
 

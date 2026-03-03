@@ -2,13 +2,14 @@ import { putUrlFormData } from "@/api/fetchFilter";
 import { getBackendUrl } from "../getBaseUrl";
 import API_URL from "@/api/endpoints";
 import { NextRequest, NextResponse } from "next/server";
-import { generateRefreshToken, verifyRefreshToken } from "../jwt";
+import { generateRefreshToken, verifyRefreshToken } from "@/lib/auth/utils/token";
 import { BaseResponse } from "@/types/common";
 import { isProd } from "../env";
-import { REFRESH_TOKEN_COOKIE_AGE, SELLER_TOKEN_COOKIE_AGE } from "../tokenTime";
-import { generateSellerToken, verifySellerToken } from "@/lib/seller/jwt";
+import { REFRESH_TOKEN_COOKIE_AGE, SELLER_TOKEN_COOKIE_AGE } from "../auth/utils/tokenTime";
+import { generateSellerToken, verifySellerToken } from "@/lib/auth/utils/token";
 import { Token } from "@/types/token";
 
+// withAuth에서 사용할 함수들
 type AutoRefreshResult =
 	| {
 			ok: true;

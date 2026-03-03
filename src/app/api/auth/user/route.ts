@@ -1,10 +1,10 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { postUrlFormData, putUrlFormData } from "@/api/fetchFilter";
-import { withAuth } from "@/lib/auth";
+import { withAuth } from "@/lib/auth/index";
 import { isProd } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
-import { verifyPhoneAuthCompleteToken } from "@/lib/jwt";
+import { verifyPhoneAuthCompleteToken } from "@/lib/auth/utils/token";
 import { JoinRequest, UserUpdateRequest } from "@/types/auth";
 import { BaseResponse, ISODate } from "@/types/common";
 import { parseISODate } from "@/utils/date";

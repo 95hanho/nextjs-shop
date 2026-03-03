@@ -2,11 +2,11 @@ import { putUrlFormData } from "@/api/fetchFilter";
 import { getBackendUrl } from "../getBaseUrl";
 import API_URL from "@/api/endpoints";
 import { NextRequest, NextResponse } from "next/server";
-import { generateRefreshToken, verifyRefreshToken } from "../jwt";
+import { generateRefreshToken, verifyRefreshToken } from "@/lib/auth/utils/token";
 import { BaseResponse } from "@/types/common";
 import { isProd } from "../env";
-import { ADMIN_TOKEN_COOKIE_AGE, REFRESH_TOKEN_COOKIE_AGE } from "../tokenTime";
-import { generateAdminToken, verifyAdminToken } from "@/lib/admin/jwt";
+import { ADMIN_TOKEN_COOKIE_AGE, REFRESH_TOKEN_COOKIE_AGE } from "../auth/utils/tokenTime";
+import { generateAdminToken, verifyAdminToken } from "@/lib/auth/utils/token";
 import { Token } from "@/types/token";
 
 type AutoRefreshResult =

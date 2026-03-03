@@ -1,7 +1,7 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { getNormal, postJson, postUrlFormData } from "@/api/fetchFilter";
-import { withAuth } from "@/lib/auth";
+import { withAuth } from "@/lib/auth/index";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { getStockHoldProductResponse, payRequest } from "@/types/buy";
 import { BaseResponse } from "@/types/common";

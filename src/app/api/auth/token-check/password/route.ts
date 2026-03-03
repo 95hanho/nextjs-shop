@@ -1,4 +1,4 @@
-import { verifyPwdResetToken } from "@/lib/jwt";
+import { verifyPwdResetToken } from "@/lib/auth/utils/token";
 import { NextRequest, NextResponse } from "next/server";
 
 // 패스워드 리셋토큰 확인
@@ -17,7 +17,7 @@ export const GET = async (nextRequest: NextRequest) => {
 				status: 200,
 				message: "PWDRESET_AUTHORIZED",
 			},
-			{ status: 200 }
+			{ status: 200 },
 		);
 	} catch (error) {
 		return NextResponse.json(
@@ -25,7 +25,7 @@ export const GET = async (nextRequest: NextRequest) => {
 				status: 401,
 				message: "PWDRESET_UNAUTHORIZED",
 			},
-			{ status: 401 }
+			{ status: 401 },
 		);
 	}
 };

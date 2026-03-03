@@ -8,7 +8,6 @@ import { ModalRoot } from "@/components/modal/core/ModalRoot";
 import RootProviders from "@/app/RootProviders";
 import DynamicHeader from "@/app/DynamicHeader";
 import { getBackendUrl } from "@/lib/getBaseUrl";
-import { getServerSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { ModalTest } from "@/components/modal/ModalTest";
