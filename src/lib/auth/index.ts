@@ -1,90 +1,21 @@
-import { getNormal, postUrlFormData } from "@/api/fetchFilter";
-import { cookies } from "next/headers";
-import { getApiUrl, getBackendUrl } from "./getBaseUrl";
+import { postUrlFormData } from "@/api/fetchFilter";
 import API_URL from "@/api/endpoints";
-import { GetUserResponse } from "@/types/auth";
 import { NextRequest, NextResponse } from "next/server";
-import { generateAccessToken, generateRefreshToken, verifyRefreshToken, verifyAccessToken } from "./jwt";
+import { generateAccessToken, generateRefreshToken, verifyRefreshToken, verifyAccessToken } from "@/lib/auth/utils/token";
 import { BaseResponse } from "@/types/common";
-import { isProd } from "./env";
-import { ACCESS_TOKEN_COOKIE_AGE, REFRESH_TOKEN_COOKIE_AGE } from "./tokenTime";
+import { isProd } from "@/lib/env";
+import { ACCESS_TOKEN_COOKIE_AGE, REFRESH_TOKEN_COOKIE_AGE } from "@/lib/auth/utils/tokenTime";
 import { Token } from "@/types/token";
+import { AutoRefreshResult } from "@/lib/auth/types";
+import { tokenRefreshLock } from "@/lib/auth/utils/lock";
+import { getBackendUrl } from "@/lib/getBaseUrl";
 
-/** 처음페이지로드 시 accessToken있으면 유저 정보 가져옴 */
-export async function getServerSession() {
-	const accessToken = (await cookies()).get("accessToken")?.value;
-	if (!accessToken) return null;
-	console.log("서버->서버로 유저정보 요청!!");
-	const data = await getNormal<GetUserResponse>(getApiUrl(API_URL.AUTH), undefined, {
-		Cookie: `accessToken=${accessToken}`,
-	});
-
-	return data.user;
-}
-/**
- * 로그아웃쿼리 추가
- * @param originUrl 원래url
- * @returns 추가 url
- */
-export const addLogoutQuery = (originUrl: string): string => {
-	const url = new URL(originUrl); // originURL이 'https://...'값이므로 뒤에 baseURL을 안넣어도됨.
-	url.searchParams.set("logout", "1");
-	return url.pathname + (url.search ? url.search : "");
-};
-
-/**
- * 토큰 갱신 중복 방지를 위한 인메모리 Lock
- */
-class TokenRefreshLock {
-	private locks = new Map<string, Promise<unknown>>();
-
-	async acquireOrWait<T>(key: string, task: () => Promise<T>): Promise<T> {
-		// 이미 진행 중인 갱신 작업이 있으면 그 결과를 기다림
-		const existing = this.locks.get(key);
-		if (existing) {
-			console.log(`[TokenLock] 이미 토큰 갱신 중... 대기: ${key}`);
-			return existing as Promise<T>;
-		}
-
-		// 새로운 갱신 작업 시작
-		const promise = task().finally(() => {
-			// 작업 완료 후 lock 해제
-			this.locks.delete(key);
-		});
-
-		this.locks.set(key, promise);
-		return promise;
-	}
-
-	clear(key: string) {
-		this.locks.delete(key);
-	}
-}
-
-export const tokenRefreshLock = new TokenRefreshLock();
-
-// withAuth에서 사용할 함수들
-type AutoRefreshResult =
-	| {
-			ok: true;
-			userNo?: number;
-			newAccessToken?: string;
-			newRefreshToken?: string;
-			isAnonymous?: boolean; // ✅ 추가
-			reason?: "NO_TOKENS" | "NO_REFRESH"; // ✅ 추가
-	  }
-	| {
-			ok: false;
-			status: number;
-			message: string;
-			clearCookies?: boolean;
-	  };
-
+// 토큰 재발급
 // API동작 시 refreshToken은 있는데 accessToken가 없을 때 재발급 해주기 위해서 사용
-const authFromTokens = async (nextRequest: NextRequest): Promise<AutoRefreshResult> => {
+const refreshAuthFromTokens = async (nextRequest: NextRequest): Promise<AutoRefreshResult> => {
 	const accessToken = nextRequest.cookies.get("accessToken")?.value || nextRequest.headers.get("accessToken") || undefined;
 	const refreshToken = nextRequest.cookies.get("refreshToken")?.value || nextRequest.headers.get("refreshToken") || undefined;
-	// console.log("authFromTokens -----------", accessToken?.slice(-10), refreshToken?.slice(-10));
+	console.log("[refreshAuthFromTokens] 현재 토큰 accessToken", accessToken?.slice(-10) + "...", "refreshToken", refreshToken?.slice(-10) + "...");
 
 	// 1) accessToken 유효하면 그대로 통과
 	if (accessToken?.trim()) {
@@ -93,7 +24,7 @@ const authFromTokens = async (nextRequest: NextRequest): Promise<AutoRefreshResu
 			return { ok: true, userNo: token.userNo };
 		} catch {
 			// accessToken 만료 → 아래에서 refreshToken으로 처리
-			console.warn("accessToken 만료됨!!!");
+			console.warn("[refreshAuthFromTokens] accessToken 만료됨!!!");
 		}
 	}
 
@@ -152,18 +83,20 @@ const authFromTokens = async (nextRequest: NextRequest): Promise<AutoRefreshResu
 		};
 	});
 };
-//
-export type AuthHandler<TParams extends Record<string, string> = Record<string, never>> = (ctx: {
+
+// ===========================================================================
+// 인증 필요한 API 핸들러
+// ===========================================================================
+type AuthHandler<TParams extends Record<string, string> = Record<string, never>> = (ctx: {
 	nextRequest: NextRequest;
 	userNo: number;
 	accessToken: string;
 	params: TParams;
 }) => Promise<NextResponse>;
-//
 export const withAuth =
 	<TParams extends Record<string, string> = Record<string, never>>(handler: AuthHandler<TParams>) =>
 	async (nextRequest: NextRequest, context: { params: TParams }): Promise<NextResponse> => {
-		const auth = await authFromTokens(nextRequest);
+		const auth = await refreshAuthFromTokens(nextRequest);
 
 		if (!auth.ok) {
 			const response = NextResponse.json({ message: auth.message }, { status: auth.status });
@@ -227,7 +160,10 @@ export const withAuth =
 		return response;
 	};
 
-//
+// ===========================================================================
+// 인증이 필요할 수도 있고 아닐 수도 있는 API 핸들러
+// userNo가 없어도 통과(예: 로그인 상태면 userNo도 주고, 아니면 null 주는 식)
+// ===========================================================================
 export type OptionalAuthHandler<TParams extends Record<string, string> = Record<string, never>> = (ctx: {
 	nextRequest: NextRequest;
 	userNo: number | null;
@@ -247,7 +183,7 @@ export const withOptionalAuth =
 	<TParams extends Record<string, string> = Record<string, never>>(handler: OptionalAuthHandler<TParams>) =>
 	async (nextRequest: NextRequest, context: { params: TParams }): Promise<NextResponse> => {
 		const authMode = getAuthMode(nextRequest);
-		const auth = await authFromTokens(nextRequest);
+		const auth = await refreshAuthFromTokens(nextRequest);
 
 		// console.log("auth", auth);
 		if (authMode === "required" && auth.ok && !auth.userNo) {
@@ -269,7 +205,7 @@ export const withOptionalAuth =
 			});
 
 			if (auth.clearCookies) {
-				console.warn("토큰지워!!!!");
+				console.warn("[withOptionalAuth] 토큰지워!!!!");
 				response.cookies.set("accessToken", "", {
 					httpOnly: true,
 					secure: isProd,
@@ -324,12 +260,14 @@ export const withOptionalAuth =
 				path: "/",
 				maxAge: REFRESH_TOKEN_COOKIE_AGE,
 			});
-			// console.log("토큰 다시 세팅 !!!! ---------------------", nextRequest.url);
+			console.log("[withOptionalAuth] 토큰 다시 세팅 !!!! ---------------------", nextRequest.url);
 		}
-		// console.log(
-		// 	"accessToken11111",
-		// 	auth.newAccessToken || nextRequest.cookies.get("accessToken")?.value || response.cookies.get("accessToken")?.value,
-		// );
+		console.log(
+			"[withOptionalAuth] 마지막 토큰확인 accessToken",
+			response.cookies.get("accessToken")?.value?.slice(-10) + "...",
+			"refreshToken",
+			response.cookies.get("refreshToken")?.value?.slice(-10) + "...",
+		);
 
 		return response;
 	};

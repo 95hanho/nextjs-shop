@@ -1,5 +1,5 @@
 // src/middleware.ts or /middleware.ts
-import { handleAuthCheck, handleTokenRefresh } from "@/lib/middleware";
+import { handleAuthCheck, handleTokenRefresh } from "@/lib/mv";
 import { isAuthRequiredPath } from "@/utils/auth";
 import { NextRequest, NextResponse } from "next/server";
 

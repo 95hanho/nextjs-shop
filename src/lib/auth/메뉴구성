@@ -1,0 +1,17 @@
+src/
+└─ lib/
+   └─ auth/
+      ├─ index.ts              # public exports (barrel)
+      ├─ types.ts              # 공통 타입 (AutoRefreshResult, Handler 등)
+      ├─ utils/
+      │  ├─ token.ts           # generate/verify 래퍼, 공통 로직
+      │  └─ lock.ts            # TokenRefreshLock
+      ├─ user/
+      │  ├─ auth.ts            # withAuth, withOptionalAuth
+      │  └─ refresh.ts         # authFromTokens
+      ├─ admin/
+      │  ├─ auth.ts            # withAdminAuth
+      │  └─ refresh.ts         # authFromAdminTokens
+      └─ seller/
+         ├─ auth.ts            # withSellerAuth
+         └─ refresh.ts         # authFromSellerTokens

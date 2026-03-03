@@ -1,7 +1,7 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { postJson } from "@/api/fetchFilter";
-import { withAuth } from "@/lib/auth";
+import { withAuth } from "@/lib/auth/index";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { payPriceRequest, payPriceResponse } from "@/types/buy";
 import { NextResponse } from "next/server";

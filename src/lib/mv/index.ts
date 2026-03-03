@@ -2,22 +2,23 @@ import { postUrlFormData } from "@/api/fetchFilter";
 import { BaseResponse } from "@/types/common";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import API_URL from "@/api/endpoints";
-import { ACCESS_TOKEN_COOKIE_AGE, REFRESH_TOKEN_COOKIE_AGE } from "@/lib/tokenTime";
+import { ACCESS_TOKEN_COOKIE_AGE, REFRESH_TOKEN_COOKIE_AGE } from "@/lib/auth/utils/tokenTime";
 import { isProd } from "@/lib/env";
-import { tokenRefreshLock } from "@/lib/auth";
+import { tokenRefreshLock } from "@/lib/auth/index";
 import { toErrorResponse } from "@/api/error";
 import {
 	generateAccessTokenForMiddleware,
 	generateRefreshTokenForMiddleware,
-	verifyAccessTokeForMiddleware,
+	verifyAccessTokenForMiddleware,
 	verifyRefreshTokenForMiddleware,
-} from "@/lib/jwt";
+} from "@/lib/auth/utils/token";
 import { NextRequest, NextResponse } from "next/server";
+import { MiddlewarePolicy } from "@/lib/mv/policy.type";
 
 /**
  * Middleware에서 사용할 토큰 재발급 함수
  */
-export const refreshAccessToken = async (nextRequest: NextRequest, refreshToken: string) => {
+const refreshAccessToken = async (nextRequest: NextRequest, refreshToken: string) => {
 	const newRefreshToken = await generateRefreshTokenForMiddleware();
 	const xffHeader = nextRequest.headers.get("x-forwarded-for");
 	const ip = xffHeader?.split(",")[0]?.trim() ?? nextRequest.headers.get("x-real-ip") ?? "unknown";
@@ -68,18 +69,19 @@ export const refreshAccessToken = async (nextRequest: NextRequest, refreshToken:
  */
 export const handleTokenRefresh = async (
 	nextRequest: NextRequest,
+	policy: MiddlewarePolicy,
 ): Promise<{ response: NextResponse; newAccessToken?: string; newRefreshToken?: string }> => {
-	const accessToken = nextRequest.cookies.get("accessToken")?.value || nextRequest.headers.get("accessToken");
-	const refreshToken = nextRequest.cookies.get("refreshToken")?.value || nextRequest.headers.get("refreshToken");
+	const accessToken = nextRequest.cookies.get(policy.cookies.access)?.value || nextRequest.headers.get(policy.cookies.access);
+	const refreshToken = nextRequest.cookies.get(policy.cookies.refresh)?.value || nextRequest.headers.get(policy.cookies.refresh);
 
 	// 1) accessToken 유효 → 그대로 통과
 	if (accessToken?.trim()) {
 		try {
-			await verifyAccessTokeForMiddleware(accessToken);
-			console.log("[Middleware] accessToken 유효");
+			await policy.verifyAccessToken(accessToken);
+			console.log(`[Middleware] ${policy.cookies.access} 유효`);
 			return { response: NextResponse.next() };
 		} catch {
-			console.warn("[Middleware] accessToken 만료됨");
+			console.warn(`[Middleware] ${policy.cookies.access} 만료됨`);
 		}
 	}
 
@@ -91,9 +93,9 @@ export const handleTokenRefresh = async (
 	// 3) refreshToken 검증
 	try {
 		await verifyRefreshTokenForMiddleware(refreshToken);
-		console.log("[Middleware] refreshToken 유효");
+		console.log(`[Middleware] ${policy.cookies.refresh} 유효`);
 	} catch {
-		console.error("[Middleware] refreshToken 만료됨");
+		console.error(`[Middleware] ${policy.cookies.refresh} 만료됨`);
 		return { response: NextResponse.next() };
 	}
 
@@ -155,7 +157,7 @@ export const handleTokenRefresh = async (
 /**
  * 로그인 페이지로 리다이렉트
  */
-export const redirectToLogin = (nextRequest: NextRequest, message: string): NextResponse => {
+const redirectToLogin = (nextRequest: NextRequest, message: string): NextResponse => {
 	const pathname = nextRequest.nextUrl.pathname;
 	const search = nextRequest.nextUrl.search;
 	const returnUrl = encodeURIComponent(pathname + search);
@@ -219,7 +221,7 @@ export const handleAuthCheck = async (nextRequest: NextRequest, baseResponse: Ne
 	// 4) accessToken 유효 → 그실패해도 페이지 접근은 허용 (API에서 최종 권한 확인)
 	if (accessToken?.trim()) {
 		try {
-			await verifyAccessTokeForMiddleware(accessToken);
+			await verifyAccessTokenForMiddleware(accessToken);
 			console.log("[Middleware] accessToken 유효 - 통과");
 		} catch {
 			console.warn("[Middleware] accessToken 만료됨 - refreshToken 유효하므로 baseResponse로 통과");

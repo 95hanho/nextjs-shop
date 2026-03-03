@@ -5,14 +5,13 @@ import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { getNormal, postUrlFormData } from "@/api/fetchFilter";
 import { withAdminAuth } from "@/lib/admin/auth";
-import { generateAdminToken } from "@/lib/admin/jwt";
 import { isProd } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
-import { generateRefreshToken } from "@/lib/jwt";
-import { ADMIN_TOKEN_COOKIE_AGE, REFRESH_TOKEN_COOKIE_AGE } from "@/lib/tokenTime";
+import { ADMIN_TOKEN_COOKIE_AGE, REFRESH_TOKEN_COOKIE_AGE } from "@/lib/auth/utils/tokenTime";
 import { AdminLoginForm, AdminLoginResponse, GetAdminInfoResponse } from "@/types/admin";
 import { BaseResponse } from "@/types/common";
 import { NextRequest, NextResponse } from "next/server";
+import { generateAdminToken, generateRefreshToken } from "@/lib/auth/utils/token";
 
 // 관리자 정보조회
 // - 초기패이지로딩(로그인되어있을 때), 로그인, 로그아웃, 관리자정보필요할 때, 관리자정보수정(상태변화)

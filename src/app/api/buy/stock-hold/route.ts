@@ -1,7 +1,7 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { getNormal, postJson } from "@/api/fetchFilter";
-import { withAuth } from "@/lib/auth";
+import { withAuth } from "@/lib/auth/index";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { BuyHoldReleaseResponse, BuyHoldRequest, BuyHoldResponse, BuyItem } from "@/types/buy";
 import { NextResponse } from "next/server";
@@ -20,7 +20,7 @@ export const POST = withAuth(async ({ nextRequest, accessToken }) => {
 			{ ...payload },
 			{
 				Authorization: `Bearer ${accessToken}`,
-			}
+			},
 		);
 		console.log("data", data);
 
@@ -48,7 +48,7 @@ export const DELETE = withAuth(async ({ nextRequest, userId, accessToken }) => {
 			{ holdIds },
 			{
 				Authorization: `Bearer ${accessToken}`,
-			}
+			},
 		);
 		console.log("data", data);
 
