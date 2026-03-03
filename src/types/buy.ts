@@ -2,7 +2,6 @@ import { BaseResponse } from "./common";
 
 export interface BuyItem {
 	productOptionId: number;
-	addPrice: number; // 옵션 추가금 (0 이상)
 	count: number; // 1 이상 정수
 }
 

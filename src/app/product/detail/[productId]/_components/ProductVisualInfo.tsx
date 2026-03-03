@@ -24,6 +24,7 @@ import { BaseResponse } from "@/types/common";
 import { useModalStore } from "@/store/modal.store";
 import { ModalResultMap } from "@/store/modal.type";
 import clsx from "clsx";
+import { BuyHoldRequest, BuyHoldResponse } from "@/types/buy";
 
 export type ProductCouponWithDiscount = AvailableProductCoupon & {
 	discountAmount: number;
@@ -121,6 +122,28 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 		onSettled: () => {
 			setProductSelectList([]);
 			queryClient.invalidateQueries({ queryKey: ["productOptions", productId] });
+		},
+	});
+	// 상품 확인 및 점유(바로 구매하기)
+	const { mutate: buyNowMutate } = useMutation({
+		mutationKey: ["productDetailBuyNow", productId],
+		mutationFn: () =>
+			postJson<BuyHoldResponse, BuyHoldRequest>(getApiUrl(API_URL.BUY_HOLD), {
+				buyList: productSelectList.map((option) => ({
+					productOptionId: option.productOptionId,
+					count: option.quantity,
+				})),
+			}),
+		onSuccess: (data) => {
+			console.log("상품 점유 성공", data);
+		},
+		onError: (err) => {
+			console.error("상품 점유 실패", err);
+			if (err.message === "STOCK_HOLD_FAILED") {
+				openModal("ALERT", { content: "품절된 상품이 있습니다. 옵션과 수량을 다시 확인해주세요." });
+				setProductSelectList([]);
+				queryClient.invalidateQueries({ queryKey: ["productOptions", productId] });
+			}
 		},
 	});
 
@@ -282,14 +305,11 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 	}, [modalResult, clearModalResult, addCartMutate]);
 	// 장바구니 담기 팝업 애니메이션 및 자동 닫힘
 	useEffect(() => {
-		if (cartPopupOpen) {
-			setTimeout(() => {
-				setCartPopupClose(true);
-			}, 2000);
-			setTimeout(() => {
-				setCartPopupOpen(false);
-			}, 2400);
-		}
+		if (!cartPopupOpen) return;
+		const closeTimer = setTimeout(() => {
+			setCartPopupClose(true);
+		}, 2000);
+		return () => clearTimeout(closeTimer);
 	}, [cartPopupOpen]);
 
 	/* ------------------------------------------------------------------ */
@@ -539,45 +559,62 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 										</div>
 										{/* 선택된 옵션과 수량 보여주는 영역 */}
 										{productSelectList.length > 0 && (
-											<div className={styles.selectedOptions}>
-												{productSelectList.map((option) => (
-													<div key={option.productOptionId} className={styles.selectedOptionItem}>
-														<span className={styles.selectedOptionName}>
-															{option.size} {option.addPrice > 0 && `(추가금 ${money(option.addPrice)})`}
-														</span>
-														<div className="flex items-center">
-															<span>
-																<ProductCounter
-																	count={option.quantity}
-																	setCount={(count) => {
-																		setProductSelectList((prev) => {
-																			const newList = [...prev];
-																			const existingIdx = newList.findIndex(
-																				(o) => o.productOptionId === option.productOptionId,
-																			);
-																			if (existingIdx !== -1) {
-																				newList[existingIdx].quantity = count;
-																			}
-																			return newList;
-																		});
-																	}}
-																	stock={option.stock}
-																/>
+											<>
+												<div className={styles.selectedOptions}>
+													{productSelectList.map((option) => (
+														<div key={option.productOptionId} className={styles.selectedOptionItem}>
+															<span className={styles.selectedOptionName}>
+																{option.size} {option.addPrice > 0 && `(추가금 ${money(option.addPrice)})`}
 															</span>
-															<button
-																className="inline-flex ml-2 text-3xl"
-																onClick={() => {
-																	setProductSelectList((prev) =>
-																		prev.filter((o) => o.productOptionId !== option.productOptionId),
-																	);
-																}}
-															>
-																<IoIosClose />
-															</button>
+															<div className="flex items-center">
+																<span>
+																	<ProductCounter
+																		count={option.quantity}
+																		setCount={(count) => {
+																			setProductSelectList((prev) => {
+																				const newList = [...prev];
+																				const existingIdx = newList.findIndex(
+																					(o) => o.productOptionId === option.productOptionId,
+																				);
+																				if (existingIdx !== -1) {
+																					newList[existingIdx].quantity = count;
+																				}
+																				return newList;
+																			});
+																		}}
+																		stock={option.stock}
+																	/>
+																</span>
+																<span className="ml-3 font-medium">
+																	{money(productDetail.finalPrice + option.addPrice)}원
+																</span>
+																<button
+																	className="inline-flex ml-2 text-3xl"
+																	onClick={() => {
+																		setProductSelectList((prev) =>
+																			prev.filter((o) => o.productOptionId !== option.productOptionId),
+																		);
+																	}}
+																>
+																	<IoIosClose />
+																</button>
+															</div>
 														</div>
-													</div>
-												))}
-											</div>
+													))}
+												</div>
+												<div className={styles.totalPrice}>
+													<span className={styles.totalPriceLabel}>총 상품 금액</span>
+													<span className={styles.totalPriceValue}>
+														{money(
+															productSelectList.reduce(
+																(acc, option) => acc + (productDetail.finalPrice + option.addPrice) * option.quantity,
+																0,
+															),
+														)}
+														원
+													</span>
+												</div>
+											</>
 										)}
 										<div className={styles.actionButtons}>
 											<button className={styles.btnCart} onClick={handleAddCart}>
@@ -586,7 +623,7 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 											<button
 												className={styles.btnBuy}
 												onClick={() => {
-													push(`/buy`);
+													buyNowMutate();
 												}}
 											>
 												바로 구매하기
@@ -599,7 +636,14 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 							</>
 						)}
 						{cartPopupOpen && (
-							<div className={clsx(styles.addCartPopup, cartPopupClose && "animateFadeOut")}>
+							<div
+								className={clsx(styles.addCartPopup, cartPopupClose && "animateFadeOut")}
+								onAnimationEnd={() => {
+									if (!cartPopupClose) return;
+									setCartPopupOpen(false);
+									setCartPopupClose(false);
+								}}
+							>
 								<p>
 									장바구니에
 									<br />

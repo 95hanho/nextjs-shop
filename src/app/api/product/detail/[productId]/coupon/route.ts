@@ -21,7 +21,7 @@ export const GET = withAuth<{ productId: string }>(async ({ accessToken, params 
 				Authorization: `Bearer ${accessToken}`,
 			},
 		);
-		console.log("data", data);
+		// console.log("data", data);
 
 		return NextResponse.json({ ...data }, { status: 200 });
 	} catch (err: unknown) {

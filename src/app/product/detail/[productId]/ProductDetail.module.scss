@@ -349,6 +349,22 @@
 						}
 					}
 
+					.totalPrice {
+						border-top: 1px solid black;
+						padding: 15px 15px 0 15px;
+						text-align: right;
+						margin-top: 10px;
+						.totalPriceLabel {
+							font-size: 14px;
+						}
+						.totalPriceValue {
+							margin-left: 10px;
+							font-size: 18px;
+							font-weight: bold;
+							color: #f35b1f;
+						}
+					}
+
 					.actionButtons {
 						display: flex;
 						gap: 5px;

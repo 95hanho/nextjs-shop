@@ -203,13 +203,21 @@
 }
 .animateFadeIn {
 	animation: fadeIn 0.4s ease-out;
+	animation-iteration-count: 1;
+	animation-fill-mode: both; /* 끝 상태 유지 */
 }
 .animateFadeOut {
 	animation: fadeOut 0.4s ease-out;
+	animation-iteration-count: 1;
+	animation-fill-mode: both;
 }
 .animatePopIn {
 	animation: popIn 0.4s ease-out;
+	animation-iteration-count: 1;
+	animation-fill-mode: both;
 }
 .animatePopOut {
 	animation: popOut 0.4s ease-out;
+	animation-iteration-count: 1;
+	animation-fill-mode: both;
 }
