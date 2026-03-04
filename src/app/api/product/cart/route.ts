@@ -1,7 +1,7 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { getNormal, postJson } from "@/api/fetchFilter";
-import { withUserAuth } from "@/lib/auth/user";
+import { userWithAuth } from "@/lib/auth/user";
 import { WRONG_REQUEST_MESSAGE } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { BaseResponse } from "@/types/common";
@@ -9,7 +9,7 @@ import { AddCartRequest } from "@/types/product";
 import { NextResponse } from "next/server";
 
 // 장바구니 확인
-export const GET = withUserAuth(async ({ nextRequest, accessToken }) => {
+export const GET = userWithAuth(async ({ nextRequest, accessToken }) => {
 	try {
 		const productId = nextRequest.nextUrl.searchParams.get("productId");
 		if (!productId) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
@@ -30,7 +30,7 @@ export const GET = withUserAuth(async ({ nextRequest, accessToken }) => {
 });
 
 // 장바구니 넣기
-export const POST = withUserAuth(async ({ nextRequest, accessToken }) => {
+export const POST = userWithAuth(async ({ nextRequest, accessToken }) => {
 	try {
 		const { addCartList, productId }: AddCartRequest = await nextRequest.json();
 		if (!addCartList || addCartList.length === 0 || !productId) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });

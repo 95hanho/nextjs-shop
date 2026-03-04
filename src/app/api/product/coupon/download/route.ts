@@ -1,13 +1,13 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { postUrlFormData } from "@/api/fetchFilter";
-import { withUserAuth } from "@/lib/auth/user";
+import { userWithAuth } from "@/lib/auth/user";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { BaseResponse } from "@/types/common";
 import { NextResponse } from "next/server";
 
 // 쿠폰 다운로드
-export const POST = withUserAuth(async ({ nextRequest, accessToken }) => {
+export const POST = userWithAuth(async ({ nextRequest, accessToken }) => {
 	try {
 		const { couponId } = await nextRequest.json();
 		if (!couponId) return NextResponse.json({ message: "쿠폰 ID를 입력해주세요." }, { status: 400 });

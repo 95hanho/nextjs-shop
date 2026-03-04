@@ -98,7 +98,7 @@ export type AdminHandler<TParams extends Record<string, string> = Record<string,
 	params: TParams;
 }) => Promise<NextResponse>;
 //
-export const withAdminAuth =
+export const adminWithAuth =
 	<TParams extends Record<string, string> = Record<string, never>>(handler: AdminHandler<TParams>) =>
 	async (nextRequest: NextRequest, context: { params: TParams }): Promise<NextResponse> => {
 		const auth = await authFromAdminTokens(nextRequest);

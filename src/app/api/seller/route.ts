@@ -9,12 +9,12 @@ import { REFRESH_TOKEN_COOKIE_AGE, SELLER_TOKEN_COOKIE_AGE } from "@/lib/auth/ut
 import { BaseResponse } from "@/types/common";
 import { SellerLoginForm, SellerLoginResponse, GetSellerInfoResponse } from "@/types/seller";
 import { NextRequest, NextResponse } from "next/server";
-import { withSellerAuth } from "@/lib/auth/seller";
+import { sellerWithAuth } from "@/lib/auth/seller";
 
 // 판매자 정보조회
 // - 초기패이지로딩(로그인되어있을 때), 로그인, 로그아웃, 판매자정보필요할 때, 판매자정보수정(상태변화)
 // 할 때 바로 가져올 수 있게 useQuery 실행함.
-export const GET = withSellerAuth(async ({ sellerToken }) => {
+export const GET = sellerWithAuth(async ({ sellerToken }) => {
 	try {
 		const data = await getNormal<GetSellerInfoResponse>(getBackendUrl(API_URL.AUTH), {
 			Authorization: `Bearer ${sellerToken}`,

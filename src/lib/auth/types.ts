@@ -65,6 +65,20 @@ export type AutoRefreshResult<R extends Role> =
 // MIDDLEWARE 용
 // =========================================================
 
-export type MiddlewareAuthCheckPreset<R extends Role> = CommonPreset<R> {
-	
+export type MiddlewareCommmonPreset = {
+	verifyATokenForMiddleware: (token: string) => Promise<Token>;
+	verifyRTokenForMiddleware: (token: string) => Promise<Token>;
 };
+
+export type MiddlewareTokenRefreshPreset<R extends Role> = CommonPreset<R> &
+	MiddlewareCommmonPreset & {
+		generateATokenForMiddleware: (payload: { [key in RoleKeyMap[R]["primaryKey"]]: number }) => Promise<string>;
+		generateRTokenForMiddleware: (expiresIn?: StringValue) => Promise<string>;
+		reTokenApiUrl: string;
+		aTokenCookieAge: number;
+	};
+
+export type MiddlewareAuthCheckPreset<R extends Role> = CommonPreset<R> &
+	MiddlewareCommmonPreset & {
+		loginUrl: string;
+	};

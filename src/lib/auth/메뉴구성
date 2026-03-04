@@ -10,8 +10,8 @@ src/
       │  ├─ auth.ts            # withAuth, withOptionalAuth
       │  └─ refresh.ts         # authFromTokens
       ├─ admin/
-      │  ├─ auth.ts            # withAdminAuth
+      │  ├─ auth.ts            # adminWithAuth
       │  └─ refresh.ts         # authFromAdminTokens
       └─ seller/
-         ├─ auth.ts            # withSellerAuth
+         ├─ auth.ts            # sellerWithAuth
          └─ refresh.ts         # authFromSellerTokens

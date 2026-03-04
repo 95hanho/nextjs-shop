@@ -1,7 +1,7 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { deleteNormal, getNormal, postUrlFormData, putUrlFormData } from "@/api/fetchFilter";
-import { withUserAuth } from "@/lib/auth/user";
+import { userWithAuth } from "@/lib/auth/user";
 import { WRONG_REQUEST_MESSAGE } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { BaseResponse } from "@/types/common";
@@ -9,7 +9,7 @@ import { GetCartResponse, UpdateCartRequest, UpdateCartSelectedRequest } from "@
 import { NextResponse } from "next/server";
 
 // 장바구니 조회
-export const GET = withUserAuth(async ({ accessToken }) => {
+export const GET = userWithAuth(async ({ accessToken }) => {
 	try {
 		const data = await getNormal<GetCartResponse>(getBackendUrl(API_URL.MY_CART), undefined, {
 			Authorization: `Bearer ${accessToken}`,
@@ -23,7 +23,7 @@ export const GET = withUserAuth(async ({ accessToken }) => {
 	}
 });
 // 장바구니 제품 옵션/수량 변경
-export const POST = withUserAuth(async ({ nextRequest, accessToken }) => {
+export const POST = userWithAuth(async ({ nextRequest, accessToken }) => {
 	try {
 		const { cartId, productOptionId, quantity }: UpdateCartRequest = await nextRequest.json();
 		if (!cartId || !productOptionId || !quantity) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
@@ -45,7 +45,7 @@ export const POST = withUserAuth(async ({ nextRequest, accessToken }) => {
 	}
 });
 // 장바구니 제품 선택여부 변경
-export const PUT = withUserAuth(async ({ nextRequest, accessToken }) => {
+export const PUT = userWithAuth(async ({ nextRequest, accessToken }) => {
 	try {
 		const { cartIdList, selected }: UpdateCartSelectedRequest = await nextRequest.json();
 		if (!cartIdList?.length || selected === undefined) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
@@ -67,7 +67,7 @@ export const PUT = withUserAuth(async ({ nextRequest, accessToken }) => {
 	}
 });
 // 장바구니 제품 삭제
-export const DELETE = withUserAuth(async ({ nextRequest, accessToken }) => {
+export const DELETE = userWithAuth(async ({ nextRequest, accessToken }) => {
 	try {
 		const cartIdList = nextRequest.nextUrl.searchParams.getAll("cartIdList").map(Number);
 		if (!cartIdList || !cartIdList?.length) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });

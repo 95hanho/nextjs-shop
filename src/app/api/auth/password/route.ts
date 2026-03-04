@@ -8,10 +8,10 @@ import { PWD_CHANGE_COOKIE_AGE } from "@/lib/auth/utils/tokenTime";
 import { PasswordChangeRequest } from "@/types/auth";
 import { BaseResponse } from "@/types/common";
 import { NextResponse } from "next/server";
-import { withOptionalAuth, withUserAuth } from "@/lib/auth/user";
+import { withOptionalAuth, userWithAuth } from "@/lib/auth/user";
 
 // 비밀번호 변경 토큰 생성
-export const POST = withUserAuth(async ({ userNo }) => {
+export const POST = userWithAuth(async ({ userNo }) => {
 	try {
 		const response = NextResponse.json({ message: "MAKE_PWDRESET_TOKEN" }, { status: 200 });
 		const pwdResetToken = generatePwdResetToken({ userNo });

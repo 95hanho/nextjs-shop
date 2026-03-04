@@ -3,13 +3,13 @@ import { toErrorResponse } from "@/api/error";
 import { getNormal, postUrlFormData } from "@/api/fetchFilter";
 import { WRONG_REQUEST_MESSAGE } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
-import { withSellerAuth } from "@/lib/auth/seller";
+import { sellerWithAuth } from "@/lib/auth/seller";
 import { BaseResponse } from "@/types/common";
 import { AddCouponRequest, GetSellerCouponListResponse, UpdateCouponRequest } from "@/types/seller";
 import { NextResponse } from "next/server";
 
 // 쿠폰 조회
-export const GET = withSellerAuth(async ({ nextRequest, sellerToken }) => {
+export const GET = sellerWithAuth(async ({ nextRequest, sellerToken }) => {
 	try {
 		const sellerId = nextRequest.nextUrl.searchParams.get("sellerId");
 		if (!sellerId) return NextResponse.json({ message: "판매자 아이디를 입력해주세요." }, { status: 400 });
@@ -30,7 +30,7 @@ export const GET = withSellerAuth(async ({ nextRequest, sellerToken }) => {
 	}
 });
 // 쿠폰 등록
-export const POST = withSellerAuth(async ({ nextRequest, sellerToken }) => {
+export const POST = sellerWithAuth(async ({ nextRequest, sellerToken }) => {
 	try {
 		// json으로 받으면
 		const { description, discountType, discountValue, maxDiscount, minimumOrderBeforeAmount, amount, startDate, endDate }: AddCouponRequest =
@@ -64,7 +64,7 @@ export const POST = withSellerAuth(async ({ nextRequest, sellerToken }) => {
 	}
 });
 // 쿠폰 수정
-export const PUT = withSellerAuth(async ({ nextRequest, sellerToken }) => {
+export const PUT = sellerWithAuth(async ({ nextRequest, sellerToken }) => {
 	try {
 		// json으로 받으면
 		const {

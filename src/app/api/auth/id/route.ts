@@ -1,13 +1,13 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { getNormal, postUrlFormData } from "@/api/fetchFilter";
-import { withUserAuth } from "@/lib/auth/user";
+import { userWithAuth } from "@/lib/auth/user";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { BaseResponse } from "@/types/common";
 import { NextRequest, NextResponse } from "next/server";
 
 // 유저아이디 조회 By인증토큰
-export const GET = withUserAuth(async ({ accessToken }) => {
+export const GET = userWithAuth(async ({ accessToken }) => {
 	try {
 		const data = await getNormal<BaseResponse & { userId: string }>(getBackendUrl(API_URL.AUTH_ID), undefined, {
 			Authorization: `Bearer ${accessToken}`,

@@ -1,14 +1,14 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { getNormal, postUrlFormData } from "@/api/fetchFilter";
-import { withUserAuth } from "@/lib/auth/user";
+import { userWithAuth } from "@/lib/auth/user";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { BaseResponse } from "@/types/common";
 import { NextResponse } from "next/server";
 
 /*  */
 //
-export const GET = withUserAuth(async ({ nextRequest, userNo, params, accessToken }) => {
+export const GET = userWithAuth(async ({ nextRequest, userNo, params, accessToken }) => {
 	// query 접근 (App Router에서는 req.nextUrl.searchParams)
 	const search = Object.fromEntries(nextRequest.nextUrl.searchParams.entries());
 	if (Object.keys(search).length > 0) {
@@ -30,7 +30,7 @@ export const GET = withUserAuth(async ({ nextRequest, userNo, params, accessToke
 	}
 });
 //
-export const POST = withUserAuth(async ({ nextRequest, userNo, params, accessToken }) => {
+export const POST = userWithAuth(async ({ nextRequest, userNo, params, accessToken }) => {
 	try {
 		const {} = params ?? {};
 		// formdata || application/x-www-form-urlencoded로 보냈으면 이렇게

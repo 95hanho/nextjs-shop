@@ -8,7 +8,7 @@ import { JoinRequest, UserUpdateRequest } from "@/types/auth";
 import { BaseResponse, ISODate } from "@/types/common";
 import { parseISODate } from "@/utils/date";
 import { NextRequest, NextResponse } from "next/server";
-import { withUserAuth } from "@/lib/auth/user";
+import { userWithAuth } from "@/lib/auth/user";
 
 type JoinPayloadForSpring = Omit<JoinRequest, "birthday"> & {
 	birthday: ISODate;
@@ -80,7 +80,7 @@ export const POST = async (nextRequest: NextRequest) => {
 };
 
 // 회원정보변경
-export const PUT = withUserAuth(async ({ nextRequest, accessToken }) => {
+export const PUT = userWithAuth(async ({ nextRequest, accessToken }) => {
 	try {
 		const { zonecode, address, addressDetail, phone, changePhone, email }: UserUpdateRequest = await nextRequest.json();
 		if (!phone) return NextResponse.json({ message: "핸드폰번호를 입력해주세요." }, { status: 400 });
@@ -133,7 +133,7 @@ export const PUT = withUserAuth(async ({ nextRequest, accessToken }) => {
 });
 
 // 회원탈퇴 요청
-export const DELETE = withUserAuth(async ({ accessToken }) => {
+export const DELETE = userWithAuth(async ({ accessToken }) => {
 	try {
 		const data = await putUrlFormData<BaseResponse>(getBackendUrl(API_URL.AUTH_JOIN), {
 			Authorization: `Bearer ${accessToken}`,

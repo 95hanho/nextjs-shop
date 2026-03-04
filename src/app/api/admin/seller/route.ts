@@ -1,7 +1,7 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { getNormal, postUrlFormData } from "@/api/fetchFilter";
-import { withAdminAuth } from "@/lib/auth/admin";
+import { adminWithAuth } from "@/lib/auth/admin";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { AddSellerRequest } from "@/types/admin";
 import { BaseResponse } from "@/types/common";
@@ -9,7 +9,7 @@ import { NextResponse } from "next/server";
 
 /*  */
 // 판매자 조회
-export const GET = withAdminAuth(async ({ adminToken }) => {
+export const GET = adminWithAuth(async ({ adminToken }) => {
 	try {
 		const data = await getNormal<BaseResponse>(getBackendUrl(API_URL.ADMIN_SELLER), undefined, {
 			Authorization: `Bearer ${adminToken}`,
@@ -23,7 +23,7 @@ export const GET = withAdminAuth(async ({ adminToken }) => {
 	}
 });
 // 판매자 추가
-export const POST = withAdminAuth(async ({ nextRequest, adminToken }) => {
+export const POST = adminWithAuth(async ({ nextRequest, adminToken }) => {
 	try {
 		// method별 요청처리
 		if (nextRequest.method === "POST") {

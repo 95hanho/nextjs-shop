@@ -1,12 +1,18 @@
 import { refreshAuthFromTokens, withAuth } from "@/lib/auth/api";
-import { userRefreshAuthFromTokensPreset, userWithAuthPreset } from "@/lib/auth/presets/user";
+import { handleAuthCheck, handleTokenRefresh } from "@/lib/auth/mv";
+import {
+	userMiddlewareAuthCheckPreset,
+	userMiddlewareTokenRefreshPreset,
+	userRefreshAuthFromTokensPreset,
+	userWithAuthPreset,
+} from "@/lib/auth/presets/user";
 import { AuthHandler } from "@/lib/auth/types";
 import { ACCESS_TOKEN_COOKIE_AGE, REFRESH_TOKEN_COOKIE_AGE } from "@/lib/auth/utils/tokenTime";
 import { isProd } from "@/lib/env";
 import { NextRequest, NextResponse } from "next/server";
 
 // 유저 페이지 인증 필요 API 핸들러
-export const withUserAuth = <TParams extends Record<string, string> = Record<string, never>>(handler: AuthHandler<"USER", TParams>) => {
+export const userWithAuth = <TParams extends Record<string, string> = Record<string, never>>(handler: AuthHandler<"USER", TParams>) => {
 	return withAuth(handler, userWithAuthPreset);
 };
 
@@ -122,3 +128,15 @@ export const withOptionalAuth =
 
 		return response;
 	};
+
+// ===========================================================================
+// MIDDLEWARE에서 토큰 재발급 처리
+// ===========================================================================
+
+export const userHandleTokenRefresh = (nextRequest: NextRequest) => {
+	return handleTokenRefresh(nextRequest, userMiddlewareTokenRefreshPreset);
+};
+
+export const userHandleAuthCheck = (nextRequest: NextRequest, baseResponse: NextResponse) => {
+	return handleAuthCheck(nextRequest, baseResponse, userMiddlewareAuthCheckPreset);
+};
