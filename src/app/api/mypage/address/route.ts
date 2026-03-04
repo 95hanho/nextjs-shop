@@ -1,7 +1,7 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { getNormal, postUrlFormData, putUrlFormData } from "@/api/fetchFilter";
-import { withAuth } from "@/lib/auth/index";
+import { withUserAuth } from "@/lib/auth/user";
 import { WRONG_REQUEST_MESSAGE } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { BaseResponse } from "@/types/common";
@@ -9,7 +9,7 @@ import { GetUserAddressListResponse, setUserAddressRequest } from "@/types/mypag
 import { NextResponse } from "next/server";
 
 // 유저배송지 조회
-export const GET = withAuth(async ({ accessToken }) => {
+export const GET = withUserAuth(async ({ accessToken }) => {
 	try {
 		const data = await getNormal<GetUserAddressListResponse>(getBackendUrl(API_URL.MY_ADDRESS), undefined, {
 			Authorization: `Bearer ${accessToken}`,
@@ -23,7 +23,7 @@ export const GET = withAuth(async ({ accessToken }) => {
 	}
 });
 // 유저배송지 추가
-export const POST = withAuth(async ({ nextRequest, accessToken }) => {
+export const POST = withUserAuth(async ({ nextRequest, accessToken }) => {
 	try {
 		const { addressName, recipientName, addressPhone, zonecode, address, addressDetail, memo, defaultAddress }: setUserAddressRequest =
 			await nextRequest.json();
@@ -65,7 +65,7 @@ export const POST = withAuth(async ({ nextRequest, accessToken }) => {
 	}
 });
 // 유저배송지 수정
-export const PUT = withAuth(async ({ nextRequest, accessToken }) => {
+export const PUT = withUserAuth(async ({ nextRequest, accessToken }) => {
 	try {
 		const { addressId, addressName, recipientName, addressPhone, zonecode, address, addressDetail, memo, defaultAddress }: setUserAddressRequest =
 			await nextRequest.json();

@@ -1,13 +1,13 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { postJson } from "@/api/fetchFilter";
-import { withAuth } from "@/lib/auth/index";
+import { withUserAuth } from "@/lib/auth/user";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { payPriceRequest, payPriceResponse } from "@/types/buy";
 import { NextResponse } from "next/server";
 
 // 상품 쿠폰, 마일리지, 배송비 여부의 변경에 따라 가격계산해서 보여줌.(결제 바로 전)
-export const POST = withAuth(async ({ nextRequest, accessToken }) => {
+export const POST = withUserAuth(async ({ nextRequest, accessToken }) => {
 	try {
 		// json으로 받으면
 		const { products, commonCoupon, useMileage }: payPriceRequest = await nextRequest.json();

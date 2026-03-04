@@ -2,7 +2,7 @@ import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { getNormal } from "@/api/fetchFilter";
 import { getBackendUrl } from "@/lib/getBaseUrl";
-import { withSellerAuth } from "@/lib/seller/auth";
+import { withSellerAuth } from "@/lib/auth/seller";
 import { GetSellerInterestingUserResponse } from "@/types/seller";
 import { NextResponse } from "next/server";
 

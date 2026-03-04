@@ -3,7 +3,7 @@ import { toErrorResponse } from "@/api/error";
 import { getNormal, postUrlFormData } from "@/api/fetchFilter";
 import { WRONG_REQUEST_MESSAGE } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
-import { withSellerAuth } from "@/lib/seller/auth";
+import { withSellerAuth } from "@/lib/auth/seller";
 import { BaseResponse, ISODate } from "@/types/common";
 import { AddSellerProductRequest, GetSellerProductListResponse, UpdateSellerProductRequest } from "@/types/seller";
 import { parseISODate } from "@/utils/date";

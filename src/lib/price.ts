@@ -1,15 +1,20 @@
 import { MILEAGE_RATE } from "@/lib/env";
-import { GetProductDetailCouponResponse } from "@/types/product";
+import { AvailableProductCoupon } from "@/types/product";
 
-// 상품 적립 마일리지 계산
+/** 상품 적립 마일리지 계산 */
 export const calculateMileage = (price: number): number => {
 	if (price <= 0) return 0;
 
 	const mileage = price * MILEAGE_RATE;
 	return Math.floor(mileage / 10) * 10;
 };
-// 쿠폰을 적용한 가격
-export const calculateDiscount = (price: number, coupon: GetProductDetailCouponResponse["availableProductCoupon"][number]): number | null => {
+/**
+ * 쿠폰을 적용한 가격
+ * @param price 적용 전 가격
+ * @param coupon 적용할 쿠폰
+ * @returns 적용 후 가격
+ */
+export const calculateDiscount = (price: number, coupon: AvailableProductCoupon): number | null => {
 	if (price < coupon.minimumOrderBeforeAmount) return null;
 
 	if (coupon.discountType === "fixed_amount") {

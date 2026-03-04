@@ -1,7 +1,7 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { deleteNormal, getNormal, postUrlFormData, putUrlFormData } from "@/api/fetchFilter";
-import { withAuth } from "@/lib/auth/index";
+import { withUserAuth } from "@/lib/auth/user";
 import { WRONG_REQUEST_MESSAGE } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { BaseResponse } from "@/types/common";
@@ -9,7 +9,7 @@ import { GetCartResponse, UpdateCartRequest, UpdateCartSelectedRequest } from "@
 import { NextResponse } from "next/server";
 
 // 장바구니 조회
-export const GET = withAuth(async ({ accessToken }) => {
+export const GET = withUserAuth(async ({ accessToken }) => {
 	try {
 		const data = await getNormal<GetCartResponse>(getBackendUrl(API_URL.MY_CART), undefined, {
 			Authorization: `Bearer ${accessToken}`,
@@ -23,7 +23,7 @@ export const GET = withAuth(async ({ accessToken }) => {
 	}
 });
 // 장바구니 제품 옵션/수량 변경
-export const POST = withAuth(async ({ nextRequest, accessToken }) => {
+export const POST = withUserAuth(async ({ nextRequest, accessToken }) => {
 	try {
 		const { cartId, productOptionId, quantity }: UpdateCartRequest = await nextRequest.json();
 		if (!cartId || !productOptionId || !quantity) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
@@ -45,7 +45,7 @@ export const POST = withAuth(async ({ nextRequest, accessToken }) => {
 	}
 });
 // 장바구니 제품 선택여부 변경
-export const PUT = withAuth(async ({ nextRequest, accessToken }) => {
+export const PUT = withUserAuth(async ({ nextRequest, accessToken }) => {
 	try {
 		const { cartIdList, selected }: UpdateCartSelectedRequest = await nextRequest.json();
 		if (!cartIdList?.length || selected === undefined) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
@@ -67,7 +67,7 @@ export const PUT = withAuth(async ({ nextRequest, accessToken }) => {
 	}
 });
 // 장바구니 제품 삭제
-export const DELETE = withAuth(async ({ nextRequest, accessToken }) => {
+export const DELETE = withUserAuth(async ({ nextRequest, accessToken }) => {
 	try {
 		const cartIdList = nextRequest.nextUrl.searchParams.getAll("cartIdList").map(Number);
 		if (!cartIdList || !cartIdList?.length) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });

@@ -1,14 +1,14 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { getNormal, postJson } from "@/api/fetchFilter";
-import { withAuth } from "@/lib/auth/index";
+import { withUserAuth } from "@/lib/auth/user";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { BuyHoldReleaseResponse, BuyHoldRequest, BuyHoldResponse, BuyItem } from "@/types/buy";
 import { NextResponse } from "next/server";
 
 // 상품 확인 및 점유(장비구니, 상품상세보기에서 구매페이지이동 시)
 // FE : 10분 안에 아무 동작도 없고 결제도 안하고 하면 알람
-export const POST = withAuth(async ({ nextRequest, accessToken }) => {
+export const POST = withUserAuth(async ({ nextRequest, accessToken }) => {
 	try {
 		const { buyList }: { buyList: BuyItem[] } = await nextRequest.json();
 
@@ -31,7 +31,7 @@ export const POST = withAuth(async ({ nextRequest, accessToken }) => {
 	}
 });
 // 점유 해제
-export const DELETE = withAuth(async ({ nextRequest, userId, accessToken }) => {
+export const DELETE = withUserAuth(async ({ nextRequest, userId, accessToken }) => {
 	// query 접근 (App Router에서는 req.nextUrl.searchParams)
 	const search = Object.fromEntries(nextRequest.nextUrl.searchParams.entries());
 	if (Object.keys(search).length > 0) {

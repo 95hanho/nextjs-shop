@@ -4,7 +4,6 @@ import { getBackendUrl } from "@/lib/getBaseUrl";
 import API_URL from "@/api/endpoints";
 import { ACCESS_TOKEN_COOKIE_AGE, REFRESH_TOKEN_COOKIE_AGE } from "@/lib/auth/utils/tokenTime";
 import { isProd } from "@/lib/env";
-import { tokenRefreshLock } from "@/lib/auth/index";
 import { toErrorResponse } from "@/api/error";
 import {
 	generateAccessTokenForMiddleware,
@@ -14,6 +13,8 @@ import {
 } from "@/lib/auth/utils/token";
 import { NextRequest, NextResponse } from "next/server";
 import { MiddlewarePolicy } from "@/lib/mv/policy.type";
+import { tokenRefreshLock } from "@/lib/auth/utils/lock";
+import { MiddlewareAuthCheckPreset } from "@/lib/auth/types";
 
 /**
  * Middleware에서 사용할 토큰 재발급 함수
@@ -185,17 +186,17 @@ const redirectToLogin = (nextRequest: NextRequest, message: string): NextRespons
 };
 
 /**
- * 로그인 인증 체크
+ * 인증 필요 페이지 처리 - 토큰검사 후 로그인 페이지로 리다이렉트 처리
  * @param baseResponse - 토큰 재발급이 이미 적용된 response (쿠키 유지를 위해 필수)
  */
-export const handleAuthCheck = async (nextRequest: NextRequest, baseResponse: NextResponse) => {
-	console.log("[Middleware] 로그인 인증이 필요한 url", nextRequest.url);
+export const handleAuthCheck = async (nextRequest: NextRequest, baseResponse: NextResponse, preset: MiddlewareAuthCheckPreset) => {
+	console.log("[Middleware AuthCheck] 로그인 인증이 필요한 url", nextRequest.url);
 
 	const accessToken = nextRequest.cookies.get("accessToken")?.value || nextRequest.headers.get("accessToken");
 	const refreshToken = nextRequest.cookies.get("refreshToken")?.value || nextRequest.headers.get("refreshToken");
 
 	console.log(
-		"[Middleware] 토큰 확인",
+		"[Middleware AuthCheck] 토큰 확인",
 		"accessToken",
 		accessToken ? accessToken.substring(0, 10) + "..." : "없음",
 		"refreshToken",
@@ -204,16 +205,16 @@ export const handleAuthCheck = async (nextRequest: NextRequest, baseResponse: Ne
 
 	// 1) refreshToken 없음 → 로그인 페이지로 리다이렉트
 	if (!refreshToken?.trim()) {
-		console.log("[Middleware] refreshToken 없음 → 로그인 페이지로 리다이렉트");
+		console.log("[Middleware AuthCheck] refreshToken 없음 → 로그인 페이지로 리다이렉트");
 		return redirectToLogin(nextRequest, "need_login");
 	}
 
 	// 2) refreshToken 검증
 	try {
 		await verifyRefreshTokenForMiddleware(refreshToken);
-		console.log("[Middleware] refreshToken 유효");
+		console.log("[Middleware AuthCheck] refreshToken 유효");
 	} catch {
-		console.error("[Middleware] refreshToken 만료 → 로그인 페이지로 리다이렉트");
+		console.error("[Middleware AuthCheck] refreshToken 만료 → 로그인 페이지로 리다이렉트");
 		return redirectToLogin(nextRequest, "need_login");
 	}
 
@@ -222,13 +223,13 @@ export const handleAuthCheck = async (nextRequest: NextRequest, baseResponse: Ne
 	if (accessToken?.trim()) {
 		try {
 			await verifyAccessTokenForMiddleware(accessToken);
-			console.log("[Middleware] accessToken 유효 - 통과");
+			console.log("[Middleware AuthCheck] accessToken 유효 - 통과");
 		} catch {
-			console.warn("[Middleware] accessToken 만료됨 - refreshToken 유효하므로 baseResponse로 통과");
+			console.warn("[Middleware AuthCheck] accessToken 만료됨 - refreshToken 유효하므로 baseResponse로 통과");
 		}
 		return baseResponse;
 	}
 	// 5) refreshToken 유효 → 페이지 접근은 허용 (accessToken 없음/미확인 다음 요청에서 반영/재발급될 수 있음, baseResponse로 통과)
-	console.log("[Middleware] refreshToken 유효 - accessToken 없음 - refreshToken 유효하므로 통과");
+	console.log("[Middleware AuthCheck] refreshToken 유효 - accessToken 없음 - refreshToken 유효하므로 통과");
 	return baseResponse;
 };
