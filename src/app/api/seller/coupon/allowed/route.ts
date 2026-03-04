@@ -3,13 +3,13 @@ import { toErrorResponse } from "@/api/error";
 import { getNormal, postUrlFormData } from "@/api/fetchFilter";
 import { WRONG_REQUEST_MESSAGE } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
-import { withSellerAuth } from "@/lib/auth/seller";
+import { sellerWithAuth } from "@/lib/auth/seller";
 import { BaseResponse } from "@/types/common";
 import { GetSellerCouponAllowResponse, SetSellerCouponAllowRequest } from "@/types/seller";
 import { NextResponse } from "next/server";
 
 // 쿠폰 허용제품 조회
-export const GET = withSellerAuth(async ({ sellerToken }) => {
+export const GET = sellerWithAuth(async ({ sellerToken }) => {
 	try {
 		const data = await getNormal<GetSellerCouponAllowResponse>(getBackendUrl(API_URL.SELLER_COUPON_ALLOWED), undefined, {
 			Authorization: `Bearer ${sellerToken}`,
@@ -23,7 +23,7 @@ export const GET = withSellerAuth(async ({ sellerToken }) => {
 	}
 });
 // 쿠폰 허용제품 변경
-export const POST = withSellerAuth(async ({ nextRequest, sellerToken }) => {
+export const POST = sellerWithAuth(async ({ nextRequest, sellerToken }) => {
 	try {
 		// json으로 받으면
 		const { couponId, productIds, allow }: SetSellerCouponAllowRequest = await nextRequest.json();

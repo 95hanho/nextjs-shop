@@ -2,13 +2,13 @@ import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { postUrlFormData } from "@/api/fetchFilter";
 import { getBackendUrl } from "@/lib/getBaseUrl";
-import { withSellerAuth } from "@/lib/auth/seller";
+import { sellerWithAuth } from "@/lib/auth/seller";
 import { BaseResponse } from "@/types/common";
 import { IssueCouponsToUsersRequest } from "@/types/seller";
 import { NextResponse } from "next/server";
 
 // 쿠폰을 유저에게 발행하기(개발필요)
-export const POST = withSellerAuth(async ({ nextRequest }) => {
+export const POST = sellerWithAuth(async ({ nextRequest }) => {
 	try {
 		const { couponId, userIds } = await nextRequest.json();
 		if (!couponId || !userIds || userIds.length === 0) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });

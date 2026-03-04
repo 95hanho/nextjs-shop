@@ -1,7 +1,7 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { postUrlFormData } from "@/api/fetchFilter";
-import { withAdminAuth } from "@/lib/auth/admin";
+import { adminWithAuth } from "@/lib/auth/admin";
 import { WRONG_REQUEST_MESSAGE } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { SetSellerApprovalRequest } from "@/types/admin";
@@ -9,7 +9,7 @@ import { BaseResponse } from "@/types/common";
 import { NextResponse } from "next/server";
 
 // 판매자 승인여부 변경
-export const POST = withAdminAuth(async ({ nextRequest, adminToken }) => {
+export const POST = adminWithAuth(async ({ nextRequest, adminToken }) => {
 	try {
 		const { sellerNoList, approvalStatus, rejectReason }: SetSellerApprovalRequest = await nextRequest.json();
 		if (!sellerNoList || !sellerNoList.length) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });

@@ -3,13 +3,13 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { postJson } from "@/api/fetchFilter";
-import { withUserAuth } from "@/lib/auth/user";
+import { userWithAuth } from "@/lib/auth/user";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { ExtendStockHoldRequest, ExtendStockHoldResponse } from "@/types/buy";
 import { NextResponse } from "next/server";
 
 // 상품 점유 연장
-export const POST = withUserAuth(async ({ nextRequest, accessToken }) => {
+export const POST = userWithAuth(async ({ nextRequest, accessToken }) => {
 	try {
 		const { holdIds }: ExtendStockHoldRequest = await nextRequest.json();
 

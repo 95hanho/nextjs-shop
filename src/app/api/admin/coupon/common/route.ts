@@ -1,7 +1,7 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { getNormal, postUrlFormData, putUrlFormData } from "@/api/fetchFilter";
-import { withAdminAuth } from "@/lib/auth/admin";
+import { adminWithAuth } from "@/lib/auth/admin";
 import { WRONG_REQUEST_MESSAGE } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { AddCommonCouponRequest, GetCommonCouponListResponse, UpdateCommonCouponRequest } from "@/types/admin";
@@ -10,7 +10,7 @@ import { parseISODateTimeLocal } from "@/utils/date";
 import { NextResponse } from "next/server";
 
 // 공용 쿠폰 조회
-export const GET = withAdminAuth(async ({ adminToken }) => {
+export const GET = adminWithAuth(async ({ adminToken }) => {
 	try {
 		const data = await getNormal<GetCommonCouponListResponse>(getBackendUrl(API_URL.ADMIN_COUPON_COMMON), undefined, {
 			Authorization: `Bearer ${adminToken}`,
@@ -30,7 +30,7 @@ type AddCommonCouponPayloadForSpring = Omit<AddCommonCouponRequest, "startDate" 
 };
 
 // 공용 쿠폰 등록
-export const POST = withAdminAuth(async ({ nextRequest, adminToken }) => {
+export const POST = adminWithAuth(async ({ nextRequest, adminToken }) => {
 	try {
 		const {
 			description,
@@ -78,7 +78,7 @@ type UpdateCommonCouponPayloadForSpring = Omit<UpdateCommonCouponRequest, "start
 };
 
 // 공용 쿠폰 수정
-export const PUT = withAdminAuth(async ({ nextRequest, adminToken }) => {
+export const PUT = adminWithAuth(async ({ nextRequest, adminToken }) => {
 	try {
 		const {
 			couponId,

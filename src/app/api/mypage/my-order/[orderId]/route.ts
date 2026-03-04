@@ -1,13 +1,13 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { getNormal } from "@/api/fetchFilter";
-import { withUserAuth } from "@/lib/auth/user";
+import { userWithAuth } from "@/lib/auth/user";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { MyOrderDetailResponse } from "@/types/mypage";
 import { NextResponse } from "next/server";
 
 // 주문배송정보 상세조회
-export const GET = withUserAuth<{ orderId: string }>(async ({ accessToken, params }) => {
+export const GET = userWithAuth<{ orderId: string }>(async ({ accessToken, params }) => {
 	try {
 		const orderId = Number(params.orderId);
 

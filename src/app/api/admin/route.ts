@@ -4,7 +4,7 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { getNormal, postUrlFormData } from "@/api/fetchFilter";
-import { withAdminAuth } from "@/lib/auth/admin";
+import { adminWithAuth } from "@/lib/auth/admin";
 import { isProd } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { ADMIN_TOKEN_COOKIE_AGE, REFRESH_TOKEN_COOKIE_AGE } from "@/lib/auth/utils/tokenTime";
@@ -16,7 +16,7 @@ import { generateAdminToken, generateRefreshToken } from "@/lib/auth/utils/token
 // 관리자 정보조회
 // - 초기패이지로딩(로그인되어있을 때), 로그인, 로그아웃, 관리자정보필요할 때, 관리자정보수정(상태변화)
 // 할 때 바로 가져올 수 있게 useQuery 실행함.
-export const GET = withAdminAuth(async ({ adminToken }) => {
+export const GET = adminWithAuth(async ({ adminToken }) => {
 	try {
 		const data = await getNormal<GetAdminInfoResponse>(getBackendUrl(API_URL.ADMIN), {
 			Authorization: `Bearer ${adminToken}`,

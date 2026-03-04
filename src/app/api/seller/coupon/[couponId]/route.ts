@@ -3,12 +3,12 @@ import { toErrorResponse } from "@/api/error";
 import { deleteNormal } from "@/api/fetchFilter";
 import { WRONG_REQUEST_MESSAGE } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
-import { withSellerAuth } from "@/lib/auth/seller";
+import { sellerWithAuth } from "@/lib/auth/seller";
 import { BaseResponse } from "@/types/common";
 import { NextResponse } from "next/server";
 
 // 쿠폰 삭제
-export const DELETE = withSellerAuth<{ couponId: string }>(async ({ params, sellerToken }) => {
+export const DELETE = sellerWithAuth<{ couponId: string }>(async ({ params, sellerToken }) => {
 	try {
 		const couponId = Number(params.couponId);
 		if (!couponId && couponId <= 0 && !Number.isInteger(couponId)) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });

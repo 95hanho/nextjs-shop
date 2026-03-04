@@ -1,13 +1,13 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { getNormal } from "@/api/fetchFilter";
-import { withUserAuth } from "@/lib/auth/user";
+import { userWithAuth } from "@/lib/auth/user";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { UserCouponResponse } from "@/types/mypage";
 import { NextResponse } from "next/server";
 
 // 유저 쿠폰 조회
-export const GET = withUserAuth(async ({ accessToken }) => {
+export const GET = userWithAuth(async ({ accessToken }) => {
 	try {
 		const data = await getNormal<UserCouponResponse>(getBackendUrl(API_URL.MY_USER_COUPON), undefined, {
 			Authorization: `Bearer ${accessToken}`,

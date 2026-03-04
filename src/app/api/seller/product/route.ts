@@ -3,14 +3,14 @@ import { toErrorResponse } from "@/api/error";
 import { getNormal, postUrlFormData } from "@/api/fetchFilter";
 import { WRONG_REQUEST_MESSAGE } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
-import { withSellerAuth } from "@/lib/auth/seller";
+import { sellerWithAuth } from "@/lib/auth/seller";
 import { BaseResponse, ISODate } from "@/types/common";
 import { AddSellerProductRequest, GetSellerProductListResponse, UpdateSellerProductRequest } from "@/types/seller";
 import { parseISODate } from "@/utils/date";
 import { NextResponse } from "next/server";
 
 // 제품 조회
-export const GET = withSellerAuth(async ({ sellerToken }) => {
+export const GET = sellerWithAuth(async ({ sellerToken }) => {
 	try {
 		const data = await getNormal<GetSellerProductListResponse>(getBackendUrl(API_URL.SELLER_PRODUCT), undefined, {
 			Authorization: `Bearer ${sellerToken}`,
@@ -29,7 +29,7 @@ type AddSellerProductPayloadForSpring = Omit<AddSellerProductRequest, "manufactu
 };
 
 // 제품 추가
-export const POST = withSellerAuth(async ({ nextRequest, sellerToken }) => {
+export const POST = sellerWithAuth(async ({ nextRequest, sellerToken }) => {
 	try {
 		const {
 			name,
@@ -96,7 +96,7 @@ export const POST = withSellerAuth(async ({ nextRequest, sellerToken }) => {
 	}
 });
 // 판매자 제품 수정
-export const PUT = withSellerAuth(async ({ nextRequest, sellerToken }) => {
+export const PUT = sellerWithAuth(async ({ nextRequest, sellerToken }) => {
 	try {
 		const {
 			productId,

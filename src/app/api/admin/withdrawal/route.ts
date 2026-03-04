@@ -1,7 +1,7 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { postUrlFormData } from "@/api/fetchFilter";
-import { withAdminAuth } from "@/lib/auth/admin";
+import { adminWithAuth } from "@/lib/auth/admin";
 import { WRONG_REQUEST_MESSAGE } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { UserWithdrawalStatusRequest } from "@/types/admin";
@@ -9,7 +9,7 @@ import { BaseResponse } from "@/types/common";
 import { NextResponse } from "next/server";
 
 // 회원 탈퇴 확정하기
-export const POST = withAdminAuth(async ({ nextRequest, adminToken }) => {
+export const POST = adminWithAuth(async ({ nextRequest, adminToken }) => {
 	try {
 		const { userNoList, withdrawalStatus }: UserWithdrawalStatusRequest = await nextRequest.json();
 		if (!userNoList || !userNoList.length || !withdrawalStatus) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });

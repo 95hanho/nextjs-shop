@@ -1,14 +1,14 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { getNormal, postUrlFormData } from "@/api/fetchFilter";
-import { withAdminAuth } from "@/lib/auth/admin";
+import { adminWithAuth } from "@/lib/auth/admin";
 import { WRONG_REQUEST_MESSAGE } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { GetUserInfoUnmaskedResponse, GetUserListResponse } from "@/types/admin";
 import { NextResponse } from "next/server";
 
 // 회원 조회
-export const GET = withAdminAuth(async ({ adminToken }) => {
+export const GET = adminWithAuth(async ({ adminToken }) => {
 	try {
 		const data = await getNormal<GetUserListResponse>(getBackendUrl(API_URL.ADMIN_USER), undefined, {
 			Authorization: `Bearer ${adminToken}`,
@@ -22,7 +22,7 @@ export const GET = withAdminAuth(async ({ adminToken }) => {
 	}
 });
 // 회원 정보 보기(마스킹해제)
-export const POST = withAdminAuth(async ({ nextRequest, adminToken }) => {
+export const POST = adminWithAuth(async ({ nextRequest, adminToken }) => {
 	try {
 		const { userNo }: { userNo: number } = await nextRequest.json();
 		if (!userNo) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
