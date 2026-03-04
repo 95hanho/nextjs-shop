@@ -3,7 +3,7 @@ import { toErrorResponse } from "@/api/error";
 import { getNormal, postUrlFormData } from "@/api/fetchFilter";
 import { WRONG_REQUEST_MESSAGE } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
-import { withSellerAuth } from "@/lib/seller/auth";
+import { withSellerAuth } from "@/lib/auth/seller";
 import { BaseResponse } from "@/types/common";
 import { GetSellerCouponAllowResponse, SetSellerCouponAllowRequest } from "@/types/seller";
 import { NextResponse } from "next/server";

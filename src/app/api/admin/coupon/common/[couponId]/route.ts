@@ -1,7 +1,7 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { deleteNormal } from "@/api/fetchFilter";
-import { withAdminAuth } from "@/lib/admin/auth";
+import { withAdminAuth } from "@/lib/auth/admin";
 import { WRONG_REQUEST_MESSAGE } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { BaseResponse } from "@/types/common";

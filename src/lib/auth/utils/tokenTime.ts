@@ -14,14 +14,15 @@ export const REFRESH_TOKEN_COOKIE_AGE: number = 60 * 60 * 24 * 30; // 30일
 // export const REFRESH_TOKEN_EXPIRES_IN = "15s"; // 15초
 // export const REFRESH_TOKEN_COOKIE_AGE = 15; // 15초
 // -------------------------------------------------------------
-export const PHONE_AUTH_EXPIRES_IN: StringValue = "3m";
-export const PHONE_AUTH_COMPLETE_EXPIRES_IN: StringValue = "30m";
-export const PHONE_AUTH_COMPLETE_COOKIE_AGE: number = 60 * 30; // 30분
-export const PWD_CHANGE_EXPIRES_IN: StringValue = "5m";
-export const PWD_CHANGE_COOKIE_AGE: number = 60 * 5; // 5분
-// -------------------------------------------------------------
 export const SELLER_TOKEN_EXPIRES_IN: StringValue = "5y"; // 5년
 export const SELLER_TOKEN_COOKIE_AGE: number = 60 * 60 * 24 * 365 * 5; // 5년
 // -------------------------------------------------------------
 export const ADMIN_TOKEN_EXPIRES_IN: StringValue = "5y"; // 5년
 export const ADMIN_TOKEN_COOKIE_AGE: number = 60 * 60 * 24 * 365 * 5; // 5년
+
+// -------------------------------------------------------------
+export const PHONE_AUTH_EXPIRES_IN: StringValue = "3m";
+export const PHONE_AUTH_COMPLETE_EXPIRES_IN: StringValue = "30m";
+export const PHONE_AUTH_COMPLETE_COOKIE_AGE: number = 60 * 30; // 30분
+export const PWD_CHANGE_EXPIRES_IN: StringValue = "5m";
+export const PWD_CHANGE_COOKIE_AGE: number = 60 * 5; // 5분

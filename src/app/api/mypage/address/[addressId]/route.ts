@@ -1,14 +1,14 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { deleteNormal } from "@/api/fetchFilter";
-import { withAuth } from "@/lib/auth/index";
+import { withUserAuth } from "@/lib/auth/user";
 import { WRONG_REQUEST_MESSAGE } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { BaseResponse } from "@/types/common";
 import { NextResponse } from "next/server";
 
 // 유저배송지 삭제
-export const DELETE = withAuth<{ addressId: string }>(async ({ params, accessToken }) => {
+export const DELETE = withUserAuth<{ addressId: string }>(async ({ params, accessToken }) => {
 	try {
 		const addressId = Number(params.addressId);
 		if (Number.isNaN(addressId)) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });

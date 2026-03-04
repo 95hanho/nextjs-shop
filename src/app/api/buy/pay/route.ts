@@ -1,7 +1,7 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { getNormal, postJson, postUrlFormData } from "@/api/fetchFilter";
-import { withAuth } from "@/lib/auth/index";
+import { withUserAuth } from "@/lib/auth/user";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { getStockHoldProductResponse, payRequest } from "@/types/buy";
 import { BaseResponse } from "@/types/common";
@@ -9,7 +9,7 @@ import { NextResponse } from "next/server";
 
 /*  */
 // 점유 중인 상품 및 사용 가능 쿠폰 조회(결제화면)
-export const GET = withAuth(async ({ accessToken }) => {
+export const GET = withUserAuth(async ({ accessToken }) => {
 	try {
 		const data = await getNormal<getStockHoldProductResponse>(getBackendUrl(API_URL.BUY_PAY), undefined, {
 			Authorization: `Bearer ${accessToken}`,
@@ -23,7 +23,7 @@ export const GET = withAuth(async ({ accessToken }) => {
 	}
 });
 // 상품 구매/결제
-export const POST = withAuth(async ({ nextRequest, accessToken }) => {
+export const POST = withUserAuth(async ({ nextRequest, accessToken }) => {
 	try {
 		const {
 			items,

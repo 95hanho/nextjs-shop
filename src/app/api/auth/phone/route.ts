@@ -1,7 +1,7 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { postUrlFormData, RequestHeaders } from "@/api/fetchFilter";
-import { withOptionalAuth } from "@/lib/auth/index";
+import { withOptionalAuth } from "@/lib/auth/user";
 import { WRONG_REQUEST_MESSAGE } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { generatePhoneAuthToken } from "@/lib/auth/utils/token";

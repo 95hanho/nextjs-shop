@@ -1,13 +1,13 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { getNormal } from "@/api/fetchFilter";
-import { withAuth } from "@/lib/auth/index";
+import { withUserAuth } from "@/lib/auth/user";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { GetProductDetailCouponResponse } from "@/types/product";
 import { NextResponse } from "next/server";
 
 // 제품 상세조회 쿠폰 조회
-export const GET = withAuth<{ productId: string }>(async ({ accessToken, params }) => {
+export const GET = withUserAuth<{ productId: string }>(async ({ accessToken, params }) => {
 	try {
 		const productId = Number(params.productId);
 		if (!productId || !Number.isInteger(productId)) {

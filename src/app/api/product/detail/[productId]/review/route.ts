@@ -1,7 +1,7 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { getNormal, RequestHeaders } from "@/api/fetchFilter";
-import { withOptionalAuth } from "@/lib/auth/index";
+import { withOptionalAuth } from "@/lib/auth/user";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { GetProductDetailReviewResponse } from "@/types/product";
 import { NextResponse } from "next/server";

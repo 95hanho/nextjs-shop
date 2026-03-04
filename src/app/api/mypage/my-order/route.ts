@@ -1,13 +1,13 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { getNormal } from "@/api/fetchFilter";
-import { withAuth } from "@/lib/auth/index";
+import { withUserAuth } from "@/lib/auth/user";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { MyOrderListResponse } from "@/types/mypage";
 import { NextResponse } from "next/server";
 
 // 주문배송정보 조회
-export const GET = withAuth(async ({ accessToken }) => {
+export const GET = withUserAuth(async ({ accessToken }) => {
 	try {
 		const data = await getNormal<MyOrderListResponse>(getBackendUrl(API_URL.MY_ORDER), undefined, {
 			Authorization: `Bearer ${accessToken}`,

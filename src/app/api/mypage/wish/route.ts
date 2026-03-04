@@ -1,13 +1,13 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { getNormal } from "@/api/fetchFilter";
-import { withAuth } from "@/lib/auth/index";
+import { withUserAuth } from "@/lib/auth/user";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { GetWishListResponse } from "@/types/mypage";
 import { NextResponse } from "next/server";
 
 // 위시리스트 조회
-export const GET = withAuth(async ({ accessToken }) => {
+export const GET = withUserAuth(async ({ accessToken }) => {
 	try {
 		const data = await getNormal<GetWishListResponse>(getBackendUrl(API_URL.MY_WISH), undefined, {
 			Authorization: `Bearer ${accessToken}`,

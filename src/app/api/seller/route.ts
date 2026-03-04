@@ -3,13 +3,13 @@ import { toErrorResponse } from "@/api/error";
 import { getNormal, postUrlFormData } from "@/api/fetchFilter";
 import { isProd } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
-import { withSellerAuth } from "@/lib/seller/auth";
 import { generateSellerToken } from "@/lib/auth/utils/token";
 import { generateRefreshToken } from "@/lib/auth/utils/token";
 import { REFRESH_TOKEN_COOKIE_AGE, SELLER_TOKEN_COOKIE_AGE } from "@/lib/auth/utils/tokenTime";
 import { BaseResponse } from "@/types/common";
 import { SellerLoginForm, SellerLoginResponse, GetSellerInfoResponse } from "@/types/seller";
 import { NextRequest, NextResponse } from "next/server";
+import { withSellerAuth } from "@/lib/auth/seller";
 
 // 판매자 정보조회
 // - 초기패이지로딩(로그인되어있을 때), 로그인, 로그아웃, 판매자정보필요할 때, 판매자정보수정(상태변화)

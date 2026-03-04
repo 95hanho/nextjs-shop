@@ -1,7 +1,6 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { getNormal, postUrlFormData } from "@/api/fetchFilter";
-import { withAuth } from "@/lib/auth/index";
 import { isProd } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { generateAccessToken, generateRefreshToken } from "@/lib/auth/utils/token";
@@ -9,11 +8,12 @@ import { ACCESS_TOKEN_COOKIE_AGE, REFRESH_TOKEN_COOKIE_AGE } from "@/lib/auth/ut
 import { LoginFormData, GetUserResponse } from "@/types/auth";
 import { BaseResponse } from "@/types/common";
 import { NextRequest, NextResponse } from "next/server";
+import { withUserAuth } from "@/lib/auth/user";
 
 // 회원정보가져오기
 // - 초기패이지로딩(로그인되어있을 때), 로그인, 로그아웃, 유저정보필요할 때, 유저정보수정(상태변화)
 // 할 때 바로 가져올 수 있게 useQuery 실행함.
-export const GET = withAuth(async ({ accessToken }) => {
+export const GET = withUserAuth(async ({ accessToken }) => {
 	try {
 		console.log("accessToken ===", accessToken);
 		const data = await getNormal<GetUserResponse>(getBackendUrl(API_URL.AUTH), undefined, {

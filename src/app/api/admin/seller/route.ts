@@ -1,7 +1,7 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { getNormal, postUrlFormData } from "@/api/fetchFilter";
-import { withAdminAuth } from "@/lib/admin/auth";
+import { withAdminAuth } from "@/lib/auth/admin";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { AddSellerRequest } from "@/types/admin";
 import { BaseResponse } from "@/types/common";

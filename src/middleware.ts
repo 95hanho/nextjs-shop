@@ -1,5 +1,5 @@
 // src/middleware.ts or /middleware.ts
-import { handleAuthCheck, handleTokenRefresh } from "@/lib/mv";
+import { handleAuthCheck, handleTokenRefresh } from "@/lib/auth/mv";
 import { isAuthRequiredPath } from "@/utils/auth";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -31,6 +31,7 @@ export async function middleware(nextRequest: NextRequest) {
 		// 2) 로그인이 필요한 페이지는 추가 인증 체크
 		const needsAuth = isAuthRequiredPath(pathname);
 		if (!needsAuth) {
+			// 로그인이 필요한 페이지가 아니면 토큰 재발급 결과만 적용된 response 반환 (쿠키 유지)
 			return tokenResponse;
 		}
 
