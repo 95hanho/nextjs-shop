@@ -15,12 +15,14 @@ import { sellerWithAuth } from "@/lib/auth/seller";
 // - 초기패이지로딩(로그인되어있을 때), 로그인, 로그아웃, 판매자정보필요할 때, 판매자정보수정(상태변화)
 // 할 때 바로 가져올 수 있게 useQuery 실행함.
 export const GET = sellerWithAuth(async ({ sellerToken }) => {
+	console.log("[API] 판매자 정보조회");
 	try {
 		const data = await getNormal<GetSellerInfoResponse>(getBackendUrl(API_URL.AUTH), {
 			Authorization: `Bearer ${sellerToken}`,
 		});
 		return NextResponse.json({ ...data }, { status: 200 });
 	} catch (err: unknown) {
+		console.error("[API] 판매자 정보조회 실패");
 		const { status, payload } = toErrorResponse(err);
 		return NextResponse.json(payload, { status });
 	}
@@ -28,19 +30,20 @@ export const GET = sellerWithAuth(async ({ sellerToken }) => {
 
 // 판매자 로그인
 export const POST = async (nextRequest: NextRequest) => {
+	console.log("[API] 판매자 로그인");
 	try {
 		const { sellerId, password }: SellerLoginForm = await nextRequest.json();
 		if (!sellerId) return NextResponse.json({ message: "아이디를 입력해주세요." }, { status: 400 });
 		if (!password) return NextResponse.json({ message: "비밀번호를 입력해주세요." }, { status: 400 });
 
 		const loginValidateData = await postUrlFormData<SellerLoginResponse>(getBackendUrl(API_URL.SELLER), { sellerId, password });
-		console.log("loginValidateData", loginValidateData);
+		// console.log("loginValidateData", loginValidateData);
 
 		// ✅ HttpOnly 쿠키 설정
 		const sellerToken = generateSellerToken({ sellerNo: loginValidateData.sellerNo });
 		const sellerRefreshToken = generateRefreshToken();
-		console.log("sellerToken", sellerToken);
-		console.log("sellerRefreshToken", sellerRefreshToken);
+		// console.log("sellerToken", sellerToken);
+		// console.log("sellerRefreshToken", sellerRefreshToken);
 
 		const xffHeader = nextRequest.headers.get("x-forwarded-for");
 		const ip =
@@ -75,8 +78,13 @@ export const POST = async (nextRequest: NextRequest) => {
 			maxAge: REFRESH_TOKEN_COOKIE_AGE,
 		});
 
+		console.log("[API] 판매자 로그인 성공 - 토큰 발급 및 쿠키 설정 완료", {
+			sellerToken: "..." + sellerToken.slice(-10),
+			sellerRefreshToken: "..." + sellerRefreshToken.slice(-10),
+		});
 		return response;
 	} catch (err: unknown) {
+		console.error("[API] 판매자 로그인 실패");
 		const { status, payload } = toErrorResponse(err);
 		return NextResponse.json(payload, { status });
 	}

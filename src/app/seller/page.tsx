@@ -1,3 +1,7 @@
 export default function SellerPage() {
-	return <></>;
+	return (
+		<>
+			<h1>Seller Page</h1>
+		</>
+	);
 }

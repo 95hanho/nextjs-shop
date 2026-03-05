@@ -18,8 +18,8 @@ const refreshAccessToken = async <R extends Role>(nextRequest: NextRequest, refr
 
 	try {
 		// console.log(`[Middleware TokenRefresh:${preset.role}] 토큰 재생성 시작 =>`, {
-		// 	beforeToken: refreshToken.slice(-10) + "...",
-		// 	newRefreshToken: newRefreshToken.slice(-10) + "...",
+		// 	beforeToken: "..." + refreshToken.slice(-10),
+		// 	newRefreshToken: "..." + newRefreshToken.slice(-10),
 		// });
 		const reTokenData = await postUrlFormData<BaseResponse & { [key in typeof preset.primaryKey]: number }>(
 			getBackendUrl(preset.reTokenApiUrl),
@@ -67,8 +67,14 @@ export const handleTokenRefresh = async <R extends Role>(
 	nextRequest: NextRequest,
 	preset: MiddlewareTokenRefreshPreset<R>,
 ): Promise<{ response: NextResponse; newAccessToken?: string; newRefreshToken?: string }> => {
+	// console.log("프리셋 체크", preset);
 	const accessToken = nextRequest.cookies.get(preset.aToken)?.value || nextRequest.headers.get(preset.aToken);
 	const refreshToken = nextRequest.cookies.get(preset.rToken)?.value || nextRequest.headers.get(preset.rToken);
+
+	console.log(`[Middleware TokenRefresh:${preset.role}] 토큰 재발급 체크 - 요청 url: ${nextRequest.url}`, {
+		[preset.aToken]: accessToken ? "..." + accessToken.slice(-10) : "없음",
+		[preset.rToken]: refreshToken ? "..." + refreshToken.slice(-10) : "없음",
+	});
 
 	// 1) accessToken 유효 → 그대로 통과
 	if (accessToken?.trim()) {
@@ -100,7 +106,7 @@ export const handleTokenRefresh = async <R extends Role>(
 	const lockKey = `mw-refresh:${preset.role}:${refreshToken.slice(-10)}`;
 
 	const result = await tokenRefreshLock.acquireOrWait(lockKey, async () => {
-		console.log(`[Middleware TokenLock:${preset.role}] 토큰 갱신 시작: ${lockKey}`);
+		// console.log(`[Middleware TokenLock:${preset.role}] 토큰 갱신 시작: ${lockKey}`);
 		return refreshAccessToken(nextRequest, refreshToken, preset);
 	});
 
@@ -122,8 +128,8 @@ export const handleTokenRefresh = async <R extends Role>(
 		});
 
 		console.log(`[Middleware TokenRefresh:${preset.role}] 토큰 쿠키 재설정 완료`, {
-			newAccessToken: result.newAccessToken!.slice(-10) + "...",
-			newRefreshToken: result.newRefreshToken!.slice(-10) + "...",
+			newAccessToken: "..." + result.newAccessToken!.slice(-10),
+			newRefreshToken: "..." + result.newRefreshToken!.slice(-10),
 		});
 
 		return {
@@ -152,6 +158,8 @@ export const handleTokenRefresh = async <R extends Role>(
 			maxAge: 0,
 		});
 	}
+
+	console.log(`[Middleware TokenRefresh:${preset.role}] 토큰 재발급 체크 완료`);
 
 	return { response };
 };
@@ -197,9 +205,9 @@ export const handleAuthCheck = async <R extends Role>(
 	const accessToken = nextRequest.cookies.get(preset.aToken)?.value || nextRequest.headers.get(preset.aToken);
 	const refreshToken = nextRequest.cookies.get(preset.rToken)?.value || nextRequest.headers.get(preset.rToken);
 
-	console.log(`[Middleware AuthCheck:${preset.role}] 인증이 필요한 url: ${nextRequest.url}`, {
-		[preset.aToken]: accessToken ? accessToken.slice(-10) + "..." : "없음",
-		[preset.rToken]: refreshToken ? refreshToken.slice(-10) + "..." : "없음",
+	console.log(`[Middleware AuthCheck:${preset.role}] 인증 필요 페이지 처리 url: ${nextRequest.url}`, {
+		[preset.aToken]: accessToken ? "..." + accessToken.slice(-10) : "없음",
+		[preset.rToken]: refreshToken ? "..." + refreshToken.slice(-10) : "없음",
 	});
 
 	// 1) refreshToken 없음 → 로그인 페이지로 리다이렉트

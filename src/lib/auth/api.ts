@@ -20,8 +20,8 @@ export const refreshAuthFromTokens = async <R extends Role>(
 	const refreshToken = nextRequest.cookies.get(preset.rToken)?.value || nextRequest.headers.get(preset.rToken) || undefined;
 
 	console.log(`[API refreshAuthFromTokens:${preset.role}] 토큰 재발급 / 현재 토큰 =>`, {
-		[preset.aToken]: accessToken ? accessToken.slice(-10) + "..." : "없음",
-		[preset.rToken]: refreshToken ? refreshToken.slice(-10) + "..." : "없음",
+		[preset.aToken]: accessToken ? "..." + accessToken.slice(-10) : "없음",
+		[preset.rToken]: refreshToken ? "..." + refreshToken.slice(-10) : "없음",
 	});
 
 	// 1) accessToken 유효하면 그대로 통과
@@ -87,8 +87,8 @@ export const refreshAuthFromTokens = async <R extends Role>(
 		const newAccessToken = preset.generateAToken(aTokenPayload);
 
 		console.log(`[API TokenRefresh:${preset.role}]`, {
-			[preset.newAToken]: newAccessToken.slice(-10) + "...",
-			[preset.newRToken]: newRefreshToken.slice(-10) + "...",
+			[preset.newAToken]: "..." + newAccessToken.slice(-10),
+			[preset.newRToken]: "..." + newRefreshToken.slice(-10),
 		});
 
 		return {
@@ -175,8 +175,8 @@ export const withAuth =
 				maxAge: REFRESH_TOKEN_COOKIE_AGE,
 			});
 			console.log(`[API withAuth:${preset.role}] 토큰 쿠키 재설정 완료`, {
-				newAccessToken: (okAuth[newATokenKey] as string).slice(-10) + "...",
-				newRefreshToken: (okAuth[newRTokenKey] as string).slice(-10) + "...",
+				newAccessToken: "..." + (okAuth[newATokenKey] as string).slice(-10),
+				newRefreshToken: "..." + (okAuth[newRTokenKey] as string).slice(-10),
 			});
 		}
 		return response;

@@ -22,11 +22,13 @@ export const generateTokenForMiddleware = (secret: string | Uint8Array, payload:
 };
 
 /** JWT 검증 (Node.js 환경) */
-export const verifyTokenByType = (secret: string, token: string, expectedType: string, hasUserNo = false): Token => {
+export const verifyTokenByType = (secret: string, token: string, expectedType: string, primaryKey?: string): Token => {
 	const payload = jwt.verify(token, secret, { algorithms: ["HS256"] }) as Token;
 
-	// 타입과 userNo 조건 검증
-	const isValid = payload.type === expectedType && (!hasUserNo ? !payload.userNo : !!payload.userNo);
+	// 타입과 userNo, sellerNo, adminNo 조건 검증
+	let isValid = payload.type === expectedType;
+	if (primaryKey) isValid = isValid && !!payload[primaryKey];
+
 	if (!isValid) throw new Error("INVALID_TOKEN_TYPE");
 
 	return payload;
@@ -37,13 +39,16 @@ export const middlewareVerifyTokenByType = async (
 	secret: string | Uint8Array,
 	token: string,
 	expectedType: string,
-	hasUserNo = false,
+	primaryKey?: string,
 ): Promise<Token> => {
 	try {
 		const secretAsUint8Array = typeof secret === "string" ? new TextEncoder().encode(secret) : secret;
 		const { payload } = await jwtVerify(token, secretAsUint8Array, { algorithms: ["HS256"] });
 
-		const isValid = payload.type === expectedType && (!hasUserNo ? !payload.userNo : !!payload.userNo);
+		// 타입과 userNo, sellerNo, adminNo 조건 검증
+		let isValid = payload.type === expectedType;
+		if (primaryKey) isValid = isValid && !!payload[primaryKey];
+
 		if (!isValid) throw new Error("INVALID_TOKEN_TYPE");
 
 		return payload as Token;
