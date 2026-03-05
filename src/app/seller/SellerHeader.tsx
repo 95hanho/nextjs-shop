@@ -45,9 +45,9 @@ export default function SellerHeader() {
 								<Link key="info" href="/seller/info" prefetch={false}>
 									내정보
 								</Link>,
-								<button key="logout" onClick={logout}>
+								<a key="logout" onClick={logout}>
 									로그아웃
-								</button>,
+								</a>,
 							]}
 						/>
 					</button>

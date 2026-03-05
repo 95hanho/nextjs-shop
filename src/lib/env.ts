@@ -7,12 +7,12 @@ export const BASIC_NO_IMAGE = process.env.NEXT_PUBLIC_BASIC_NO_IMAGE || "";
 // =========================================
 // JWT 인증키
 // =========================================
-// refresh
-export const REFRESH_JWT_SECRET_KEY = process.env.NEXT_PUBLIC_REFRESH_SECRET || "your-secret";
-export const MIDDLEWARE_REFRESH_JWT_SECRET_KEY = new TextEncoder().encode(process.env.NEXT_PUBLIC_REFRESH_SECRET || "your-secret");
 // access
 export const JWT_SECRET_KEY = process.env.NEXT_PUBLIC_JWT_SECRET || "your-secret";
 export const MIDDLEWARE_JWT_SECRET_KEY = new TextEncoder().encode(process.env.NEXT_PUBLIC_JWT_SECRET || "your-secret");
+// refresh
+export const REFRESH_JWT_SECRET_KEY = process.env.NEXT_PUBLIC_REFRESH_SECRET || "your-secret";
+export const MIDDLEWARE_REFRESH_JWT_SECRET_KEY = new TextEncoder().encode(process.env.NEXT_PUBLIC_REFRESH_SECRET || "your-secret");
 // seller, admin
 export const SELLER_JWT_SECRET_KEY = process.env.NEXT_PUBLIC_SELLER_JWT_SECRET || "your-secret";
 export const MIDDLEWARE_SELLER_JWT_SECRET_KEY = new TextEncoder().encode(process.env.NEXT_PUBLIC_SELLER_JWT_SECRET || "your-secret");

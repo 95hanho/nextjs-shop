@@ -119,12 +119,10 @@ export const withOptionalAuth =
 			});
 			console.log("[withOptionalAuth] 토큰 다시 세팅 !!!! ---------------------", nextRequest.url);
 		}
-		console.log(
-			"[withOptionalAuth] 마지막 토큰확인 accessToken",
-			response.cookies.get("accessToken")?.value?.slice(-10) + "...",
-			"refreshToken",
-			response.cookies.get("refreshToken")?.value?.slice(-10) + "...",
-		);
+		console.log(`[withOptionalAuth] 마지막 토큰확인`, {
+			accessToken: "..." + response.cookies.get("accessToken")?.value?.slice(-10),
+			refreshToken: "..." + response.cookies.get("refreshToken")?.value?.slice(-10),
+		});
 
 		return response;
 	};

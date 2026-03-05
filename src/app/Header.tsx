@@ -87,9 +87,9 @@ export default function Header({ menuList }: HeaderProps) {
 												로그인
 											</Link>
 										) : (
-											<button key="logout" onClick={logoutButton}>
+											<a key="logout" onClick={logoutButton}>
 												로그아웃
-											</button>
+											</a>
 										)}
 									</>,
 									<Link key="order-history" href="/mypage/order-history" prefetch={false}>

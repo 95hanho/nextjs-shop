@@ -1,7 +1,9 @@
 // src/middleware.ts or /middleware.ts
-import { handleAuthCheck, handleTokenRefresh } from "@/lib/auth/mv";
+import { adminHandleAuthCheck, adminHandleTokenRefresh } from "@/lib/auth/admin";
+import { sellerHandleAuthCheck, sellerHandleTokenRefresh } from "@/lib/auth/seller";
+import { userHandleAuthCheck, userHandleTokenRefresh } from "@/lib/auth/user";
 import { isAuthRequiredPath } from "@/utils/auth";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 
 /**
  * middleware는 Edge Runtime에서 동작
@@ -26,27 +28,44 @@ export async function middleware(nextRequest: NextRequest) {
 	// 1) 유저 ------------------------------------
 	if (!pathname.startsWith("/seller") && !pathname.startsWith("/admin")) {
 		// 1) ✅ 모든 요청에 대해 토큰 재발급 먼저 처리
-		const { response: tokenResponse } = await handleTokenRefresh(nextRequest);
+		const { response: tokenResponse } = await userHandleTokenRefresh(nextRequest);
 
 		// 2) 로그인이 필요한 페이지는 추가 인증 체크
 		const needsAuth = isAuthRequiredPath(pathname);
+		// 로그인이 필요한 페이지가 아니면 토큰 재발급 결과만 적용된 response 반환 (쿠키 유지)
 		if (!needsAuth) {
-			// 로그인이 필요한 페이지가 아니면 토큰 재발급 결과만 적용된 response 반환 (쿠키 유지)
 			return tokenResponse;
 		}
 
 		// 3) ✅ 토큰 재발급이 적용된 response를 전달하여 쿠키 유지
-		return handleAuthCheck(nextRequest, tokenResponse);
+		return userHandleAuthCheck(nextRequest, tokenResponse);
 	}
 	// 2) 판매자 ------------------------------------
 	if (pathname.startsWith("/seller")) {
-		console.log("판매자 페이지 접근");
-		return NextResponse.next();
+		console.log("[Middleware] 판매자 페이지 접근");
+		// 1) ✅ 모든 요청에 대해 토큰 재발급 먼저 처리
+		const { response: tokenResponse } = await sellerHandleTokenRefresh(nextRequest);
+
+		// 로그인이 필요한 페이지가 아니면 토큰 재발급 결과만 적용된 response 반환 (쿠키 유지)
+		if (pathname.startsWith("/seller/login")) {
+			return tokenResponse;
+		}
+
+		// 3) ✅ 토큰 재발급이 적용된 response를 전달하여 쿠키 유지
+		return sellerHandleAuthCheck(nextRequest, tokenResponse);
 	}
 	// 3) 관리자 ------------------------------------
 	if (pathname.startsWith("/admin")) {
-		console.log("관리자 페이지 접근");
-		return NextResponse.next();
+		console.log("[Middleware] 관리자 페이지 접근");
+		const { response: tokenResponse } = await adminHandleTokenRefresh(nextRequest);
+
+		// 로그인이 필요한 페이지가 아니면 토큰 재발급 결과만 적용된 response 반환 (쿠키 유지)
+		if (pathname.startsWith("/admin/login")) {
+			return tokenResponse;
+		}
+
+		// 3) ✅ 토큰 재발급이 적용된 response를 전달하여 쿠키 유지
+		return adminHandleAuthCheck(nextRequest, tokenResponse);
 	}
 }
 
