@@ -19,7 +19,7 @@ import {
 	REFRESH_TOKEN_EXPIRES_IN,
 	SELLER_TOKEN_EXPIRES_IN,
 } from "@/lib/auth/utils/tokenTime";
-import { generateToken, generateTokenForMiddleware, middlewareVerifyTokenByType, verifyTokenByType } from "@/lib/jwt";
+import { generateToken, generateTokenForMiddleware, middlewareVerifyTokenByType, verifyTokenByType } from "@/lib/auth/utils/jwt";
 import { StringValue } from "ms";
 import { Token } from "@/types/token";
 

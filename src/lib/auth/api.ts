@@ -18,9 +18,11 @@ export const refreshAuthFromTokens = async <R extends Role>(
 ): Promise<AutoRefreshResult<R>> => {
 	const accessToken = nextRequest.cookies.get(preset.aToken)?.value || nextRequest.headers.get(preset.aToken) || undefined;
 	const refreshToken = nextRequest.cookies.get(preset.rToken)?.value || nextRequest.headers.get(preset.rToken) || undefined;
-	console.log(
-		`[refreshAuthFromTokens:${preset.role}] 현재 토큰 ${preset.aToken} ${accessToken?.slice(-10)}... ${preset.rToken} ${refreshToken?.slice(-10)}...`,
-	);
+
+	console.log(`[API refreshAuthFromTokens:${preset.role}] 토큰 재발급 / 현재 토큰 =>`, {
+		[preset.aToken]: accessToken ? accessToken.slice(-10) + "..." : "없음",
+		[preset.rToken]: refreshToken ? refreshToken.slice(-10) + "..." : "없음",
+	});
 
 	// 1) accessToken 유효하면 그대로 통과
 	if (accessToken?.trim()) {
@@ -29,7 +31,7 @@ export const refreshAuthFromTokens = async <R extends Role>(
 			return { ok: true, [preset.primaryKey]: token[preset.primaryKey] };
 		} catch {
 			// accessToken 만료 → 아래에서 refreshToken으로 처리
-			console.warn(`[refreshAuthFromTokens:${preset.role}] accessToken 만료됨!!!`);
+			console.warn(`[API refreshAuthFromTokens:${preset.role}] accessToken 만료됨!!!`);
 		}
 	}
 
@@ -75,7 +77,7 @@ export const refreshAuthFromTokens = async <R extends Role>(
 				["x-forwarded-for"]: ip,
 			},
 		);
-		console.log(`[API TokenRefresh:${preset.role}] 토큰 재생성 완료 ${reTokenData}`);
+		// console.log(`[API TokenRefresh:${preset.role}] 토큰 재생성 완료 ${reTokenData}`);
 
 		const primaryKey = preset.primaryKey as KeyOf<R, "primaryKey">;
 		const aTokenPayload = {
@@ -83,9 +85,11 @@ export const refreshAuthFromTokens = async <R extends Role>(
 		} as Record<KeyOf<R, "primaryKey">, number>;
 
 		const newAccessToken = preset.generateAToken(aTokenPayload);
-		console.log(
-			`[API TokenRefresh:${preset.role}] ${preset.newAToken} ${newAccessToken.slice(-10)}... ${preset.newRToken} ${newRefreshToken.slice(-10)}...`,
-		);
+
+		console.log(`[API TokenRefresh:${preset.role}]`, {
+			[preset.newAToken]: newAccessToken.slice(-10) + "...",
+			[preset.newRToken]: newRefreshToken.slice(-10) + "...",
+		});
 
 		return {
 			ok: true,
@@ -108,7 +112,6 @@ export const withAuth =
 			const response = NextResponse.json({ message: auth.message }, { status: auth.status });
 
 			if (auth.clearCookies) {
-				console.warn(`[withAuth:${preset.role}] 토큰초기화!!`);
 				response.cookies.set(preset.aToken, "", {
 					httpOnly: true,
 					secure: isProd,
@@ -123,6 +126,7 @@ export const withAuth =
 					path: "/",
 					maxAge: 0,
 				});
+				console.warn(`[API withAuth:${preset.role}] 토큰초기화!!`);
 			}
 
 			return response;
@@ -156,19 +160,23 @@ export const withAuth =
 
 		// 토큰 재발급된 경우 쿠키 세팅
 		if (okAuth[newATokenKey] && okAuth[newRTokenKey]) {
-			response.cookies.set(preset.aToken, okAuth[newATokenKey], {
+			response.cookies.set(preset.aToken, okAuth[newATokenKey] as string, {
 				httpOnly: true,
 				secure: isProd,
 				sameSite: "strict",
 				path: "/",
 				maxAge: preset.aTokenCookieAge,
 			});
-			response.cookies.set(preset.rToken, okAuth[newRTokenKey], {
+			response.cookies.set(preset.rToken, okAuth[newRTokenKey] as string, {
 				httpOnly: true,
 				secure: isProd,
 				sameSite: "strict",
 				path: "/",
 				maxAge: REFRESH_TOKEN_COOKIE_AGE,
+			});
+			console.log(`[API withAuth:${preset.role}] 토큰 쿠키 재설정 완료`, {
+				newAccessToken: (okAuth[newATokenKey] as string).slice(-10) + "...",
+				newRefreshToken: (okAuth[newRTokenKey] as string).slice(-10) + "...",
 			});
 		}
 		return response;

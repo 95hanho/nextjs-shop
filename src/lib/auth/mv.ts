@@ -17,9 +17,10 @@ const refreshAccessToken = async <R extends Role>(nextRequest: NextRequest, refr
 	const ip = xffHeader?.split(",")[0]?.trim() ?? nextRequest.headers.get("x-real-ip") ?? "unknown";
 
 	try {
-		console.log(
-			`[Middleware TokenRefresh:${preset.role}] 토큰 재생성 시작 => beforeToken: ${refreshToken.slice(-10)}..., newRefreshToken: ${newRefreshToken.slice(-10)}|...`,
-		);
+		// console.log(`[Middleware TokenRefresh:${preset.role}] 토큰 재생성 시작 =>`, {
+		// 	beforeToken: refreshToken.slice(-10) + "...",
+		// 	newRefreshToken: newRefreshToken.slice(-10) + "...",
+		// });
 		const reTokenData = await postUrlFormData<BaseResponse & { [key in typeof preset.primaryKey]: number }>(
 			getBackendUrl(preset.reTokenApiUrl),
 			{
@@ -31,7 +32,7 @@ const refreshAccessToken = async <R extends Role>(nextRequest: NextRequest, refr
 				["x-forwarded-for"]: ip,
 			},
 		);
-		console.log(`[Middleware TokenRefresh:${preset.role}] 토큰 재생성 완료`, reTokenData);
+		// console.log(`[Middleware TokenRefresh:${preset.role}] 토큰 재생성 완료`, reTokenData);
 
 		const primaryKey = preset.primaryKey as KeyOf<R, "primaryKey">;
 		const aTokenPayload = {
@@ -39,10 +40,6 @@ const refreshAccessToken = async <R extends Role>(nextRequest: NextRequest, refr
 		} as Record<KeyOf<R, "primaryKey">, number>;
 
 		const newAccessToken = await preset.generateATokenForMiddleware(aTokenPayload);
-		console.log(`[Middleware TokenRefresh:${preset.role}] 토큰 재생성 완료`, {
-			newAccessToken: newAccessToken.slice(-10) + "...",
-			newRefreshToken: newRefreshToken.slice(-10) + "...",
-		});
 
 		return {
 			success: true,
@@ -50,6 +47,7 @@ const refreshAccessToken = async <R extends Role>(nextRequest: NextRequest, refr
 			newRefreshToken,
 		};
 	} catch (err: unknown) {
+		console.error(`[Middleware TokenRefresh:${preset.role}] 토큰 재생성 중 오류`, err);
 		const { status } = toErrorResponse(err);
 
 		// 토큰 자체가 문제인 케이스(예시)
@@ -76,7 +74,7 @@ export const handleTokenRefresh = async <R extends Role>(
 	if (accessToken?.trim()) {
 		try {
 			await preset.verifyATokenForMiddleware(accessToken);
-			console.log(`[Middleware TokenRefresh:${preset.role}] ${preset.aToken} 유효`);
+			// console.log(`[Middleware TokenRefresh:${preset.role}] ${preset.aToken} 유효`);
 			return { response: NextResponse.next() };
 		} catch {
 			console.warn(`[Middleware TokenRefresh:${preset.role}] ${preset.aToken} 만료됨`);
@@ -91,7 +89,7 @@ export const handleTokenRefresh = async <R extends Role>(
 	// 3) refreshToken 검증
 	try {
 		await preset.verifyRTokenForMiddleware(refreshToken);
-		console.log(`[Middleware TokenRefresh:${preset.role}] ${preset.rToken} 유효`);
+		// console.log(`[Middleware TokenRefresh:${preset.role}] ${preset.rToken} 유효`);
 	} catch {
 		console.error(`[Middleware TokenRefresh:${preset.role}] ${preset.rToken} 만료됨`);
 		return { response: NextResponse.next() };
@@ -122,6 +120,12 @@ export const handleTokenRefresh = async <R extends Role>(
 			path: "/",
 			maxAge: REFRESH_TOKEN_COOKIE_AGE,
 		});
+
+		console.log(`[Middleware TokenRefresh:${preset.role}] 토큰 쿠키 재설정 완료`, {
+			newAccessToken: result.newAccessToken!.slice(-10) + "...",
+			newRefreshToken: result.newRefreshToken!.slice(-10) + "...",
+		});
+
 		return {
 			response,
 			// newAccessToken: result.newAccessToken,
@@ -190,14 +194,13 @@ export const handleAuthCheck = async <R extends Role>(
 	baseResponse: NextResponse,
 	preset: MiddlewareAuthCheckPreset<R>,
 ): Promise<NextResponse> => {
-	console.log(`[Middleware AuthCheck:${preset.role}] 로그인 인증이 필요한 url: ${nextRequest.url}`);
-
 	const accessToken = nextRequest.cookies.get(preset.aToken)?.value || nextRequest.headers.get(preset.aToken);
 	const refreshToken = nextRequest.cookies.get(preset.rToken)?.value || nextRequest.headers.get(preset.rToken);
 
-	console.log(
-		`[Middleware AuthCheck:${preset.role}] 토큰 확인 ${preset.aToken}: ${accessToken ? accessToken.substring(0, 10) + "..." : "없음"}, ${preset.rToken}: ${refreshToken ? refreshToken.substring(0, 10) + "..." : "없음"}`,
-	);
+	console.log(`[Middleware AuthCheck:${preset.role}] 인증이 필요한 url: ${nextRequest.url}`, {
+		[preset.aToken]: accessToken ? accessToken.slice(-10) + "..." : "없음",
+		[preset.rToken]: refreshToken ? refreshToken.slice(-10) + "..." : "없음",
+	});
 
 	// 1) refreshToken 없음 → 로그인 페이지로 리다이렉트
 	if (!refreshToken?.trim()) {
@@ -208,7 +211,6 @@ export const handleAuthCheck = async <R extends Role>(
 	// 2) refreshToken 검증
 	try {
 		await preset.verifyRTokenForMiddleware(refreshToken);
-		console.log(`[Middleware AuthCheck:${preset.role}] ${preset.rToken} 유효`);
 	} catch {
 		console.error(`[Middleware AuthCheck:${preset.role}] ${preset.rToken} 만료 → 로그인 페이지로 리다이렉트`);
 		return redirectToLogin(nextRequest, "need_login", preset);
@@ -219,13 +221,13 @@ export const handleAuthCheck = async <R extends Role>(
 	if (accessToken?.trim()) {
 		try {
 			await preset.verifyATokenForMiddleware(accessToken);
-			console.log(`[Middleware AuthCheck:${preset.role}] ${preset.aToken} 유효 - 통과`);
+			// console.log(`[Middleware AuthCheck:${preset.role}] ${preset.rToken} 유효 - ${preset.aToken} 유효`);
 		} catch {
-			console.warn(`[Middleware AuthCheck:${preset.role}] ${preset.aToken} 만료됨 - ${preset.rToken} 유효하므로 baseResponse로 통과`);
+			console.warn(`[Middleware AuthCheck:${preset.role}] ${preset.aToken} 만료 - ${preset.rToken} 유효하므로 baseResponse로 통과 / 확인 필요`);
 		}
 		return baseResponse;
 	}
 	// 5) refreshToken 유효 → 페이지 접근은 허용 (accessToken 없음/미확인 다음 요청에서 반영/재발급될 수 있음, baseResponse로 통과)
-	console.log(`[Middleware AuthCheck:${preset.role}] ${preset.rToken} 유효 - ${preset.aToken} 없음 - ${preset.rToken} 유효하므로 통과`);
+	console.log(`[Middleware AuthCheck:${preset.role}] ${preset.rToken} 유효 - ${preset.aToken} 없음 - ${preset.rToken} 유효하므로 통과 / 확인 필요`);
 	return baseResponse;
 };
