@@ -45,10 +45,12 @@ export interface SellerRegisterRequest extends SellerLoginForm, SellerInfo {}
 type SellerProductOptionAdd = { salesCount: number; createdAt: string; updatedAt: string; displayed: boolean };
 export type sellerProduct = ProductDetail & {
 	sellerId: string;
+	updatedAt: string;
 	subMenuName: string;
 	topMenuName: string;
 	gender: string;
 	optionList: (ProductOption & SellerProductOptionAdd)[];
+	saleStop: boolean;
 };
 export interface GetSellerProductListResponse extends BaseResponse {
 	sellerProductList: sellerProduct[];

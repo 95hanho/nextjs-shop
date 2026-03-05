@@ -15,7 +15,7 @@ export const GET = sellerWithAuth(async ({ sellerToken }) => {
 		const data = await getNormal<GetSellerProductListResponse>(getBackendUrl(API_URL.SELLER_PRODUCT), undefined, {
 			Authorization: `Bearer ${sellerToken}`,
 		});
-		console.log("data", data);
+		// console.log("data", data);
 
 		return NextResponse.json({ ...data }, { status: 200 });
 	} catch (err: unknown) {

@@ -17,7 +17,7 @@ import { sellerWithAuth } from "@/lib/auth/seller";
 export const GET = sellerWithAuth(async ({ sellerToken }) => {
 	console.log("[API] 판매자 정보조회");
 	try {
-		const data = await getNormal<GetSellerInfoResponse>(getBackendUrl(API_URL.AUTH), {
+		const data = await getNormal<GetSellerInfoResponse>(getBackendUrl(API_URL.SELLER), undefined, {
 			Authorization: `Bearer ${sellerToken}`,
 		});
 		return NextResponse.json({ ...data }, { status: 200 });

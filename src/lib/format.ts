@@ -12,3 +12,15 @@ export const money = (v: number | string): string => {
 export const discountPercent = (originPrice: number, discountedPrice: number) => {
 	return Math.round(((originPrice - discountedPrice) / originPrice) * 100);
 };
+
+/** 성별 코드를 한글로 변환 */
+export const getGender = (genderCode: "M" | "F" | string) => {
+	switch (genderCode) {
+		case "M":
+			return "남성";
+		case "F":
+			return "여성";
+		default:
+			return "알 수 없음";
+	}
+};

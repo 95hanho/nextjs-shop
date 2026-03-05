@@ -50,9 +50,9 @@ export default function AdminHeader() {
 											로그인
 										</Link>
 									) : (
-										<div key="logout" onClick={logout}>
+										<a key="logout" onClick={logout}>
 											로그아웃
-										</div>
+										</a>
 									)}
 								</>,
 							]}
