@@ -95,8 +95,10 @@ export interface UpdateSellerProductOption {
 	isDisplayed: boolean;
 }
 /* 쿠폰 조회 */
+export type SellerCoupon = Coupon & AdminCoupon;
+
 export interface GetSellerCouponListResponse extends BaseResponse {
-	couponList: (Coupon & AdminCoupon)[];
+	couponList: SellerCoupon[];
 }
 /* 쿠폰 등록 */
 export interface AddCouponRequest {

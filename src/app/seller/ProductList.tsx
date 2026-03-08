@@ -8,9 +8,9 @@ import { getApiUrl } from "@/lib/getBaseUrl";
 import { GetSellerProductListResponse, sellerProduct } from "@/types/seller";
 import { useQuery } from "@tanstack/react-query";
 import moment from "moment";
-import { useState } from "react";
-import { BsFillSignStopFill } from "react-icons/bs";
+import React, { useEffect, useState } from "react";
 import { FaCaretSquareDown } from "react-icons/fa";
+import styles from "./ProductList.module.scss";
 
 export default function ProductList() {
 	const { loginOn } = useSellerAuth();
@@ -23,14 +23,15 @@ export default function ProductList() {
 	// invalidateQueries(["cartList"])
 	const {
 		data: sellerProductList = [],
-		isLoading,
+		isLoading: isProductLoading,
 		// isFetching,
 	} = useQuery<GetSellerProductListResponse, Error, sellerProduct[]>({
 		queryKey: ["sellerProductList"],
-		queryFn: async () => await getNormal(getApiUrl(API_URL.SELLER_PRODUCT)),
+		queryFn: () => getNormal(getApiUrl(API_URL.SELLER_PRODUCT)),
 		select: (data) => {
 			return data.sellerProductList;
 		},
+
 		enabled: loginOn,
 		refetchOnWindowFocus: false,
 	});
@@ -38,10 +39,17 @@ export default function ProductList() {
 	// ------------------------------------------------
 	// React
 	// ------------------------------------------------
+
 	const [openProductId, setOpenProductId] = useState<number | null>(null);
 
+	useEffect(() => {
+		if (sellerProductList.length > 0) {
+			// console.log("sellerProductList", sellerProductList);
+		}
+	}, [sellerProductList]);
+
 	return (
-		<div>
+		<div id="sellerProductList">
 			<h2>상품 목록</h2>
 			<div>
 				<table>
@@ -59,11 +67,11 @@ export default function ProductList() {
 						</tr>
 					</thead>
 					<tbody>
-						{!isLoading && (
+						{!isProductLoading && (
 							<>
 								{sellerProductList.length > 0 &&
 									sellerProductList.map((product) => (
-										<>
+										<React.Fragment key={product.productId}>
 											<tr key={product.productId}>
 												<td>{product.name}</td>
 												<td>{moment(product.createdAt).format("YYYY-MM-DD")}</td>
@@ -88,24 +96,35 @@ export default function ProductList() {
 													<td colSpan={10}>
 														<div>
 															<h4>옵션 목록</h4>
-															<div>
-																<table>
+															<div className={styles.productOptionTable}>
+																<table className="w-full">
 																	<thead>
 																		<tr>
 																			<th>사이즈</th>
 																			<th>추가금액</th>
 																			<th>재고</th>
-																			<th></th>
+																			<th>판매량</th>
+																			<th>숨김</th>
 																		</tr>
 																	</thead>
-																	<tbody></tbody>
+																	<tbody>
+																		{product.optionList.map((option) => (
+																			<tr key={option.productOptionId}>
+																				<td>{option.size}</td>
+																				<td>{option.addPrice}</td>
+																				<td>{option.stock}</td>
+																				<td>{option.salesCount}</td>
+																				<td>{!option.displayed && "O"}</td>
+																			</tr>
+																		))}
+																	</tbody>
 																</table>
 															</div>
 														</div>
 													</td>
 												</tr>
 											)}
-										</>
+										</React.Fragment>
 									))}
 							</>
 						)}
