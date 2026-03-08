@@ -9,21 +9,14 @@ import { AddCouponRequest, GetSellerCouponListResponse, UpdateCouponRequest } fr
 import { NextResponse } from "next/server";
 
 // 쿠폰 조회
-export const GET = sellerWithAuth(async ({ nextRequest, sellerToken }) => {
+export const GET = sellerWithAuth(async ({ sellerToken }) => {
 	try {
-		const sellerId = nextRequest.nextUrl.searchParams.get("sellerId");
-		if (!sellerId) return NextResponse.json({ message: "판매자 아이디를 입력해주세요." }, { status: 400 });
-
-		const data = await getNormal<GetSellerCouponListResponse>(
-			getBackendUrl(API_URL.SELLER_COUPON),
-			{ sellerId },
-			{
-				Authorization: `Bearer ${sellerToken}`,
-			},
-		);
+		const data = await getNormal<GetSellerCouponListResponse>(getBackendUrl(API_URL.SELLER_COUPON), undefined, {
+			Authorization: `Bearer ${sellerToken}`,
+		});
 		console.log("data", data);
 
-		return NextResponse.json({ message: data.message }, { status: 200 });
+		return NextResponse.json({ ...data }, { status: 200 });
 	} catch (err: unknown) {
 		const { status, payload } = toErrorResponse(err);
 		return NextResponse.json(payload, { status });
