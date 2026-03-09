@@ -7,7 +7,7 @@ import { CartItem, UpdateCartRequest, UpdateCartSelectedRequest } from "@/types/
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import API_URL from "@/api/endpoints";
 import { getApiUrl } from "@/lib/getBaseUrl";
-import { IoIosClose } from "react-icons/io";
+import { IoIosClose, IoMdDownload } from "react-icons/io";
 import { BsExclamationCircle } from "react-icons/bs";
 import { deleteNormal, postJson, putJson } from "@/api/fetchFilter";
 import { money } from "@/lib/format";
@@ -19,6 +19,9 @@ import Error from "next/error";
 import { SmartImage } from "@/components/ui/SmartImage";
 import { WishButton } from "@/components/product/WishButton";
 import { BrandGroupEntry, CartItemSelectCollection } from "@/app/mypage/cart/CartClient";
+import clsx from "clsx";
+import { TooltipIcon } from "@/components/ui/TooltipIcon";
+import { calculateDiscount } from "@/lib/price";
 
 interface CartProductSectionProps extends CartItemSelectCollection {
 	brandGroupList: BrandGroupEntry[];
@@ -281,10 +284,12 @@ export default function CartProductSection({
 
 																<div className={styles.productItemPrices}>
 																	<h5 className={`${styles.price} ${styles.priceSale}`}>
-																		<del>129,000원</del>
+																		<del>{money(product.originPrice * product.quantity)}원</del>
 																	</h5>
 																	<h5 className={`${styles.price} ${styles.priceOrigin}`}>
-																		<span>{money(product.finalPrice)}원</span>
+																		<span>
+																			{money(product.finalPrice * product.quantity - product.discountAmount)}원
+																		</span>
 																	</h5>
 																</div>
 															</div>
@@ -303,6 +308,70 @@ export default function CartProductSection({
 													<div className={styles.productItemActions}>
 														<button onClick={() => openOptionChangeModal(product)}>옵션 변경</button>
 														<button>쿠폰 사용</button>
+													</div>
+
+													<div className={styles.productItemAppliedCouponList}>
+														<div className={styles.appliedCouponListTitle}>
+															{product.appliedCouponList.map((coupon) => {
+																const isDiscountApplied = calculateDiscount(
+																	product.finalPrice * product.quantity,
+																	coupon,
+																);
+
+																return (
+																	<div
+																		key={"appliedCouponList-" + coupon.couponId}
+																		className={clsx(
+																			styles.myPriceCheckboxTooltip,
+																			isDiscountApplied ? "" : styles.disabled,
+																		)}
+																	>
+																		<div className={styles.checkbox}>
+																			<input
+																				id={"coupon-" + coupon.couponId}
+																				type="checkbox"
+																				disabled={!isDiscountApplied}
+																				checked={coupon.used}
+																				onChange={() => {
+																					// setAppliedProductCoupon(!couponChecked);
+																				}}
+																			/>
+																			<label htmlFor={"coupon-" + coupon.couponId} title={coupon.description}>
+																				<span className={coupon.isStackable ? styles.isStackable : ""}>
+																					{coupon.description}
+																				</span>
+																				{!coupon.isStackable && <mark>중복불가</mark>}
+																			</label>
+																		</div>
+																		<div className={styles.discountInfo}>
+																			{isDiscountApplied ? (
+																				<strong>-{money(isDiscountApplied)}</strong>
+																			) : (
+																				<span className="inline-flex items-center w-100px">
+																					<strong className="text-[10px] text-red-500">적용불가</strong>
+																					<TooltipIcon tooltipText="수량을 늘리거나, 같은 판매자 상품을 함께 구매하면 적용될 수 있어요." />
+																				</span>
+																			)}
+																			{coupon.userCouponId ? (
+																				<span className={clsx(styles.couponDownloadBtn, styles.have)}>
+																					보유중
+																				</span>
+																			) : (
+																				<button
+																					className={clsx(styles.couponDownloadBtn)}
+																					onClick={() => {
+																						// couponDownload.mutate(coupon.couponId);
+																					}}
+																				>
+																					받기
+																					<IoMdDownload />
+																				</button>
+																			)}
+																		</div>
+																	</div>
+																);
+															})}
+														</div>
 													</div>
 												</div>
 
