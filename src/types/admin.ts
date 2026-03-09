@@ -1,6 +1,6 @@
 import { BaseResponse } from "@/types/common";
 import { AdminCoupon, Coupon } from "@/types/mypage";
-import { SellerInfo } from "@/types/seller";
+import { SellerInfo, SellerLoginForm } from "@/types/seller";
 import { User } from "@/types/user";
 
 // 로그인폼 데이터
@@ -40,9 +40,7 @@ export interface GetSellerResponse extends BaseResponse {
 	sellerList: AdminSellerInfo;
 }
 /* 판매자 추가 */
-export interface AddSellerRequest extends SellerInfo {
-	password: string;
-}
+export interface AddSellerRequest extends SellerLoginForm, SellerInfo {}
 /* 판매자 승인여부 변경 */
 export interface SetSellerApprovalRequest {
 	sellerNoList: number[];

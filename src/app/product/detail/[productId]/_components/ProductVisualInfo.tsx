@@ -245,7 +245,7 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 			return; // 이미 초기화했으면 다시 실행 안 함
 		}
 
-		// 쿠폰 적용한 쿠폰 filter
+		// 쿠폰 적용 가능한 쿠폰 filter
 		const availableCouponsWithDiscount = availableCouponResponse.availableProductCoupon.filter(
 			(coupon) => calculateDiscount(productDetail.finalPrice, coupon) !== null,
 		);
@@ -258,11 +258,11 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 		);
 
 		// 중복 가능 쿠폰들 (모두 적용)
-		const stackableCoupons = availableCouponsWithDiscount.filter((c) => c.isStackable);
+		const stackableCouponList = availableCouponsWithDiscount.filter((c) => c.isStackable);
 
 		setAppliedProductCoupon({
 			unStackable: maxUnStackable,
-			stackable: stackableCoupons,
+			stackable: stackableCouponList,
 		});
 		setIsInitialCouponApplied(true); //	 초기화 완료 표시
 	}, [availableCouponResponse, isInitialCouponApplied, productDetail.finalPrice]);
