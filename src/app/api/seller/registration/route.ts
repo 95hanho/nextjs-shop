@@ -8,6 +8,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 // 판매자 등록요청(회원가입)
 export const POST = async (nextRequest: NextRequest) => {
+	console.log("[API] 판매자 등록요청");
 	try {
 		const {
 			sellerId,
@@ -54,7 +55,7 @@ export const POST = async (nextRequest: NextRequest) => {
 			businessAddressDetail,
 		};
 		const data = await postUrlFormData<BaseResponse>(getBackendUrl(API_URL.SELLER_REGISTRATION), { ...payload });
-		console.log("data", data);
+		// console.log("data", data);
 
 		return NextResponse.json({ message: data.message }, { status: 200 });
 	} catch (err: unknown) {

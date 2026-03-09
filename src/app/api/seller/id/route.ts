@@ -7,11 +7,12 @@ import { NextRequest, NextResponse } from "next/server";
 
 // 판매자id 중복확인
 export const POST = async (nextRequest: NextRequest) => {
+	console.log("[API] 판매자id 중복확인");
 	try {
 		const { sellerId }: { sellerId: string } = await nextRequest.json();
 		if (!sellerId) return NextResponse.json({ message: "아이디를 입력해주세요." }, { status: 400 });
 		const data = await postUrlFormData<BaseResponse>(getBackendUrl(API_URL.SELLER_ID), { sellerId });
-		console.log("data", data);
+		// console.log("data", data);
 
 		return NextResponse.json({ message: data.message }, { status: 200 });
 	} catch (err: unknown) {

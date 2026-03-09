@@ -11,6 +11,7 @@ import { NextResponse } from "next/server";
 
 // 휴대폰 인증 확인
 export const POST = withOptionalAuth(async ({ nextRequest }) => {
+	console.log("[API] 휴대폰 인증 확인");
 	try {
 		const { phoneAuthToken, authNumber }: PhoneAuthCheckRequest = await nextRequest.json();
 
@@ -36,7 +37,7 @@ export const POST = withOptionalAuth(async ({ nextRequest }) => {
 		const data = await postUrlFormData<PhoneAuthCheckResponse>(getBackendUrl(API_URL.AUTH_PHONE_AUTH_CHECK), {
 			...payload,
 		});
-		console.log(data);
+		// console.log("data", data);
 
 		const response = NextResponse.json({ ...data }, { status: 200 });
 

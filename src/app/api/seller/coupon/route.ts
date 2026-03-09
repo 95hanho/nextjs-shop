@@ -10,11 +10,12 @@ import { NextResponse } from "next/server";
 
 // 쿠폰 조회
 export const GET = sellerWithAuth(async ({ sellerToken }) => {
+	console.log("[API] 쿠폰 조회");
 	try {
 		const data = await getNormal<GetSellerCouponListResponse>(getBackendUrl(API_URL.SELLER_COUPON), undefined, {
 			Authorization: `Bearer ${sellerToken}`,
 		});
-		console.log("data", data);
+		// console.log("data", data);
 
 		return NextResponse.json({ ...data }, { status: 200 });
 	} catch (err: unknown) {
@@ -24,6 +25,7 @@ export const GET = sellerWithAuth(async ({ sellerToken }) => {
 });
 // 쿠폰 등록
 export const POST = sellerWithAuth(async ({ nextRequest, sellerToken }) => {
+	console.log("[API] 쿠폰 등록");
 	try {
 		// json으로 받으면
 		const { description, discountType, discountValue, maxDiscount, minimumOrderBeforeAmount, amount, startDate, endDate }: AddCouponRequest =
@@ -48,7 +50,7 @@ export const POST = sellerWithAuth(async ({ nextRequest, sellerToken }) => {
 				Authorization: `Bearer ${sellerToken}`,
 			},
 		);
-		console.log("data", data);
+		// console.log("data", data);
 
 		return NextResponse.json({ message: data.message }, { status: 200 });
 	} catch (err: unknown) {
@@ -58,6 +60,7 @@ export const POST = sellerWithAuth(async ({ nextRequest, sellerToken }) => {
 });
 // 쿠폰 수정
 export const PUT = sellerWithAuth(async ({ nextRequest, sellerToken }) => {
+	console.log("[API] 쿠폰 수정");
 	try {
 		// json으로 받으면
 		const {
@@ -98,7 +101,7 @@ export const PUT = sellerWithAuth(async ({ nextRequest, sellerToken }) => {
 				Authorization: `Bearer ${sellerToken}`,
 			},
 		);
-		console.log("data", data);
+		// console.log("data", data);
 
 		return NextResponse.json({ message: data.message }, { status: 200 });
 	} catch (err: unknown) {

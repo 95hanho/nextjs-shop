@@ -9,6 +9,7 @@ import { NextResponse } from "next/server";
 
 // 좋아요/취소
 export const POST = userWithAuth(async ({ nextRequest, accessToken }) => {
+	console.log("[API] 좋아요/취소");
 	try {
 		const { productId }: { productId: number } = await nextRequest.json();
 		if (!productId) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });

@@ -11,6 +11,7 @@ import { NextResponse } from "next/server";
 
 // 제품 조회
 export const GET = sellerWithAuth(async ({ sellerToken }) => {
+	console.log("[API] 제품 조회");
 	try {
 		const data = await getNormal<GetSellerProductListResponse>(getBackendUrl(API_URL.SELLER_PRODUCT), undefined, {
 			Authorization: `Bearer ${sellerToken}`,
@@ -30,6 +31,7 @@ type AddSellerProductPayloadForSpring = Omit<AddSellerProductRequest, "manufactu
 
 // 제품 추가
 export const POST = sellerWithAuth(async ({ nextRequest, sellerToken }) => {
+	console.log("[API] 제품 추가");
 	try {
 		const {
 			name,
@@ -87,7 +89,7 @@ export const POST = sellerWithAuth(async ({ nextRequest, sellerToken }) => {
 				Authorization: `Bearer ${sellerToken}`,
 			},
 		);
-		console.log("data", data);
+		// console.log("data", data);
 
 		return NextResponse.json({ message: data.message }, { status: 200 });
 	} catch (err: unknown) {
@@ -97,6 +99,7 @@ export const POST = sellerWithAuth(async ({ nextRequest, sellerToken }) => {
 });
 // 판매자 제품 수정
 export const PUT = sellerWithAuth(async ({ nextRequest, sellerToken }) => {
+	console.log("[API] 제품 수정");
 	try {
 		const {
 			productId,
@@ -158,7 +161,7 @@ export const PUT = sellerWithAuth(async ({ nextRequest, sellerToken }) => {
 				Authorization: `Bearer ${sellerToken}`,
 			},
 		);
-		console.log("data", data);
+		// console.log("data", data);
 
 		return NextResponse.json({ message: data.message }, { status: 200 });
 	} catch (err: unknown) {

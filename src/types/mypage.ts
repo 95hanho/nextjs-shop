@@ -193,7 +193,7 @@ export type CartItem = Cart & {
 		sellerName: string;
 	};
 
-export type AvailableProductForProduct = AvailableProductCoupon & { productId: number };
+export type AvailableProductForProduct = Omit<AvailableProductCoupon, "sellerName"> & { productId: number; sellerName: string };
 export interface GetCartResponse extends BaseResponse {
 	cartList: CartItem[];
 	availableCouponsAtCart: AvailableProductCoupon[];

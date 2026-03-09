@@ -9,6 +9,7 @@ import { NextResponse } from "next/server";
 // 상품 확인 및 점유(장비구니, 상품상세보기에서 구매페이지이동 시)
 // FE : 10분 안에 아무 동작도 없고 결제도 안하고 하면 알람
 export const POST = userWithAuth(async ({ nextRequest, accessToken }) => {
+	console.log("[API] 상품 확인 및 점유(장비구니, 상품상세보기에서 구매페이지이동 시)");
 	try {
 		const { buyList }: { buyList: BuyItem[] } = await nextRequest.json();
 
@@ -22,7 +23,7 @@ export const POST = userWithAuth(async ({ nextRequest, accessToken }) => {
 				Authorization: `Bearer ${accessToken}`,
 			},
 		);
-		console.log("data", data);
+		// console.log("data", data);
 
 		return NextResponse.json({ message: data.message, holds: data.holds }, { status: 200 });
 	} catch (err: unknown) {
@@ -31,7 +32,8 @@ export const POST = userWithAuth(async ({ nextRequest, accessToken }) => {
 	}
 });
 // 점유 해제
-export const DELETE = userWithAuth(async ({ nextRequest, userId, accessToken }) => {
+export const DELETE = userWithAuth(async ({ nextRequest, accessToken }) => {
+	console.log("[API] 점유 해제");
 	// query 접근 (App Router에서는 req.nextUrl.searchParams)
 	const search = Object.fromEntries(nextRequest.nextUrl.searchParams.entries());
 	if (Object.keys(search).length > 0) {
@@ -41,8 +43,6 @@ export const DELETE = userWithAuth(async ({ nextRequest, userId, accessToken }) 
 	try {
 		const holdIds = nextRequest.nextUrl.searchParams.getAll("cartIdList").map(Number);
 
-		if (!userId) return NextResponse.json({ message: "아이디를 입력해주세요." }, { status: 400 });
-
 		const data = await getNormal<BuyHoldReleaseResponse>(
 			getBackendUrl(API_URL.BUY_PAY),
 			{ holdIds },
@@ -50,7 +50,7 @@ export const DELETE = userWithAuth(async ({ nextRequest, userId, accessToken }) 
 				Authorization: `Bearer ${accessToken}`,
 			},
 		);
-		console.log("data", data);
+		// console.log("data", data);
 
 		return NextResponse.json({ ...data }, { status: 200 });
 	} catch (err: unknown) {

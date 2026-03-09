@@ -9,11 +9,12 @@ import { NextResponse } from "next/server";
 
 // 회원 조회
 export const GET = adminWithAuth(async ({ adminToken }) => {
+	console.log("[API] 회원 조회");
 	try {
 		const data = await getNormal<GetUserListResponse>(getBackendUrl(API_URL.ADMIN_USER), undefined, {
 			Authorization: `Bearer ${adminToken}`,
 		});
-		console.log("data", data);
+		// console.log("data", data);
 
 		return NextResponse.json({ ...data }, { status: 200 });
 	} catch (err: unknown) {
@@ -23,6 +24,7 @@ export const GET = adminWithAuth(async ({ adminToken }) => {
 });
 // 회원 정보 보기(마스킹해제)
 export const POST = adminWithAuth(async ({ nextRequest, adminToken }) => {
+	console.log("[API] 회원 정보 보기(마스킹해제)");
 	try {
 		const { userNo }: { userNo: number } = await nextRequest.json();
 		if (!userNo) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
@@ -33,7 +35,7 @@ export const POST = adminWithAuth(async ({ nextRequest, adminToken }) => {
 				Authorization: `Bearer ${adminToken}`,
 			},
 		);
-		console.log("data", data);
+		// console.log("data", data);
 
 		return NextResponse.json({ ...data }, { status: 200 });
 	} catch (err: unknown) {

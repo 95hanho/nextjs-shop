@@ -6,16 +6,18 @@ import { sellerWithAuth } from "@/lib/auth/seller";
 import { BaseResponse } from "@/types/common";
 import { IssueCouponsToUsersRequest } from "@/types/seller";
 import { NextResponse } from "next/server";
+import { WRONG_REQUEST_MESSAGE } from "@/lib/env";
 
 // 쿠폰을 유저에게 발행하기(개발필요)
 export const POST = sellerWithAuth(async ({ nextRequest }) => {
+	console.log("[API] 쿠폰을 유저에게 발행하기");
 	try {
 		const { couponId, userIds } = await nextRequest.json();
 		if (!couponId || !userIds || userIds.length === 0) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
 
 		const payload: IssueCouponsToUsersRequest = { couponId, userIds };
 		const data = await postUrlFormData<BaseResponse>(getBackendUrl(API_URL.SELLER_COUPON_USER_COUPON), { ...payload });
-		console.log("data", data);
+		// console.log("data", data);
 
 		return NextResponse.json({ message: data.message }, { status: 200 });
 	} catch (err: unknown) {

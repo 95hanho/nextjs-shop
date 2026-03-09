@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 // 로그인 했는지 확인(토큰확인) AND 패스워드 리셋토큰 확인
 export const GET = async (nextRequest: NextRequest) => {
+	console.log("[API] 로그인 했는지 확인(토큰확인) AND 패스워드 리셋토큰 확인");
 	const pwdResetToken = nextRequest.cookies.get("pwdResetToken")?.value || nextRequest.headers.get("pwdResetToken") || undefined;
 	const refreshToken = nextRequest.cookies.get("refreshToken")?.value || nextRequest.headers.get("refreshToken") || undefined;
 
@@ -12,7 +13,7 @@ export const GET = async (nextRequest: NextRequest) => {
 			throw new Error("NO_PWDRESET_TOKEN");
 		}
 		verifyPwdResetToken(pwdResetToken);
-	} catch (error) {
+	} catch {
 		return NextResponse.json(
 			{
 				status: 401,
@@ -28,7 +29,7 @@ export const GET = async (nextRequest: NextRequest) => {
 			throw new Error("NO_REFRESH_TOKEN");
 		}
 		verifyRefreshToken(refreshToken);
-	} catch (error) {
+	} catch {
 		return NextResponse.json(
 			{
 				status: 401,

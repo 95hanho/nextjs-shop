@@ -36,6 +36,12 @@ export default function Header({ menuList }: HeaderProps) {
 			}, 300);
 		} else headerRef.current?.removeEventListener("mouseleave", menuMouseleave);
 	}, [isOpen]);
+	// 로그인 href
+	const loginHref =
+		pathname.startsWith("/user") || pathname === "/"
+			? "/user"
+			: `/user?returnUrl=${encodeURIComponent(pathname + `?${searchParams.toString()}`)}`;
+
 	// 로그아웃 버튼 클릭
 	const logoutButton = async () => {
 		const needsAuth = isAuthRequiredPath(pathname);
@@ -79,11 +85,7 @@ export default function Header({ menuList }: HeaderProps) {
 									</Link>,
 									<>
 										{!user.name ? (
-											<Link
-												key="login"
-												href={`/user${pathname !== "/" ? `?returnUrl=${encodeURIComponent(pathname + `?${searchParams.toString()}`)}` : ""}`}
-												prefetch={false}
-											>
+											<Link key="login" href={loginHref} prefetch={false}>
 												로그인
 											</Link>
 										) : (

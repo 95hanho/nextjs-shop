@@ -11,11 +11,12 @@ import { NextResponse } from "next/server";
 
 // 공용 쿠폰 조회
 export const GET = adminWithAuth(async ({ adminToken }) => {
+	console.log("[API] 공용 쿠폰 조회");
 	try {
 		const data = await getNormal<GetCommonCouponListResponse>(getBackendUrl(API_URL.ADMIN_COUPON_COMMON), undefined, {
 			Authorization: `Bearer ${adminToken}`,
 		});
-		console.log("data", data);
+		// console.log("data", data);
 
 		return NextResponse.json({ ...data }, { status: 200 });
 	} catch (err: unknown) {
@@ -31,6 +32,7 @@ type AddCommonCouponPayloadForSpring = Omit<AddCommonCouponRequest, "startDate" 
 
 // 공용 쿠폰 등록
 export const POST = adminWithAuth(async ({ nextRequest, adminToken }) => {
+	console.log("[API] 공용 쿠폰 등록");
 	try {
 		const {
 			description,
@@ -63,7 +65,7 @@ export const POST = adminWithAuth(async ({ nextRequest, adminToken }) => {
 				Authorization: `Bearer ${adminToken}`,
 			},
 		);
-		console.log("data", data);
+		// console.log("data", data);
 
 		return NextResponse.json({ message: data.message }, { status: 200 });
 	} catch (err: unknown) {
@@ -79,6 +81,7 @@ type UpdateCommonCouponPayloadForSpring = Omit<UpdateCommonCouponRequest, "start
 
 // 공용 쿠폰 수정
 export const PUT = adminWithAuth(async ({ nextRequest, adminToken }) => {
+	console.log("[API] 공용 쿠폰 수정");
 	try {
 		const {
 			couponId,
@@ -131,7 +134,7 @@ export const PUT = adminWithAuth(async ({ nextRequest, adminToken }) => {
 				Authorization: `Bearer ${adminToken}`,
 			},
 		);
-		console.log("data", data);
+		// console.log("data", data);
 
 		return NextResponse.json({ message: data.message }, { status: 200 });
 	} catch (err: unknown) {

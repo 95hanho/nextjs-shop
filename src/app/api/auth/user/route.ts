@@ -16,6 +16,7 @@ type JoinPayloadForSpring = Omit<JoinRequest, "birthday"> & {
 
 // 회원가입
 export const POST = async (nextRequest: NextRequest) => {
+	console.log("[API] 회원가입");
 	try {
 		const { userId, password, name, zonecode, address, addressDetail, birthday, phone, email }: JoinRequest = await nextRequest.json();
 		if (!userId) return NextResponse.json({ message: "아이디를 입력해주세요." }, { status: 400 });
@@ -61,7 +62,7 @@ export const POST = async (nextRequest: NextRequest) => {
 		const data = await postUrlFormData<BaseResponse>(getBackendUrl(API_URL.AUTH_JOIN), {
 			...payload,
 		});
-		console.log("data", data);
+		// console.log("data", data);
 
 		const response = NextResponse.json({ message: data.message }, { status: 200 });
 		// 사용한 토큰 제거
@@ -81,6 +82,7 @@ export const POST = async (nextRequest: NextRequest) => {
 
 // 회원정보변경
 export const PUT = userWithAuth(async ({ nextRequest, accessToken }) => {
+	console.log("[API] 회원정보변경");
 	try {
 		const { zonecode, address, addressDetail, phone, changePhone, email }: UserUpdateRequest = await nextRequest.json();
 		if (!phone) return NextResponse.json({ message: "핸드폰번호를 입력해주세요." }, { status: 400 });
@@ -123,7 +125,7 @@ export const PUT = userWithAuth(async ({ nextRequest, accessToken }) => {
 				Authorization: `Bearer ${accessToken}`,
 			},
 		);
-		console.log("data", data);
+		// console.log("data", data);
 
 		return NextResponse.json({ ...data }, { status: 200 });
 	} catch (err: unknown) {
@@ -134,11 +136,12 @@ export const PUT = userWithAuth(async ({ nextRequest, accessToken }) => {
 
 // 회원탈퇴 요청
 export const DELETE = userWithAuth(async ({ accessToken }) => {
+	console.log("[API] 회원탈퇴 요청");
 	try {
 		const data = await putUrlFormData<BaseResponse>(getBackendUrl(API_URL.AUTH_JOIN), {
 			Authorization: `Bearer ${accessToken}`,
 		});
-		console.log("data", data);
+		// console.log("data", data);
 
 		return NextResponse.json({ ...data }, { status: 200 });
 	} catch (err: unknown) {

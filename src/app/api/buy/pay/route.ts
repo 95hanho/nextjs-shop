@@ -10,11 +10,12 @@ import { NextResponse } from "next/server";
 /*  */
 // 점유 중인 상품 및 사용 가능 쿠폰 조회(결제화면)
 export const GET = userWithAuth(async ({ accessToken }) => {
+	console.log("[API] 점유 중인 상품 및 사용 가능 쿠폰 조회(결제화면)");
 	try {
 		const data = await getNormal<getStockHoldProductResponse>(getBackendUrl(API_URL.BUY_PAY), undefined, {
 			Authorization: `Bearer ${accessToken}`,
 		});
-		console.log("data", data);
+		// console.log("data", data);
 
 		return NextResponse.json({ ...data }, { status: 200 });
 	} catch (err: unknown) {
@@ -24,6 +25,7 @@ export const GET = userWithAuth(async ({ accessToken }) => {
 });
 // 상품 구매/결제
 export const POST = userWithAuth(async ({ nextRequest, accessToken }) => {
+	console.log("[API] 상품 구매/결제");
 	try {
 		const {
 			items,
@@ -52,7 +54,7 @@ export const POST = userWithAuth(async ({ nextRequest, accessToken }) => {
 		const data = await postJson<BaseResponse>(getBackendUrl(API_URL.AUTH), payload, {
 			Authorization: `Bearer ${accessToken}`,
 		});
-		console.log("data", data);
+		// console.log("data", data);
 
 		return NextResponse.json({ message: data.message }, { status: 200 });
 	} catch (err: unknown) {

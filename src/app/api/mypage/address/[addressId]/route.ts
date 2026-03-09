@@ -9,6 +9,7 @@ import { NextResponse } from "next/server";
 
 // 유저배송지 삭제
 export const DELETE = userWithAuth<{ addressId: string }>(async ({ params, accessToken }) => {
+	console.log("[API] 유저배송지 삭제");
 	try {
 		const addressId = Number(params.addressId);
 		if (Number.isNaN(addressId)) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
@@ -20,7 +21,7 @@ export const DELETE = userWithAuth<{ addressId: string }>(async ({ params, acces
 				Authorization: `Bearer ${accessToken}`,
 			},
 		);
-		console.log("data", data);
+		// console.log("data", data);
 
 		return NextResponse.json({ message: data.message }, { status: 200 });
 	} catch (err: unknown) {

@@ -12,6 +12,7 @@ import { withOptionalAuth, userWithAuth } from "@/lib/auth/user";
 
 // 비밀번호 변경 토큰 생성
 export const POST = userWithAuth(async ({ userNo }) => {
+	console.log("[API] 비밀번호 변경 토큰 생성");
 	try {
 		const response = NextResponse.json({ message: "MAKE_PWDRESET_TOKEN" }, { status: 200 });
 		const pwdResetToken = generatePwdResetToken({ userNo });
@@ -40,6 +41,7 @@ export const POST = userWithAuth(async ({ userNo }) => {
 
 // 비밀번호 변경
 export const PUT = withOptionalAuth(async ({ nextRequest }) => {
+	console.log("[API] 비밀번호 변경");
 	try {
 		let pwdResetToken;
 		try {
@@ -60,7 +62,7 @@ export const PUT = withOptionalAuth(async ({ nextRequest }) => {
 			}
 			// 실패
 			else throw new Error("NO_TOKEN");
-		} catch (err) {
+		} catch {
 			return NextResponse.json(
 				{
 					status: 401,
@@ -76,8 +78,8 @@ export const PUT = withOptionalAuth(async ({ nextRequest }) => {
 		const payload: PasswordChangeRequest = { newPassword, pwdResetToken };
 		if (curPassword) payload.curPassword = curPassword;
 
-		const data = await postUrlFormData<BaseResponse>(getBackendUrl(API_URL.AUTH_PASSWORD), payload);
-		console.log("data", data);
+		const data = await postUrlFormData<BaseResponse>(getBackendUrl(API_URL.AUTH_PASSWORD), { ...payload });
+		// console.log("data", data);
 
 		// 사용한 토큰 제거
 		const response = NextResponse.json({ message: data.message }, { status: 200 });

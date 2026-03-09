@@ -8,11 +8,12 @@ import { NextResponse } from "next/server";
 
 // 판매자와 관련된 회원 조회
 export const GET = sellerWithAuth(async ({ nextRequest, userId, params }) => {
+	console.log("[API] 판매자와 관련된 회원 조회");
 	try {
 		const sellerId = nextRequest.nextUrl.searchParams.get("sellerId");
 		if (!sellerId) return NextResponse.json({ message: "판매자 아이디를 입력해주세요." }, { status: 400 });
 		const data = await getNormal<GetSellerInterestingUserResponse>(getBackendUrl(API_URL.SELLER_INTERESTING_USER), { sellerId });
-		console.log("data", data);
+		// console.log("data", data);
 
 		return NextResponse.json({ ...data }, { status: 200 });
 	} catch (err: unknown) {

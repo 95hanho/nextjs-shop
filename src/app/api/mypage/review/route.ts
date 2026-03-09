@@ -10,6 +10,7 @@ import { NextResponse } from "next/server";
 
 // 리뷰 작성
 export const POST = userWithAuth(async ({ nextRequest, accessToken }) => {
+	console.log("[API] 리뷰 작성");
 	try {
 		// formdata || application/x-www-form-urlencoded로 보내면 이렇게
 		// const formData = await nextRequest.formData();
@@ -29,7 +30,7 @@ export const POST = userWithAuth(async ({ nextRequest, accessToken }) => {
 				Authorization: `Bearer ${accessToken}`,
 			},
 		);
-		console.log("data", data);
+		// console.log("data", data);
 
 		return NextResponse.json({ message: data.message }, { status: 200 });
 	} catch (err: unknown) {

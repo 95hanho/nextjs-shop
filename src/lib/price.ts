@@ -12,7 +12,7 @@ export const calculateMileage = (price: number): number => {
  * 쿠폰을 적용한 가격
  * @param price 적용 전 가격
  * @param coupon 적용할 쿠폰
- * @returns 적용 후 가격
+ * @returns 쿠폰 적용불가 null / 적용 후 가격
  */
 export const calculateDiscount = (price: number, coupon: AvailableProductCoupon): number | null => {
 	if (price < coupon.minimumOrderBeforeAmount) return null;

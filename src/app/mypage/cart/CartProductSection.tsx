@@ -18,15 +18,10 @@ import { ModalResultMap } from "@/store/modal.type";
 import Error from "next/error";
 import { SmartImage } from "@/components/ui/SmartImage";
 import { WishButton } from "@/components/product/WishButton";
-import { BrandGroupEntry } from "@/app/mypage/cart/CartClient";
+import { BrandGroupEntry, CartItemSelectCollection } from "@/app/mypage/cart/CartClient";
 
-interface CartProductSectionProps {
+interface CartProductSectionProps extends CartItemSelectCollection {
 	brandGroupList: BrandGroupEntry[];
-	selectedCount: number;
-	allSelected: boolean;
-	anySelected: boolean;
-	unselectedCartIdList: number[];
-	selectedCartIdList: number[];
 }
 
 export default function CartProductSection({

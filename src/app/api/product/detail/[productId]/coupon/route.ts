@@ -8,6 +8,7 @@ import { NextResponse } from "next/server";
 
 // 제품 상세조회 쿠폰 조회
 export const GET = userWithAuth<{ productId: string }>(async ({ accessToken, params }) => {
+	console.log("[API] 제품 상세조회 쿠폰 조회");
 	try {
 		const productId = Number(params.productId);
 		if (!productId || !Number.isInteger(productId)) {

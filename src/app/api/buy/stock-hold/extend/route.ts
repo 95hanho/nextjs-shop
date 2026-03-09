@@ -4,12 +4,14 @@ import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { postJson } from "@/api/fetchFilter";
 import { userWithAuth } from "@/lib/auth/user";
+import { WRONG_REQUEST_MESSAGE } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { ExtendStockHoldRequest, ExtendStockHoldResponse } from "@/types/buy";
 import { NextResponse } from "next/server";
 
 // 상품 점유 연장
 export const POST = userWithAuth(async ({ nextRequest, accessToken }) => {
+	console.log("[API] 상품 점유 연장");
 	try {
 		const { holdIds }: ExtendStockHoldRequest = await nextRequest.json();
 
@@ -23,7 +25,7 @@ export const POST = userWithAuth(async ({ nextRequest, accessToken }) => {
 				Authorization: `Bearer ${accessToken}`,
 			},
 		);
-		console.log("data", data);
+		// console.log("data", data);
 
 		return NextResponse.json({ ...data }, { status: 200 });
 	} catch (err: unknown) {

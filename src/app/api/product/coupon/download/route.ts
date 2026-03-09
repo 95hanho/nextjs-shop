@@ -8,6 +8,7 @@ import { NextResponse } from "next/server";
 
 // 쿠폰 다운로드
 export const POST = userWithAuth(async ({ nextRequest, accessToken }) => {
+	console.log("[API] 쿠폰 다운로드");
 	try {
 		const { couponId } = await nextRequest.json();
 		if (!couponId) return NextResponse.json({ message: "쿠폰 ID를 입력해주세요." }, { status: 400 });
@@ -18,7 +19,7 @@ export const POST = userWithAuth(async ({ nextRequest, accessToken }) => {
 				Authorization: `Bearer ${accessToken}`,
 			},
 		);
-		console.log("data", data);
+		// console.log("data", data);
 
 		return NextResponse.json({ message: data.message }, { status: 200 });
 	} catch (err: unknown) {
