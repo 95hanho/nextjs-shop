@@ -8,6 +8,7 @@ import { NextResponse } from "next/server";
 
 // 위시리스트 조회
 export const GET = userWithAuth(async ({ accessToken }) => {
+	console.log("[API] 위시리스트 조회");
 	try {
 		const data = await getNormal<GetWishListResponse>(getBackendUrl(API_URL.MY_WISH), undefined, {
 			Authorization: `Bearer ${accessToken}`,

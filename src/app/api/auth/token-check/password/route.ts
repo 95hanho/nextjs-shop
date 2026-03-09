@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 // 패스워드 리셋토큰 확인
 export const GET = async (nextRequest: NextRequest) => {
+	console.log("[API] 패스워드 리셋토큰 확인");
 	const pwdResetToken = nextRequest.cookies.get("pwdResetToken")?.value || nextRequest.headers.get("pwdResetToken") || undefined;
 
 	try {
@@ -19,7 +20,7 @@ export const GET = async (nextRequest: NextRequest) => {
 			},
 			{ status: 200 },
 		);
-	} catch (error) {
+	} catch {
 		return NextResponse.json(
 			{
 				status: 401,

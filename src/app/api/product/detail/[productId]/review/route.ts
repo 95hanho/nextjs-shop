@@ -8,8 +8,8 @@ import { NextResponse } from "next/server";
 
 // 제품 상세조회 리뷰 조회
 export const GET = withOptionalAuth<{ productId: string }>(async ({ accessToken, params }) => {
+	console.log("[API] 제품 상세조회 리뷰 조회");
 	try {
-		console.log("제품 리뷰 조회");
 		const productId = Number(params.productId);
 		if (!productId || !Number.isInteger(productId)) return NextResponse.json({ message: "productId is required" }, { status: 400 });
 
@@ -17,7 +17,7 @@ export const GET = withOptionalAuth<{ productId: string }>(async ({ accessToken,
 		if (accessToken) headers.Authorization = `Bearer ${accessToken}`;
 
 		const data = await getNormal<GetProductDetailReviewResponse>(getBackendUrl(API_URL.PRODUCT_DETAIL_REVIEW), { productId }, headers);
-		console.log("data", data);
+		// console.log("data", data);
 
 		return NextResponse.json({ ...data }, { status: 200 });
 	} catch (err: unknown) {

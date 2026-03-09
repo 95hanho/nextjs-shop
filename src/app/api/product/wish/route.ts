@@ -9,6 +9,7 @@ import { NextResponse } from "next/server";
 
 // 위시 등록/해제
 export const POST = userWithAuth(async ({ nextRequest, accessToken }) => {
+	console.log("[API] 위시 등록/해제");
 	try {
 		const { productId }: { productId: number } = await nextRequest.json();
 

@@ -10,6 +10,7 @@ import { NextResponse } from "next/server";
 
 // 회원 탈퇴 확정하기
 export const POST = adminWithAuth(async ({ nextRequest, adminToken }) => {
+	console.log("[API] 회원 탈퇴 확정하기");
 	try {
 		const { userNoList, withdrawalStatus }: UserWithdrawalStatusRequest = await nextRequest.json();
 		if (!userNoList || !userNoList.length || !withdrawalStatus) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
@@ -22,7 +23,7 @@ export const POST = adminWithAuth(async ({ nextRequest, adminToken }) => {
 				Authorization: `Bearer ${adminToken}`,
 			},
 		);
-		console.log("data", data);
+		// console.log("data", data);
 
 		return NextResponse.json({ message: data.message }, { status: 200 });
 	} catch (err: unknown) {

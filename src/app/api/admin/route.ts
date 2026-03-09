@@ -17,6 +17,7 @@ import { generateAdminToken, generateRefreshToken } from "@/lib/auth/utils/token
 // - 초기패이지로딩(로그인되어있을 때), 로그인, 로그아웃, 관리자정보필요할 때, 관리자정보수정(상태변화)
 // 할 때 바로 가져올 수 있게 useQuery 실행함.
 export const GET = adminWithAuth(async ({ adminToken }) => {
+	console.log("[API] 관리자 정보조회");
 	try {
 		const data = await getNormal<GetAdminInfoResponse>(getBackendUrl(API_URL.ADMIN), {
 			Authorization: `Bearer ${adminToken}`,
@@ -30,19 +31,20 @@ export const GET = adminWithAuth(async ({ adminToken }) => {
 
 // 관리자 로그인
 export const POST = async (nextRequest: NextRequest) => {
+	console.log("[API] 관리자 로그인");
 	try {
 		const { adminId, password }: AdminLoginForm = await nextRequest.json();
 		if (!adminId) return NextResponse.json({ message: "아이디를 입력해주세요." }, { status: 400 });
 		if (!password) return NextResponse.json({ message: "비밀번호를 입력해주세요." }, { status: 400 });
 
 		const loginValidateData = await postUrlFormData<AdminLoginResponse>(getBackendUrl(API_URL.ADMIN), { adminId, password });
-		console.log("loginValidateData", loginValidateData);
+		// console.log("loginValidateData", loginValidateData);
 
 		// ✅ HttpOnly 쿠키 설정
 		const adminToken = generateAdminToken({ adminNo: loginValidateData.adminNo });
 		const adminRefreshToken = generateRefreshToken();
-		console.log("adminToken", adminToken);
-		console.log("adminRefreshToken", adminRefreshToken);
+		// console.log("adminToken", adminToken);
+		// console.log("adminRefreshToken", adminRefreshToken);
 
 		const xffHeader = nextRequest.headers.get("x-forwarded-for");
 		const ip =

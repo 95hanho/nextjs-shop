@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 
 // 로그아웃
 export const POST = () => {
+	console.log("[API] 로그아웃");
 	try {
 		const response = NextResponse.json({ message: "SELLER_LOGOUT_SUCCESS" }, { status: 200 });
 		// 토큰 초기화

@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 
 // 로그아웃
 export async function POST() {
+	console.log("[API] 로그아웃");
 	try {
 		const response = NextResponse.json({ message: "LOGOUT_SUCCESS" }, { status: 200 });
 		// 토큰 초기화
@@ -12,7 +13,7 @@ export async function POST() {
 			[
 				`accessToken=; Path=/; Max-Age=0; HttpOnly; ${isProd ? "Secure; " : ""}SameSite=Strict`,
 				`refreshToken=; Path=/; Max-Age=0; HttpOnly; ${isProd ? "Secure; " : ""}SameSite=Strict`,
-			].join(", ")
+			].join(", "),
 		);
 
 		return response;

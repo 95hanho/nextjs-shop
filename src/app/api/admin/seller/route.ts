@@ -10,11 +10,12 @@ import { NextResponse } from "next/server";
 /*  */
 // 판매자 조회
 export const GET = adminWithAuth(async ({ adminToken }) => {
+	console.log("[API] 판매자 조회");
 	try {
 		const data = await getNormal<BaseResponse>(getBackendUrl(API_URL.ADMIN_SELLER), undefined, {
 			Authorization: `Bearer ${adminToken}`,
 		});
-		console.log("data", data);
+		// console.log("data", data);
 
 		return NextResponse.json({ ...data }, { status: 200 });
 	} catch (err: unknown) {
@@ -24,6 +25,7 @@ export const GET = adminWithAuth(async ({ adminToken }) => {
 });
 // 판매자 추가
 export const POST = adminWithAuth(async ({ nextRequest, adminToken }) => {
+	console.log("[API] 판매자 추가");
 	try {
 		// method별 요청처리
 		if (nextRequest.method === "POST") {
@@ -79,7 +81,7 @@ export const POST = adminWithAuth(async ({ nextRequest, adminToken }) => {
 					Authorization: `Bearer ${adminToken}`,
 				},
 			);
-			console.log("data", data);
+			// console.log("data", data);
 
 			return NextResponse.json({ message: data.message }, { status: 200 });
 		}

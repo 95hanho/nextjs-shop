@@ -11,6 +11,7 @@ import { NextResponse } from "next/server";
 
 // 휴대폰 인증
 export const POST = withOptionalAuth(async ({ nextRequest, accessToken }) => {
+	console.log("[API] 휴대폰 인증");
 	try {
 		const { phone, mode }: PhoneAuthRequest = await nextRequest.json();
 		if (!phone) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
@@ -29,10 +30,10 @@ export const POST = withOptionalAuth(async ({ nextRequest, accessToken }) => {
 			userAgent: nextRequest.headers.get("user-agent") || "",
 			["x-forwarded-for"]: ip,
 		};
-		console.log("accessToken", accessToken);
+		// console.log("accessToken", accessToken);
 		if (accessToken) headers.Authorization = `Bearer ${accessToken}`;
 
-		console.log(headers);
+		// console.log(headers);
 
 		const data = await postUrlFormData<BaseResponse>(getBackendUrl(API_URL.AUTH_PHONE_AUTH), { ...payload }, headers);
 

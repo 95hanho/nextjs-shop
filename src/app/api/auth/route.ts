@@ -14,8 +14,9 @@ import { userWithAuth } from "@/lib/auth/user";
 // - 초기패이지로딩(로그인되어있을 때), 로그인, 로그아웃, 유저정보필요할 때, 유저정보수정(상태변화)
 // 할 때 바로 가져올 수 있게 useQuery 실행함.
 export const GET = userWithAuth(async ({ accessToken }) => {
+	console.log("[API] 회원정보가져오기");
 	try {
-		console.log("accessToken ===", accessToken);
+		// console.log("accessToken ===", accessToken);
 		const data = await getNormal<GetUserResponse>(getBackendUrl(API_URL.AUTH), undefined, {
 			Authorization: `Bearer ${accessToken}`,
 		});
@@ -28,20 +29,20 @@ export const GET = userWithAuth(async ({ accessToken }) => {
 
 // 로그인
 export const POST = async (nextRequest: NextRequest) => {
-	console.log("로그인");
+	console.log("[API] 로그인");
 	try {
 		const { userId, password }: LoginFormData = await nextRequest.json();
 		if (!userId) return NextResponse.json({ message: "아이디를 입력해주세요." }, { status: 400 });
 		if (!password) return NextResponse.json({ message: "비밀번호를 입력해주세요." }, { status: 400 });
 
 		const loginValidateData = await postUrlFormData<BaseResponse & { userNo: number }>(getBackendUrl(API_URL.AUTH), { userId, password });
-		console.log("loginValidateData", loginValidateData);
+		// console.log("loginValidateData", loginValidateData);
 
 		const userNo = loginValidateData.userNo;
 		const accessToken = generateAccessToken({ userNo });
 		const refreshToken = generateRefreshToken();
-		console.log("accessToken", accessToken);
-		console.log("refreshToken", refreshToken);
+		// console.log("accessToken", accessToken);
+		// console.log("refreshToken", refreshToken);
 
 		const xffHeader = nextRequest.headers.get("x-forwarded-for");
 		const ip =

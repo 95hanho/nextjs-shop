@@ -9,6 +9,7 @@ import { NextResponse } from "next/server";
 
 // 공용 쿠폰 삭제
 export const DELETE = adminWithAuth<{ couponId: string }>(async ({ params, adminToken }) => {
+	console.log("[API] 공용 쿠폰 삭제");
 	try {
 		const couponId = Number(params.couponId);
 		if (!Number.isInteger(couponId) || couponId <= 0) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
@@ -20,7 +21,7 @@ export const DELETE = adminWithAuth<{ couponId: string }>(async ({ params, admin
 				Authorization: `Bearer ${adminToken}`,
 			},
 		);
-		console.log("data", data);
+		// console.log("data", data);
 
 		return NextResponse.json({ message: data.message }, { status: 200 });
 	} catch (err: unknown) {

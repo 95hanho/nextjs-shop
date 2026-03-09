@@ -10,6 +10,7 @@ import { NextResponse } from "next/server";
 
 // 제품 옵션 추가
 export const POST = sellerWithAuth(async ({ nextRequest, sellerToken }) => {
+	console.log("[API] 제품 옵션 추가");
 	try {
 		const { productId, addPrice, stock, size }: AddSellerProductOption = await nextRequest.json();
 		if (!productId || !addPrice || !stock || !size) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
@@ -28,7 +29,7 @@ export const POST = sellerWithAuth(async ({ nextRequest, sellerToken }) => {
 				Authorization: `Bearer ${sellerToken}`,
 			},
 		);
-		console.log("data", data);
+		// console.log("data", data);
 
 		return NextResponse.json({ message: data.message }, { status: 200 });
 	} catch (err: unknown) {
@@ -38,6 +39,7 @@ export const POST = sellerWithAuth(async ({ nextRequest, sellerToken }) => {
 });
 // 제품 옵션 수정
 export const PUT = sellerWithAuth(async ({ nextRequest, sellerToken }) => {
+	console.log("[API] 제품 옵션 수정");
 	try {
 		const { productOptionId, addPrice, stock, isDisplayed }: UpdateSellerProductOption = await nextRequest.json();
 		if (!productOptionId || !addPrice || !stock || !isDisplayed) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
@@ -56,7 +58,7 @@ export const PUT = sellerWithAuth(async ({ nextRequest, sellerToken }) => {
 				Authorization: `Bearer ${sellerToken}`,
 			},
 		);
-		console.log("data", data);
+		// console.log("data", data);
 
 		return NextResponse.json({ message: data.message }, { status: 200 });
 	} catch (err: unknown) {

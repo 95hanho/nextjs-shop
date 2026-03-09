@@ -8,11 +8,12 @@ import { NextResponse } from "next/server";
 
 // 주문배송정보 조회
 export const GET = userWithAuth(async ({ accessToken }) => {
+	console.log("[API] 주문배송정보 조회");
 	try {
 		const data = await getNormal<MyOrderListResponse>(getBackendUrl(API_URL.MY_ORDER), undefined, {
 			Authorization: `Bearer ${accessToken}`,
 		});
-		console.log("data", data);
+		// console.log("data", data);
 
 		return NextResponse.json({ ...data }, { status: 200 });
 	} catch (err: unknown) {

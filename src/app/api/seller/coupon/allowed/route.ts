@@ -10,11 +10,12 @@ import { NextResponse } from "next/server";
 
 // 쿠폰 허용제품 조회
 export const GET = sellerWithAuth(async ({ sellerToken }) => {
+	console.log("[API] 쿠폰 허용제품 조회");
 	try {
 		const data = await getNormal<GetSellerCouponAllowResponse>(getBackendUrl(API_URL.SELLER_COUPON_ALLOWED), undefined, {
 			Authorization: `Bearer ${sellerToken}`,
 		});
-		console.log("data", data);
+		// console.log("data", data);
 
 		return NextResponse.json({ message: data.message }, { status: 200 });
 	} catch (err: unknown) {
@@ -24,6 +25,7 @@ export const GET = sellerWithAuth(async ({ sellerToken }) => {
 });
 // 쿠폰 허용제품 변경
 export const POST = sellerWithAuth(async ({ nextRequest, sellerToken }) => {
+	console.log("[API] 쿠폰 허용제품 변경");
 	try {
 		// json으로 받으면
 		const { couponId, productIds, allow }: SetSellerCouponAllowRequest = await nextRequest.json();
@@ -38,7 +40,7 @@ export const POST = sellerWithAuth(async ({ nextRequest, sellerToken }) => {
 				Authorization: `Bearer ${sellerToken}`,
 			},
 		);
-		console.log("data", data);
+		// console.log("data", data);
 
 		return NextResponse.json({ message: data.message }, { status: 200 });
 	} catch (err: unknown) {

@@ -10,6 +10,7 @@ import { NextResponse } from "next/server";
 
 // 장바구니 확인
 export const GET = userWithAuth(async ({ nextRequest, accessToken }) => {
+	console.log("[API] 장바구니 확인");
 	try {
 		const productId = nextRequest.nextUrl.searchParams.get("productId");
 		if (!productId) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
@@ -31,6 +32,7 @@ export const GET = userWithAuth(async ({ nextRequest, accessToken }) => {
 
 // 장바구니 넣기
 export const POST = userWithAuth(async ({ nextRequest, accessToken }) => {
+	console.log("[API] 장바구니 넣기");
 	try {
 		const { addCartList, productId }: AddCartRequest = await nextRequest.json();
 		if (!addCartList || addCartList.length === 0 || !productId) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
@@ -43,7 +45,7 @@ export const POST = userWithAuth(async ({ nextRequest, accessToken }) => {
 				Authorization: `Bearer ${accessToken}`,
 			},
 		);
-		console.log("data", data);
+		// console.log("data", data);
 
 		return NextResponse.json({ message: data.message }, { status: 200 });
 	} catch (err: unknown) {

@@ -9,6 +9,7 @@ import { NextResponse } from "next/server";
 
 // 쿠폰 삭제
 export const DELETE = sellerWithAuth<{ couponId: string }>(async ({ params, sellerToken }) => {
+	console.log("[API] 쿠폰 삭제");
 	try {
 		const couponId = Number(params.couponId);
 		if (!couponId && couponId <= 0 && !Number.isInteger(couponId)) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
@@ -19,7 +20,7 @@ export const DELETE = sellerWithAuth<{ couponId: string }>(async ({ params, sell
 				Authorization: `Bearer ${sellerToken}`,
 			},
 		);
-		console.log("data", data);
+		// console.log("data", data);
 
 		return NextResponse.json({ message: data.message }, { status: 200 });
 	} catch (err: unknown) {

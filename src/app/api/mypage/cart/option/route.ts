@@ -9,6 +9,7 @@ import { NextResponse } from "next/server";
 
 // 장바구니 제품 다른 option조회
 export const GET = userWithAuth(async ({ nextRequest, accessToken }) => {
+	console.log("[API] 장바구니 제품 다른 option조회");
 	try {
 		const productId = nextRequest.nextUrl.searchParams.get("productId");
 		if (!productId) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });

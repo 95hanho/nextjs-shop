@@ -8,6 +8,7 @@ import { NextResponse } from "next/server";
 
 // 주문배송정보 상세조회
 export const GET = userWithAuth<{ orderId: string }>(async ({ accessToken, params }) => {
+	console.log("[API] 주문배송정보 상세조회");
 	try {
 		const orderId = Number(params.orderId);
 
@@ -18,7 +19,7 @@ export const GET = userWithAuth<{ orderId: string }>(async ({ accessToken, param
 				Authorization: `Bearer ${accessToken}`,
 			},
 		);
-		console.log("data", data);
+		// console.log("data", data);
 
 		return NextResponse.json({ ...data }, { status: 200 });
 	} catch (err: unknown) {
