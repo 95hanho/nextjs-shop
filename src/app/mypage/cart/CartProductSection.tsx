@@ -18,17 +18,22 @@ import { ModalResultMap } from "@/store/modal.type";
 import Error from "next/error";
 import { SmartImage } from "@/components/ui/SmartImage";
 import { WishButton } from "@/components/product/WishButton";
-import { BrandGroupEntry, CartItemSelectCollection } from "@/app/mypage/cart/CartClient";
+import { BrandGroupEntry, CartCoupon, CartItemSelectCollection, ProductCoupon } from "@/app/mypage/cart/CartClient";
 import clsx from "clsx";
 import { TooltipIcon } from "@/components/ui/TooltipIcon";
 import { calculateDiscount } from "@/lib/price";
+import Link from "next/link";
 
 interface CartProductSectionProps extends CartItemSelectCollection {
 	brandGroupList: BrandGroupEntry[];
+	cartCouponList: CartCoupon[];
+	productCouponList: ProductCoupon[];
 }
 
 export default function CartProductSection({
 	brandGroupList,
+	cartCouponList,
+	productCouponList,
 	//
 	selectedCount,
 	allSelected,
@@ -242,7 +247,7 @@ export default function CartProductSection({
 												<div className={styles.productItemSection}>
 													<div className={styles.productItemOverview}>
 														<div className={styles.productItemMedia}>
-															<a href="" className={styles.productItemThumb}>
+															<Link href={`/product/detail/${product.productId}`} className={styles.productItemThumb}>
 																<SmartImage src={product.filePath} alt={product.fileName} fill={true} />
 
 																{selectDisabled && (
@@ -253,7 +258,7 @@ export default function CartProductSection({
 																		</span>
 																	</div>
 																)}
-															</a>
+															</Link>
 
 															<WishButton
 																productId={product.productId}
@@ -267,9 +272,12 @@ export default function CartProductSection({
 
 														<div className={styles.productItemContent}>
 															<div className={styles.productItemInfo}>
-																<a href="" className={styles.productItemName}>
+																<Link
+																	href={`/product/detail/${product.productId}`}
+																	className={styles.productItemName}
+																>
 																	{product.productName}
-																</a>
+																</Link>
 
 																<p className={styles.productItemOption}>
 																	{product.size} / {product.quantity}개
@@ -312,7 +320,9 @@ export default function CartProductSection({
 
 													<div className={styles.productItemAppliedCouponList}>
 														<div className={styles.appliedCouponListTitle}>
-															{product.appliedCouponList.map((coupon) => {
+															<div>
+																<h4>상품 쿠폰 할인</h4>
+																{/*productCouponList.map((coupon) => {
 																const isDiscountApplied = calculateDiscount(
 																	product.finalPrice * product.quantity,
 																	coupon,
@@ -370,7 +380,11 @@ export default function CartProductSection({
 																		</div>
 																	</div>
 																);
-															})}
+															}) */}
+															</div>
+															<div>
+																<h4>장바구니 쿠폰 할인</h4>
+															</div>
 														</div>
 													</div>
 												</div>
