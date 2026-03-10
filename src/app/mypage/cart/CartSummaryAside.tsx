@@ -120,7 +120,7 @@ export default function CartSummaryAside({ selectedCount }: CartSummaryAsideProp
 			)}
 
 			<div>
-				<button className="w-full px-5 py-3 btn--black">145,040원 구매하기 ({selectedCount}개)</button>
+				<button className="w-full px-5 py-3 mt-3 btn--black">145,040원 구매하기 ({selectedCount}개)</button>
 			</div>
 		</aside>
 	);
