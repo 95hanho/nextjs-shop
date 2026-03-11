@@ -260,8 +260,9 @@ export default function CartProductSection({
 										const appliedProductCoupon = appliedProductCouponMap[product.cartId];
 										// console.log({ appliedProductCoupon });
 										// 쿠폰이 하나라도 적용이 됐는지 여부
-										const appliedCouponCount =
-											appliedProductCoupon?.stackable.length + (appliedProductCoupon?.unStackable ? 1 : 0);
+										const appliedCouponCount = !appliedProductCoupon
+											? 0
+											: appliedProductCoupon?.stackable.length + (appliedProductCoupon?.unStackable ? 1 : 0);
 
 										return (
 											<li key={"cartBrandItem-" + product.cartId} className={styles.productItem} data-sku="DEN0861">
@@ -362,27 +363,42 @@ export default function CartProductSection({
 													<div className={styles.productItemActions}>
 														<button onClick={() => openOptionChangeModal(product)}>옵션 변경</button>
 														{/* 하나라도 쿠폰 적용 됐으면 '변경' */}
-														{availableProductCouponCount > 0 ? (
+														{product.selected ? (
+															<>
+																{availableProductCouponCount > 0 ? (
+																	<button
+																		onClick={(e) => {
+																			if (couponAppliedSelectorOpenSeller === product.sellerName) {
+																				setCouponAppliedSelectorOpenSeller("");
+																			} else {
+																				console.log(e.currentTarget);
+																				panelRef.current = e.currentTarget;
+																				scrollYRef.current = window.scrollY;
+																				setCouponAppliedSelectorOpenSeller(product.sellerName);
+																			}
+																		}}
+																	>
+																		{couponAppliedSelectorOpenSeller === product.sellerName
+																			? "닫기"
+																			: appliedCouponCount > 0
+																				? `쿠폰 변경(${appliedCouponCount})`
+																				: "쿠폰 사용"}
+																	</button>
+																) : (
+																	<button className="bg-gray-200 opacity-60">적용 가능 쿠폰 없음</button>
+																)}
+															</>
+														) : (
 															<button
-																onClick={(e) => {
-																	if (couponAppliedSelectorOpenSeller === product.sellerName) {
-																		setCouponAppliedSelectorOpenSeller("");
-																	} else {
-																		console.log(e.currentTarget);
-																		panelRef.current = e.currentTarget;
-																		scrollYRef.current = window.scrollY;
-																		setCouponAppliedSelectorOpenSeller(product.sellerName);
-																	}
+																className="bg-gray-200 opacity-60"
+																onClick={() => {
+																	openModal("ALERT", {
+																		content: "쿠폰을 적용하려면 상품을 선택해주세요.",
+																	});
 																}}
 															>
-																{couponAppliedSelectorOpenSeller === product.sellerName
-																	? "닫기"
-																	: appliedCouponCount > 0
-																		? `쿠폰 변경(${appliedCouponCount})`
-																		: "쿠폰 사용"}
+																선택 후 적용
 															</button>
-														) : (
-															<button className="bg-gray-400">적용 가능 쿠폰 없음</button>
 														)}
 													</div>
 													{couponAppliedSelectorOpenSeller === product.sellerName && (

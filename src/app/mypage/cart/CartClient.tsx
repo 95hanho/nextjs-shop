@@ -81,60 +81,63 @@ export default function CartClient() {
 				},
 				{} as Record<string, ProductCoupon[]>,
 			);
+			// cartId별 적용된 쿠폰 정보 초기값 설정 (초기에는 모든 상품에 쿠폰 미적용 상태로 시작)
 			const initialAppliedProductCouponMap: AppliedProductCouponMap = {};
 
 			data.cartList.forEach((cart) => {
-				// 쿠폰 적용 정보 초기값 설정
-				const totalPrice = cart.finalPrice * cart.quantity;
-				const cartItem: CartItemWithCoupon = { ...cart, discountedPrice: totalPrice, discountAmount: 0 };
-				// 해당 판매자 쿠폰 & 해당 상품 쿠폰 분류하기
-				const couponsForSeller =
-					availableCouponsWithDiscountObj[cart.sellerName].filter((coupon) => coupon.productId === cart.productId) || [];
-				const usedCouponIds: number[] = [];
+				const initPrice = cart.finalPrice * cart.quantity;
+				const cartItem: CartItemWithCoupon = { ...cart, discountedPrice: initPrice, discountAmount: 0 };
+				if (cart.selected === true) {
+					// 쿠폰 적용 정보 초기값 설정
+					// 해당 판매자 쿠폰 & 해당 상품 쿠폰 분류하기
+					const couponsForSeller =
+						availableCouponsWithDiscountObj[cart.sellerName].filter((coupon) => coupon.productId === cart.productId) || [];
+					const usedCouponIds: number[] = [];
 
-				// -------- 장바구니 쿠폰 초기 적용 하기 --------
-				// 사용 가능한 장바구니 쿠폰 filter
-				const availableCartCoupon = [...cartCouponList, ...couponsForSeller].filter((coupon) => {
-					return coupon.used === false && calculateDiscount(totalPrice, coupon) !== null;
-				});
-
-				if (availableCartCoupon.length > 0) {
-					// 중복불가 쿠폰 중 최대 할인 1개 + 중복가능 쿠폰 전체
-					// 가격이 0원이 되는 경우는 없다고 가정(쿠폰 적용 불가능한 경우는 위에서 걸러졌으므로)
-					const selectedUnStackableCoupons = availableCartCoupon.filter((coupon) => !coupon.isStackable);
-					const selectedMaxUnStackable = selectedUnStackableCoupons.reduce((max, coupon) => {
-						const currentDiscount = calculateDiscount(totalPrice, coupon) || 0;
-						const maxDiscount = max ? calculateDiscount(totalPrice, max) || 0 : 0;
-
-						return currentDiscount > maxDiscount ? coupon : max;
-					}, selectedUnStackableCoupons[0] as AppliedCartCoupon);
-					const selectedStackableCouponList = availableCartCoupon.filter((coupon) => coupon.isStackable);
-
-					// 사용된 쿠폰 ID 저장
-					usedCouponIds.push(selectedMaxUnStackable.couponId, ...selectedStackableCouponList.map((coupon) => coupon.couponId));
-					// 사용된 쿠폰 표시
-					cartCouponList.forEach((coupon) => {
-						if (usedCouponIds.includes(coupon.couponId)) coupon.used = true;
-					});
-					productCouponList.forEach((coupon) => {
-						if (usedCouponIds.includes(coupon.couponId)) coupon.used = true;
+					// -------- 장바구니 쿠폰 초기 적용 하기 --------
+					// 사용 가능한 장바구니 쿠폰 filter
+					const availableCartCoupon = [...cartCouponList, ...couponsForSeller].filter((coupon) => {
+						return coupon.used === false && calculateDiscount(initPrice, coupon) !== null;
 					});
 
-					// 보여줄 떄 할인된 가격 계산하기 (UI에서는 할인된 가격 보여주기 위해)
-					// const selectedCartCoupon: AppliedCartCoupon[] = [
-					// 	...(selectedMaxUnStackable ? [selectedMaxUnStackable] : []),
-					// 	...selectedStackableCouponList,
-					// ];
-					// selectedCartCoupon.forEach((coupon) => {
-					// 	const discountAmount = calculateDiscount(totalPrice, coupon) || 0;
-					// 	cartItem.discountAmount += discountAmount;
-					// 	cartItem.discountedPrice -= discountAmount;
-					// });
+					if (availableCartCoupon.length > 0) {
+						// 중복불가 쿠폰 중 최대 할인 1개 + 중복가능 쿠폰 전체
+						// 가격이 0원이 되는 경우는 없다고 가정(쿠폰 적용 불가능한 경우는 위에서 걸러졌으므로)
+						const selectedUnStackableCoupons = availableCartCoupon.filter((coupon) => !coupon.isStackable);
+						const selectedMaxUnStackable = selectedUnStackableCoupons.reduce((max, coupon) => {
+							const currentDiscount = calculateDiscount(initPrice, coupon) || 0;
+							const maxDiscount = max ? calculateDiscount(initPrice, max) || 0 : 0;
 
-					initialAppliedProductCouponMap[cart.cartId] = {
-						unStackable: selectedMaxUnStackable,
-						stackable: selectedStackableCouponList,
-					};
+							return currentDiscount > maxDiscount ? coupon : max;
+						}, selectedUnStackableCoupons[0] as AppliedCartCoupon);
+						const selectedStackableCouponList = availableCartCoupon.filter((coupon) => coupon.isStackable);
+
+						// 사용된 쿠폰 ID 저장
+						usedCouponIds.push(selectedMaxUnStackable.couponId, ...selectedStackableCouponList.map((coupon) => coupon.couponId));
+						// 사용된 쿠폰 표시
+						cartCouponList.forEach((coupon) => {
+							if (usedCouponIds.includes(coupon.couponId)) coupon.used = true;
+						});
+						productCouponList.forEach((coupon) => {
+							if (usedCouponIds.includes(coupon.couponId)) coupon.used = true;
+						});
+
+						// 보여줄 떄 할인된 가격 계산하기 (UI에서는 할인된 가격 보여주기 위해)
+						// const selectedCartCoupon: AppliedCartCoupon[] = [
+						// 	...(selectedMaxUnStackable ? [selectedMaxUnStackable] : []),
+						// 	...selectedStackableCouponList,
+						// ];
+						// selectedCartCoupon.forEach((coupon) => {
+						// 	const discountAmount = calculateDiscount(initPrice, coupon) || 0;
+						// 	cartItem.discountAmount += discountAmount;
+						// 	cartItem.discountedPrice -= discountAmount;
+						// });
+
+						initialAppliedProductCouponMap[cart.cartId] = {
+							unStackable: selectedMaxUnStackable,
+							stackable: selectedStackableCouponList,
+						};
+					}
 				}
 
 				// 브랜드별 그룹을 묶기
@@ -192,25 +195,33 @@ export default function CartClient() {
 	const [appliedProductCouponMap, setAppliedProductCouponMap] = useState<AppliedProductCouponMap>({});
 
 	// 선택된 쿠폰에 따른 가격 계산만 해줌.(일단 나중에)
-	const { brandGroupListWithCoupon, cartTotalPrice } = useMemo(() => {
+	const {
+		brandGroupListWithCoupon, // 쿠폰 적용 값 추가
+		cartTotalPrice, // 전체 합산 가격 (쿠폰 적용된 가격 기준)
+	} = useMemo(() => {
 		let cartTotalPrice = 0;
 
 		return {
 			brandGroupListWithCoupon: brandGroupList.map(([sellerName, list]) => {
 				const productList = list.map((product) => {
 					let discountAmount = 0;
+					let discountedPrice = product.discountedPrice;
+
 					const appliedProductCoupon = appliedProductCouponMap[product.cartId];
-					if (appliedProductCoupon.unStackable) {
-						discountAmount += calculateDiscount(product.discountedPrice, appliedProductCoupon.unStackable) || 0;
-					}
-					if (appliedProductCoupon.stackable.length > 0) {
-						appliedProductCoupon.stackable.forEach((coupon) => {
-							discountAmount += calculateDiscount(product.discountedPrice, coupon) || 0;
-						});
+
+					if (appliedProductCoupon) {
+						if (appliedProductCoupon.unStackable) {
+							discountAmount += calculateDiscount(product.discountedPrice, appliedProductCoupon.unStackable) || 0;
+						}
+						if (appliedProductCoupon.stackable.length > 0) {
+							appliedProductCoupon.stackable.forEach((coupon) => {
+								discountAmount += calculateDiscount(product.discountedPrice, coupon) || 0;
+							});
+						}
+						discountedPrice -= discountAmount;
+						cartTotalPrice += discountedPrice; // 전체 합산 가격 계산
 					}
 
-					const discountedPrice = product.discountedPrice - discountAmount;
-					cartTotalPrice += discountedPrice; // 전체 합산 가격 계산
 					return {
 						...product,
 						discountAmount,
