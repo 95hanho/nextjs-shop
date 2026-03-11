@@ -34,7 +34,7 @@ export default function MyPriceCheckboxTooltip(props: MyPriceCheckboxTooltipProp
 
 	// 쿠폰 다운로드
 	const couponDownload = useMutation({
-		mutationFn: (couponId: number) => postJson<BaseResponse>(getApiUrl(API_URL.PRODUCT_COUPON_DOWNLOAD), { couponId }),
+		mutationFn: (couponId: number) => postJson<BaseResponse & { userCouponId: number }>(getApiUrl(API_URL.PRODUCT_COUPON_DOWNLOAD), { couponId }),
 		onSuccess(data) {
 			console.log("couponDownload data", data);
 			queryClient.invalidateQueries({ queryKey: ["productCouponList", productId] });
@@ -85,7 +85,9 @@ export default function MyPriceCheckboxTooltip(props: MyPriceCheckboxTooltipProp
 					) : (
 						<span className="inline-flex items-center w-100px">
 							<strong className="text-[10px] text-red-500">적용불가</strong>
-							<TooltipIcon tooltipText="수량을 늘리거나, 같은 판매자 상품을 함께 구매하면 적용될 수 있어요." />
+							<TooltipIcon
+								tooltipText={`[최소 주문 금액:${money(coupon.minimumOrderBeforeAmount)}원]수량을 늘리거나, 같은 판매자 상품을 함께 구매하면 적용될 수 있어요.`}
+							/>
 						</span>
 					)}
 					{coupon.userCouponId ? (

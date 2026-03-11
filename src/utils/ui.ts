@@ -20,3 +20,15 @@ export const isValidDateString = (dateStr: string): boolean => {
 	if (day > daysIsMonth[month - 1]) return false;
 	return true;
 };
+/** 해당 요소가 있는 위치가 스크롤 중앙에 위치하게 */
+export const scrollIntoCenter = (element: HTMLElement, extraOffset = 0, behavior: ScrollBehavior = "instant") => {
+	const rect = element.getBoundingClientRect();
+	const absoluteTop = rect.top + window.pageYOffset;
+	const elementCenterY = absoluteTop + rect.height / 2;
+	const targetTop = elementCenterY - window.innerHeight / 2 - extraOffset;
+
+	const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+	const clampedTop = Math.max(0, Math.min(targetTop, maxScroll));
+
+	window.scrollTo({ top: clampedTop, behavior });
+};

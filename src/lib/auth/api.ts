@@ -19,10 +19,10 @@ export const refreshAuthFromTokens = async <R extends Role>(
 	const accessToken = nextRequest.cookies.get(preset.aToken)?.value || nextRequest.headers.get(preset.aToken) || undefined;
 	const refreshToken = nextRequest.cookies.get(preset.rToken)?.value || nextRequest.headers.get(preset.rToken) || undefined;
 
-	console.log(`[API refreshAuthFromTokens:${preset.role}] 토큰 재발급 / 현재 토큰 =>`, {
-		[preset.aToken]: accessToken ? "..." + accessToken.slice(-10) : "없음",
-		[preset.rToken]: refreshToken ? "..." + refreshToken.slice(-10) : "없음",
-	});
+	// console.log(`[API refreshAuthFromTokens:${preset.role}] 토큰 재발급 / 현재 토큰 =>`, {
+	// 	[preset.aToken]: accessToken ? "..." + accessToken.slice(-10) : "없음",
+	// 	[preset.rToken]: refreshToken ? "..." + refreshToken.slice(-10) : "없음",
+	// });
 
 	// 1) accessToken 유효하면 그대로 통과
 	if (accessToken?.trim()) {
