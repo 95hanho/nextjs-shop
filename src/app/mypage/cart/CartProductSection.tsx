@@ -7,33 +7,34 @@ import { CartItem, UpdateCartRequest, UpdateCartSelectedRequest } from "@/types/
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import API_URL from "@/api/endpoints";
 import { getApiUrl } from "@/lib/getBaseUrl";
-import { IoIosClose, IoMdDownload } from "react-icons/io";
+import { IoIosClose } from "react-icons/io";
 import { BsExclamationCircle } from "react-icons/bs";
 import { deleteNormal, postJson, putJson } from "@/api/fetchFilter";
-import { money } from "@/lib/format";
+import { discountPercent, money } from "@/lib/format";
 import { BaseResponse } from "@/types/common";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useModalStore } from "@/store/modal.store";
 import { ModalResultMap } from "@/store/modal.type";
 import Error from "next/error";
 import { SmartImage } from "@/components/ui/SmartImage";
 import { WishButton } from "@/components/product/WishButton";
-import { BrandGroupEntry, CartCoupon, CartItemSelectCollection, ProductCoupon } from "@/app/mypage/cart/CartClient";
-import clsx from "clsx";
-import { TooltipIcon } from "@/components/ui/TooltipIcon";
-import { calculateDiscount } from "@/lib/price";
+import { AppliedProductCouponMap, BrandGroupEntry, CartCoupon, CartItemSelectCollection, ProductCoupon } from "@/app/mypage/cart/CartClient";
 import Link from "next/link";
+import CartCouponSelector from "@/app/mypage/cart/CartCouponSelector";
+import { scrollIntoCenter } from "@/utils/ui";
 
 interface CartProductSectionProps extends CartItemSelectCollection {
 	brandGroupList: BrandGroupEntry[];
 	cartCouponList: CartCoupon[];
 	productCouponList: ProductCoupon[];
+	appliedProductCouponMap: AppliedProductCouponMap;
 }
 
 export default function CartProductSection({
 	brandGroupList,
 	cartCouponList,
 	productCouponList,
+	appliedProductCouponMap,
 	//
 	selectedCount,
 	allSelected,
@@ -43,6 +44,10 @@ export default function CartProductSection({
 }: CartProductSectionProps) {
 	const queryClient = useQueryClient();
 	const { openModal, modalResult, clearModalResult } = useModalStore();
+
+	// =================================================================
+	// React Query
+	// =================================================================
 
 	// 장바구니 제품 옵션/수량 변경
 	const handleChangeQuantity = useMutation<BaseResponse, Error, UpdateCartRequest>({
@@ -59,7 +64,7 @@ export default function CartProductSection({
 			console.log(err, variables, context);
 		},
 		// 결과에 관계 없이 무언가 실행됨
-		onSettled(data, error, variables, context) {},
+		// onSettled(data, error, variables, context) {},
 	});
 	// 장바구니 선택여부 변경
 	const handleChangeSelected = useMutation<BaseResponse, Error, UpdateCartSelectedRequest>({
@@ -75,7 +80,7 @@ export default function CartProductSection({
 			console.log(err);
 		},
 		// 결과에 관계 없이 무언가 실행됨
-		onSettled(a, b) {},
+		// onSettled(a, b) {},
 	});
 	// 장바구니 제품 삭제
 	const handleCartProductDelete = useMutation<BaseResponse, Error, { cartIdList: number[] }>({
@@ -91,10 +96,13 @@ export default function CartProductSection({
 			console.log(err);
 		},
 		// 결과에 관계 없이 무언가 실행됨
-		onSettled(a, b) {},
+		// onSettled(a, b) {},
 	});
 
-	/* ----------------------------------- */
+	// =================================================================
+	// React
+	// =================================================================
+
 	// 옵션변경 모달 오픈
 	const openOptionChangeModal = (product: CartItem) => {
 		openModal("PRODUCTOPTION", {
@@ -137,6 +145,25 @@ export default function CartProductSection({
 		// ✅ 한 번 처리했으면 비워주기 (중복 처리 방지)
 		clearModalResult();
 	}, [modalResult, clearModalResult, deletingCartIdList, handleCartProductDelete, handleChangeQuantity, queryClient]);
+
+	// 쿠폰변경 UI 열기(판매자이름)
+	const [couponAppliedSelectorOpenSeller, setCouponAppliedSelectorOpenSeller] = useState<string>("");
+	// 열리는 버튼 요소에 ref를 저장
+	const panelRef = useRef<HTMLElement | null>(null);
+	// 열릴 때 닫힌 스크롤위치 저장
+	const scrollYRef = useRef<number | null>(null);
+
+	// 열림 상태가 바뀌면 다음 프레임에서 스크롤
+	useEffect(() => {
+		requestAnimationFrame(() => {
+			if (couponAppliedSelectorOpenSeller) {
+				if (panelRef.current) scrollIntoCenter(panelRef.current);
+			} else if (scrollYRef.current !== null) {
+				scrollTo({ top: scrollYRef.current, behavior: "instant" });
+				scrollYRef.current = null;
+			}
+		});
+	}, [couponAppliedSelectorOpenSeller]);
 
 	return (
 		<section className={styles.productWrap} aria-label="상품 영역">
@@ -224,6 +251,18 @@ export default function CartProductSection({
 											productAlarm = "재고가 부족합니다. 옵션을 변경하시면 선택이 가능합니다.";
 										}
 
+										// 해당 장바구니상품에 적용 가능한 쿠폰 리스트
+										const availableProductCoupons = productCouponList.filter((coupon) => coupon.productId === product.productId);
+										// 적용 가능한 쿠폰 갯수
+										const availableProductCouponCount = availableProductCoupons.length + cartCouponList.length;
+
+										// 해당 장바구니에 적용된 쿠폰 정보 가져오기
+										const appliedProductCoupon = appliedProductCouponMap[product.cartId];
+										// console.log({ appliedProductCoupon });
+										// 쿠폰이 하나라도 적용이 됐는지 여부
+										const appliedCouponCount =
+											appliedProductCoupon?.stackable.length + (appliedProductCoupon?.unStackable ? 1 : 0);
+
 										return (
 											<li key={"cartBrandItem-" + product.cartId} className={styles.productItem} data-sku="DEN0861">
 												{/* 상품 체크 */}
@@ -264,7 +303,6 @@ export default function CartProductSection({
 																productId={product.productId}
 																initWishOn={product.wishId !== null}
 																clickHandler={() => {
-																	console.log(12321232132);
 																	queryClient.invalidateQueries({ queryKey: ["cartList"] });
 																}}
 															/>
@@ -277,6 +315,7 @@ export default function CartProductSection({
 																	className={styles.productItemName}
 																>
 																	{product.productName}
+																	<span className="test">cartId({product.cartId})</span>
 																</Link>
 
 																<p className={styles.productItemOption}>
@@ -292,6 +331,13 @@ export default function CartProductSection({
 
 																<div className={styles.productItemPrices}>
 																	<h5 className={`${styles.price} ${styles.priceSale}`}>
+																		<b>
+																			{discountPercent(
+																				product.originPrice * product.quantity,
+																				product.discountedPrice,
+																			)}
+																			%
+																		</b>
 																		<del>{money(product.originPrice * product.quantity)}원</del>
 																	</h5>
 																	<h5 className={`${styles.price} ${styles.priceOrigin}`}>
@@ -315,78 +361,116 @@ export default function CartProductSection({
 
 													<div className={styles.productItemActions}>
 														<button onClick={() => openOptionChangeModal(product)}>옵션 변경</button>
-														<button>쿠폰 사용</button>
+														{/* 하나라도 쿠폰 적용 됐으면 '변경' */}
+														{availableProductCouponCount > 0 ? (
+															<button
+																onClick={(e) => {
+																	if (couponAppliedSelectorOpenSeller === product.sellerName) {
+																		setCouponAppliedSelectorOpenSeller("");
+																	} else {
+																		console.log(e.currentTarget);
+																		panelRef.current = e.currentTarget;
+																		scrollYRef.current = window.scrollY;
+																		setCouponAppliedSelectorOpenSeller(product.sellerName);
+																	}
+																}}
+															>
+																{couponAppliedSelectorOpenSeller === product.sellerName
+																	? "닫기"
+																	: appliedCouponCount > 0
+																		? `쿠폰 변경(${appliedCouponCount})`
+																		: "쿠폰 사용"}
+															</button>
+														) : (
+															<button className="bg-gray-400">적용 가능 쿠폰 없음</button>
+														)}
 													</div>
+													{couponAppliedSelectorOpenSeller === product.sellerName && (
+														<div className={styles.productItemAppliedCouponList}>
+															<div className={styles.appliedCouponListTitle}>
+																<div className="mb-2">
+																	<h4 className="mb-1 text-gray-500">상품 할인</h4>
+																	<CartCouponSelector
+																		type="BASE"
+																		originXQuantity={product.originPrice * product.quantity}
+																		finalXQuantity={product.finalPrice * product.quantity}
+																	/>
+																</div>
+																<div className="mb-2">
+																	<h4 className="mb-1 text-gray-500">상품 쿠폰 할인</h4>
+																	{availableProductCoupons.map((coupon) => {
+																		// 중복불가 쿠폰일 시 검사
+																		const unStackableChecked =
+																			!coupon.isStackable &&
+																			appliedProductCoupon.unStackable?.couponId === coupon.couponId;
+																		// 중복가능 쿠폰일 시 검사
+																		const stackableChecked =
+																			coupon.isStackable &&
+																			appliedProductCoupon.stackable?.some(
+																				(c) => c.couponId === coupon.couponId,
+																			);
+																		// checked 여부
+																		const couponChecked = unStackableChecked || stackableChecked;
+																		// otherUsed - 다른 쿠폰이 사용중
+																		// console.log({
+																		// 	cartId: product.cartId,
+																		// 	["쿠폰이름"]: coupon.description,
+																		// 	couponChecked,
+																		// 	used: coupon.used,
+																		// });
+																		const otherUsed = !couponChecked && coupon.used;
 
-													<div className={styles.productItemAppliedCouponList}>
-														<div className={styles.appliedCouponListTitle}>
-															<div>
-																<h4>상품 쿠폰 할인</h4>
-																{/*productCouponList.map((coupon) => {
-																const isDiscountApplied = calculateDiscount(
-																	product.finalPrice * product.quantity,
-																	coupon,
-																);
-
-																return (
-																	<div
-																		key={"appliedCouponList-" + coupon.couponId}
-																		className={clsx(
-																			styles.myPriceCheckboxTooltip,
-																			isDiscountApplied ? "" : styles.disabled,
-																		)}
-																	>
-																		<div className={styles.checkbox}>
-																			<input
-																				id={"coupon-" + coupon.couponId}
-																				type="checkbox"
-																				disabled={!isDiscountApplied}
-																				checked={coupon.used}
-																				onChange={() => {
-																					// setAppliedProductCoupon(!couponChecked);
+																		return (
+																			<CartCouponSelector
+																				key={"CartCouponSelector-" + coupon.couponId}
+																				type="COUPON"
+																				coupon={coupon}
+																				couponChecked={couponChecked}
+																				finalXQuantity={product.finalPrice * product.quantity}
+																				setAppliedProductCoupon={(isAdd) => {
+																					console.log("isAdd", isAdd);
+																					if (isAdd) {
+																					} else {
+																					}
 																				}}
+																				otherUsed={otherUsed}
 																			/>
-																			<label htmlFor={"coupon-" + coupon.couponId} title={coupon.description}>
-																				<span className={coupon.isStackable ? styles.isStackable : ""}>
-																					{coupon.description}
-																				</span>
-																				{!coupon.isStackable && <mark>중복불가</mark>}
-																			</label>
-																		</div>
-																		<div className={styles.discountInfo}>
-																			{isDiscountApplied ? (
-																				<strong>-{money(isDiscountApplied)}</strong>
-																			) : (
-																				<span className="inline-flex items-center w-100px">
-																					<strong className="text-[10px] text-red-500">적용불가</strong>
-																					<TooltipIcon tooltipText="수량을 늘리거나, 같은 판매자 상품을 함께 구매하면 적용될 수 있어요." />
-																				</span>
-																			)}
-																			{coupon.userCouponId ? (
-																				<span className={clsx(styles.couponDownloadBtn, styles.have)}>
-																					보유중
-																				</span>
-																			) : (
-																				<button
-																					className={clsx(styles.couponDownloadBtn)}
-																					onClick={() => {
-																						// couponDownload.mutate(coupon.couponId);
-																					}}
-																				>
-																					받기
-																					<IoMdDownload />
-																				</button>
-																			)}
-																		</div>
-																	</div>
-																);
-															}) */}
-															</div>
-															<div>
-																<h4>장바구니 쿠폰 할인</h4>
+																		);
+																	})}
+																</div>
+																<div>
+																	<h4 className="mb-1 text-gray-500">장바구니 쿠폰 할인</h4>
+																	{cartCouponList.map((coupon) => {
+																		// 중복불가 쿠폰일 시 검사
+																		const unStackableChecked =
+																			!coupon.isStackable &&
+																			appliedProductCoupon.unStackable?.couponId === coupon.couponId;
+																		// 중복가능 쿠폰일 시 검사
+																		const stackableChecked =
+																			coupon.isStackable &&
+																			appliedProductCoupon.stackable?.some(
+																				(c) => c.couponId === coupon.couponId,
+																			);
+																		// checked 여부
+																		const couponChecked = unStackableChecked || stackableChecked;
+																		const otherUsed = !couponChecked && coupon.used;
+
+																		return (
+																			<CartCouponSelector
+																				key={"CartCouponSelector-" + coupon.couponId}
+																				type="COUPON"
+																				coupon={coupon}
+																				couponChecked={couponChecked}
+																				finalXQuantity={product.finalPrice * product.quantity}
+																				setAppliedProductCoupon={() => {}}
+																				otherUsed={otherUsed}
+																			/>
+																		);
+																	})}
+																</div>
 															</div>
 														</div>
-													</div>
+													)}
 												</div>
 
 												<div className={styles.productItemDelete}>

@@ -1,5 +1,4 @@
 .cart {
-	height: 2000px;
 	background-color: #fafafa;
 
 	* {
@@ -12,6 +11,7 @@
 	max-width: 1000px;
 	min-width: 780px;
 	margin: 0 auto;
+	padding-bottom: 30px;
 
 	.cartTitle {
 		padding: 10px 0;
@@ -216,6 +216,10 @@
 											.priceSale {
 												color: #cbcbcb;
 												padding: 3px 0 0px;
+												b {
+													color: #f35b1f;
+													margin-right: 5px;
+												}
 											}
 
 											.priceOrigin {
