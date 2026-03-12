@@ -359,7 +359,7 @@ export default function CartClient() {
 		// if (cartCouponList.length > 0 || productCouponList.length > 0) console.log({ cartCouponList, productCouponList });
 		// if (Object.keys(appliedProductCouponMap).length > 0) console.log({ appliedProductCouponMap });
 		// console.log({ cartTotalPrice, cartSelfDiscount, cartCouponDiscount, sellerCouponDiscount });
-		console.log({ deliveryFee });
+		// console.log({ deliveryFee });
 	}, [
 		cartCouponList,
 		productCouponList,
