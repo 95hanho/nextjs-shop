@@ -195,6 +195,7 @@ export type CartItem = Cart & {
 
 export type AvailableProductForProduct = Omit<AvailableProductCoupon, "sellerName"> & { productId: number; sellerName: string };
 export interface GetCartResponse extends BaseResponse {
+	isExceedQuantity: boolean; // 장바구니 내 상품 중 재고 수량보다 주문 수량이 초과된 상품이 있는지 여부
 	cartList: CartItem[];
 	availableCouponsAtCart: AvailableProductCoupon[];
 	availableCouponsForProduct: AvailableProductForProduct[];

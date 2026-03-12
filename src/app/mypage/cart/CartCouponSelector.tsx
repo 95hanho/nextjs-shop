@@ -23,6 +23,7 @@ type CartCouponSelectorProps =
 			setAppliedProductCoupon: (isAdd: boolean) => void;
 			couponChecked: boolean;
 			otherUsed: boolean;
+			productOptionId: number;
 	  });
 
 export default function CartCouponSelector(props: CartCouponSelectorProps) {
@@ -56,7 +57,7 @@ export default function CartCouponSelector(props: CartCouponSelectorProps) {
 		);
 	}
 	if (type === "COUPON") {
-		const { coupon, setAppliedProductCoupon, couponChecked, otherUsed } = props;
+		const { coupon, setAppliedProductCoupon, couponChecked, otherUsed, productOptionId } = props;
 
 		const isDiscountApplied = calculateDiscount(finalXQuantity, coupon);
 		const disabled = !isDiscountApplied || otherUsed; // 할인 적용 불가 or 다른 쿠폰 사용중인 경우
@@ -65,7 +66,7 @@ export default function CartCouponSelector(props: CartCouponSelectorProps) {
 			<div className={clsx(styles.myPriceCheckboxTooltip, disabled ? styles.disabled : "")}>
 				<div className={styles.checkbox}>
 					<input
-						id={"coupon-" + coupon.couponId}
+						id={`coupon-${productOptionId}-${coupon.couponId}`}
 						type="checkbox"
 						disabled={disabled}
 						checked={couponChecked}
@@ -73,7 +74,7 @@ export default function CartCouponSelector(props: CartCouponSelectorProps) {
 							setAppliedProductCoupon(!couponChecked);
 						}}
 					/>
-					<label htmlFor={"coupon-" + coupon.couponId} title={coupon.description}>
+					<label htmlFor={`coupon-${productOptionId}-${coupon.couponId}`} title={coupon.description}>
 						<span className={coupon.isStackable ? styles.isStackable : ""}>{coupon.description}</span>
 						{!coupon.isStackable && <mark>중복불가</mark>}
 					</label>

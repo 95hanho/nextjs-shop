@@ -75,9 +75,9 @@ export const WishButton = ({ initWishOn, productId, bottom = 1, right = 1, size 
 	const handleProductWish = useMutation({
 		mutationFn: () => postJson<BaseResponse>(getApiUrl(API_URL.PRODUCT_WISH), { productId }),
 		// Mutation이 시작되기 직전에 특정 작업을 수행
-		onMutate(a) {
-			console.log(a);
-		},
+		// onMutate(a) {
+		// 	console.log(a);
+		// },
 		onSuccess(data) {
 			console.log(data);
 		},
@@ -89,11 +89,11 @@ export const WishButton = ({ initWishOn, productId, bottom = 1, right = 1, size 
 	});
 
 	// 위시 선택변경
-	const changeWish = (e: MouseEvent) => {
+	const changeWish = async (e: MouseEvent) => {
 		e.stopPropagation(); // 클릭 이벤트가 부모 요소로 전파되는 것을 방지
 		e.preventDefault();
 		setWishOn(!wishOn);
-		handleProductWish.mutate();
+		await handleProductWish.mutateAsync();
 		if (clickHandler) {
 			clickHandler();
 		}
