@@ -191,6 +191,8 @@ export type CartItem = Cart & {
 	wishId: number;
 } & FileInfo & {
 		sellerName: string;
+		baseShippingFee: number; // 기본 배송비
+		freeShippingMinAmount: number; // 무료배송 최소 주문금액
 	};
 
 export type AvailableProductForProduct = Omit<AvailableProductCoupon, "sellerName"> & { productId: number; sellerName: string };

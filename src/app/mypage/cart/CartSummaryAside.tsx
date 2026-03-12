@@ -2,13 +2,32 @@ import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import styles from "./CartClient.module.scss";
 import { useState } from "react";
 import { SmartImage } from "@/components/ui/SmartImage";
+import { discountPercent, money } from "@/lib/format";
+import { calculateMileage } from "@/lib/price";
+import clsx from "clsx";
 
 interface CartSummaryAsideProps {
+	cartOriginPrice: number; // 장바구니 제품 원래 가격 총합
+	cartTotalPrice: number; // 장바구니 최종 가격
+	cartSelfDiscount: number; // 장바구니 제품 자체 할인 금액
+	cartCouponDiscount: number; // 장바구니 쿠폰의 할인가
+	sellerCouponDiscount: number; // 판매자 쿠폰의 할인가
+	deliveryFee: number; // 배송비
+	//
 	selectedCount: number;
 }
 
 // 우측: 요약/혜택/유의사항/CTA
-export default function CartSummaryAside({ selectedCount }: CartSummaryAsideProps) {
+export default function CartSummaryAside({
+	cartOriginPrice,
+	cartTotalPrice,
+	cartSelfDiscount,
+	cartCouponDiscount,
+	sellerCouponDiscount,
+	deliveryFee,
+	//
+	selectedCount,
+}: CartSummaryAsideProps) {
 	// 유의사항 on/off
 	const [noticeOpen, setNoticeOpen] = useState(false);
 
@@ -21,33 +40,52 @@ export default function CartSummaryAside({ selectedCount }: CartSummaryAsideProp
 					<div className={styles.priceLine}>
 						<div className={styles.infoName}>상품 금액</div>
 						<div className={styles.priceNum} data-field="subtotal">
-							185,000원
+							{money(cartOriginPrice)}원
 						</div>
 					</div>
 
-					<div className={styles.priceLine}>
-						<div>할인 금액</div>
-						<div className="text-blue-700">-39,960원</div>
-					</div>
+					<div>
+						<div className={styles.discountLine}>
+							<div>총 할인 금액</div>
+							<div className="font-bold text-red-500">-{money(cartOriginPrice - cartTotalPrice)}원</div>
+						</div>
 
-					<div className={styles.priceLine}>
-						<div>배송비</div>
-						<div className="text-blue-700">무료배송</div>
+						<div className={clsx(styles.discountLine, styles.discountRow)}>
+							<div>ㄴ 상품 자체 할인금액</div>
+							<div className="text-gray-600">-{money(cartSelfDiscount)}원</div>
+						</div>
+
+						<div className={clsx(styles.discountLine, styles.discountRow)}>
+							<div>ㄴ 제품 할인 쿠폰금액</div>
+							<div className="text-gray-600">-{money(sellerCouponDiscount)}원</div>
+						</div>
+
+						<div className={clsx(styles.discountLine, styles.discountRow)}>
+							<div>ㄴ 장바구니 쿠폰 할인금액</div>
+							<div className="text-gray-600">-{money(cartCouponDiscount)}원</div>
+						</div>
 					</div>
 
 					<div className={`mt-4 font-bold ${styles.priceLine} ${styles.priceLineTotal}`}>
 						<div>총 구매 금액</div>
 						<div aria-live="polite">
-							<span className="mr-2 text-red-500 align-baseline summary__badge">22%</span>
+							<span className="mr-2 text-red-500 align-baseline summary__badge">
+								{discountPercent(cartOriginPrice, cartTotalPrice)}%
+							</span>
 							<span className="align-baseline" data-field="total">
-								145,040원
+								{money(cartTotalPrice)}원
 							</span>
 						</div>
 					</div>
 
 					<div className={styles.priceLine}>
+						<div>배송비</div>
+						<div className="text-blue-700">{deliveryFee === 0 ? "무료배송" : `${money(deliveryFee)}원`}</div>
+					</div>
+
+					<div className={styles.priceLine}>
 						<div>적립혜택 예상</div>
-						<div>최대 5,120</div>
+						<div>최대 {money(calculateMileage(cartTotalPrice))}원</div>
 					</div>
 				</div>
 
@@ -120,7 +158,9 @@ export default function CartSummaryAside({ selectedCount }: CartSummaryAsideProp
 			)}
 
 			<div>
-				<button className="w-full px-5 py-3 mt-3 btn--black">145,040원 구매하기 ({selectedCount}개)</button>
+				<button className="w-full px-5 py-3 mt-3 text-base btn--black">
+					{money(cartTotalPrice + deliveryFee)}원 구매하기 ({selectedCount}개)
+				</button>
 			</div>
 		</aside>
 	);

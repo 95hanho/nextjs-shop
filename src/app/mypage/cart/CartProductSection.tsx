@@ -344,7 +344,7 @@ export default function CartProductSection({
 																	className={styles.productItemName}
 																>
 																	{product.productName}
-																	<span className="test">cartId({product.cartId})</span>
+																	{/* <span className="test">cartId({product.cartId})</span> */}
 																</Link>
 
 																<p className={styles.productItemOption}>
