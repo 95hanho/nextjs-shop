@@ -18,23 +18,36 @@ import { ModalResultMap } from "@/store/modal.type";
 import Error from "next/error";
 import { SmartImage } from "@/components/ui/SmartImage";
 import { WishButton } from "@/components/product/WishButton";
-import { AppliedProductCouponMap, BrandGroupEntry, CartCoupon, CartItemSelectCollection, ProductCoupon } from "@/app/mypage/cart/CartClient";
+import {
+	AppliedCartCoupon,
+	AppliedProductCouponMap,
+	BrandGroupEntry,
+	CartCoupon,
+	CartItemSelectCollection,
+	ProductCoupon,
+} from "@/app/mypage/cart/CartClient";
 import Link from "next/link";
 import CartCouponSelector from "@/app/mypage/cart/CartCouponSelector";
 import { scrollIntoCenter } from "@/utils/ui";
 
 interface CartProductSectionProps extends CartItemSelectCollection {
+	noResetCouponOn: () => void;
+	//
 	brandGroupList: BrandGroupEntry[];
 	cartCouponList: CartCoupon[];
 	productCouponList: ProductCoupon[];
 	appliedProductCouponMap: AppliedProductCouponMap;
+	changeAppliedProductCoupon: (cartId: number, coupon: AppliedCartCoupon, isChecked: boolean) => void;
 }
 
 export default function CartProductSection({
+	noResetCouponOn,
+	//
 	brandGroupList,
 	cartCouponList,
 	productCouponList,
 	appliedProductCouponMap,
+	changeAppliedProductCoupon,
 	//
 	selectedCount,
 	allSelected,
@@ -54,12 +67,12 @@ export default function CartProductSection({
 		mutationFn: ({ cartId, productOptionId, quantity }) =>
 			postJson<BaseResponse>(getApiUrl(API_URL.MY_CART), { cartId, productOptionId, quantity }),
 		// Mutation이 시작되기 직전에 특정 작업을 수행
-		onMutate(variables) {
-			console.log(variables);
-		},
-		onSuccess(data, variables, context) {
-			console.log(data, variables, context);
-		},
+		// onMutate(variables) {
+		// 	console.log(variables);
+		// },
+		// onSuccess(data, variables, context) {
+		// 	console.log(data, variables, context);
+		// },
 		onError(err, variables, context) {
 			console.log(err, variables, context);
 		},
@@ -70,12 +83,12 @@ export default function CartProductSection({
 	const handleChangeSelected = useMutation<BaseResponse, Error, UpdateCartSelectedRequest>({
 		mutationFn: ({ cartIdList, selected }) => putJson<BaseResponse>(getApiUrl(API_URL.MY_CART), { cartIdList, selected }),
 		// Mutation이 시작되기 직전에 특정 작업을 수행
-		onMutate(a) {
-			console.log(a);
-		},
-		onSuccess(data) {
-			console.log(data);
-		},
+		// onMutate(a) {
+		// 	console.log(a);
+		// },
+		// onSuccess(data) {
+		// 	console.log(data);
+		// },
 		onError(err) {
 			console.log(err);
 		},
@@ -86,12 +99,12 @@ export default function CartProductSection({
 	const handleCartProductDelete = useMutation<BaseResponse, Error, { cartIdList: number[] }>({
 		mutationFn: ({ cartIdList }) => deleteNormal<BaseResponse>(getApiUrl(API_URL.MY_CART), { cartIdList }),
 		// Mutation이 시작되기 직전에 특정 작업을 수행
-		onMutate(a) {
-			console.log(a);
-		},
-		onSuccess(data) {
-			console.log(data);
-		},
+		// onMutate(a) {
+		// 	console.log(a);
+		// },
+		// onSuccess(data) {
+		// 	console.log(data);
+		// },
 		onError(err) {
 			console.log(err);
 		},
@@ -103,8 +116,11 @@ export default function CartProductSection({
 	// React
 	// =================================================================
 
+	// 모달 오픈 시 selected 상태 - selected가 안된거를 옵션 변경이나 삭제 시에 쿠폰초기화 안하기
+	const modalOpenSelectedState = useRef<boolean>(false);
 	// 옵션변경 모달 오픈
 	const openOptionChangeModal = (product: CartItem) => {
+		if (!product.selected) modalOpenSelectedState.current = true; // 모달 열 때의 selected 상태 저장
 		openModal("PRODUCTOPTION", {
 			product,
 		});
@@ -119,7 +135,7 @@ export default function CartProductSection({
 	// 모달 닫힌 후 처리
 	useEffect(() => {
 		if (!modalResult) return;
-		// 옵션변경
+		// 장바구니 제품 옵션변경
 		if (modalResult.action === "PRODUCTOPTION_CHANGED") {
 			const p = modalResult.payload as ModalResultMap["PRODUCTOPTION_CHANGED"];
 
@@ -127,9 +143,11 @@ export default function CartProductSection({
 			// await mutateOptionChange(p.nextProductOptionId) ...
 			// queryClient.invalidateQueries({ queryKey: ["cartList"] });
 
-			console.log("옵션 변경 결과:", p);
 			const changeCartOption = async () => {
 				await handleChangeQuantity.mutateAsync({ cartId: p.cartId, productOptionId: p.productOptionId, quantity: p.quantity });
+				if (modalOpenSelectedState.current) {
+					noResetCouponOn(); // 옵션 변경 시 selected 상태가 안된 경우 쿠폰 초기화 방지
+				}
 				queryClient.invalidateQueries({ queryKey: ["cartList"] });
 			};
 			changeCartOption();
@@ -138,13 +156,19 @@ export default function CartProductSection({
 		if (modalResult.action === "CONFIRM_OK") {
 			const deleteCart = async () => {
 				await handleCartProductDelete.mutateAsync({ cartIdList: deletingCartIdList });
+				if (modalOpenSelectedState.current) {
+					noResetCouponOn(); // 삭제 시 selected 상태가 안된 경우 쿠폰 초기화 방지
+				}
 				queryClient.invalidateQueries({ queryKey: ["cartList"] });
 			};
 			deleteCart();
 		}
+		if (modalResult?.action === "CLOSE") {
+			modalOpenSelectedState.current = false;
+		}
 		// ✅ 한 번 처리했으면 비워주기 (중복 처리 방지)
 		clearModalResult();
-	}, [modalResult, clearModalResult, deletingCartIdList, handleCartProductDelete, handleChangeQuantity, queryClient]);
+	}, [modalResult, clearModalResult, deletingCartIdList, handleCartProductDelete, handleChangeQuantity, queryClient, noResetCouponOn]);
 
 	// 쿠폰변경 UI 열기(판매자이름)
 	const [couponAppliedSelectorOpenSeller, setCouponAppliedSelectorOpenSeller] = useState<string>("");
@@ -211,12 +235,13 @@ export default function CartProductSection({
 						<React.Fragment key={"cartBrand-" + brandName}>
 							{brandGroupIdx > 0 && <hr className={styles.productBrandDivider} />}
 
-							<article className={styles.brandGroup} aria-labelledby="brand-denmade">
+							<article className={styles.brandGroup} aria-labelledby={`brand-${brandName}`}>
 								<h2 className={styles.brandGroupHeader}>
 									<span className={styles.brandGroupLeft}>
 										<span className={styles.brandGroupCheck}>
+											{/* 브랜드 상품 전체선택 */}
 											<input
-												id="group-denmade"
+												id={`group-${brandName}`}
 												type="checkbox"
 												className="checkbox"
 												checked={brandAllchecked}
@@ -230,7 +255,7 @@ export default function CartProductSection({
 											/>
 										</span>
 
-										<label className={styles.brandGroupTitle} id="brand-denmade" htmlFor="group-denmade">
+										<label className={styles.brandGroupTitle} id={`brand-${brandName}`} htmlFor={`group-${brandName}`}>
 											{brandName}
 										</label>
 									</span>
@@ -244,6 +269,8 @@ export default function CartProductSection({
 								<ul className={styles.productList}>
 									{/* 상품 하나 */}
 									{productList.map((product) => {
+										const initialOriginPrice = (product.originPrice + product.addPrice) * product.quantity;
+										const initialFinalPrice = (product.finalPrice + product.addPrice) * product.quantity;
 										const selectDisabled = product.stock < product.quantity;
 
 										let productAlarm = "";
@@ -304,6 +331,7 @@ export default function CartProductSection({
 																productId={product.productId}
 																initWishOn={product.wishId !== null}
 																clickHandler={() => {
+																	noResetCouponOn(); // 쿠폰 초기화 방지
 																	queryClient.invalidateQueries({ queryKey: ["cartList"] });
 																}}
 															/>
@@ -320,7 +348,8 @@ export default function CartProductSection({
 																</Link>
 
 																<p className={styles.productItemOption}>
-																	{product.size} / {product.quantity}개
+																	{product.size}
+																	{product.addPrice > 0 && `(+${money(product.addPrice)})`} / {product.quantity}개
 																</p>
 
 																{/* 10개 이하 시에 표시 */}
@@ -332,19 +361,11 @@ export default function CartProductSection({
 
 																<div className={styles.productItemPrices}>
 																	<h5 className={`${styles.price} ${styles.priceSale}`}>
-																		<b>
-																			{discountPercent(
-																				product.originPrice * product.quantity,
-																				product.discountedPrice,
-																			)}
-																			%
-																		</b>
-																		<del>{money(product.originPrice * product.quantity)}원</del>
+																		<b>{discountPercent(initialOriginPrice, product.discountedPrice)}%</b>
+																		<del>{money(initialOriginPrice)}원</del>
 																	</h5>
 																	<h5 className={`${styles.price} ${styles.priceOrigin}`}>
-																		<span>
-																			{money(product.finalPrice * product.quantity - product.discountAmount)}원
-																		</span>
+																		<span>{money(initialFinalPrice - product.discountAmount)}원</span>
 																	</h5>
 																</div>
 															</div>
@@ -371,7 +392,6 @@ export default function CartProductSection({
 																			if (couponAppliedSelectorOpenSeller === product.sellerName) {
 																				setCouponAppliedSelectorOpenSeller("");
 																			} else {
-																				console.log(e.currentTarget);
 																				panelRef.current = e.currentTarget;
 																				scrollYRef.current = window.scrollY;
 																				setCouponAppliedSelectorOpenSeller(product.sellerName);
@@ -401,15 +421,15 @@ export default function CartProductSection({
 															</button>
 														)}
 													</div>
-													{couponAppliedSelectorOpenSeller === product.sellerName && (
+													{product.selected && couponAppliedSelectorOpenSeller === product.sellerName && (
 														<div className={styles.productItemAppliedCouponList}>
 															<div className={styles.appliedCouponListTitle}>
 																<div className="mb-2">
 																	<h4 className="mb-1 text-gray-500">상품 할인</h4>
 																	<CartCouponSelector
 																		type="BASE"
-																		originXQuantity={product.originPrice * product.quantity}
-																		finalXQuantity={product.finalPrice * product.quantity}
+																		originXQuantity={initialOriginPrice}
+																		finalXQuantity={initialFinalPrice}
 																	/>
 																</div>
 																<div className="mb-2">
@@ -418,11 +438,11 @@ export default function CartProductSection({
 																		// 중복불가 쿠폰일 시 검사
 																		const unStackableChecked =
 																			!coupon.isStackable &&
-																			appliedProductCoupon.unStackable?.couponId === coupon.couponId;
+																			appliedProductCoupon?.unStackable?.couponId === coupon.couponId;
 																		// 중복가능 쿠폰일 시 검사
 																		const stackableChecked =
 																			coupon.isStackable &&
-																			appliedProductCoupon.stackable?.some(
+																			appliedProductCoupon?.stackable?.some(
 																				(c) => c.couponId === coupon.couponId,
 																			);
 																		// checked 여부
@@ -442,14 +462,12 @@ export default function CartProductSection({
 																				type="COUPON"
 																				coupon={coupon}
 																				couponChecked={couponChecked}
-																				finalXQuantity={product.finalPrice * product.quantity}
+																				finalXQuantity={initialFinalPrice}
 																				setAppliedProductCoupon={(isAdd) => {
-																					console.log("isAdd", isAdd);
-																					if (isAdd) {
-																					} else {
-																					}
+																					changeAppliedProductCoupon(product.cartId, coupon, isAdd);
 																				}}
 																				otherUsed={otherUsed}
+																				productOptionId={product.productOptionId}
 																			/>
 																		);
 																	})}
@@ -460,11 +478,11 @@ export default function CartProductSection({
 																		// 중복불가 쿠폰일 시 검사
 																		const unStackableChecked =
 																			!coupon.isStackable &&
-																			appliedProductCoupon.unStackable?.couponId === coupon.couponId;
+																			appliedProductCoupon?.unStackable?.couponId === coupon.couponId;
 																		// 중복가능 쿠폰일 시 검사
 																		const stackableChecked =
 																			coupon.isStackable &&
-																			appliedProductCoupon.stackable?.some(
+																			appliedProductCoupon?.stackable?.some(
 																				(c) => c.couponId === coupon.couponId,
 																			);
 																		// checked 여부
@@ -477,9 +495,12 @@ export default function CartProductSection({
 																				type="COUPON"
 																				coupon={coupon}
 																				couponChecked={couponChecked}
-																				finalXQuantity={product.finalPrice * product.quantity}
-																				setAppliedProductCoupon={() => {}}
+																				finalXQuantity={initialFinalPrice}
+																				setAppliedProductCoupon={(isAdd) => {
+																					changeAppliedProductCoupon(product.cartId, coupon, isAdd);
+																				}}
 																				otherUsed={otherUsed}
+																				productOptionId={product.productOptionId}
 																			/>
 																		);
 																	})}
@@ -493,6 +514,7 @@ export default function CartProductSection({
 													<button
 														onClick={() => {
 															setDeletingCartIdList([product.cartId]);
+															if (!product.selected) modalOpenSelectedState.current = true;
 															cartDeleteModalOpen("해당 제품을 장바구니에서 삭제하시겠습니까?");
 														}}
 													>
