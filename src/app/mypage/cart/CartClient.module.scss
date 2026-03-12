@@ -397,6 +397,19 @@
 					justify-content: space-between;
 					margin-bottom: 5px;
 					font-size: 15px;
+					&.discountRow {
+						font-size: 14px;
+					}
+				}
+
+				.discountLine {
+					display: flex;
+					justify-content: space-between;
+					margin-bottom: 3px;
+					font-size: 15px;
+					&.discountRow {
+						font-size: 14px;
+					}
 				}
 
 				.priceLineTotal {

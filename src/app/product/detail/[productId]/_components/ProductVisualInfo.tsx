@@ -491,7 +491,7 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 				<div className={styles.productAdditionalInfo}>
 					<div className={styles.productMileage}>
 						<b>구매 적립금</b>
-						<span>최대 {calculateMileage(productDetail.finalPrice)} 마일리지 적립 예정</span>
+						<span>최대 {money(calculateMileage(totalPrice))}원 마일리지 적립 예정</span>
 					</div>
 
 					<div className={styles.installmentInfo}>

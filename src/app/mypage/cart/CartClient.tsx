@@ -29,10 +29,12 @@ type CartSelectResult = {
 	productCouponList: ProductCoupon[];
 };
 type CartSummaryAsideValue = {
+	cartOriginPrice: number; // 장바구니 제품 원래 가격 총합
 	cartTotalPrice: number; // 장바구니 최종 가격
 	cartSelfDiscount: number; // 장바구니 제품 자체 할인 금액
 	cartCouponDiscount: number; // 장바구니 쿠폰의 할인가
 	sellerCouponDiscount: number; // 판매자 쿠폰의 할인가
+	deliveryFee: number; // 배송비
 };
 
 type CartSelectResultWithSummary = CartSelectResult & CartSummaryAsideValue;
@@ -205,10 +207,12 @@ export default function CartClient() {
 		cartCouponList,
 		productCouponList,
 		// 금액 표시를 위한 값들
+		cartOriginPrice,
 		cartTotalPrice,
 		cartSelfDiscount,
 		cartCouponDiscount,
 		sellerCouponDiscount,
+		deliveryFee,
 	}: CartSelectResultWithSummary = useMemo(() => {
 		// API 응답 전
 		if (!cartData) {
@@ -216,19 +220,32 @@ export default function CartClient() {
 				brandGroupList: [],
 				cartCouponList: [],
 				productCouponList: [],
+				cartOriginPrice: 0,
 				cartTotalPrice: 0,
 				cartSelfDiscount: 0,
 				cartCouponDiscount: 0,
 				sellerCouponDiscount: 0,
+				deliveryFee: 0,
 			};
 		}
 		// API 응답 후 / 쿠폰 적용 변경 시
 
 		const brandGroup: Record<string, CartItemWithCoupon[]> = {};
+		let cartOriginPrice = 0;
 		let cartTotalPrice = 0;
 		let cartSelfDiscount = 0;
 		let cartCouponDiscount = 0;
 		let sellerCouponDiscount = 0;
+
+		// 배송비 계산을 위한 객체
+		const deliveryInfoBySeller: Record<
+			string,
+			{
+				totalFinalPrice: number; // 해당 판매자 상품들의 자체 할인가 가격 총합
+				baseShippingFee: number; // 기본 배송비
+				freeShippingMinAmount: number; // 무료배송 최소 주문금액
+			}
+		> = {};
 
 		cartData.cartList.forEach((cart) => {
 			const initPrice = (cart.finalPrice + cart.addPrice) * cart.quantity;
@@ -236,7 +253,19 @@ export default function CartClient() {
 
 			if (cart.selected) {
 				// 자체할인가 계산
+				cartOriginPrice += cart.originPrice * cart.quantity;
 				cartSelfDiscount += (cart.originPrice - cart.finalPrice) * cart.quantity;
+
+				// 배송비 계산 정보 저장
+				if (!deliveryInfoBySeller[cart.sellerName]) {
+					deliveryInfoBySeller[cart.sellerName] = {
+						totalFinalPrice: cartItem.finalPrice * cart.quantity,
+						baseShippingFee: cart.baseShippingFee,
+						freeShippingMinAmount: cart.freeShippingMinAmount,
+					};
+				} else {
+					deliveryInfoBySeller[cart.sellerName].totalFinalPrice += cartItem.finalPrice * cart.quantity;
+				}
 
 				// 적용 쿠폰에 따라 discountedPrice와 discountAmount 계산
 				const appliedProductCoupon = appliedProductCouponMap[cartItem.cartId];
@@ -284,10 +313,14 @@ export default function CartClient() {
 				...coupon,
 				used: usedSet.has(coupon.couponId),
 			})),
+			cartOriginPrice,
 			cartTotalPrice,
 			cartSelfDiscount,
 			cartCouponDiscount,
 			sellerCouponDiscount,
+			deliveryFee: Object.values(deliveryInfoBySeller).reduce((fee, { totalFinalPrice, baseShippingFee, freeShippingMinAmount }) => {
+				return fee + (totalFinalPrice >= freeShippingMinAmount ? 0 : baseShippingFee);
+			}, 0),
 		};
 	}, [cartData, appliedProductCouponMap]);
 
@@ -326,7 +359,17 @@ export default function CartClient() {
 		// if (cartCouponList.length > 0 || productCouponList.length > 0) console.log({ cartCouponList, productCouponList });
 		// if (Object.keys(appliedProductCouponMap).length > 0) console.log({ appliedProductCouponMap });
 		// console.log({ cartTotalPrice, cartSelfDiscount, cartCouponDiscount, sellerCouponDiscount });
-	}, [cartCouponList, productCouponList, appliedProductCouponMap, cartTotalPrice, cartSelfDiscount, cartCouponDiscount, sellerCouponDiscount]);
+		console.log({ deliveryFee });
+	}, [
+		cartCouponList,
+		productCouponList,
+		appliedProductCouponMap,
+		cartTotalPrice,
+		cartSelfDiscount,
+		cartCouponDiscount,
+		sellerCouponDiscount,
+		deliveryFee,
+	]);
 
 	// =================================================================
 	// UI
@@ -348,6 +391,17 @@ export default function CartClient() {
 		selectedCartIdList,
 	};
 
+	const CartSummaryAsideProps = {
+		cartOriginPrice,
+		cartTotalPrice,
+		cartSelfDiscount, // 장바구니 제품 자체 할인 금액
+		cartCouponDiscount, // 장바구니 쿠폰의 할인가
+		sellerCouponDiscount, // 판매자 쿠폰의 할인가
+		deliveryFee,
+		//
+		selectedCount,
+	};
+
 	return (
 		<main id="cart" className={styles.cart}>
 			<div className={styles.cartFrame}>
@@ -361,7 +415,7 @@ export default function CartClient() {
 					<CartProductSection {...CartProductSectionProps} />
 
 					{/* 우측: 요약/혜택/유의사항/CTA */}
-					<CartSummaryAside selectedCount={selectedCount} />
+					<CartSummaryAside {...CartSummaryAsideProps} />
 				</div>
 			</div>
 		</main>
