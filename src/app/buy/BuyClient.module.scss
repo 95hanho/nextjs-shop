@@ -5,6 +5,8 @@
 .page {
 	padding: 32px 40px;
 	background: #fff;
+	max-width: 1000px;
+	margin: 0 auto;
 }
 
 .pageTitle {
@@ -27,9 +29,11 @@
 }
 
 .aside {
-	width: 360px;
 	position: sticky;
 	top: 100px;
+	.asideBox {
+		min-width: 360px;
+	}
 }
 
 /* =========================
