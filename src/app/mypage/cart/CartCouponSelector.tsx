@@ -24,6 +24,7 @@ type CartCouponSelectorProps =
 			couponChecked: boolean;
 			otherUsed: boolean;
 			productOptionId: number;
+			handleAfterCouponDownload?: () => void;
 	  });
 
 export default function CartCouponSelector(props: CartCouponSelectorProps) {
@@ -34,6 +35,9 @@ export default function CartCouponSelector(props: CartCouponSelectorProps) {
 		mutationFn: (couponId: number) => postJson<BaseResponse & { userCouponId: number }>(getApiUrl(API_URL.PRODUCT_COUPON_DOWNLOAD), { couponId }),
 		onSuccess(data) {
 			console.log("couponDownload data", data);
+			if (type === "COUPON") {
+				if (props.handleAfterCouponDownload) props.handleAfterCouponDownload();
+			}
 			return data;
 		},
 		onError(err) {
@@ -98,9 +102,7 @@ export default function CartCouponSelector(props: CartCouponSelectorProps) {
 								<button
 									className={clsx(styles.couponDownloadBtn)}
 									onClick={() => {
-										couponDownload.mutateAsync(coupon.couponId).then((data) => {
-											coupon.userCouponId = data.userCouponId;
-										});
+										couponDownload.mutate(coupon.couponId);
 									}}
 								>
 									받기
