@@ -15,6 +15,7 @@ import CartSummaryAside from "@/app/mypage/cart/CartSummaryAside";
 import CartProductSection from "@/app/mypage/cart/CartProductSection";
 import { calculateDiscount } from "@/lib/price";
 import { useModalStore } from "@/store/modal.store";
+import { BuyItem } from "@/types/buy";
 
 type CartItemWithCoupon = CartItem & {
 	discountedPrice: number; // 해당 상품에 적용된 쿠폰 할인을 반영한 가격 (finalPrice에서 할인금액을 뺀 가격)
@@ -35,6 +36,8 @@ type CartSummaryAsideValue = {
 	cartCouponDiscount: number; // 장바구니 쿠폰의 할인가
 	sellerCouponDiscount: number; // 판매자 쿠폰의 할인가
 	deliveryFee: number; // 배송비
+	//
+	buyList: BuyItem[]; // 구매를 위한 상품 리스트 (hold 요청 시 사용)
 };
 
 type CartSelectResultWithSummary = CartSelectResult & CartSummaryAsideValue;
@@ -61,8 +64,6 @@ export type CartItemSelectCollection = {
 export default function CartClient() {
 	const { loginOn } = useAuth();
 	const { openModal } = useModalStore();
-	// 마지막으로 초기 자동 적용을 수행한 fetch 시점
-	const lastInitAtRef = useRef<number>(0);
 
 	// =================================================================
 	// React Query
@@ -86,6 +87,8 @@ export default function CartClient() {
 	// React
 	// =================================================================
 
+	// 마지막으로 초기 자동 적용을 수행한 fetch 시점
+	const lastInitAtRef = useRef<number>(0);
 	// cartId별 적용된 쿠폰
 	const [appliedProductCouponMap, setAppliedProductCouponMap] = useState<AppliedProductCouponMap>({});
 	const changeAppliedProductCoupon = (cartId: number, coupon: AppliedCoupon, isChecked: boolean) => {
@@ -132,6 +135,10 @@ export default function CartClient() {
 	const noResetCouponOn = () => {
 		noResetCoupon.current = true;
 	};
+
+	// =================================================================
+	// useEffect, useMemo
+	// =================================================================
 
 	// 장바구니 데이터 초기화 및 쿠폰 자동 적용 로직
 	useEffect(() => {
@@ -196,6 +203,7 @@ export default function CartClient() {
 			};
 		});
 
+		// console.log("initialAppliedProductCouponMap", initialAppliedProductCouponMap);
 		setAppliedProductCouponMap(initialAppliedProductCouponMap);
 		lastInitAtRef.current = dataUpdatedAt; // 초기 적용 완료 시점 기록
 	}, [cartData, dataUpdatedAt, openModal, userCouponChanged]);
@@ -213,6 +221,8 @@ export default function CartClient() {
 		cartCouponDiscount,
 		sellerCouponDiscount,
 		deliveryFee,
+		// 상품 구매(점유)를 위한
+		buyList,
 	}: CartSelectResultWithSummary = useMemo(() => {
 		// API 응답 전
 		if (!cartData) {
@@ -226,16 +236,17 @@ export default function CartClient() {
 				cartCouponDiscount: 0,
 				sellerCouponDiscount: 0,
 				deliveryFee: 0,
+				buyList: [],
 			};
 		}
 		// API 응답 후 / 쿠폰 적용 변경 시
-
 		const brandGroup: Record<string, CartItemWithCoupon[]> = {};
 		let cartOriginPrice = 0;
 		let cartTotalPrice = 0;
 		let cartSelfDiscount = 0;
 		let cartCouponDiscount = 0;
 		let sellerCouponDiscount = 0;
+		const buyList: BuyItem[] = [];
 
 		// 배송비 계산을 위한 객체
 		const deliveryInfoBySeller: Record<
@@ -252,6 +263,8 @@ export default function CartClient() {
 			const cartItem: CartItemWithCoupon = { ...cart, discountedPrice: initPrice, discountAmount: 0 };
 
 			if (cart.selected) {
+				const buyCouponIds: number[] = [];
+
 				// 자체할인가 계산
 				cartOriginPrice += cart.originPrice * cart.quantity;
 				cartSelfDiscount += (cart.originPrice - cart.finalPrice) * cart.quantity;
@@ -275,6 +288,8 @@ export default function CartClient() {
 						cartItem.discountAmount += unStackableDiscount;
 						if (appliedProductCoupon.unStackable.sellerName) sellerCouponDiscount += unStackableDiscount;
 						else cartCouponDiscount += unStackableDiscount;
+						// 구매 쿠폰 추가(중복 불가능)
+						buyCouponIds.push(appliedProductCoupon.unStackable.couponId);
 					}
 					if (appliedProductCoupon.stackable.length > 0) {
 						appliedProductCoupon.stackable.forEach((coupon) => {
@@ -283,10 +298,20 @@ export default function CartClient() {
 							if (coupon.sellerName) sellerCouponDiscount += stackableDiscount;
 							else cartCouponDiscount += stackableDiscount;
 						});
+						// 구매 쿠폰 추가(중복 가능)
+						buyCouponIds.push(...appliedProductCoupon.stackable.map((c) => c.couponId));
 					}
 					cartItem.discountedPrice -= cartItem.discountAmount;
 				}
 				cartTotalPrice += cartItem.discountedPrice; // 전체 합산 가격 계산
+
+				// 구매를 위한 buyList 구성
+				buyList.push({
+					productOptionId: cartItem.productOptionId,
+					cartId: cartItem.cartId,
+					count: cartItem.quantity,
+					couponIds: buyCouponIds,
+				});
 			}
 
 			// 판매자(브랜드)별로 장바구니 상품 그룹핑
@@ -298,9 +323,8 @@ export default function CartClient() {
 		Object.values(appliedProductCouponMap).forEach((applied) => {
 			if (applied?.unStackable) {
 				usedSet.add(applied.unStackable.couponId);
-			} else {
-				applied?.stackable.forEach((coupon) => usedSet.add(coupon.couponId));
 			}
+			applied?.stackable.forEach((coupon) => usedSet.add(coupon.couponId));
 		});
 
 		return {
@@ -321,6 +345,7 @@ export default function CartClient() {
 			deliveryFee: Object.values(deliveryInfoBySeller).reduce((fee, { totalFinalPrice, baseShippingFee, freeShippingMinAmount }) => {
 				return fee + (totalFinalPrice >= freeShippingMinAmount ? 0 : baseShippingFee);
 			}, 0),
+			buyList,
 		};
 	}, [cartData, appliedProductCouponMap]);
 
@@ -342,10 +367,6 @@ export default function CartClient() {
 			};
 		}, [brandGroupList]);
 
-	// =================================================================
-	// useEffect
-	// =================================================================
-
 	// 장바구니 내 상품 중 재고 수량보다 주문 수량이 초과된 상품이 있는지 여부에 따른 모달 띄우기
 	useEffect(() => {
 		if (cartData && cartData.isExceedQuantity) {
@@ -356,7 +377,8 @@ export default function CartClient() {
 	}, [openModal, cartData]);
 
 	useEffect(() => {
-		// if (cartCouponList.length > 0 || productCouponList.length > 0) console.log({ cartCouponList, productCouponList });
+		if (cartCouponList.length > 0) console.log({ cartCouponList });
+		if (productCouponList.length > 0) console.log({ productCouponList });
 		// if (Object.keys(appliedProductCouponMap).length > 0) console.log({ appliedProductCouponMap });
 		// console.log({ cartTotalPrice, cartSelfDiscount, cartCouponDiscount, sellerCouponDiscount });
 		// console.log({ deliveryFee });
@@ -400,6 +422,8 @@ export default function CartClient() {
 		deliveryFee,
 		//
 		selectedCount,
+		//
+		buyList,
 	};
 
 	return (

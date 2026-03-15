@@ -5,6 +5,14 @@ import { SmartImage } from "@/components/ui/SmartImage";
 import { discountPercent, money } from "@/lib/format";
 import { calculateMileage } from "@/lib/price";
 import clsx from "clsx";
+import { useMutation } from "@tanstack/react-query";
+import { BaseResponse } from "@/types/common";
+import API_URL from "@/api/endpoints";
+import { postJson } from "@/api/fetchFilter";
+import { getApiUrl } from "@/lib/getBaseUrl";
+import { BuyHoldRequest, BuyItem } from "@/types/buy";
+import { useModalStore } from "@/store/modal.store";
+import { useRouter } from "next/navigation";
 
 interface CartSummaryAsideProps {
 	cartOriginPrice: number; // 장바구니 제품 원래 가격 총합
@@ -15,6 +23,8 @@ interface CartSummaryAsideProps {
 	deliveryFee: number; // 배송비
 	//
 	selectedCount: number;
+	//
+	buyList: BuyItem[];
 }
 
 // 우측: 요약/혜택/유의사항/CTA
@@ -27,9 +37,55 @@ export default function CartSummaryAside({
 	deliveryFee,
 	//
 	selectedCount,
+	//
+	buyList,
 }: CartSummaryAsideProps) {
+	const { openModal } = useModalStore();
+	const { push } = useRouter();
+
+	// =================================================================
+	// React Query
+	// =================================================================
+
+	// 상품 확인 및 점유(구매페이지에서는 다운로드 쿠폰만 조회하기)
+	const handleStockHold = useMutation<BaseResponse, Error>({
+		mutationFn: () =>
+			postJson<BaseResponse & { holds: number[] }, BuyHoldRequest>(getApiUrl(API_URL.BUY_HOLD), {
+				buyList,
+			}),
+		// Mutation이 시작되기 직전에 특정 작업을 수행
+		// onMutate(variables) {
+		// 	console.log(variables);
+		// },
+		onSuccess() {
+			// console.log(data, variables, context);
+			push("/buy");
+		},
+		onError(err, variables, context) {
+			console.log(err, variables, context);
+		},
+		// 결과에 관계 없이 무언가 실행됨
+		// onSettled(data, error, variables, context) {},
+	});
+
+	// =================================================================
+	// React
+	// =================================================================
+
 	// 유의사항 on/off
 	const [noticeOpen, setNoticeOpen] = useState(false);
+
+	// 상품 구매하기 버튼 - 상품 확인 및 점유 -> 성공 시 결제 페이지로 이동, 실패 시 에러 메시지 노출
+	const handlePurchaseClick = () => {
+		if (buyList.length === 0) {
+			openModal("ALERT", {
+				content: "선택된 상품이 없습니다.",
+			});
+			return;
+		}
+		// console.log("buyList", buyList);
+		handleStockHold.mutate();
+	};
 
 	return (
 		<aside className={styles.priceWrap} aria-label="주문 요약">
@@ -158,7 +214,7 @@ export default function CartSummaryAside({
 			)}
 
 			<div>
-				<button className="w-full px-5 py-3 mt-3 text-base btn--black">
+				<button className="w-full px-5 py-3 mt-3 text-base btn--black" onClick={handlePurchaseClick}>
 					{money(cartTotalPrice + deliveryFee)}원 구매하기 ({selectedCount}개)
 				</button>
 			</div>

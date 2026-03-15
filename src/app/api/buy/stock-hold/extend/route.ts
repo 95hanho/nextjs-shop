@@ -4,27 +4,17 @@ import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { postJson } from "@/api/fetchFilter";
 import { userWithAuth } from "@/lib/auth/user";
-import { WRONG_REQUEST_MESSAGE } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
-import { ExtendStockHoldRequest, ExtendStockHoldResponse } from "@/types/buy";
+import { ExtendStockHoldResponse } from "@/types/buy";
 import { NextResponse } from "next/server";
 
 // 상품 점유 연장
-export const POST = userWithAuth(async ({ nextRequest, accessToken }) => {
+export const POST = userWithAuth(async ({ accessToken }) => {
 	console.log("[API] 상품 점유 연장");
 	try {
-		const { holdIds }: ExtendStockHoldRequest = await nextRequest.json();
-
-		if (holdIds.length === 0) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
-
-		const payload: ExtendStockHoldRequest = { holdIds };
-		const data = await postJson<ExtendStockHoldResponse, ExtendStockHoldRequest>(
-			getBackendUrl(API_URL.BUY_HOLD_EXTENT),
-			{ ...payload },
-			{
-				Authorization: `Bearer ${accessToken}`,
-			},
-		);
+		const data = await postJson<ExtendStockHoldResponse>(getBackendUrl(API_URL.BUY_HOLD_EXTEND), undefined, {
+			Authorization: `Bearer ${accessToken}`,
+		});
 		// console.log("data", data);
 
 		return NextResponse.json({ ...data }, { status: 200 });

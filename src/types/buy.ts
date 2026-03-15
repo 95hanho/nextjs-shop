@@ -1,12 +1,13 @@
 import { BaseResponse } from "./common";
 
-export interface BuyItem {
-	productOptionId: number;
-	count: number; // 1 이상 정수
-}
-
 /* ---------------------------------------------------- */
 /* 상품 확인 및 점유(구매페이지이동) */
+export interface BuyItem {
+	productOptionId: number;
+	cartId: number | null; // 장바구니에서 온 경우 해당 cartId, 바로 구매하는 경우 null
+	count: number; // 1 이상 정수
+	couponIds: number[]; // 각 상품에 적용할 쿠폰 ID 리스트 (없으면 빈 배열)
+}
 export interface BuyHoldRequest {
 	buyList: BuyItem[];
 }
@@ -14,15 +15,14 @@ export interface BuyHoldResponse extends BaseResponse {
 	holds: {
 		productOptionId: number;
 		holdId: number;
+		count: number;
 	}[];
 }
 /* 구매상품 점유 연장 */
-export interface ExtendStockHoldRequest {
-	holdIds: number[];
-}
-export interface ExtendStockHoldResponse extends BaseResponse, ExtendStockHoldRequest {
+export interface ExtendStockHoldResponse extends BaseResponse {
 	requestedCount: number;
 	updatedCount: number;
+	holdIds: number[];
 }
 
 /* 구매상품 점유 해제 */

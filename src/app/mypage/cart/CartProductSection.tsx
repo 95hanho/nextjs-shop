@@ -468,6 +468,10 @@ export default function CartProductSection({
 																				}}
 																				otherUsed={otherUsed}
 																				productOptionId={product.productOptionId}
+																				handleAfterCouponDownload={() => {
+																					noResetCouponOn(); // 쿠폰 초기화 방지
+																					queryClient.invalidateQueries({ queryKey: ["cartList"] });
+																				}}
 																			/>
 																		);
 																	})}
@@ -501,6 +505,10 @@ export default function CartProductSection({
 																				}}
 																				otherUsed={otherUsed}
 																				productOptionId={product.productOptionId}
+																				handleAfterCouponDownload={() => {
+																					noResetCouponOn(); // 쿠폰 초기화 방지
+																					queryClient.invalidateQueries({ queryKey: ["cartList"] });
+																				}}
 																			/>
 																		);
 																	})}
