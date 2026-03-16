@@ -14,6 +14,20 @@ export default function BuyClient() {
 	// React Query
 	// =================================================================
 
+	// 점유한 상품 조회
+	// invalidateQueries(["cartList"])
+	// const {
+	// 	data: cartData,
+	// 	isLoading,
+	// 	isFetching,
+	// 	dataUpdatedAt,
+	// } = useQuery<GetCartResponse, Error>({
+	// 	queryKey: ["cartList"],
+	// 	queryFn: () => getNormal(getApiUrl(API_URL.MY_CART)),
+	// 	enabled: loginOn,
+	// 	refetchOnWindowFocus: false,
+	// });
+
 	// 점유 연장 handleStockHoldExtend
 	const { mutateAsync: handleStockHoldExtend } = useMutation({
 		mutationFn: () => postJson(getApiUrl(API_URL.BUY_HOLD_EXTEND), {}),
@@ -42,7 +56,7 @@ export default function BuyClient() {
 			if (inFlightRef.current || document.hidden) return;
 			inFlightRef.current = true;
 			try {
-				// await handleStockHoldExtend();
+				await handleStockHoldExtend();
 			} finally {
 				inFlightRef.current = false;
 			}
@@ -50,7 +64,7 @@ export default function BuyClient() {
 
 		const id = window.setInterval(tick, 60_000);
 		// 필요하면 진입 직후 1회 즉시 호출
-		// tick();
+		tick();
 
 		return () => window.clearInterval(id);
 	}, [handleStockHoldExtend]);

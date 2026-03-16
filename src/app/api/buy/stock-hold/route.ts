@@ -2,8 +2,9 @@ import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { getNormal, postJson } from "@/api/fetchFilter";
 import { userWithAuth } from "@/lib/auth/user";
+import { WRONG_REQUEST_MESSAGE } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
-import { BuyHoldReleaseResponse, BuyHoldRequest, BuyHoldResponse, BuyItem } from "@/types/buy";
+import { BuyHoldReleaseResponse, BuyHoldRequest, BuyHoldResponse } from "@/types/buy";
 import { NextResponse } from "next/server";
 
 // 상품 확인 및 점유(장비구니, 상품상세보기에서 구매페이지이동 시)
@@ -11,11 +12,12 @@ import { NextResponse } from "next/server";
 export const POST = userWithAuth(async ({ nextRequest, accessToken }) => {
 	console.log("[API] 상품 확인 및 점유(장비구니, 상품상세보기에서 구매페이지이동 시)");
 	try {
-		const { buyList }: { buyList: BuyItem[] } = await nextRequest.json();
+		const { buyList, returnUrl }: BuyHoldRequest = await nextRequest.json();
 
 		if (buyList.length === 0) return NextResponse.json({ message: "구매 상품이 없습니다." }, { status: 400 });
+		if (!returnUrl) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
 
-		const payload: BuyHoldRequest = { buyList };
+		const payload: BuyHoldRequest = { buyList, returnUrl };
 		const data = await postJson<BuyHoldResponse, BuyHoldRequest>(
 			getBackendUrl(API_URL.BUY_HOLD),
 			{ ...payload },

@@ -52,6 +52,7 @@ export default function CartSummaryAside({
 		mutationFn: () =>
 			postJson<BaseResponse & { holds: number[] }, BuyHoldRequest>(getApiUrl(API_URL.BUY_HOLD), {
 				buyList,
+				returnUrl: "/mypage/cart",
 			}),
 		// Mutation이 시작되기 직전에 특정 작업을 수행
 		// onMutate(variables) {

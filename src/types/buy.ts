@@ -10,6 +10,7 @@ export interface BuyItem {
 }
 export interface BuyHoldRequest {
 	buyList: BuyItem[];
+	returnUrl: string; // 점유 해제 후 돌아올 URL (예: 구매페이지 URL, 장바구니 URL)
 }
 export interface BuyHoldResponse extends BaseResponse {
 	holds: {
