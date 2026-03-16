@@ -76,6 +76,8 @@ export default function MyAddressClient() {
 	const [changeAddress, setChangeAddress] = useState<UserAddressListItem | null>(null);
 	// Confirm
 	useEffect(() => {
+		if (!modalResult) return;
+
 		if (modalResult?.action === "CONFIRM_OK") {
 			const payload = modalResult.payload as ModalResultMap["CONFIRM_OK"];
 			// 기본값 변경
@@ -114,7 +116,7 @@ export default function MyAddressClient() {
 			addressUpdating();
 		}
 		clearModalResult();
-	}, [modalResult, clearModalResult, handleAddressAdd, handleAddressDelete, handleAddressUpdate, queryClient, changeAddress]);
+	}, [changeAddress, modalResult, clearModalResult, handleAddressAdd, handleAddressUpdate, handleAddressDelete, queryClient]);
 
 	// if (isLoading && !userAddressList.length) return null;
 	return (

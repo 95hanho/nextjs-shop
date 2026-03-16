@@ -93,14 +93,14 @@ export interface GetProductDetailResponse extends BaseResponse {
 	};
 }
 /* 제품 상세보기 쿠폰 조회 */
-export type AvailableProductCoupon = Coupon & {
+export type AvailableCouponAtProductDetail = Coupon & {
 	issueMethod: string;
 	couponAllowedId: number | null;
 	userCouponId: number | null;
 	sellerName: string | null;
 };
 export interface GetProductDetailCouponResponse extends BaseResponse {
-	availableProductCoupon: AvailableProductCoupon[];
+	availableProductCoupon: AvailableCouponAtProductDetail[];
 }
 /* 제품 상세보기 리뷰 조회 */
 export interface GetProductDetailReviewResponse extends BaseResponse {

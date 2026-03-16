@@ -35,7 +35,7 @@ interface CartProductSectionProps extends CartItemSelectCollection {
 	//
 	brandGroupList: BrandGroupEntry[];
 	cartCouponList: CartCoupon[];
-	productCouponList: ProductCoupon[];
+	sellerCouponList: ProductCoupon[];
 	appliedProductCouponMap: AppliedProductCouponMap;
 	changeAppliedProductCoupon: (cartId: number, coupon: AppliedCartCoupon, isChecked: boolean) => void;
 }
@@ -45,7 +45,7 @@ export default function CartProductSection({
 	//
 	brandGroupList,
 	cartCouponList,
-	productCouponList,
+	sellerCouponList,
 	appliedProductCouponMap,
 	changeAppliedProductCoupon,
 	//
@@ -278,10 +278,16 @@ export default function CartProductSection({
 											productAlarm = "재고가 부족합니다. 옵션을 변경하시면 선택이 가능합니다.";
 										}
 
-										// 해당 장바구니상품에 적용 가능한 쿠폰 리스트
-										const availableProductCoupons = productCouponList.filter((coupon) => coupon.productId === product.productId);
+										// 해당 장바구니상품에 적용 가능한 장바구니 쿠폰 리스트
+										const availableCartCoupons = cartCouponList.filter(
+											(coupon) =>
+												(coupon.isProductRestricted && coupon.couponAllowedId && coupon.productId === product.productId) ||
+												(!coupon.isProductRestricted && !coupon.couponAllowedId && !coupon.productId),
+										);
+										// 해당 장바구니상품에 적용 가능한 판매자 쿠폰 리스트
+										const availableProductCoupons = sellerCouponList.filter((coupon) => coupon.productId === product.productId);
 										// 적용 가능한 쿠폰 갯수
-										const availableProductCouponCount = availableProductCoupons.length + cartCouponList.length;
+										const availableProductCouponCount = availableProductCoupons.length + availableCartCoupons.length;
 
 										// 해당 장바구니에 적용된 쿠폰 정보 가져오기
 										const appliedProductCoupon = appliedProductCouponMap[product.cartId];
@@ -478,7 +484,7 @@ export default function CartProductSection({
 																</div>
 																<div>
 																	<h4 className="mb-1 text-gray-500">장바구니 쿠폰 할인</h4>
-																	{cartCouponList.map((coupon) => {
+																	{availableCartCoupons.map((coupon) => {
 																		// 중복불가 쿠폰일 시 검사
 																		const unStackableChecked =
 																			!coupon.isStackable &&

@@ -7,7 +7,7 @@ import { IoIosArrowDown, IoIosArrowUp, IoIosClose } from "react-icons/io";
 import styles from "../ProductDetail.module.scss";
 import { SmartImage } from "@/components/ui/SmartImage";
 import { discountPercent, money } from "@/lib/format";
-import { AddCartRequest, AvailableProductCoupon, ProductOption } from "@/types/product";
+import { AddCartRequest, AvailableCouponAtProductDetail, ProductOption } from "@/types/product";
 import { useEffect, useMemo, useState } from "react";
 import { GetProductDetailCouponResponse } from "@/types/product";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -26,7 +26,7 @@ import { ModalResultMap } from "@/store/modal.type";
 import clsx from "clsx";
 import { BuyHoldRequest, BuyHoldResponse } from "@/types/buy";
 
-export type ProductCouponWithDiscount = AvailableProductCoupon & {
+export type ProductCouponWithDiscount = AvailableCouponAtProductDetail & {
 	discountAmount: number;
 };
 export type GetProductDetailCouponWithDiscountData = Omit<GetProductDetailCouponResponse, "availableProductCoupon"> & {

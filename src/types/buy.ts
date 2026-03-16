@@ -1,6 +1,16 @@
+import { Coupon, UserAddress } from "@/types/mypage";
 import { BaseResponse } from "./common";
 
-/* ---------------------------------------------------- */
+/* ---- MODEL --------------------------------------------- */
+
+export type StockHoldCoupon = {
+	holdCouponId: number;
+	holdId: number;
+	userCouponId: number;
+};
+
+/* ---- API --------------------------------------------- */
+
 /* 상품 확인 및 점유(구매페이지이동) */
 export interface BuyItem {
 	productOptionId: number;
@@ -10,6 +20,7 @@ export interface BuyItem {
 }
 export interface BuyHoldRequest {
 	buyList: BuyItem[];
+	returnUrl: string; // 점유 해제 후 돌아올 URL (예: 구매페이지 URL, 장바구니 URL)
 }
 export interface BuyHoldResponse extends BaseResponse {
 	holds: {
@@ -32,50 +43,48 @@ export interface BuyHoldReleaseResponse extends BaseResponse {
 	requestedCount: number;
 }
 /* 점유 중인 상품 및 사용 가능 쿠폰 조회 */
-export interface getStockHoldProductResponse extends BaseResponse {
-	orderStock: {
+export interface GetStockHoldResponse extends BaseResponse {
+	stockHoldProductList: {
 		holdId: number;
 		count: number;
-
+		//
 		productOptionId: number;
 		addPrice: number;
 		size: string;
-
+		//
 		productId: number;
-		name: string;
+		productName: string;
+		originPrice: number;
+		finalPrice: number;
 		colorName: string;
-
+		//
+		wishId: number | null;
+		//
 		sellerId: string;
 		sellerName: string;
-
+		baseShippingFee: number;
+		freeShippingMinAmount: number;
+		extraShippingFee: number;
+		//
 		fileName: string;
 		storeName: string;
 		filePath: string;
 		copyright: string;
 		copyrightUrl: string;
 	};
-	availableCouponList: {
-		couponId: number;
-		description: string;
-		couponCode: string;
-		discountType: string;
-		discountValue: number;
-		maxDiscount: number;
-		minimumOrderBeforeAmount: number;
-		status: string;
-		isStackable: boolean;
-		isProductRestricted: boolean;
-		amount: number;
-		startDate: string;
-		endDate: string;
-		createdAt: string;
-		updatedAt: string;
-		sellerId: string;
-		//
+	availableCartCoupons: Coupon & {
 		userCouponId: number;
-		used: boolean;
-		userId: string;
+		couponAllowedId: number | null;
+		productId: number | null;
 	};
+	availableSellerCoupons: Coupon & {
+		userCouponId: number;
+		couponAllowedId: number | null;
+		productId: number | null;
+		sellerName: string;
+	};
+	holdCoupons: StockHoldCoupon[];
+	defaultAddress: UserAddress | null;
 }
 /* 상품 쿠폰, 마일리지, 배송비 여부의 변경에 따라 가격계산해서 보여줌.(결제화면) */
 type AvailableCoupon = {
