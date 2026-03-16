@@ -1,11 +1,10 @@
 import { BaseResponse } from "./common";
 import { FileInfo } from "./file";
-import { AvailableProductCoupon, ProductOption } from "./product";
+import { ProductOption } from "./product";
 // 쿠폰
 export type Coupon = {
 	couponId: number;
 	description: string;
-	couponCode: string;
 	discountType: "percentage" | "fixed_amount";
 	discountValue: number;
 	maxDiscount: number;
@@ -15,7 +14,7 @@ export type Coupon = {
 	amount: number;
 	startDate: string;
 	endDate: string;
-	issueMethod: string;
+	issueMethod: "CLAIM" | "AUTO" | "MANUAL";
 };
 export type AdminCoupon = {
 	status: "ACTIVE" | "SUSPENDED" | "DELETED";
@@ -195,12 +194,22 @@ export type CartItem = Cart & {
 		freeShippingMinAmount: number; // 무료배송 최소 주문금액
 	};
 
-export type AvailableProductForProduct = Omit<AvailableProductCoupon, "sellerName"> & { productId: number; sellerName: string };
+export type AvailableCartCouponAtCart = Coupon & {
+	couponAllowedId: number | null;
+	productId: number | null;
+	userCouponId: number | null;
+};
+export type AvailableSellerCouponAtCart = Coupon & {
+	couponAllowedId: number | null;
+	productId: number | null;
+	userCouponId: number | null;
+	sellerName: string;
+};
 export interface GetCartResponse extends BaseResponse {
 	isExceedQuantity: boolean; // 장바구니 내 상품 중 재고 수량보다 주문 수량이 초과된 상품이 있는지 여부
 	cartList: CartItem[];
-	availableCouponsAtCart: AvailableProductCoupon[];
-	availableCouponsForProduct: AvailableProductForProduct[];
+	availableCartCoupons: AvailableCartCouponAtCart[];
+	availableSellerCoupons: AvailableSellerCouponAtCart[];
 }
 /* 장바구니 제품 옵션/수량 변경 */
 export interface UpdateCartRequest {

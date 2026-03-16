@@ -1,32 +1,37 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import styles from "./BuyClient.module.scss";
 import OrderFormSection from "@/app/buy/OrderFormSection";
 import OrderSummaryPanel from "@/app/buy/OrderSummaryPanel";
-import { useMutation } from "@tanstack/react-query";
-import { postJson } from "@/api/fetchFilter";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { getNormal, postJson } from "@/api/fetchFilter";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import API_URL from "@/api/endpoints";
+import { GetStockHoldResponse } from "@/types/buy";
+import { useAuth } from "@/hooks/useAuth";
+import { BuyProvider } from "@/providers/buy/BuyProvider";
 
 export default function BuyClient() {
+	const { loginOn } = useAuth();
+
 	// =================================================================
 	// React Query
 	// =================================================================
 
 	// 점유한 상품 조회
-	// invalidateQueries(["cartList"])
-	// const {
-	// 	data: cartData,
-	// 	isLoading,
-	// 	isFetching,
-	// 	dataUpdatedAt,
-	// } = useQuery<GetCartResponse, Error>({
-	// 	queryKey: ["cartList"],
-	// 	queryFn: () => getNormal(getApiUrl(API_URL.MY_CART)),
-	// 	enabled: loginOn,
-	// 	refetchOnWindowFocus: false,
-	// });
+	// invalidateQueries(["stockHold"])
+	const {
+		data: stockHoldData,
+		isLoading,
+		isFetching,
+		dataUpdatedAt,
+	} = useQuery<GetStockHoldResponse, Error>({
+		queryKey: ["stockHold"],
+		queryFn: () => getNormal(getApiUrl(API_URL.BUY_PAY)),
+		enabled: loginOn,
+		refetchOnWindowFocus: false,
+	});
 
 	// 점유 연장 handleStockHoldExtend
 	const { mutateAsync: handleStockHoldExtend } = useMutation({
@@ -69,21 +74,42 @@ export default function BuyClient() {
 		return () => window.clearInterval(id);
 	}, [handleStockHoldExtend]);
 
+	// 디버깅용 log
+	useEffect(() => {
+		if (stockHoldData) console.log({ stockHoldData });
+	}, [stockHoldData]);
+
+	const { defaultAddress } = useMemo(() => {
+		if (!stockHoldData) {
+			return {
+				defaultAddress: null,
+			};
+		}
+
+		return {
+			defaultAddress: stockHoldData.defaultAddress,
+		};
+	}, [stockHoldData]);
+
 	// =================================================================
 	// UI
 	// =================================================================
 
+	const OrderFormSectionProps = {};
+
 	return (
-		<div className={styles.page}>
-			<h1 className={styles.pageTitle}>주문서</h1>
+		<BuyProvider defaultAddress={defaultAddress}>
+			<div className={styles.page}>
+				<h1 className={styles.pageTitle}>주문서</h1>
 
-			<div className={styles.layout}>
-				{/* LEFT */}
-				<OrderFormSection />
+				<div className={styles.layout}>
+					{/* LEFT */}
+					<OrderFormSection {...OrderFormSectionProps} />
 
-				{/* RIGHT */}
-				<OrderSummaryPanel />
+					{/* RIGHT */}
+					<OrderSummaryPanel />
+				</div>
 			</div>
-		</div>
+		</BuyProvider>
 	);
 }
