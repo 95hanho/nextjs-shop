@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { OptionSelector } from "../../ui/OptionSelector";
 import { UserAddressListItem } from "@/types/mypage";
 import { useModalStore } from "@/store/modal.store";
 import { ModalFrame } from "@/components/modal/frame/ModalFrame";
@@ -9,6 +8,7 @@ import { FormInput } from "@/components/auth/FormInput";
 import { FormInputAlarm, FormInputRefs } from "@/types/form";
 import { AddressSection } from "@/components/auth/AddressSection";
 import clsx from "clsx";
+import { DeliveryMemoSelector } from "@/components/address/DeliveryMemoSelector";
 
 export type AddressForm = {
 	addressName: string;
@@ -22,14 +22,6 @@ export type AddressForm = {
 type AddressFormInputKeys = keyof Omit<AddressForm, "zonecode">;
 type AddressFormAlarm = FormInputAlarm<AddressFormInputKeys>;
 type AddressFormFormInputRefs = FormInputRefs<AddressFormInputKeys>;
-
-const memoOptionList = [
-	{ id: 1, val: "문 앞에 놓아주세요" },
-	{ id: 2, val: "경비실에 맡겨주세요" },
-	{ id: 3, val: "부재 시 전화 주세요" },
-	{ id: 4, val: "배송 전 연락 바랍니다" },
-	{ id: 5, val: "직접 입력" },
-];
 
 const initAddressForm = {
 	addressName: "",
@@ -59,8 +51,8 @@ export const AddressModal = ({ onClose, prevAddress }: AddressModalProps) => {
 	const [addressForm, setAddressForm] = useState<AddressForm>(initAddressForm);
 	const [addressFormAlarm, setAddressFormAlarm] = useState<AddressFormAlarm | null>(null);
 	const addressFormInputRefs = useRef<Partial<AddressFormFormInputRefs>>({});
-	const [memoPickidx, setMemoPickidx] = useState(0);
-	const [memoOptionInit, setMemoOptionInit] = useState(memoOptionList[0]);
+	const [initMemo, setInitMemo] = useState("문 앞에 놓아주세요");
+	const [memoDirectInput, setMemoDirectInput] = useState(false); // 직접입력 show
 
 	const changeAddressForm = (e: ChangeEvent) => {
 		const { name, value } = e.target as {
@@ -143,14 +135,7 @@ export const AddressModal = ({ onClose, prevAddress }: AddressModalProps) => {
 				addressDetail: prevAddress.addressDetail,
 				memo: prevAddress.memo,
 			}));
-			const findIndex = memoOptionList.slice(0, 4).findIndex((v) => v.val === prevAddress.memo);
-			if (findIndex === -1) {
-				setMemoPickidx(4);
-				setMemoOptionInit(memoOptionList[4]);
-			} else {
-				setMemoPickidx(findIndex);
-				setMemoOptionInit(memoOptionList[findIndex]);
-			}
+			setInitMemo(prevAddress.memo);
 		}
 	}, [prevAddress]);
 
@@ -224,28 +209,22 @@ export const AddressModal = ({ onClose, prevAddress }: AddressModalProps) => {
 					<div className={styles.optionMemo}>
 						<span className={clsx(styles.title, "w-1/3")}>메모</span>
 						<span className={clsx(styles.memoOption, "w-2/3")}>
-							<OptionSelector
-								optionSelectorName="deliveryMemo"
-								pickIdx={memoPickidx}
-								initData={memoOptionInit}
-								optionList={memoOptionList}
-								changeOption={(idx, id) => {
-									setMemoPickidx(idx);
-									let memo;
-									if (id < 5) memo = memoOptionList[idx].val;
-									else memo = "";
+							<DeliveryMemoSelector
+								keyName="deliveryMemo"
+								initMemo={initMemo}
+								changeMemo={(memo, directInput) => {
 									setAddressForm((prev) => ({
 										...prev,
 										memo,
 									}));
+									setMemoDirectInput(directInput);
 									setAddressFormAlarm(null);
 								}}
-								variant="addressModal"
 							/>
 						</span>
 					</div>
 					<div className={styles.addressWrite}>
-						{memoPickidx === 4 && (
+						{memoDirectInput && (
 							<FormInput
 								name="memo"
 								label="직접입력"

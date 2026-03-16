@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent } from "@/types/event";
+import { ChangeEvent, ChangeSet } from "@/types/event";
 import { UserAddress } from "@/types/mypage";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
@@ -14,7 +14,7 @@ interface BuyContextValue {
 	defaultMemo: string;
 	setDefaultMemo: (memo: string) => void;
 	newAddress: UserAddress;
-	changeNewAddress: (e: ChangeEvent) => void;
+	changeNewAddress: (e?: ChangeEvent, changeSet?: ChangeSet) => void;
 }
 
 interface BuyProviderProps {
@@ -39,11 +39,18 @@ export const BuyProvider = ({ children, defaultAddress: initialDefaultAddress = 
 		addressDetail: "",
 		memo: "",
 	});
-	const changeNewAddress = (e: ChangeEvent) => {
-		setNewAddress((prev) => ({
-			...prev,
-			[e.target.name]: e.target.value,
-		}));
+	const changeNewAddress = (e?: ChangeEvent, changeSet?: ChangeSet) => {
+		if (changeSet) {
+			setNewAddress((prev) => ({
+				...prev,
+				[changeSet.name]: changeSet.value,
+			}));
+		} else if (e) {
+			setNewAddress((prev) => ({
+				...prev,
+				[e.target.name]: e.target.value,
+			}));
+		}
 	};
 
 	const value = useMemo(
@@ -63,10 +70,11 @@ export const BuyProvider = ({ children, defaultAddress: initialDefaultAddress = 
 	useEffect(() => {
 		setDefaultAddress(initialDefaultAddress);
 		setShippingAddressMode(initialDefaultAddress ? "existing" : "new");
+		setDefaultMemo(initialDefaultAddress ? initialDefaultAddress.memo : "");
 	}, [initialDefaultAddress]);
 
 	useEffect(() => {
-		// if (defaultAddress) console.log({ defaultAddress });
+		if (defaultAddress) console.log({ defaultAddress });
 	}, [defaultAddress, shippingAddressMode, newAddress]);
 
 	return <buyContext.Provider value={value}>{children}</buyContext.Provider>;

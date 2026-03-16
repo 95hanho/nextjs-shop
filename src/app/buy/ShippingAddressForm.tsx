@@ -1,7 +1,9 @@
-import { FaAngleDown, FaQuestion } from "react-icons/fa";
+import { FaQuestion } from "react-icons/fa";
 import styles from "./BuyClient.module.scss";
 import { useBuyContext } from "@/providers/buy/BuyProvider";
 import clsx from "clsx";
+import { DeliveryMemoSelector } from "@/components/address/DeliveryMemoSelector";
+import { useEffect, useMemo, useState } from "react";
 
 // interface ShippingAddressFormProps {}
 
@@ -10,8 +12,18 @@ export default function ShippingAddressForm() {
 		useBuyContext();
 
 	const isModeExisting = shippingAddressMode === "existing";
-
 	const inputAddress = isModeExisting ? defaultAddress : newAddress;
+	const [initMemo, setInitMemo] = useState("");
+
+	useEffect(() => {
+		if (shippingAddressMode === "existing") {
+			setInitMemo(defaultMemo || "문 앞에 놓아주세요");
+		} else {
+			setInitMemo(newAddress.memo || "문 앞에 놓아주세요");
+		}
+	}, [shippingAddressMode, defaultMemo, newAddress.memo]);
+
+	const [memoDirectInput, setMemoDirectInput] = useState(false); // 직접입력 show
 
 	return (
 		<article className={styles.block}>
@@ -142,13 +154,30 @@ export default function ShippingAddressForm() {
 					<div className={styles.formField}>
 						{/* 배송 메모 셀렉터 자리 */}
 						<div className={styles.selectRow}>
-							<button type="button" className={styles.selectLikeBtn}>
-								문앞X 원룸정문1597# 우편함오른쪽 밑 보관함
-								<i className={styles.chev}>
-									<FaAngleDown />
-								</i>
-							</button>
+							<DeliveryMemoSelector
+								keyName="buyShippingMemo"
+								initMemo={initMemo}
+								changeMemo={(memo, directInput) => {
+									if (isModeExisting) setDefaultMemo(memo);
+									else changeNewAddress(undefined, { name: "memo", value: memo });
+									setMemoDirectInput(directInput);
+								}}
+							/>
 						</div>
+						{memoDirectInput && (
+							<div className="mt-2">
+								<input
+									className={clsx(styles.input)}
+									type="text"
+									name="memo"
+									value={isModeExisting ? defaultMemo : newAddress.memo}
+									onChange={(e) => {
+										if (isModeExisting) setDefaultMemo(e.target.value);
+										else changeNewAddress(e);
+									}}
+								/>
+							</div>
+						)}
 
 						<p className={styles.helperText}>기본 배송지입니다. 주문 시 변경하신 내용으로 기본 배송지 주소가 수정됩니다.</p>
 					</div>
