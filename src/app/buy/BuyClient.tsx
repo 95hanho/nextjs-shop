@@ -97,6 +97,7 @@ export default function BuyClient() {
 
 	const OrderFormSectionProps = {};
 
+	if (!stockHoldData) return null;
 	return (
 		<BuyProvider defaultAddress={defaultAddress}>
 			<div className={styles.page}>
