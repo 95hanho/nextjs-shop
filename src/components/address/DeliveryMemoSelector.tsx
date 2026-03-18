@@ -1,7 +1,7 @@
 import { OptionSelector } from "@/components/ui/OptionSelector";
 import { useEffect, useState } from "react";
 
-const memoOptionList = [
+export const memoOptionList = [
 	{ id: 1, val: "문 앞에 놓아주세요" },
 	{ id: 2, val: "경비실에 맡겨주세요" },
 	{ id: 3, val: "부재 시 전화 주세요" },
@@ -30,6 +30,10 @@ export const DeliveryMemoSelector = ({ keyName = "deliveryMemo", initMemo, chang
 			setMemoOptionInit(memoOptionList[findIndex]);
 		}
 	}, [initMemo, changeMemo]);
+
+	useEffect(() => {
+		console.log(initMemo);
+	}, [initMemo]);
 
 	return (
 		<OptionSelector

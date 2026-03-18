@@ -1,7 +1,10 @@
 import { FaAngleDown } from "react-icons/fa";
 import styles from "./BuyClient.module.scss";
+import { useBuy } from "@/hooks/buy/useBuy";
 
 export default function OrderSummaryPanel() {
+	const { handleBuy } = useBuy();
+
 	return (
 		<aside className={styles.aside}>
 			<section className={styles.asideBox}>
@@ -70,7 +73,7 @@ export default function OrderSummaryPanel() {
 					</span>
 				</div>
 
-				<button className={styles.payButton} type="button">
+				<button className={styles.payButton} type="button" onClick={handleBuy}>
 					29,660원 결제하기
 				</button>
 			</section>

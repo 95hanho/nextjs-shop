@@ -8,9 +8,26 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { getNormal, postJson } from "@/api/fetchFilter";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import API_URL from "@/api/endpoints";
-import { GetStockHoldResponse } from "@/types/buy";
+import { AvailableCartCouponAtBuy, AvailableSellerCouponAtBuy, GetStockHoldResponse, StockHoldProduct } from "@/types/buy";
 import { useAuth } from "@/hooks/useAuth";
 import { BuyProvider } from "@/providers/buy/BuyProvider";
+
+export type BuyItemWishCoupon = StockHoldProduct & {
+	discountedPrice: number; // 해당 상품에 적용된 쿠폰 할인을 반영한 가격 (finalPrice에서 할인금액을 뺀 가격)
+	discountAmount: number; // 해당 상품에 적용된 총 할인 금액
+};
+export type CartCoupon = AvailableCartCouponAtBuy & { used: boolean };
+export type SellerCoupon = AvailableSellerCouponAtBuy & { used: boolean };
+
+type AppliedCoupon = AvailableCartCouponAtBuy | AvailableSellerCouponAtBuy;
+// 최대 할인쿠폰 저장
+export type MaxDiscountedCouponMap = Record<
+	number, // cartId
+	{
+		unStackable: AppliedCoupon | null;
+		stackable: AppliedCoupon[];
+	}
+>;
 
 export default function BuyClient() {
 	const { loginOn } = useAuth();
@@ -74,28 +91,47 @@ export default function BuyClient() {
 		return () => window.clearInterval(id);
 	}, [handleStockHoldExtend]);
 
-	// 디버깅용 log
-	useEffect(() => {
-		if (stockHoldData) console.log({ stockHoldData });
-	}, [stockHoldData]);
+	// 최대할인가 저장
+	const maxDiscountedPriceRef = useRef<MaxDiscountedCouponMap>({});
+	useEffect(() => {}, []);
 
-	const { defaultAddress } = useMemo(() => {
+	const { buyItemList, defaultAddress } = useMemo(() => {
+		// API 응답 전
 		if (!stockHoldData) {
 			return {
+				buyItemList: [],
 				defaultAddress: null,
 			};
 		}
+		// API 응답 후 / 쿠폰 적용 변경 시
+		const buyItemList: BuyItemWishCoupon[] = [];
+
+		stockHoldData.stockHoldProductList.forEach((product) => {
+			const initPrice = (product.finalPrice + product.addPrice) * product.count;
+			const buyItem: BuyItemWishCoupon = { ...product, discountedPrice: initPrice, discountAmount: 0 };
+
+			// 구매 리스트 넣기
+			buyItemList.push(buyItem);
+		});
 
 		return {
+			buyItemList,
 			defaultAddress: stockHoldData.defaultAddress,
 		};
+	}, [stockHoldData]);
+
+	// 디버깅용 log
+	useEffect(() => {
+		if (stockHoldData) console.log({ stockHoldData });
 	}, [stockHoldData]);
 
 	// =================================================================
 	// UI
 	// =================================================================
 
-	const OrderFormSectionProps = {};
+	const OrderFormSectionProps = {
+		buyItemList,
+	};
 
 	if (!stockHoldData) return null;
 	return (

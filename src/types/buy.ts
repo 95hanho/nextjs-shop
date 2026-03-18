@@ -43,46 +43,49 @@ export interface BuyHoldReleaseResponse extends BaseResponse {
 	requestedCount: number;
 }
 /* 점유 중인 상품 및 사용 가능 쿠폰 조회 */
+export type StockHoldProduct = {
+	holdId: number;
+	count: number;
+	//
+	productOptionId: number;
+	addPrice: number;
+	size: string;
+	//
+	productId: number;
+	productName: string;
+	originPrice: number;
+	finalPrice: number;
+	colorName: string;
+	//
+	wishId: number | null;
+	//
+	sellerId: string;
+	sellerName: string;
+	baseShippingFee: number;
+	freeShippingMinAmount: number;
+	extraShippingFee: number;
+	//
+	fileName: string;
+	storeName: string;
+	filePath: string;
+	copyright: string;
+	copyrightUrl: string;
+};
+export type AvailableCartCouponAtBuy = Coupon & {
+	userCouponId: number;
+	couponAllowedId: number | null;
+	productId: number | null;
+};
+export type AvailableSellerCouponAtBuy = Coupon & {
+	userCouponId: number;
+	couponAllowedId: number | null;
+	productId: number | null;
+	sellerName: string;
+};
 export interface GetStockHoldResponse extends BaseResponse {
-	stockHoldProductList: {
-		holdId: number;
-		count: number;
-		//
-		productOptionId: number;
-		addPrice: number;
-		size: string;
-		//
-		productId: number;
-		productName: string;
-		originPrice: number;
-		finalPrice: number;
-		colorName: string;
-		//
-		wishId: number | null;
-		//
-		sellerId: string;
-		sellerName: string;
-		baseShippingFee: number;
-		freeShippingMinAmount: number;
-		extraShippingFee: number;
-		//
-		fileName: string;
-		storeName: string;
-		filePath: string;
-		copyright: string;
-		copyrightUrl: string;
-	};
-	availableCartCoupons: Coupon & {
-		userCouponId: number;
-		couponAllowedId: number | null;
-		productId: number | null;
-	};
-	availableSellerCoupons: Coupon & {
-		userCouponId: number;
-		couponAllowedId: number | null;
-		productId: number | null;
-		sellerName: string;
-	};
+	stockHoldProductList: StockHoldProduct[];
+	availableCartCoupons: AvailableCartCouponAtBuy[];
+	availableSellerCoupons: AvailableSellerCouponAtBuy[];
 	holdCoupons: StockHoldCoupon[];
 	defaultAddress: UserAddress | null;
 }
