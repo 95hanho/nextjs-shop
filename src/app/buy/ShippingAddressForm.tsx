@@ -16,7 +16,6 @@ export default function ShippingAddressForm() {
 	const [memoDirectInput, setMemoDirectInput] = useState(false); // 직접입력 show
 	const handleChangeMemo = useCallback(
 		(memo: string, directInput: boolean) => {
-			console.log("memo", memo);
 			changeNewAddress(undefined, { name: "memo", value: memo });
 			setMemoDirectInput(directInput);
 		},

@@ -31,10 +31,6 @@ export const DeliveryMemoSelector = ({ keyName = "deliveryMemo", initMemo, chang
 		}
 	}, [initMemo, changeMemo]);
 
-	useEffect(() => {
-		console.log(initMemo);
-	}, [initMemo]);
-
 	return (
 		<OptionSelector
 			optionSelectorName={keyName}
