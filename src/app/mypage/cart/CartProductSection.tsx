@@ -24,7 +24,7 @@ import {
 	BrandGroupEntry,
 	CartCoupon,
 	CartItemSelectCollection,
-	ProductCoupon,
+	SellerCoupon,
 } from "@/app/mypage/cart/CartClient";
 import Link from "next/link";
 import CartCouponSelector from "@/app/mypage/cart/CartCouponSelector";
@@ -35,7 +35,7 @@ interface CartProductSectionProps extends CartItemSelectCollection {
 	//
 	brandGroupList: BrandGroupEntry[];
 	cartCouponList: CartCoupon[];
-	sellerCouponList: ProductCoupon[];
+	sellerCouponList: SellerCoupon[];
 	appliedProductCouponMap: AppliedProductCouponMap;
 	changeAppliedProductCoupon: (cartId: number, coupon: AppliedCartCoupon, isChecked: boolean) => void;
 }

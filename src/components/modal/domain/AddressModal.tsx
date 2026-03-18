@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { UserAddressListItem } from "@/types/mypage";
 import { useModalStore } from "@/store/modal.store";
 import { ModalFrame } from "@/components/modal/frame/ModalFrame";
@@ -53,6 +53,14 @@ export const AddressModal = ({ onClose, prevAddress }: AddressModalProps) => {
 	const addressFormInputRefs = useRef<Partial<AddressFormFormInputRefs>>({});
 	const [initMemo, setInitMemo] = useState("문 앞에 놓아주세요");
 	const [memoDirectInput, setMemoDirectInput] = useState(false); // 직접입력 show
+	const handleChangeMemo = useCallback((memo: string, directInput: boolean) => {
+		setAddressForm((prev) => ({
+			...prev,
+			memo,
+		}));
+		setMemoDirectInput(directInput);
+		setAddressFormAlarm(null);
+	}, []);
 
 	const changeAddressForm = (e: ChangeEvent) => {
 		const { name, value } = e.target as {
@@ -209,18 +217,7 @@ export const AddressModal = ({ onClose, prevAddress }: AddressModalProps) => {
 					<div className={styles.optionMemo}>
 						<span className={clsx(styles.title, "w-1/3")}>메모</span>
 						<span className={clsx(styles.memoOption, "w-2/3")}>
-							<DeliveryMemoSelector
-								keyName="deliveryMemo"
-								initMemo={initMemo}
-								changeMemo={(memo, directInput) => {
-									setAddressForm((prev) => ({
-										...prev,
-										memo,
-									}));
-									setMemoDirectInput(directInput);
-									setAddressFormAlarm(null);
-								}}
-							/>
+							<DeliveryMemoSelector keyName="deliveryMemo" initMemo={initMemo} changeMemo={handleChangeMemo} />
 						</span>
 					</div>
 					<div className={styles.addressWrite}>

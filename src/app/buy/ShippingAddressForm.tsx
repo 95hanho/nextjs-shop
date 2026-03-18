@@ -1,29 +1,27 @@
 import { FaQuestion } from "react-icons/fa";
 import styles from "./BuyClient.module.scss";
-import { useBuyContext } from "@/providers/buy/BuyProvider";
 import clsx from "clsx";
 import { DeliveryMemoSelector } from "@/components/address/DeliveryMemoSelector";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
+import { useBuy } from "@/hooks/buy/useBuy";
 
 // interface ShippingAddressFormProps {}
 
 export default function ShippingAddressForm() {
-	const { defaultAddress, shippingAddressMode, setShippingAddressMode, newAddress, changeNewAddress, defaultMemo, setDefaultMemo } =
-		useBuyContext();
+	const { initMemo, defaultAddress, shippingAddressMode, setShippingAddressMode, newAddress, changeNewAddress } = useBuy();
 
 	const isModeExisting = shippingAddressMode === "existing";
 	const inputAddress = isModeExisting ? defaultAddress : newAddress;
-	const [initMemo, setInitMemo] = useState("");
-
-	useEffect(() => {
-		if (shippingAddressMode === "existing") {
-			setInitMemo(defaultMemo || "문 앞에 놓아주세요");
-		} else {
-			setInitMemo(newAddress.memo || "문 앞에 놓아주세요");
-		}
-	}, [shippingAddressMode, defaultMemo, newAddress.memo]);
 
 	const [memoDirectInput, setMemoDirectInput] = useState(false); // 직접입력 show
+	const handleChangeMemo = useCallback(
+		(memo: string, directInput: boolean) => {
+			console.log("memo", memo);
+			changeNewAddress(undefined, { name: "memo", value: memo });
+			setMemoDirectInput(directInput);
+		},
+		[changeNewAddress],
+	);
 
 	return (
 		<article className={styles.block}>
@@ -154,15 +152,7 @@ export default function ShippingAddressForm() {
 					<div className={styles.formField}>
 						{/* 배송 메모 셀렉터 자리 */}
 						<div className={styles.selectRow}>
-							<DeliveryMemoSelector
-								keyName="buyShippingMemo"
-								initMemo={initMemo}
-								changeMemo={(memo, directInput) => {
-									if (isModeExisting) setDefaultMemo(memo);
-									else changeNewAddress(undefined, { name: "memo", value: memo });
-									setMemoDirectInput(directInput);
-								}}
-							/>
+							<DeliveryMemoSelector keyName="buyShippingMemo" initMemo={initMemo} changeMemo={handleChangeMemo} />
 						</div>
 						{memoDirectInput && (
 							<div className="mt-2">
@@ -170,11 +160,8 @@ export default function ShippingAddressForm() {
 									className={clsx(styles.input)}
 									type="text"
 									name="memo"
-									value={isModeExisting ? defaultMemo : newAddress.memo}
-									onChange={(e) => {
-										if (isModeExisting) setDefaultMemo(e.target.value);
-										else changeNewAddress(e);
-									}}
+									value={newAddress.memo || ""}
+									onChange={changeNewAddress}
 								/>
 							</div>
 						)}

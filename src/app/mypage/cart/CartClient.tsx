@@ -22,11 +22,12 @@ type CartItemWithCoupon = CartItem & {
 };
 export type BrandGroupEntry = [sellerName: string, items: CartItemWithCoupon[]];
 export type CartCoupon = AvailableCartCouponAtCart & { used: boolean };
-export type ProductCoupon = AvailableSellerCouponAtCart & { used: boolean };
+export type SellerCoupon = AvailableSellerCouponAtCart & { used: boolean };
+
 type CartSelectResult = {
 	brandGroupList: BrandGroupEntry[];
 	cartCouponList: CartCoupon[];
-	sellerCouponList: ProductCoupon[];
+	sellerCouponList: SellerCoupon[];
 };
 type CartSummaryAsideValue = {
 	cartOriginPrice: number; // 장바구니 제품 원래 가격 총합
@@ -41,7 +42,7 @@ type CartSummaryAsideValue = {
 
 type CartSelectResultWithSummary = CartSelectResult & CartSummaryAsideValue;
 
-export type AppliedCartCoupon = CartCoupon | ProductCoupon;
+export type AppliedCartCoupon = CartCoupon | SellerCoupon;
 
 export type AppliedCoupon = AvailableCartCouponAtCart | AvailableSellerCouponAtCart;
 export type AppliedProductCouponMap = Record<

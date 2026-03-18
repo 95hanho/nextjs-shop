@@ -1,34 +1,24 @@
 "use client";
 
+import { ShippingAddressMode } from "@/context/buyContext";
 import { ChangeEvent, ChangeSet } from "@/types/event";
 import { UserAddress } from "@/types/mypage";
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
-
-type ShippingAddressMode = "existing" | "new";
-
-interface BuyContextValue {
-	defaultAddress: UserAddress | null;
-	setDefaultAddress: (address: UserAddress | null) => void;
-	shippingAddressMode: ShippingAddressMode;
-	setShippingAddressMode: (mode: ShippingAddressMode) => void;
-	defaultMemo: string;
-	setDefaultMemo: (memo: string) => void;
-	newAddress: UserAddress;
-	changeNewAddress: (e?: ChangeEvent, changeSet?: ChangeSet) => void;
-}
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { buyContext } from "@/context/buyContext";
 
 interface BuyProviderProps {
 	children: React.ReactNode;
 	defaultAddress?: UserAddress | null;
 }
 
-const buyContext = createContext<BuyContextValue | null>(null);
-
 export const BuyProvider = ({ children, defaultAddress: initialDefaultAddress = null }: BuyProviderProps) => {
+	// ----------------------------------------------------------------
+	// React
+	// ----------------------------------------------------------------
+
 	const [defaultAddress, setDefaultAddress] = useState<UserAddress | null>(initialDefaultAddress);
 	const [shippingAddressMode, setShippingAddressMode] = useState<ShippingAddressMode>(initialDefaultAddress ? "existing" : "new");
-
-	const [defaultMemo, setDefaultMemo] = useState(initialDefaultAddress ? initialDefaultAddress.memo : ""); // 기존 배송지가 있으면 그 메모를 기본값으로, 없으면 빈 문자열
+	const [initMemo, setInitMemo] = useState(initialDefaultAddress ? initialDefaultAddress.memo : ""); // 기존 배송지가 있으면 그 메모를 기본값으로, 없으면 빈 문자열
 	const [newAddress, setNewAddress] = useState<UserAddress>({
 		addressId: 0,
 		addressName: "",
@@ -39,7 +29,7 @@ export const BuyProvider = ({ children, defaultAddress: initialDefaultAddress = 
 		addressDetail: "",
 		memo: "",
 	});
-	const changeNewAddress = (e?: ChangeEvent, changeSet?: ChangeSet) => {
+	const changeNewAddress = useCallback((e?: ChangeEvent, changeSet?: ChangeSet) => {
 		if (changeSet) {
 			setNewAddress((prev) => ({
 				...prev,
@@ -51,7 +41,33 @@ export const BuyProvider = ({ children, defaultAddress: initialDefaultAddress = 
 				[e.target.name]: e.target.value,
 			}));
 		}
-	};
+	}, []);
+
+	// 결제하기
+	const handleBuy = useCallback(() => {
+		let address: UserAddress = {} as UserAddress;
+		if (shippingAddressMode === "existing" && defaultAddress) {
+			address = {
+				...defaultAddress,
+				memo: newAddress.memo,
+			};
+		} else if (shippingAddressMode === "new") {
+			address = {
+				...newAddress,
+			};
+		}
+		console.log("구매 처리 로직 실행", { address });
+	}, [shippingAddressMode, defaultAddress, newAddress]);
+
+	// ----------------------------------------------------------------
+	// useEffect & useMemo
+	// ----------------------------------------------------------------
+
+	useEffect(() => {
+		setDefaultAddress(initialDefaultAddress);
+		setShippingAddressMode(initialDefaultAddress ? "existing" : "new");
+		setInitMemo(initialDefaultAddress?.memo || "문 앞에 놓아주세요");
+	}, [initialDefaultAddress]);
 
 	const value = useMemo(
 		() => ({
@@ -59,31 +75,18 @@ export const BuyProvider = ({ children, defaultAddress: initialDefaultAddress = 
 			setDefaultAddress,
 			shippingAddressMode,
 			setShippingAddressMode,
-			defaultMemo,
-			setDefaultMemo,
+			initMemo,
 			newAddress,
 			changeNewAddress,
+			handleBuy,
 		}),
-		[defaultAddress, shippingAddressMode, defaultMemo, newAddress],
+		[defaultAddress, shippingAddressMode, initMemo, newAddress, changeNewAddress, handleBuy],
 	);
 
+	// 디버깅용 log
 	useEffect(() => {
-		setDefaultAddress(initialDefaultAddress);
-		setShippingAddressMode(initialDefaultAddress ? "existing" : "new");
-		setDefaultMemo(initialDefaultAddress ? initialDefaultAddress.memo : "");
-	}, [initialDefaultAddress]);
-
-	useEffect(() => {
-		if (defaultAddress) console.log({ defaultAddress });
+		// if (defaultAddress) console.log({ defaultAddress });
 	}, [defaultAddress, shippingAddressMode, newAddress]);
 
 	return <buyContext.Provider value={value}>{children}</buyContext.Provider>;
-};
-
-export const useBuyContext = () => {
-	const context = useContext(buyContext);
-	if (!context) {
-		throw new Error("useBuyContext must be used within BuyProvider");
-	}
-	return context;
 };
