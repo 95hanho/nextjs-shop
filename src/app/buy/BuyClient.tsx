@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import styles from "./BuyClient.module.scss";
 import OrderFormSection from "@/app/buy/OrderFormSection";
 import OrderSummaryPanel from "@/app/buy/OrderSummaryPanel";
@@ -16,7 +16,6 @@ import { calculateDiscount } from "@/lib/price";
 export type BuyItemWishCoupon = StockHoldProduct & {
 	discountedPrice: number; // 해당 상품에 적용된 쿠폰 할인을 반영한 가격 (finalPrice에서 할인금액을 뺀 가격)
 	discountAmount: number; // 해당 상품에 적용된 총 할인 금액
-	appliedProductCouponMap: AppliedCouponGroup; // 해당 상품에 적용된 쿠폰 정보 (최대 할인 쿠폰 + 스택형 쿠폰 리스트)
 };
 export type CartCoupon = AvailableCartCouponAtBuy & { used: boolean };
 export type SellerCoupon = AvailableSellerCouponAtBuy & { used: boolean };
@@ -95,7 +94,48 @@ export default function BuyClient() {
 	}, [handleStockHoldExtend]);
 
 	// 최대할인 쿠폰 저장
-	const maxDiscountedPriceRef = useRef<AppliedProductCouponMap>({});
+	const maxDiscountAppliedProductCouponMapRef = useRef<AppliedProductCouponMap>({});
+	// holdId별 적용된 쿠폰
+	const [appliedProductCouponMap, setAppliedProductCouponMap] = useState<AppliedProductCouponMap>({});
+	const changeAppliedProductCoupon = (holdId: number, coupon: AppliedCoupon, isChecked: boolean) => {
+		setAppliedProductCouponMap((prev) => {
+			const prevForCart = prev[holdId] || { unStackable: null, stackable: [] };
+			let newForCart: { unStackable: AppliedCoupon | null; stackable: AppliedCoupon[] };
+			if (isChecked) {
+				// 쿠폰 적용
+				if (coupon.isStackable) {
+					newForCart = {
+						...prevForCart,
+						stackable: [...prevForCart.stackable, coupon],
+					};
+				} else {
+					newForCart = {
+						...prevForCart,
+						unStackable: coupon,
+					};
+				}
+			} else {
+				// 쿠폰 해제
+				if (coupon.isStackable) {
+					newForCart = {
+						...prevForCart,
+						stackable: prevForCart.stackable.filter((c) => c.couponId !== coupon.couponId),
+					};
+				} else {
+					newForCart = {
+						...prevForCart,
+						unStackable: null,
+					};
+				}
+			}
+			return {
+				...prev,
+				[holdId]: newForCart,
+			};
+		});
+	};
+
+	// 최대 할인쿠폰 저장 및 초기 쿠폰을 통한 적용 쿠폰 저장.
 	useEffect(() => {
 		if (!stockHoldData) return;
 
@@ -109,13 +149,34 @@ export default function BuyClient() {
 		);
 
 		const initialAppliedProductCouponMap: AppliedProductCouponMap = {};
+		const initMaxDiscountAppliedProductCouponMap: AppliedProductCouponMap = {};
 		const initUsedCouponIds: number[] = [];
+		const userCopponIdToCouponMap: Record<number, AvailableCartCouponAtBuy | AvailableSellerCouponAtBuy> = {};
+		[...stockHoldData.availableCartCoupons, ...stockHoldData.availableSellerCoupons].forEach((coupon) => {
+			userCopponIdToCouponMap[coupon.userCouponId] = coupon;
+		});
 
 		const sortedStockHoldProductList = [...stockHoldData.stockHoldProductList].sort((a, b) => b.finalPrice * b.count - a.finalPrice * a.count); // 할인 전 가격 내림차순
 
 		sortedStockHoldProductList.forEach((product) => {
 			const initPrice = (product.finalPrice + product.addPrice) * product.count;
+			// product.holdId;
 
+			// 초기 적용 쿠폰 저장 ------------------------------------------------------------------------------------------------------------------------
+			const holdCouponList = stockHoldData.holdCoupons.filter((holdCoupon) => holdCoupon.holdId === product.holdId);
+			if (holdCouponList.length > 0) {
+				const appliedCoupons = holdCouponList
+					.map((holdCoupon) => userCopponIdToCouponMap[holdCoupon.userCouponId])
+					.filter((c): c is AppliedCoupon => !!c);
+				if (appliedCoupons.length > 0) {
+					initialAppliedProductCouponMap[product.holdId] = {
+						unStackable: appliedCoupons.find((coupon) => !coupon.isStackable) || null,
+						stackable: appliedCoupons.filter((coupon) => coupon.isStackable),
+					};
+				}
+			}
+
+			// 최대 할인 쿠폰 저장 ------------------------------------------------------------------------------------------------------------------------
 			const couponsForCart =
 				stockHoldData.availableCartCoupons.filter(
 					(coupon) =>
@@ -125,35 +186,41 @@ export default function BuyClient() {
 			const couponsForSeller =
 				availableCouponsWithDiscountObj[product.sellerName]?.filter((coupon) => coupon.productId === product.productId) || [];
 
-			const availableCartCoupon = [...couponsForCart, ...couponsForSeller].filter((coupon) => {
-				return !initUsedCouponIds.includes(coupon.couponId) && calculateDiscount(initPrice, coupon) !== null;
+			const availableBuyCoupon = [...couponsForCart, ...couponsForSeller].filter((coupon) => calculateDiscount(initPrice, coupon) !== null);
+
+			const availableMaxDiscountBuyCoupon = availableBuyCoupon.filter((coupon) => {
+				return !initUsedCouponIds.includes(coupon.couponId);
 			});
+			if (availableMaxDiscountBuyCoupon.length > 0) {
+				const selectedUnStackableCoupons = availableMaxDiscountBuyCoupon.filter((coupon) => !coupon.isStackable);
+				const selectedMaxUnStackable = selectedUnStackableCoupons.reduce((max, coupon) => {
+					const currentDiscount = calculateDiscount(initPrice, coupon) || 0;
+					const maxDiscount = max ? calculateDiscount(initPrice, max) || 0 : 0;
 
-			if (availableCartCoupon.length === 0) return;
+					return currentDiscount > maxDiscount ? coupon : max;
+				}, selectedUnStackableCoupons[0] as AppliedCoupon);
+				const selectedStackableCouponList = availableMaxDiscountBuyCoupon.filter((coupon) => coupon.isStackable);
 
-			const selectedUnStackableCoupons = availableCartCoupon.filter((coupon) => !coupon.isStackable);
-			const selectedMaxUnStackable = selectedUnStackableCoupons.reduce((max, coupon) => {
-				const currentDiscount = calculateDiscount(initPrice, coupon) || 0;
-				const maxDiscount = max ? calculateDiscount(initPrice, max) || 0 : 0;
-
-				return currentDiscount > maxDiscount ? coupon : max;
-			}, selectedUnStackableCoupons[0] as AppliedCoupon);
-			const selectedStackableCouponList = availableCartCoupon.filter((coupon) => coupon.isStackable);
-
-			initUsedCouponIds.push(selectedMaxUnStackable?.couponId, ...selectedStackableCouponList.map((coupon) => coupon.couponId));
-			initialAppliedProductCouponMap[product.holdId] = {
-				unStackable: selectedMaxUnStackable,
-				stackable: selectedStackableCouponList,
-			};
+				initUsedCouponIds.push(selectedMaxUnStackable?.couponId, ...selectedStackableCouponList.map((coupon) => coupon.couponId));
+				initMaxDiscountAppliedProductCouponMap[product.holdId] = {
+					unStackable: selectedMaxUnStackable,
+					stackable: selectedStackableCouponList,
+				};
+			}
 		});
 
-		maxDiscountedPriceRef.current = initialAppliedProductCouponMap;
-		console.log("initial max discounted coupon map", initialAppliedProductCouponMap);
+		// console.log({ initialAppliedProductCouponMap /* initMaxDiscountAppliedProductCouponMap */ });
+		// 초기 적용 쿠폰 저장
+		setAppliedProductCouponMap(initialAppliedProductCouponMap);
+		// 최대 할인 쿠폰 저장
+		maxDiscountAppliedProductCouponMapRef.current = initMaxDiscountAppliedProductCouponMap;
 	}, [stockHoldData]);
 
 	const {
 		buyItemList,
 		defaultAddress,
+		cartCouponList,
+		sellerCouponList,
 		// 금액 표시 위해 계산된 값들
 		buyTotalOriginPrice, // 할인 전 총 상품 가격 (addPrice, count 반영된 가격)
 		buyTotalFinalPrice, // 할인 후 총 상품 가격 (addPrice, count, 쿠폰 할인 반영된 가격)
@@ -166,15 +233,22 @@ export default function BuyClient() {
 			return {
 				buyItemList: [],
 				defaultAddress: null,
+				cartCouponList: [],
+				sellerCouponList: [],
+				buyTotalOriginPrice: 0,
+				buyTotalFinalPrice: 0,
+				buySelfDiscount: 0,
+				cartCouponDiscount: 0,
+				sellerCouponDiscount: 0,
 			};
 		}
 		// API 응답 후 / 쿠폰 적용 변경 시
 		const buyItemList: BuyItemWishCoupon[] = [];
 		let buyTotalOriginPrice = 0;
-		const buyTotalFinalPrice = 0;
+		let buyTotalFinalPrice = 0;
 		let buySelfDiscount = 0;
-		const cartCouponDiscount = 0;
-		const sellerCouponDiscount = 0;
+		let cartCouponDiscount = 0;
+		let sellerCouponDiscount = 0;
 
 		// 배송비 계산을 위한 객체
 		const deliveryInfoBySeller: Record<
@@ -186,30 +260,12 @@ export default function BuyClient() {
 			}
 		> = {};
 
-		// 쿠폰정보들 정렬
-		const sortedCoupons = [...stockHoldData.availableCartCoupons, ...stockHoldData.availableSellerCoupons];
-		sortedCoupons.sort((a, b) => a.userCouponId - b.userCouponId); // userCouponId 오름차순 정렬 (API에서 내려주는 순서가 보장되지 않으므로)
-
-		const holdCouponsMap = stockHoldData.holdCoupons.reduce(
-			(acc, holdCoupon) => {
-				if (acc[holdCoupon.holdId]) return acc;
-				const couponList = sortedCoupons.filter((c) => c.userCouponId === holdCoupon.userCouponId);
-				if (couponList.length === 0) return acc;
-				acc[holdCoupon.holdId] = [...couponList];
-				return acc;
-			},
-			{} as Record<number, AppliedCoupon[]>,
-		);
-
-		console.log("holdCouponsMap", holdCouponsMap);
-
 		stockHoldData.stockHoldProductList.forEach((product) => {
 			const initPrice = (product.finalPrice + product.addPrice) * product.count;
 			const buyItem: BuyItemWishCoupon = {
 				...product,
 				discountedPrice: initPrice,
 				discountAmount: 0,
-				appliedProductCouponMap: { unStackable: null, stackable: [] },
 			};
 
 			// 자체할인가 계산
@@ -228,26 +284,69 @@ export default function BuyClient() {
 			}
 
 			// 적용 쿠폰에 따라 discountedPrice와 discountAmount 계산
-			const appliedCoupons = holdCouponsMap[product.holdId] || [];
-			if (appliedCoupons.length > 0) {
-				const unStackableCoupon = appliedCoupons.find((coupon) => !coupon.isStackable) || null;
-				const stackableCoupons = appliedCoupons.filter((coupon) => coupon.isStackable);
+			const appliedProductCoupon = appliedProductCouponMap[product.holdId];
+			if (appliedProductCoupon) {
+				if (appliedProductCoupon.unStackable) {
+					const unStackableDiscount = calculateDiscount(buyItem.discountedPrice, appliedProductCoupon.unStackable) || 0;
+					buyItem.discountAmount += unStackableDiscount;
+					if ("sellerName" in appliedProductCoupon.unStackable) {
+						sellerCouponDiscount += unStackableDiscount;
+					} else {
+						cartCouponDiscount += unStackableDiscount;
+					}
+					// 구매 쿠폰 추가(중복 불가능)
+					// buyCouponIds.push(appliedProductCoupon.unStackable.couponId);
+				}
+				if (appliedProductCoupon.stackable.length > 0) {
+					appliedProductCoupon.stackable.forEach((coupon) => {
+						const stackableDiscount = calculateDiscount(buyItem.discountedPrice, coupon) || 0;
+						buyItem.discountAmount += stackableDiscount;
+						if ("sellerName" in coupon) sellerCouponDiscount += stackableDiscount;
+						else cartCouponDiscount += stackableDiscount;
+					});
+					// 구매 쿠폰 추가(중복 가능)
+					// buyCouponIds.push(...appliedProductCoupon.stackable.map((c) => c.couponId));
+				}
+				buyItem.discountedPrice -= buyItem.discountAmount;
 			}
+			buyTotalFinalPrice += buyItem.discountedPrice;
 
 			// 구매 리스트 넣기
 			buyItemList.push(buyItem);
 		});
 
+		const usedSet = stockHoldData.holdCoupons.map((c) => c.userCouponId);
+
 		return {
 			buyItemList,
 			defaultAddress: stockHoldData.defaultAddress,
+			cartCouponList: stockHoldData.availableCartCoupons.map((coupon) => ({ ...coupon, used: usedSet.includes(coupon.userCouponId) })),
+			sellerCouponList: stockHoldData.availableSellerCoupons.map((coupon) => ({ ...coupon, used: usedSet.includes(coupon.userCouponId) })),
+			buyTotalOriginPrice,
+			buyTotalFinalPrice,
+			buySelfDiscount,
+			cartCouponDiscount,
+			sellerCouponDiscount,
 		};
-	}, [stockHoldData]);
+	}, [stockHoldData, appliedProductCouponMap]);
 
 	// 디버깅용 log
 	useEffect(() => {
 		if (stockHoldData) console.log({ stockHoldData });
-	}, [stockHoldData]);
+		if (cartCouponList.length > 0 || sellerCouponList.length > 0) {
+			// console.log({ cartCouponList, sellerCouponList });
+		}
+		// console.log({ buyTotalOriginPrice, buyTotalFinalPrice, buySelfDiscount, cartCouponDiscount, sellerCouponDiscount });
+	}, [
+		stockHoldData,
+		cartCouponList,
+		sellerCouponList,
+		buyTotalOriginPrice,
+		buyTotalFinalPrice,
+		buySelfDiscount,
+		cartCouponDiscount,
+		sellerCouponDiscount,
+	]);
 
 	// =================================================================
 	// UI
@@ -255,22 +354,29 @@ export default function BuyClient() {
 
 	const OrderFormSectionProps = {
 		buyItemList,
+		cartCouponList,
+		sellerCouponList,
+		appliedProductCouponMap,
+		//
+		buyTotalFinalPrice,
 	};
 
 	if (!stockHoldData) return null;
 	return (
-		<BuyProvider defaultAddress={defaultAddress}>
-			<div className={styles.page}>
-				<h1 className={styles.pageTitle}>주문서</h1>
+		<div className={styles.buy}>
+			<BuyProvider defaultAddress={defaultAddress}>
+				<div className={styles.page}>
+					<h1 className={styles.pageTitle}>주문서</h1>
 
-				<div className={styles.layout}>
-					{/* LEFT */}
-					<OrderFormSection {...OrderFormSectionProps} />
+					<div className={styles.layout}>
+						{/* LEFT */}
+						<OrderFormSection {...OrderFormSectionProps} />
 
-					{/* RIGHT */}
-					<OrderSummaryPanel />
+						{/* RIGHT */}
+						<OrderSummaryPanel />
+					</div>
 				</div>
-			</div>
-		</BuyProvider>
+			</BuyProvider>
+		</div>
 	);
 }
