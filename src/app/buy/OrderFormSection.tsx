@@ -1,16 +1,50 @@
 import styles from "./BuyClient.module.scss";
 import { BsExclamationCircle } from "react-icons/bs";
 import ShippingAddressForm from "@/app/buy/ShippingAddressForm";
-import { BuyItemWishCoupon } from "@/app/buy/BuyClient";
+import { AppliedProductCouponMap, BuyItemWishCoupon, CartCoupon, SellerCoupon } from "@/app/buy/BuyClient";
 import { money } from "@/lib/format";
 import { useAuth } from "@/hooks/useAuth";
+import { calculateDiscount } from "@/lib/price";
+import { useEffect, useRef, useState } from "react";
+import { scrollIntoCenter } from "@/utils/ui";
+import BuyCouponSelector from "@/app/buy/BuyCouponSelector";
 
 interface OrderFormSectionProps {
 	buyItemList: BuyItemWishCoupon[];
+	cartCouponList: CartCoupon[];
+	sellerCouponList: SellerCoupon[];
+	appliedProductCouponMap: AppliedProductCouponMap;
+	//
+	buyTotalFinalPrice: number;
 }
 
-export default function OrderFormSection({ buyItemList }: OrderFormSectionProps) {
+export default function OrderFormSection({
+	buyItemList,
+	cartCouponList,
+	sellerCouponList,
+	appliedProductCouponMap,
+	buyTotalFinalPrice,
+}: OrderFormSectionProps) {
 	const { user } = useAuth();
+
+	// 쿠폰변경 UI 열기(판매자이름)
+	const [couponAppliedSelectorOpenSeller, setCouponAppliedSelectorOpenSeller] = useState<string>("");
+	// 열리는 버튼 요소에 ref를 저장
+	const panelRef = useRef<HTMLElement | null>(null);
+	// 열릴 때 닫힌 스크롤위치 저장
+	const scrollYRef = useRef<number | null>(null);
+
+	// 열림 상태가 바뀌면 다음 프레임에서 스크롤
+	useEffect(() => {
+		requestAnimationFrame(() => {
+			if (couponAppliedSelectorOpenSeller) {
+				if (panelRef.current) scrollIntoCenter(panelRef.current);
+			} else if (scrollYRef.current !== null) {
+				scrollTo({ top: scrollYRef.current, behavior: "instant" });
+				scrollYRef.current = null;
+			}
+		});
+	}, [couponAppliedSelectorOpenSeller]);
 
 	return (
 		<section className={styles.main}>
@@ -34,6 +68,45 @@ export default function OrderFormSection({ buyItemList }: OrderFormSectionProps)
 					const initialOriginPrice = (item.originPrice + item.addPrice) * item.count;
 					const initialFinalPrice = (item.finalPrice + item.addPrice) * item.count;
 
+					// 해당 상품에 적용 가능한 장바구니 쿠폰 리스트
+					const availableCartCoupons = cartCouponList.filter(
+						(coupon) =>
+							(coupon.isProductRestricted && coupon.couponAllowedId && coupon.productId === item.productId) ||
+							(!coupon.isProductRestricted && !coupon.couponAllowedId && !coupon.productId),
+					);
+					// 해당 상품에 적용 가능한 판매자 쿠폰 리스트
+					const availableProductCoupons = sellerCouponList.filter((coupon) => coupon.productId === item.productId);
+					// 적용 가능한 쿠폰 갯수
+					const availableProductCouponCount = availableProductCoupons.length + availableCartCoupons.length;
+					// 해당 상품에 적용된 쿠폰 정보 가져오기
+					const appliedProductCoupon = appliedProductCouponMap[item.holdId];
+					// 적용된 쿠폰 중에 장바구니 쿠폰
+					const appliedCartCoupons = [];
+					// 적용된 쿠폰 중에 판매자 쿠폰
+					const appliedSellerCoupons = [];
+					if (appliedProductCoupon) {
+						if (appliedProductCoupon.unStackable) {
+							if ("sellerName" in appliedProductCoupon.unStackable) {
+								appliedSellerCoupons.push(appliedProductCoupon.unStackable);
+							} else {
+								appliedCartCoupons.push(appliedProductCoupon.unStackable);
+							}
+						}
+						if (appliedProductCoupon.stackable.length > 0) {
+							appliedProductCoupon.stackable.forEach((coupon) => {
+								if ("sellerName" in coupon) {
+									appliedSellerCoupons.push(coupon);
+								} else {
+									appliedCartCoupons.push(coupon);
+								}
+							});
+						}
+					}
+					// 쿠폰이 하나라도 적용이 됐는지 여부
+					const appliedCouponCount = !appliedProductCoupon
+						? 0
+						: appliedProductCoupon?.stackable.length + (appliedProductCoupon?.unStackable ? 1 : 0);
+
 					return (
 						<div key={"buyItem-" + item.holdId} className={styles.productCard}>
 							<div className={styles.productRow}>
@@ -56,15 +129,41 @@ export default function OrderFormSection({ buyItemList }: OrderFormSectionProps)
 									</div>
 
 									<div className={styles.couponBox}>
-										<div className={styles.couponLine}>
-											<span className={styles.couponLabel}>상품 쿠폰</span>
-											<span className={styles.couponDesc}>[20% 혜택] 일상에 감동을 더해줄 20% 쿠폰</span>
-											<span className={styles.couponPrice}>6,660</span>
-										</div>
-										<div className={styles.couponLine}>
-											<span className={styles.couponLabel}>장바구니 쿠폰</span>
-											<span className={styles.couponDesc}>중복 불가 상품 쿠폰 사용중</span>
-										</div>
+										{appliedSellerCoupons.length === 0 && appliedCartCoupons.length === 0 && (
+											<div>
+												<span className={styles.couponDesc}>적용된 쿠폰이 없습니다.</span>
+											</div>
+										)}
+										{appliedSellerCoupons.length > 0 && (
+											<div className={styles.couponLine}>
+												<span className={styles.couponLabel}>상품 쿠폰</span>
+												<div className={styles.couponAppliedList}>
+													{appliedSellerCoupons.map((coupon) => (
+														<div key={"buyAppliedCoupon-" + coupon.couponId} className={styles.couponApplied}>
+															<span className={styles.couponDesc}>{coupon.description}</span>
+															<span
+																className={styles.couponPrice}
+															>{`-${money(calculateDiscount(initialFinalPrice, coupon) as number)}`}</span>
+														</div>
+													))}
+												</div>
+											</div>
+										)}
+										{appliedCartCoupons.length > 0 && (
+											<div className={styles.couponLine}>
+												<span className={styles.couponLabel}>장바구니 쿠폰</span>
+												<div className={styles.couponAppliedList}>
+													{appliedCartCoupons.map((coupon) => (
+														<div key={"buyAppliedCoupon-" + coupon.couponId} className={styles.couponApplied}>
+															<span className={styles.couponDesc}>{coupon.description}</span>
+															<span
+																className={styles.couponPrice}
+															>{`-${money(calculateDiscount(initialFinalPrice, coupon) as number)}원`}</span>
+														</div>
+													))}
+												</div>
+											</div>
+										)}
 									</div>
 								</div>
 							</div>
@@ -72,12 +171,73 @@ export default function OrderFormSection({ buyItemList }: OrderFormSectionProps)
 							<div className={styles.couponSummary}>
 								<div className={styles.summaryRow}>
 									<span className={styles.summaryLabel}>쿠폰 할인 금액</span>
-									<span className={styles.summaryValueMinus}>-{money(item.discountedPrice)}원</span>
+									<span className={styles.summaryValueMinus}>-{money(item.discountAmount)}원</span>
 								</div>
 
 								<button type="button" className={styles.outlineBtn}>
 									쿠폰 변경
 								</button>
+							</div>
+							<div className={styles.productItemAppliedCouponList}>
+								<div className={styles.appliedCouponListTitle}>
+									<div className="mb-2">
+										<h4 className="mb-1 text-gray-500">상품 쿠폰 할인</h4>
+										{availableProductCoupons.map((coupon) => {
+											// 중복불가 쿠폰일 시 검사
+											const unStackableChecked =
+												!coupon.isStackable && appliedProductCoupon?.unStackable?.couponId === coupon.couponId;
+											// 중복가능 쿠폰일 시 검사
+											const stackableChecked =
+												coupon.isStackable && appliedProductCoupon?.stackable?.some((c) => c.couponId === coupon.couponId);
+											// checked 여부
+											const couponChecked = unStackableChecked || stackableChecked;
+											// 다른 쿠폰이 사용중
+											const otherUsed = !couponChecked && coupon.used;
+
+											return (
+												<BuyCouponSelector
+													key={"BuyCouponSelector-" + coupon.couponId}
+													coupon={coupon}
+													couponChecked={couponChecked}
+													finalXCount={initialFinalPrice}
+													setAppliedProductCoupon={(isAdd) => {
+														// changeAppliedProductCoupon(item.cartId, coupon, isAdd);
+													}}
+													otherUsed={otherUsed}
+													productOptionId={item.productOptionId}
+												/>
+											);
+										})}
+									</div>
+									<div>
+										<h4 className="mb-1 text-gray-500">장바구니 쿠폰 할인</h4>
+										{availableCartCoupons.map((coupon) => {
+											// 중복불가 쿠폰일 시 검사
+											const unStackableChecked =
+												!coupon.isStackable && appliedProductCoupon?.unStackable?.couponId === coupon.couponId;
+											// 중복가능 쿠폰일 시 검사
+											const stackableChecked =
+												coupon.isStackable && appliedProductCoupon?.stackable?.some((c) => c.couponId === coupon.couponId);
+											// checked 여부
+											const couponChecked = unStackableChecked || stackableChecked;
+											const otherUsed = !couponChecked && coupon.used;
+
+											return (
+												<BuyCouponSelector
+													key={"BuyCouponSelector-" + coupon.couponId}
+													coupon={coupon}
+													couponChecked={couponChecked}
+													finalXCount={initialFinalPrice}
+													setAppliedProductCoupon={(isAdd) => {
+														// changeAppliedProductCoupon(item.holdId, coupon, isAdd);
+													}}
+													otherUsed={otherUsed}
+													productOptionId={item.productOptionId}
+												/>
+											);
+										})}
+									</div>
+								</div>
 							</div>
 						</div>
 					);
@@ -106,8 +266,10 @@ export default function OrderFormSection({ buyItemList }: OrderFormSectionProps)
 							<button type="button" className={styles.disabledBtn}>
 								모두 사용
 							</button>
+						</div>
+						<div>
 							<span className={styles.pointText}>
-								사용 가능 {money(user.mileage)}원 / 보유 {money(user.mileage)}원
+								사용 가능 {money(Math.min(buyTotalFinalPrice, user.mileage))}원 / 보유 {money(user.mileage)}원
 							</span>
 						</div>
 					</div>
