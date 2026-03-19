@@ -270,22 +270,22 @@ export default function CartClient() {
 			const initPrice = (cart.finalPrice + cart.addPrice) * cart.quantity;
 			const cartItem: CartItemWithCoupon = { ...cart, discountedPrice: initPrice, discountAmount: 0 };
 
-			if (cart.selected) {
+			if (cartItem.selected) {
 				const buyCouponIds: number[] = [];
 
 				// 자체할인가 계산
-				cartOriginPrice += cart.originPrice * cart.quantity;
-				cartSelfDiscount += (cart.originPrice - cart.finalPrice) * cart.quantity;
+				cartOriginPrice += cartItem.originPrice * cartItem.quantity;
+				cartSelfDiscount += (cartItem.originPrice - cartItem.finalPrice) * cartItem.quantity;
 
 				// 배송비 계산 정보 저장
-				if (!deliveryInfoBySeller[cart.sellerName]) {
-					deliveryInfoBySeller[cart.sellerName] = {
-						totalFinalPrice: cartItem.finalPrice * cart.quantity,
-						baseShippingFee: cart.baseShippingFee,
-						freeShippingMinAmount: cart.freeShippingMinAmount,
+				if (!deliveryInfoBySeller[cartItem.sellerName]) {
+					deliveryInfoBySeller[cartItem.sellerName] = {
+						totalFinalPrice: cartItem.finalPrice * cartItem.quantity,
+						baseShippingFee: cartItem.baseShippingFee,
+						freeShippingMinAmount: cartItem.freeShippingMinAmount,
 					};
 				} else {
-					deliveryInfoBySeller[cart.sellerName].totalFinalPrice += cartItem.finalPrice * cart.quantity;
+					deliveryInfoBySeller[cartItem.sellerName].totalFinalPrice += cartItem.finalPrice * cartItem.quantity;
 				}
 
 				// 적용 쿠폰에 따라 discountedPrice와 discountAmount 계산
