@@ -138,6 +138,7 @@ export default function BuyClient() {
 	// 최대 할인쿠폰 저장 및 초기 쿠폰을 통한 적용 쿠폰 저장.
 	useEffect(() => {
 		if (!stockHoldData) return;
+		console.log("최대 할인쿠폰 저장 및 초기 쿠폰을 통한 적용 쿠폰 저장.");
 
 		const availableCouponsWithDiscountObj = stockHoldData.availableSellerCoupons.reduce(
 			(acc, coupon) => {
@@ -227,6 +228,7 @@ export default function BuyClient() {
 		buySelfDiscount, // 자체 할인가
 		cartCouponDiscount, // 장바구니쿠폰 할인가
 		sellerCouponDiscount, // 판매자쿠폰 할인가
+		deliveryFee, // 배송비
 	} = useMemo(() => {
 		// API 응답 전
 		if (!stockHoldData) {
@@ -240,6 +242,7 @@ export default function BuyClient() {
 				buySelfDiscount: 0,
 				cartCouponDiscount: 0,
 				sellerCouponDiscount: 0,
+				deliveryFee: 0,
 			};
 		}
 		// API 응답 후 / 쿠폰 적용 변경 시
@@ -315,24 +318,33 @@ export default function BuyClient() {
 			buyItemList.push(buyItem);
 		});
 
-		const usedSet = stockHoldData.holdCoupons.map((c) => c.userCouponId);
+		const usedSet = new Set<number>();
+		Object.values(appliedProductCouponMap).forEach((applied) => {
+			if (applied?.unStackable) {
+				usedSet.add(applied.unStackable.userCouponId);
+			}
+			applied?.stackable.forEach((coupon) => usedSet.add(coupon.userCouponId));
+		});
 
 		return {
 			buyItemList,
 			defaultAddress: stockHoldData.defaultAddress,
-			cartCouponList: stockHoldData.availableCartCoupons.map((coupon) => ({ ...coupon, used: usedSet.includes(coupon.userCouponId) })),
-			sellerCouponList: stockHoldData.availableSellerCoupons.map((coupon) => ({ ...coupon, used: usedSet.includes(coupon.userCouponId) })),
+			cartCouponList: stockHoldData.availableCartCoupons.map((coupon) => ({ ...coupon, used: usedSet.has(coupon.userCouponId) })),
+			sellerCouponList: stockHoldData.availableSellerCoupons.map((coupon) => ({ ...coupon, used: usedSet.has(coupon.userCouponId) })),
 			buyTotalOriginPrice,
 			buyTotalFinalPrice,
 			buySelfDiscount,
 			cartCouponDiscount,
 			sellerCouponDiscount,
+			deliveryFee: Object.values(deliveryInfoBySeller).reduce((fee, { totalFinalPrice, baseShippingFee, freeShippingMinAmount }) => {
+				return fee + (totalFinalPrice >= freeShippingMinAmount ? 0 : baseShippingFee);
+			}, 0),
 		};
 	}, [stockHoldData, appliedProductCouponMap]);
 
 	// 디버깅용 log
 	useEffect(() => {
-		if (stockHoldData) console.log({ stockHoldData });
+		// if (stockHoldData) console.log({ stockHoldData });
 		if (cartCouponList.length > 0 || sellerCouponList.length > 0) {
 			// console.log({ cartCouponList, sellerCouponList });
 		}
@@ -357,8 +369,18 @@ export default function BuyClient() {
 		cartCouponList,
 		sellerCouponList,
 		appliedProductCouponMap,
+		changeAppliedProductCoupon,
 		//
 		buyTotalFinalPrice,
+	};
+
+	const OrderSummaryPanelProps = {
+		buyTotalOriginPrice, // 할인 전 총 상품 가격 (addPrice, count 반영된 가격)
+		buyTotalFinalPrice, // 할인 후 총 상품 가격 (addPrice, count, 쿠폰 할인 반영된 가격)
+		buySelfDiscount, // 자체 할인가
+		cartCouponDiscount, // 장바구니쿠폰 할인가
+		sellerCouponDiscount, // 판매자쿠폰 할인가
+		deliveryFee, // 배송비
 	};
 
 	if (!stockHoldData) return null;
@@ -373,7 +395,7 @@ export default function BuyClient() {
 						<OrderFormSection {...OrderFormSectionProps} />
 
 						{/* RIGHT */}
-						<OrderSummaryPanel />
+						<OrderSummaryPanel {...OrderSummaryPanelProps} />
 					</div>
 				</div>
 			</BuyProvider>

@@ -8,12 +8,15 @@ import { calculateDiscount } from "@/lib/price";
 import { useEffect, useRef, useState } from "react";
 import { scrollIntoCenter } from "@/utils/ui";
 import BuyCouponSelector from "@/app/buy/BuyCouponSelector";
+import clsx from "clsx";
+import { useBuy } from "@/hooks/buy/useBuy";
 
 interface OrderFormSectionProps {
 	buyItemList: BuyItemWishCoupon[];
 	cartCouponList: CartCoupon[];
 	sellerCouponList: SellerCoupon[];
 	appliedProductCouponMap: AppliedProductCouponMap;
+	changeAppliedProductCoupon: (holdId: number, coupon: CartCoupon | SellerCoupon, isAdd: boolean) => void;
 	//
 	buyTotalFinalPrice: number;
 }
@@ -23,9 +26,11 @@ export default function OrderFormSection({
 	cartCouponList,
 	sellerCouponList,
 	appliedProductCouponMap,
+	changeAppliedProductCoupon,
 	buyTotalFinalPrice,
 }: OrderFormSectionProps) {
 	const { user } = useAuth();
+	const { usedMileage, setUsedMileage, changeUsedMileage } = useBuy();
 
 	// 쿠폰변경 UI 열기(판매자이름)
 	const [couponAppliedSelectorOpenSeller, setCouponAppliedSelectorOpenSeller] = useState<string>("");
@@ -71,13 +76,19 @@ export default function OrderFormSection({
 					// 해당 상품에 적용 가능한 장바구니 쿠폰 리스트
 					const availableCartCoupons = cartCouponList.filter(
 						(coupon) =>
-							(coupon.isProductRestricted && coupon.couponAllowedId && coupon.productId === item.productId) ||
-							(!coupon.isProductRestricted && !coupon.couponAllowedId && !coupon.productId),
+							((coupon.isProductRestricted && coupon.couponAllowedId && coupon.productId === item.productId) ||
+								(!coupon.isProductRestricted && !coupon.couponAllowedId && !coupon.productId)) &&
+							calculateDiscount(initialFinalPrice, coupon) !== null,
 					);
+
+					// const isDiscountApplied = calculateDiscount(finalXCount, coupon);
 					// 해당 상품에 적용 가능한 판매자 쿠폰 리스트
-					const availableProductCoupons = sellerCouponList.filter((coupon) => coupon.productId === item.productId);
+					const availableProductCoupons = sellerCouponList.filter(
+						(coupon) => coupon.productId === item.productId && calculateDiscount(initialFinalPrice, coupon) !== null,
+					);
 					// 적용 가능한 쿠폰 갯수
 					const availableProductCouponCount = availableProductCoupons.length + availableCartCoupons.length;
+
 					// 해당 상품에 적용된 쿠폰 정보 가져오기
 					const appliedProductCoupon = appliedProductCouponMap[item.holdId];
 					// 적용된 쿠폰 중에 장바구니 쿠폰
@@ -171,74 +182,106 @@ export default function OrderFormSection({
 							<div className={styles.couponSummary}>
 								<div className={styles.summaryRow}>
 									<span className={styles.summaryLabel}>쿠폰 할인 금액</span>
-									<span className={styles.summaryValueMinus}>-{money(item.discountAmount)}원</span>
+									<span className={styles.summaryValueMinus}>
+										{item.discountAmount > 0 ? `-${money(item.discountAmount)}원` : "0원"}
+									</span>
 								</div>
 
-								<button type="button" className={styles.outlineBtn}>
-									쿠폰 변경
-								</button>
+								<>
+									{availableProductCouponCount > 0 ? (
+										<button
+											className={styles.outlineBtn}
+											onClick={(e) => {
+												if (couponAppliedSelectorOpenSeller === item.sellerName) {
+													setCouponAppliedSelectorOpenSeller("");
+												} else {
+													panelRef.current = e.currentTarget;
+													scrollYRef.current = window.scrollY;
+													setCouponAppliedSelectorOpenSeller(item.sellerName);
+												}
+											}}
+										>
+											{couponAppliedSelectorOpenSeller === item.sellerName
+												? "닫기"
+												: appliedCouponCount > 0
+													? `쿠폰 변경(${appliedCouponCount})`
+													: "쿠폰 사용"}
+										</button>
+									) : (
+										<button className={clsx(styles.outlineBtn, "bg-gray-200", "opacity-60")}>적용 가능 쿠폰 없음</button>
+									)}
+								</>
 							</div>
-							<div className={styles.productItemAppliedCouponList}>
-								<div className={styles.appliedCouponListTitle}>
-									<div className="mb-2">
-										<h4 className="mb-1 text-gray-500">상품 쿠폰 할인</h4>
-										{availableProductCoupons.map((coupon) => {
-											// 중복불가 쿠폰일 시 검사
-											const unStackableChecked =
-												!coupon.isStackable && appliedProductCoupon?.unStackable?.couponId === coupon.couponId;
-											// 중복가능 쿠폰일 시 검사
-											const stackableChecked =
-												coupon.isStackable && appliedProductCoupon?.stackable?.some((c) => c.couponId === coupon.couponId);
-											// checked 여부
-											const couponChecked = unStackableChecked || stackableChecked;
-											// 다른 쿠폰이 사용중
-											const otherUsed = !couponChecked && coupon.used;
+							{couponAppliedSelectorOpenSeller === item.sellerName && (
+								<div className={styles.productItemAppliedCouponList}>
+									<div className={styles.appliedCouponListTitle}>
+										{availableProductCoupons.length > 0 && (
+											<div className="mb-2">
+												<h4 className="mb-1 text-gray-500">상품 쿠폰 할인</h4>
+												{availableProductCoupons.map((coupon) => {
+													// 중복불가 쿠폰일 시 검사
+													const unStackableChecked =
+														!coupon.isStackable && appliedProductCoupon?.unStackable?.couponId === coupon.couponId;
+													// 중복가능 쿠폰일 시 검사
+													const stackableChecked =
+														coupon.isStackable &&
+														appliedProductCoupon?.stackable?.some((c) => c.couponId === coupon.couponId);
+													// checked 여부
+													const couponChecked = unStackableChecked || stackableChecked;
+													// 다른 쿠폰이 사용중
+													const otherUsed = !couponChecked && coupon.used;
 
-											return (
-												<BuyCouponSelector
-													key={"BuyCouponSelector-" + coupon.couponId}
-													coupon={coupon}
-													couponChecked={couponChecked}
-													finalXCount={initialFinalPrice}
-													setAppliedProductCoupon={(isAdd) => {
-														// changeAppliedProductCoupon(item.cartId, coupon, isAdd);
-													}}
-													otherUsed={otherUsed}
-													productOptionId={item.productOptionId}
-												/>
-											);
-										})}
-									</div>
-									<div>
-										<h4 className="mb-1 text-gray-500">장바구니 쿠폰 할인</h4>
-										{availableCartCoupons.map((coupon) => {
-											// 중복불가 쿠폰일 시 검사
-											const unStackableChecked =
-												!coupon.isStackable && appliedProductCoupon?.unStackable?.couponId === coupon.couponId;
-											// 중복가능 쿠폰일 시 검사
-											const stackableChecked =
-												coupon.isStackable && appliedProductCoupon?.stackable?.some((c) => c.couponId === coupon.couponId);
-											// checked 여부
-											const couponChecked = unStackableChecked || stackableChecked;
-											const otherUsed = !couponChecked && coupon.used;
+													return (
+														<BuyCouponSelector
+															key={"BuyCouponSelector-" + coupon.couponId}
+															coupon={coupon}
+															couponChecked={couponChecked}
+															finalXCount={initialFinalPrice}
+															setAppliedProductCoupon={(isAdd) => {
+																changeAppliedProductCoupon(item.holdId, coupon, isAdd);
+															}}
+															otherUsed={otherUsed}
+															productOptionId={item.productOptionId}
+														/>
+													);
+												})}
+											</div>
+										)}
 
-											return (
-												<BuyCouponSelector
-													key={"BuyCouponSelector-" + coupon.couponId}
-													coupon={coupon}
-													couponChecked={couponChecked}
-													finalXCount={initialFinalPrice}
-													setAppliedProductCoupon={(isAdd) => {
-														// changeAppliedProductCoupon(item.holdId, coupon, isAdd);
-													}}
-													otherUsed={otherUsed}
-													productOptionId={item.productOptionId}
-												/>
-											);
-										})}
+										{availableCartCoupons.length > 0 && (
+											<div>
+												<h4 className="mb-1 text-gray-500">장바구니 쿠폰 할인</h4>
+												{availableCartCoupons.map((coupon) => {
+													// 중복불가 쿠폰일 시 검사
+													const unStackableChecked =
+														!coupon.isStackable && appliedProductCoupon?.unStackable?.couponId === coupon.couponId;
+													// 중복가능 쿠폰일 시 검사
+													const stackableChecked =
+														coupon.isStackable &&
+														appliedProductCoupon?.stackable?.some((c) => c.couponId === coupon.couponId);
+													// checked 여부
+													const couponChecked = unStackableChecked || stackableChecked;
+													const otherUsed = !couponChecked && coupon.used;
+
+													return (
+														<BuyCouponSelector
+															key={"BuyCouponSelector-" + coupon.couponId}
+															coupon={coupon}
+															couponChecked={couponChecked}
+															finalXCount={initialFinalPrice}
+															setAppliedProductCoupon={(isAdd) => {
+																changeAppliedProductCoupon(item.holdId, coupon, isAdd);
+															}}
+															otherUsed={otherUsed}
+															productOptionId={item.productOptionId}
+														/>
+													);
+												})}
+											</div>
+										)}
 									</div>
 								</div>
-							</div>
+							)}
 						</div>
 					);
 				})}
@@ -262,8 +305,19 @@ export default function OrderFormSection({
 
 					<div className={styles.pointField}>
 						<div className={styles.pointInputRow}>
-							<input className={styles.pointInput} type="text" defaultValue="0" />
-							<button type="button" className={styles.disabledBtn}>
+							<input
+								className={styles.pointInput}
+								type="text"
+								value={money(usedMileage)}
+								onChange={(e) => {
+									changeUsedMileage(e, Math.min(buyTotalFinalPrice, user.mileage));
+								}}
+							/>
+							<button
+								type="button"
+								className={styles.allUseBtn}
+								onClick={() => setUsedMileage(Math.min(buyTotalFinalPrice, user.mileage))}
+							>
 								모두 사용
 							</button>
 						</div>

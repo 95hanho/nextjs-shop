@@ -5,7 +5,6 @@ import { ChangeEvent, ChangeSet } from "@/types/event";
 import { UserAddress } from "@/types/mypage";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { buyContext } from "@/context/buyContext";
-
 interface BuyProviderProps {
 	children: React.ReactNode;
 	defaultAddress?: UserAddress | null;
@@ -41,6 +40,13 @@ export const BuyProvider = ({ children, defaultAddress: initialDefaultAddress = 
 				[e.target.name]: e.target.value,
 			}));
 		}
+	}, []);
+	// 마일리지 사용 금액
+	const [usedMileage, setUsedMileage] = useState(0);
+	const changeUsedMileage = useCallback((e: ChangeEvent, availableMileage: number) => {
+		const numericValue = e.target.value.replace(/[^0-9]/g, "");
+		const value = Math.min(Number(numericValue), availableMileage);
+		setUsedMileage(value);
 	}, []);
 
 	// 결제하기
@@ -79,14 +85,17 @@ export const BuyProvider = ({ children, defaultAddress: initialDefaultAddress = 
 			newAddress,
 			changeNewAddress,
 			handleBuy,
+			usedMileage,
+			setUsedMileage,
+			changeUsedMileage,
 		}),
-		[defaultAddress, shippingAddressMode, initMemo, newAddress, changeNewAddress, handleBuy],
+		[defaultAddress, shippingAddressMode, initMemo, newAddress, changeNewAddress, handleBuy, usedMileage, changeUsedMileage],
 	);
 
 	// 디버깅용 log
 	useEffect(() => {
 		// if (defaultAddress) console.log({ defaultAddress });
-	}, [defaultAddress, shippingAddressMode, newAddress]);
+	}, [defaultAddress, shippingAddressMode, newAddress, usedMileage]);
 
 	return <buyContext.Provider value={value}>{children}</buyContext.Provider>;
 };

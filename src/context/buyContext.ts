@@ -13,6 +13,9 @@ interface BuyContextValue {
 	newAddress: UserAddress;
 	changeNewAddress: (e?: ChangeEvent, changeSet?: ChangeSet) => void;
 	handleBuy: () => void;
+	usedMileage: number;
+	setUsedMileage: (mileage: number) => void;
+	changeUsedMileage: (e: ChangeEvent, availableMileage: number) => void;
 }
 
 export const buyContext = createContext<BuyContextValue | null>(null);
