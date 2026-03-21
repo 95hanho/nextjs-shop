@@ -40,12 +40,12 @@ const addressFormRegexFailMent: { [key: string]: string } = {
 	addressPhone: "휴대폰 번호 형식에 일치하지 않습니다.",
 };
 
-interface AddressModalProps {
+interface ShippingAddressEditorModalProps {
 	onClose: () => void;
 	prevAddress?: UserAddressListItem;
 }
 
-export const AddressModal = ({ onClose, prevAddress }: AddressModalProps) => {
+export const ShippingAddressEditorModal = ({ onClose, prevAddress }: ShippingAddressEditorModalProps) => {
 	const { resolveModal } = useModalStore();
 
 	const [addressForm, setAddressForm] = useState<AddressForm>(initAddressForm);

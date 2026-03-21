@@ -4,7 +4,7 @@ import API_URL from "@/api/endpoints";
 import { deleteNormal, getNormal, postJson, putJson } from "@/api/fetchFilter";
 import { FormPageShell } from "@/components/auth/FormPageShell";
 import { LodingWrap } from "@/components/common/LodingWrap";
-import { AddressForm } from "@/components/modal/domain/AddressModal";
+import { AddressForm } from "@/components/modal/domain/ShippingAddressEditorModal";
 import { useAuth } from "@/hooks/useAuth";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { useModalStore } from "@/store/modal.store";
@@ -13,10 +13,11 @@ import { BaseResponse } from "@/types/common";
 import { GetUserAddressListResponse, setUserAddressRequest, UserAddressListItem } from "@/types/mypage";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Error from "next/error";
-import { useEffect, useState } from "react";
-import styles from "./MyAddressClient.module.scss";
+import { useEffect, useRef, useState } from "react";
+import styles from "./MyShippingAddressClient.module.scss";
+import { ShippingAddressList } from "@/components/address/ShippingAddressList";
 
-export default function MyAddressClient() {
+export default function MyShippingAddressClient() {
 	const { loginOn } = useAuth();
 	const queryClient = useQueryClient();
 	const { openModal, clearModalResult, modalResult } = useModalStore();
@@ -57,7 +58,7 @@ export default function MyAddressClient() {
 	const handleAddressDelete = useMutation({
 		mutationFn: () =>
 			deleteNormal<BaseResponse>(getApiUrl(API_URL.MY_ADDRESS_DELETE), {
-				addressId: changeAddress?.addressId,
+				addressId: changingDefaultAddressRef.current?.addressId,
 			}),
 		onSuccess(data) {
 			console.log(data);
@@ -73,7 +74,7 @@ export default function MyAddressClient() {
 		}
 	}, [isLoading, userAddressData]);
 	// 기본배송지 변경
-	const [changeAddress, setChangeAddress] = useState<UserAddressListItem | null>(null);
+	const changingDefaultAddressRef = useRef(null as UserAddressListItem | null);
 	// Confirm
 	useEffect(() => {
 		if (!modalResult) return;
@@ -83,8 +84,8 @@ export default function MyAddressClient() {
 			// 기본값 변경
 			if (payload?.result === "ADDRESS_DEFAULT_CHANGE") {
 				const changing = async () => {
-					if (changeAddress) {
-						await handleAddressUpdate.mutateAsync(changeAddress);
+					if (changingDefaultAddressRef.current) {
+						await handleAddressUpdate.mutateAsync(changingDefaultAddressRef.current);
 						queryClient.invalidateQueries({ queryKey: ["userAddressList"] });
 					}
 				};
@@ -96,7 +97,6 @@ export default function MyAddressClient() {
 					await handleAddressDelete.mutateAsync();
 					queryClient.invalidateQueries({ queryKey: ["userAddressList"] });
 				};
-				console.log("삭제가 된다구??");
 				deleting();
 			}
 		}
@@ -104,9 +104,9 @@ export default function MyAddressClient() {
 		if (modalResult?.action === "ADDRESS_SET") {
 			const payload = modalResult.payload as AddressForm;
 			console.log("payload", payload);
-			// console.log("changeAddress", changeAddress);
+			// console.log("changingDefaultAddressRef", changingDefaultAddressRef.current);
 			const addressUpdating = async () => {
-				const nextAddress = { ...changeAddress, ...payload };
+				const nextAddress = { ...changingDefaultAddressRef.current, ...payload };
 				if (nextAddress) {
 					if (!nextAddress?.addressId) await handleAddressAdd.mutateAsync(nextAddress);
 					else await handleAddressUpdate.mutateAsync(nextAddress);
@@ -116,7 +116,7 @@ export default function MyAddressClient() {
 			addressUpdating();
 		}
 		clearModalResult();
-	}, [changeAddress, modalResult, clearModalResult, handleAddressAdd, handleAddressUpdate, handleAddressDelete, queryClient]);
+	}, [modalResult, clearModalResult, handleAddressAdd, handleAddressUpdate, handleAddressDelete, queryClient]);
 
 	// if (isLoading && !userAddressList.length) return null;
 	return (
@@ -127,98 +127,18 @@ export default function MyAddressClient() {
 				</div>
 			) : (
 				<div>
-					<ul className={styles.addressList}>
-						{userAddressList.map((userAddress) => (
-							<li
-								key={"userAddress" + userAddress.addressId}
-								className="p-3 border-solid border-gray-400 bg-[#fffdf0] rounded-[8px] mb-2 border-w border-[2px]"
-							>
-								<h3 className="relative pt-[7px] pb-[2px] text-2xl text-left flex justify-between">
-									<span className="inline-block pl-3 text-2xl">{userAddress.addressName}</span>
-									{userAddress.defaultAddress && <span className={styles.defaultMark}>기본배송지</span>}
-								</h3>
-
-								<div className={styles.addressBody}>
-									{/* 공통 주소 정보 */}
-									<div className={styles.row}>
-										<span className={styles.label}>수령인정보</span>
-										<span className={styles.value}>
-											{userAddress.recipientName} / {userAddress.addressPhone}
-										</span>
-									</div>
-									<div className={styles.row}>
-										<span className={styles.label}>주소</span>
-										<span className={styles.value}>
-											({userAddress.zonecode}) {userAddress.address}
-										</span>
-									</div>
-
-									<div className={styles.row}>
-										<span className={styles.label}>상세주소</span>
-										<span className={styles.value}>{userAddress.addressDetail}</span>
-									</div>
-
-									{/* 배송 메모 */}
-									<div className="flex">
-										<div className="w-[30%]">메모</div>
-
-										<div className="w-[70%]">
-											<p className={styles.memo}>{userAddress.memo}</p>
-										</div>
-									</div>
-								</div>
-
-								<div className={styles.addressActions}>
-									{!userAddress.defaultAddress && (
-										<button
-											onClick={() => {
-												setChangeAddress({
-													...userAddress,
-													defaultAddress: true,
-												});
-												openModal("CONFIRM", {
-													content: "기본배송지를 변경하시겠습니까??",
-													okResult: "ADDRESS_DEFAULT_CHANGE",
-												});
-											}}
-										>
-											기본배송지로
-										</button>
-									)}
-									<button
-										onClick={() => {
-											setChangeAddress({ ...userAddress });
-											openModal("ADDRESSSET", {
-												address: userAddress,
-												disableOverlayClose: true,
-											});
-										}}
-									>
-										수정
-									</button>
-									<button
-										onClick={() => {
-											setChangeAddress({
-												...userAddress,
-											});
-											openModal("CONFIRM", {
-												content: `'${userAddress.addressName}' 배송지를 삭제하시겠습니까?`,
-												okResult: "ADDRESS_DELETE",
-											});
-										}}
-									>
-										삭제
-									</button>
-								</div>
-							</li>
-						))}
-					</ul>
-
+					<ShippingAddressList
+						page="MYPAGE"
+						userAddressList={userAddressList}
+						changeAddressRef={(address) => {
+							changingDefaultAddressRef.current = address;
+						}}
+					/>
 					<div className={styles.addressAdd}>
 						<button
 							onClick={() => {
-								setChangeAddress(null);
-								openModal("ADDRESSSET", {
+								changingDefaultAddressRef.current = null;
+								openModal("ADDRESS_SET", {
 									address: undefined,
 									disableOverlayClose: true,
 								});

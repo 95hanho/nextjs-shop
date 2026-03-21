@@ -297,6 +297,7 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 	useEffect(() => {
 		if (modalResult?.action === "CONFIRM_OK") {
 			const payload = modalResult.payload as ModalResultMap["CONFIRM_OK"];
+			// 장바구니 담기
 			if (payload?.result === "ADDCART") {
 				addCartMutate();
 			}

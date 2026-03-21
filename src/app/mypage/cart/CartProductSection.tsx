@@ -121,7 +121,7 @@ export default function CartProductSection({
 	// 옵션변경 모달 오픈
 	const openOptionChangeModal = (product: CartItem) => {
 		if (!product.selected) modalOpenSelectedState.current = true; // 모달 열 때의 selected 상태 저장
-		openModal("PRODUCTOPTION", {
+		openModal("PRODUCT_OPTION", {
 			product,
 		});
 	};
@@ -136,8 +136,8 @@ export default function CartProductSection({
 	useEffect(() => {
 		if (!modalResult) return;
 		// 장바구니 제품 옵션변경
-		if (modalResult.action === "PRODUCTOPTION_CHANGED") {
-			const p = modalResult.payload as ModalResultMap["PRODUCTOPTION_CHANGED"];
+		if (modalResult.action === "PRODUCT_OPTION_CHANGED") {
+			const p = modalResult.payload as ModalResultMap["PRODUCT_OPTION_CHANGED"];
 
 			// ✅ 여기서 장바구니 상태 갱신 / react-query invalidate / toast 등 처리
 			// await mutateOptionChange(p.nextProductOptionId) ...
@@ -285,7 +285,11 @@ export default function CartProductSection({
 												(!coupon.isProductRestricted && !coupon.couponAllowedId && !coupon.productId),
 										);
 										// 해당 장바구니상품에 적용 가능한 판매자 쿠폰 리스트
-										const availableProductCoupons = sellerCouponList.filter((coupon) => coupon.productId === product.productId);
+										const availableProductCoupons = sellerCouponList.filter(
+											(coupon) =>
+												(coupon.isProductRestricted && coupon.couponAllowedId && coupon.productId === product.productId) ||
+												(!coupon.isProductRestricted && !coupon.couponAllowedId && !coupon.productId),
+										);
 										// 적용 가능한 쿠폰 갯수
 										const availableProductCouponCount = availableProductCoupons.length + availableCartCoupons.length;
 

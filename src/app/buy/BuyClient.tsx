@@ -8,10 +8,11 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { getNormal, postJson } from "@/api/fetchFilter";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import API_URL from "@/api/endpoints";
-import { AvailableCartCouponAtBuy, AvailableSellerCouponAtBuy, GetStockHoldResponse, StockHoldProduct } from "@/types/buy";
+import { AvailableCartCouponAtBuy, AvailableSellerCouponAtBuy, BuyHoldCouponRequest, GetStockHoldResponse, StockHoldProduct } from "@/types/buy";
 import { useAuth } from "@/hooks/useAuth";
 import { BuyProvider } from "@/providers/buy/BuyProvider";
 import { calculateDiscount } from "@/lib/price";
+import { useModalStore } from "@/store/modal.store";
 
 export type BuyItemWishCoupon = StockHoldProduct & {
 	discountedPrice: number; // 해당 상품에 적용된 쿠폰 할인을 반영한 가격 (finalPrice에서 할인금액을 뺀 가격)
@@ -33,6 +34,7 @@ export type AppliedProductCouponMap = Record<
 
 export default function BuyClient() {
 	const { loginOn } = useAuth();
+	const { openModal } = useModalStore();
 
 	// =================================================================
 	// React Query
@@ -58,6 +60,14 @@ export default function BuyClient() {
 		onSuccess() {},
 		onError(err) {
 			console.log("handleStockHoldExtend err", err);
+		},
+	});
+	// 점유 쿠폰 추가/삭제 handleBuyHoldCoupon
+	const { mutateAsync: handleBuyHoldCoupon } = useMutation({
+		mutationFn: (data: BuyHoldCouponRequest) => postJson(getApiUrl(API_URL.BUY_HOLD_COUPON), data),
+		onSuccess() {},
+		onError(err) {
+			console.log("handleBuyHoldCoupon err", err);
 		},
 	});
 
@@ -98,6 +108,7 @@ export default function BuyClient() {
 	// holdId별 적용된 쿠폰
 	const [appliedProductCouponMap, setAppliedProductCouponMap] = useState<AppliedProductCouponMap>({});
 	const changeAppliedProductCoupon = (holdId: number, coupon: AppliedCoupon, isChecked: boolean) => {
+		console.log({ holdId, coupon, isChecked });
 		setAppliedProductCouponMap((prev) => {
 			const prevForCart = prev[holdId] || { unStackable: null, stackable: [] };
 			let newForCart: { unStackable: AppliedCoupon | null; stackable: AppliedCoupon[] };
@@ -133,6 +144,25 @@ export default function BuyClient() {
 				[holdId]: newForCart,
 			};
 		});
+		// 점유 쿠폰 추가/삭제 handleBuyHoldCoupon 호출
+		// 쿠폰 추가
+		if (isChecked) {
+			handleBuyHoldCoupon({
+				isAdd: true,
+				holdId,
+				userCouponId: coupon.userCouponId,
+			});
+		}
+		// 쿠폰 삭제
+		else {
+			const holdCoupon = stockHoldData?.holdCoupons.find((hc) => hc.holdId === holdId && hc.userCouponId === coupon.userCouponId);
+			if (holdCoupon) {
+				handleBuyHoldCoupon({
+					isAdd: false,
+					holdCouponId: holdCoupon.holdCouponId,
+				});
+			}
+		}
 	};
 
 	// 최대 할인쿠폰 저장 및 초기 쿠폰을 통한 적용 쿠폰 저장.
@@ -346,7 +376,7 @@ export default function BuyClient() {
 	useEffect(() => {
 		// if (stockHoldData) console.log({ stockHoldData });
 		if (cartCouponList.length > 0 || sellerCouponList.length > 0) {
-			// console.log({ cartCouponList, sellerCouponList });
+			console.log({ /* cartCouponList */ sellerCouponList });
 		}
 		// console.log({ buyTotalOriginPrice, buyTotalFinalPrice, buySelfDiscount, cartCouponDiscount, sellerCouponDiscount });
 	}, [
@@ -359,6 +389,11 @@ export default function BuyClient() {
 		cartCouponDiscount,
 		sellerCouponDiscount,
 	]);
+
+	// 시작시
+	useEffect(() => {
+		openModal("BUY_ADDRESSLIST", {});
+	}, [openModal]);
 
 	// =================================================================
 	// UI

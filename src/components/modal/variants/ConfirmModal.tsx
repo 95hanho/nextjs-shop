@@ -1,6 +1,6 @@
 import { ModalFrame } from "@/components/modal/frame/ModalFrame";
 import { useModalStore } from "@/store/modal.store";
-import { ModalResultMap } from "@/store/modal.type";
+import { ConfirmCancelResult, ConfirmOkResult, ModalResultMap } from "@/store/modal.type";
 import styles from "../Modal.module.scss";
 import { ConfirmButton } from "@/components/modal/frame/ConfirmButton";
 
@@ -10,8 +10,8 @@ interface ConfirmModalProps {
 	content: string;
 	cancelText?: string;
 	okText?: string;
-	okResult?: string;
-	cancelResult?: string;
+	okResult?: ConfirmOkResult;
+	cancelResult?: ConfirmCancelResult;
 	hideCancel?: boolean;
 	reverse?: boolean;
 }
