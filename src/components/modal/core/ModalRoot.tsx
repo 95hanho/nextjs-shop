@@ -7,10 +7,11 @@ import { useModalStore } from "@/store/modal.store";
 import { AlertModal } from "../variants/AlertModal";
 import { ConfirmModal } from "../variants/ConfirmModal";
 import { ProductOptionModal } from "../domain/ProductOptionModal";
-import { AddressModal } from "../domain/AddressModal";
 import { CartItem, UserAddressListItem } from "@/types/mypage";
 import { ModalPropsMap } from "@/store/modal.type";
 import clsx from "clsx";
+import { ShippingAddressEditorModal } from "@/components/modal/domain/ShippingAddressEditorModal";
+import { BuyShippingAddressListModal } from "@/components/modal/domain/BuyShippingAddressListModal";
 
 type ModalCommon = {
 	disableOverlayClose?: boolean;
@@ -76,15 +77,18 @@ export const ModalRoot = () => {
 			childrenModal = <ConfirmModal {...props} onClose={handleClose} />;
 			break;
 		}
-		case "PRODUCTOPTION":
+		case "PRODUCT_OPTION":
 			const { product } = modalProps as { product: CartItem };
 
 			childrenModal = <ProductOptionModal onClose={handleClose} product={product} />;
 			break;
-		case "ADDRESSSET":
+		case "ADDRESS_SET":
 			const { address } = modalProps as { address: UserAddressListItem };
 
-			childrenModal = <AddressModal onClose={handleClose} prevAddress={address} />;
+			childrenModal = <ShippingAddressEditorModal onClose={handleClose} prevAddress={address} />;
+			break;
+		case "BUY_ADDRESSLIST":
+			childrenModal = <BuyShippingAddressListModal onClose={handleClose} />;
 			break;
 		default:
 			return null;

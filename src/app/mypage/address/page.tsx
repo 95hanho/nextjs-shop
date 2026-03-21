@@ -1,9 +1,9 @@
-import MyAddressClient from "@/app/mypage/address/MyAddressClient";
+import MyShippingAddressClient from "@/app/mypage/address/MyShippingAddressClient";
 
-export default function MyAddressPage() {
+export default function MyShippingAddressPage() {
 	return (
 		<main id="myAddress">
-			<MyAddressClient />
+			<MyShippingAddressClient />
 		</main>
 	);
 }

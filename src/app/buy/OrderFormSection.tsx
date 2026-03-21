@@ -84,8 +84,12 @@ export default function OrderFormSection({
 					// const isDiscountApplied = calculateDiscount(finalXCount, coupon);
 					// 해당 상품에 적용 가능한 판매자 쿠폰 리스트
 					const availableProductCoupons = sellerCouponList.filter(
-						(coupon) => coupon.productId === item.productId && calculateDiscount(initialFinalPrice, coupon) !== null,
+						(coupon) =>
+							((coupon.isProductRestricted && coupon.couponAllowedId && coupon.productId === item.productId) ||
+								(!coupon.isProductRestricted && !coupon.couponAllowedId && !coupon.productId)) &&
+							calculateDiscount(initialFinalPrice, coupon) !== null,
 					);
+					// console.log({ name: item.productName, availableProductCoupons });
 					// 적용 가능한 쿠폰 갯수
 					const availableProductCouponCount = availableProductCoupons.length + availableCartCoupons.length;
 

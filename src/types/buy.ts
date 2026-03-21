@@ -29,6 +29,15 @@ export interface BuyHoldResponse extends BaseResponse {
 		count: number;
 	}[];
 }
+/* 점유 쿠폰 추가/삭제 */
+export type BuyHoldCouponRequest =
+	| {
+			isAdd: true;
+			holdId: number;
+			userCouponId: number;
+	  }
+	| { isAdd: false; holdCouponId: number };
+
 /* 구매상품 점유 연장 */
 export interface ExtendStockHoldResponse extends BaseResponse {
 	requestedCount: number;

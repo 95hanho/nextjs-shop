@@ -46,6 +46,8 @@ const API_URL = {
 	// 구매 ----------------------------------
 	/** 상품 확인 및 점유, 구매상품 점유 해제 */
 	BUY_HOLD: "/buy/stock-hold",
+	/** 점유 쿠폰 추가/삭제 */
+	BUY_HOLD_COUPON: "/buy/stock-hold/coupon",
 	/** 구매상품 점유 연장 */
 	BUY_HOLD_EXTEND: "/buy/stock-hold/extend",
 	/** 점유중인 상품조회, 상품구매/결제 */

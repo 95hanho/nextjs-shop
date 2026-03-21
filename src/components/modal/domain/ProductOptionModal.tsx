@@ -122,7 +122,7 @@ export const ProductOptionModal = ({ onClose, product }: ProductOptionModalProps
 					},
 					onConfirm: () => {
 						resolveModal({
-							action: "PRODUCTOPTION_CHANGED",
+							action: "PRODUCT_OPTION_CHANGED",
 							payload: {
 								cartId: product.cartId,
 								originProductOptionId: product.productOptionId,
