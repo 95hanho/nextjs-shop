@@ -25,7 +25,7 @@ export const BuyShippingAddressListModal = ({ onClose }: ShippingAddressListProp
 	if (!userAddressData) return null;
 	return (
 		<ModalFrame title="배송지 목록" onClose={onClose} contentVariant="address">
-			<div>
+			<div className="text-sm">
 				<ShippingAddressList page="BUY" userAddressList={userAddressData} />
 			</div>
 		</ModalFrame>

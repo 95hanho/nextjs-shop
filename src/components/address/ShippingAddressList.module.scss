@@ -5,12 +5,18 @@
 	padding-right: 5px;
 	margin-bottom: 11px;
 }
+.addressHeader {
+	font-size: 1.8em;
+	.addressName {
+		font-size: 0.8em;
+	}
+}
 .defaultMark {
 	position: absolute;
 	right: 0;
 	top: -3px;
 	padding: 0 9px;
-	font-size: 12px;
+	font-size: 0.5em;
 	background-color: #5f85e7;
 	border-radius: 5px;
 	color: #fff;
@@ -18,7 +24,7 @@
 }
 .addressBody {
 	padding-left: 13px;
-	font-size: 18px;
+	font-size: 1.1em;
 	word-break: auto-phrase;
 	/* 공통 주소 라인 */
 	.row {
@@ -40,7 +46,7 @@
 	margin-top: 5px;
 	text-align: right;
 	button {
-		font-size: 19px;
+		font-size: 1.1em;
 		&:nth-last-child(n + 2) {
 			margin-right: 8px;
 		}

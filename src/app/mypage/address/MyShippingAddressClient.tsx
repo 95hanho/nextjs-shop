@@ -126,7 +126,7 @@ export default function MyShippingAddressClient() {
 					<LodingWrap bgColor="#fff" />
 				</div>
 			) : (
-				<div>
+				<div className="relative text-base">
 					<ShippingAddressList
 						page="MYPAGE"
 						userAddressList={userAddressList}
