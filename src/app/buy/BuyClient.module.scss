@@ -285,6 +285,10 @@
 	font-size: 14px;
 	font-weight: bold;
 	color: #e04a2a;
+	&.off {
+		background: #eee;
+		color: #777;
+	}
 }
 
 .productCard {

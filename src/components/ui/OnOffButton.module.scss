@@ -15,16 +15,9 @@
 
 .switchLabel {
 	position: relative;
-	cursor: pointer;
 	display: inline-block;
-	background: #fff;
-	border: 2px solid #daa;
 	border-radius: 999px;
 	transition: 0.2s;
-
-	&:hover {
-		background: #efefef;
-	}
 }
 
 .onfBtn {
@@ -33,27 +26,11 @@
 	transform: translateY(-50%);
 	display: inline-block;
 	border-radius: 999px;
-	background: #daa;
 	transition: 0.2s;
 }
 
 .onfTxt {
 	user-select: none;
-}
-
-/* checked 상태 */
-.onfCheckbox:checked + .switchLabel {
-	background: rgb(128, 197, 128);
-	border: 2px solid rgb(133, 190, 133);
-
-	&:hover {
-		background: rgb(103, 158, 103);
-	}
-
-	.onfBtn {
-		background: #fff;
-		box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.1254901961);
-	}
 }
 
 /* type="number" 숫자조절 없애기 (필요 시 유지) */

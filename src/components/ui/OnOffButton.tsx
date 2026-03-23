@@ -39,19 +39,108 @@ const getKnobCheckedLeft = (size: OnOffButtonSize) => {
 	return current.switchWidth - current.knobSize - current.knobLeft - 2;
 };
 
+const clamp = (value: number, min = 0, max = 255) => Math.max(min, Math.min(max, value));
+
+const hexToRgb = (hex: string) => {
+	let normalized = hex.replace("#", "").trim();
+
+	if (normalized.length === 3) {
+		normalized = normalized
+			.split("")
+			.map((char) => char + char)
+			.join("");
+	}
+
+	const num = parseInt(normalized, 16);
+
+	return {
+		r: (num >> 16) & 255,
+		g: (num >> 8) & 255,
+		b: num & 255,
+	};
+};
+
+const rgbToHex = (r: number, g: number, b: number) => {
+	return `#${[r, g, b].map((v) => clamp(v).toString(16).padStart(2, "0")).join("")}`;
+};
+
+/**
+ * amount
+ *  + 값이면 밝게
+ *  - 값이면 어둡게
+ */
+const shiftColor = (hex: string, amount: number) => {
+	const { r, g, b } = hexToRgb(hex);
+	return rgbToHex(r + amount, g + amount, b + amount);
+};
+
+const getSwitchColors = (checked: boolean, onColor: string, offColor: string) => {
+	if (checked) {
+		return {
+			background: onColor,
+			border: shiftColor(onColor, -7),
+			hover: shiftColor(onColor, -25),
+			knob: "#ffffff",
+			boxShadow: "1px 2px 3px rgba(0, 0, 0, 0.1254901961)",
+		};
+	}
+
+	return {
+		background: "#ffffff",
+		border: offColor,
+		hover: "#efefef",
+		knob: offColor,
+		boxShadow: "none",
+	};
+};
+
 const OnOffBtnWrap = styled.div<{ $size: OnOffButtonSize }>`
 	padding: 0 ${({ $size }) => sizeMap[$size].wrapPaddingX}px;
 `;
 
-const SwitchLabel = styled.label<{ $size: OnOffButtonSize }>`
+const SwitchLabel = styled.label<{
+	$size: OnOffButtonSize;
+	$checked: boolean;
+	$onColor: string;
+	$offColor: string;
+	$cursor?: boolean;
+}>`
 	width: ${({ $size }) => sizeMap[$size].switchWidth}px;
 	height: ${({ $size }) => sizeMap[$size].switchHeight}px;
+	cursor: ${({ $cursor }) => ($cursor ? "pointer" : "default")};
+
+	${({ $checked, $onColor, $offColor }) => {
+		const colors = getSwitchColors($checked, $onColor, $offColor);
+
+		return `
+			background: ${colors.background};
+			border: 2px solid ${colors.border};
+
+			&:hover {
+				background: ${colors.hover};
+			}
+		`;
+	}}
 `;
 
-const OnfBtn = styled.span<{ $size: OnOffButtonSize; $checked: boolean }>`
+const OnfBtn = styled.span<{
+	$size: OnOffButtonSize;
+	$checked: boolean;
+	$onColor: string;
+	$offColor: string;
+}>`
 	width: ${({ $size }) => sizeMap[$size].knobSize}px;
 	height: ${({ $size }) => sizeMap[$size].knobSize}px;
 	left: ${({ $size, $checked }) => ($checked ? `${getKnobCheckedLeft($size)}px` : `${sizeMap[$size].knobLeft}px`)};
+
+	${({ $checked, $onColor, $offColor }) => {
+		const colors = getSwitchColors($checked, $onColor, $offColor);
+
+		return `
+			background: ${colors.knob};
+			box-shadow: ${colors.boxShadow};
+		`;
+	}}
 `;
 
 const OnfTxt = styled.label<{ $size: OnOffButtonSize }>`
@@ -60,15 +149,30 @@ const OnfTxt = styled.label<{ $size: OnOffButtonSize }>`
 `;
 
 interface OnOffButtonProps {
-	text: string;
+	checkId?: string;
+	text?: string;
 	checked: boolean;
 	size?: OnOffButtonSize;
 	name?: string;
+	onOffColor?: [string, string]; // [onColor, offColor]
 	onChange?: (checked: boolean) => void;
+	cursor?: boolean;
 }
 
-export const OnOffButton = ({ text, checked, size = "md", name = "sale", onChange }: OnOffButtonProps) => {
-	const id = useId();
+export const OnOffButton = ({
+	checkId,
+	text,
+	checked,
+	size = "md",
+	name = "sale",
+	onOffColor = ["#80C580", "#DAA"],
+	onChange,
+	cursor = true,
+}: OnOffButtonProps) => {
+	const generatedId = useId();
+	const id = checkId || generatedId;
+
+	const [onColor, offColor] = onOffColor;
 
 	return (
 		<OnOffBtnWrap $size={size} className={styles.onOffBtnWrap}>
@@ -78,21 +182,26 @@ export const OnOffButton = ({ text, checked, size = "md", name = "sale", onChang
 				name={name}
 				className={styles.onfCheckbox}
 				checked={checked}
-				readOnly
-				onChange={(e) => {
-					if (onChange) {
-						onChange(e.target.checked);
-					}
-				}}
+				onChange={(e) => onChange?.(e.target.checked)}
 			/>
 
-			<SwitchLabel htmlFor={id} $size={size} className={styles.switchLabel}>
-				<OnfBtn $size={size} $checked={checked} className={styles.onfBtn} />
+			<SwitchLabel
+				htmlFor={id}
+				$size={size}
+				$checked={checked}
+				$onColor={onColor}
+				$offColor={offColor}
+				className={styles.switchLabel}
+				$cursor={cursor}
+			>
+				<OnfBtn $size={size} $checked={checked} $onColor={onColor} $offColor={offColor} className={styles.onfBtn} />
 			</SwitchLabel>
 
-			<OnfTxt htmlFor={id} $size={size} className={styles.onfTxt}>
-				{text}
-			</OnfTxt>
+			{text && (
+				<OnfTxt htmlFor={id} $size={size} className={styles.onfTxt}>
+					{text}
+				</OnfTxt>
+			)}
 		</OnOffBtnWrap>
 	);
 };

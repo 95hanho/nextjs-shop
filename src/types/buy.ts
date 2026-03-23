@@ -30,13 +30,13 @@ export interface BuyHoldResponse extends BaseResponse {
 	}[];
 }
 /* 점유 쿠폰 추가/삭제 */
-export type BuyHoldCouponRequest =
-	| {
-			isAdd: true;
-			holdId: number;
-			userCouponId: number;
-	  }
-	| { isAdd: false; holdCouponId: number };
+type ManageHoldCoupon = {
+	holdId: number;
+	userCouponId: number;
+};
+export type ManageBuyHoldCouponRequest = {
+	holdCoupons: ManageHoldCoupon[];
+};
 
 /* 구매상품 점유 연장 */
 export interface ExtendStockHoldResponse extends BaseResponse {
