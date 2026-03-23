@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useBuy } from "@/hooks/buy/useBuy";
 import { useModalStore } from "@/store/modal.store";
 import { OnOffButton } from "@/components/ui/OnOffButton";
+import { FormInput } from "@/components/auth/FormInput";
 
 // interface ShippingAddressFormProps {}
 
@@ -111,7 +112,7 @@ export default function ShippingAddressForm() {
 					)}
 				</div>
 				{/* row */}
-				<div className={styles.formRow}>
+				{/* <div className={styles.formRow}>
 					<div className={styles.formLabel}>배송지명</div>
 					<div className={styles.formField}>
 						<div className={styles.inlineBetween}>
@@ -125,7 +126,15 @@ export default function ShippingAddressForm() {
 							/>
 						</div>
 					</div>
-				</div>
+				</div> */}
+				<FormInput
+					name="addressName"
+					label="배송지명"
+					placeholder="배송지 이름을 입력해주세요."
+					type="text"
+					value={inputAddress?.addressName || ""}
+					onChange={changeNewAddress}
+				/>
 
 				<div className={styles.formRow}>
 					<div className={styles.formLabel}>
