@@ -21,6 +21,8 @@ interface BuyContextValue {
 	usedMileage: number;
 	setUsedMileage: React.Dispatch<React.SetStateAction<number>>;
 	changeUsedMileage: (e: ChangeEvent, availableMileage: number) => void;
+	paymentMethod: "CARD" | "CASH";
+	setPaymentMethod: React.Dispatch<React.SetStateAction<"CARD" | "CASH">>;
 }
 
 export const buyContext = createContext<BuyContextValue | null>(null);

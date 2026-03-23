@@ -10,7 +10,7 @@ interface FormInputProps<T extends string, K extends string = T> {
 	placeholder: string;
 	type?: string;
 	value: string;
-	alarm: FormInputAlarm<K>;
+	alarm?: FormInputAlarm<K>;
 	onChange?: ChangeFunction;
 	onBlur?: ChangeFunction;
 	readOnly?: boolean;
@@ -41,7 +41,7 @@ export const FormInput = forwardRef(<T extends string>(props: FormInputProps<T>,
 		inputWidthFill = false,
 	} = props;
 
-	let alarmStatus,
+	let alarmStatus = "SUCCESS",
 		alarmMessage = null;
 	if (alarm && name === alarm.name) {
 		alarmStatus = alarm.status || "SUCCESS";

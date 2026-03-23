@@ -58,6 +58,8 @@ export const BuyProvider = ({ children, initialDefaultAddress = null }: BuyProvi
 		const value = Math.min(Number(numericValue), availableMileage);
 		setUsedMileage(value);
 	}, []);
+	// 결제 방법 'CARD','CASH'
+	const [paymentMethod, setPaymentMethod] = useState<"CARD" | "CASH">("CARD");
 
 	// 결제하기
 	const handleBuy = useCallback(() => {
@@ -72,8 +74,8 @@ export const BuyProvider = ({ children, initialDefaultAddress = null }: BuyProvi
 				...newAddress,
 			};
 		}
-		console.log("구매 처리 로직 실행", { address, setAsDefault });
-	}, [shippingAddressMode, shippingAddress, newAddress, setAsDefault]);
+		console.log("구매 처리 로직 실행", { address, setAsDefault, usedMileage, paymentMethod });
+	}, [shippingAddressMode, shippingAddress, newAddress, setAsDefault, usedMileage, paymentMethod]);
 
 	// ----------------------------------------------------------------
 	// useEffect & useMemo
@@ -119,6 +121,8 @@ export const BuyProvider = ({ children, initialDefaultAddress = null }: BuyProvi
 			usedMileage,
 			setUsedMileage,
 			changeUsedMileage,
+			paymentMethod,
+			setPaymentMethod,
 		}),
 		[
 			shippingAddress,
@@ -131,6 +135,7 @@ export const BuyProvider = ({ children, initialDefaultAddress = null }: BuyProvi
 			handleBuy,
 			usedMileage,
 			changeUsedMileage,
+			paymentMethod,
 		],
 	);
 

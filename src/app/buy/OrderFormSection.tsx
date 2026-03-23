@@ -19,6 +19,9 @@ interface OrderFormSectionProps {
 	isMaxDiscountApplied: boolean;
 	appliedProductCouponMap: AppliedProductCouponMap;
 	changeAppliedProductCoupon: (holdId: number, coupon: CartCoupon | SellerCoupon, isAdd: boolean) => void;
+	changeMaxDiscountApplied: () => void; // 최대 할인 쿠폰 적용하기
+	maxDiscountPrice: number; // 최대 할인 금액 (최대 할인 쿠폰이 적용됐을 때의 할인 금액)
+	sumCouponDiscount: number; // 쿠폰 할인 금액 합
 	//
 	buyTotalFinalPrice: number;
 }
@@ -30,10 +33,13 @@ export default function OrderFormSection({
 	isMaxDiscountApplied,
 	appliedProductCouponMap,
 	changeAppliedProductCoupon,
+	changeMaxDiscountApplied,
+	maxDiscountPrice,
+	sumCouponDiscount,
 	buyTotalFinalPrice,
 }: OrderFormSectionProps) {
 	const { user } = useAuth();
-	const { usedMileage, setUsedMileage, changeUsedMileage } = useBuy();
+	const { usedMileage, setUsedMileage, changeUsedMileage, paymentMethod, setPaymentMethod } = useBuy();
 
 	// 쿠폰변경 UI 열기(판매자이름)
 	const [couponAppliedSelectorOpenSeller, setCouponAppliedSelectorOpenSeller] = useState<string>("");
@@ -41,6 +47,8 @@ export default function OrderFormSection({
 	const panelRef = useRef<HTMLElement | null>(null);
 	// 열릴 때 닫힌 스크롤위치 저장
 	const scrollYRef = useRef<number | null>(null);
+	// 최대 할인 적용여부
+	const isMaxDiscountStatus = isMaxDiscountApplied || sumCouponDiscount === maxDiscountPrice;
 
 	// 열림 상태가 바뀌면 다음 프레임에서 스크롤
 	useEffect(() => {
@@ -67,20 +75,25 @@ export default function OrderFormSection({
 					</div>
 				</header>
 
-				<div className={clsx(styles.couponBanner, !isMaxDiscountApplied && styles.off, "mt-3 flex justify-between")}>
-					<label htmlFor="buyMaxDiscountApplied" className={styles.bannerText}>
-						최대 할인이 적용됐어요.
-					</label>
+				<label
+					htmlFor="buyMaxDiscountApplied"
+					className={clsx(styles.couponBanner, !isMaxDiscountStatus && styles.off, "mt-3 flex justify-between")}
+				>
+					<div className={styles.bannerText}>{isMaxDiscountStatus ? "최대 할인이 적용됐어요." : "최대할인 적용하기"}</div>
 					<OnOffButton
 						checkId="buyMaxDiscountApplied"
-						checked={isMaxDiscountApplied}
+						checked={isMaxDiscountStatus} // 최대 할인 쿠폰이 적용됐거나, 다른 쿠폰 할인 금액 합이 최대 할인 금액과 같으면 켜짐
 						size="sm"
 						name="maxDiscountApplied"
 						onOffColor={["#DAA", "#737373"]}
-						onChange={() => {}}
+						onChange={() => {
+							if (!isMaxDiscountApplied) {
+								changeMaxDiscountApplied();
+							}
+						}}
 						cursor={false}
 					/>
-				</div>
+				</label>
 
 				{buyItemList.map((item) => {
 					const initialOriginPrice = (item.originPrice + item.addPrice) * item.count;
@@ -207,7 +220,7 @@ export default function OrderFormSection({
 								<>
 									{availableProductCouponCount > 0 ? (
 										<button
-											className={styles.outlineBtn}
+											className={clsx(styles.outlineBtn, couponAppliedSelectorOpenSeller === item.sellerName && styles.active)}
 											onClick={(e) => {
 												if (couponAppliedSelectorOpenSeller === item.sellerName) {
 													setCouponAppliedSelectorOpenSeller("");
@@ -252,9 +265,10 @@ export default function OrderFormSection({
 														<BuyCouponSelector
 															key={"BuyCouponSelector-" + coupon.couponId}
 															coupon={coupon}
-															couponChecked={couponChecked}
+															couponChecked={couponChecked || false}
 															finalXCount={initialFinalPrice}
 															handleCheckAppliedProductCoupon={(isAdd) => {
+																console.log({ holdId: item.holdId });
 																changeAppliedProductCoupon(item.holdId, coupon, isAdd);
 															}}
 															otherUsed={otherUsed}
@@ -284,7 +298,7 @@ export default function OrderFormSection({
 														<BuyCouponSelector
 															key={"BuyCouponSelector-" + coupon.couponId}
 															coupon={coupon}
-															couponChecked={couponChecked}
+															couponChecked={couponChecked || false}
 															finalXCount={initialFinalPrice}
 															handleCheckAppliedProductCoupon={(isAdd) => {
 																changeAppliedProductCoupon(item.holdId, coupon, isAdd);
@@ -357,12 +371,12 @@ export default function OrderFormSection({
 
 				<div className={styles.payList}>
 					<label className={styles.payItem}>
-						<input type="radio" name="pay" defaultChecked />
+						<input type="radio" name="pay" checked={paymentMethod === "CARD"} onChange={() => setPaymentMethod("CARD")} />
 						<span>신용카드</span>
 					</label>
 
 					<label className={styles.payItem}>
-						<input type="radio" name="pay" />
+						<input type="radio" name="pay" checked={paymentMethod === "CASH"} onChange={() => setPaymentMethod("CASH")} />
 						<span>계좌이체</span>
 					</label>
 				</div>

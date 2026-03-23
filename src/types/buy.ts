@@ -30,7 +30,7 @@ export interface BuyHoldResponse extends BaseResponse {
 	}[];
 }
 /* 점유 쿠폰 추가/삭제 */
-type ManageHoldCoupon = {
+export type ManageHoldCoupon = {
 	holdId: number;
 	userCouponId: number;
 };
