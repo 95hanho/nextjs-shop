@@ -130,7 +130,7 @@ export default function MyShippingAddressClient() {
 					<ShippingAddressList
 						page="MYPAGE"
 						userAddressList={userAddressList}
-						changeAddressRef={(address) => {
+						changeAddress={(address) => {
 							changingDefaultAddressRef.current = address;
 						}}
 					/>
@@ -150,6 +150,5 @@ export default function MyShippingAddressClient() {
 				</div>
 			)}
 		</FormPageShell>
-		// </div>
 	);
 }

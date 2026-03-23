@@ -2,16 +2,33 @@ import { FaQuestion } from "react-icons/fa";
 import styles from "./BuyClient.module.scss";
 import clsx from "clsx";
 import { DeliveryMemoSelector } from "@/components/address/DeliveryMemoSelector";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useBuy } from "@/hooks/buy/useBuy";
+import { useModalStore } from "@/store/modal.store";
+import { OnOffButton } from "@/components/ui/OnOffButton";
 
 // interface ShippingAddressFormProps {}
 
 export default function ShippingAddressForm() {
-	const { initMemo, defaultAddress, shippingAddressMode, setShippingAddressMode, newAddress, changeNewAddress } = useBuy();
+	const { openModal } = useModalStore();
+	const {
+		shippingMemo,
+		shippingAddress,
+		currentDefaultStatus,
+		setAsDefault,
+		setSetAsDefault,
+		shippingAddressMode,
+		setShippingAddressMode,
+		newAddress,
+		changeNewAddress,
+	} = useBuy();
 
 	const isModeExisting = shippingAddressMode === "existing";
-	const inputAddress = isModeExisting ? defaultAddress : newAddress;
+	const inputAddress = isModeExisting ? shippingAddress : newAddress;
+
+	// ----------------------------------------------------------------
+	// React
+	// ----------------------------------------------------------------
 
 	const [memoDirectInput, setMemoDirectInput] = useState(false); // 직접입력 show
 	const handleChangeMemo = useCallback(
@@ -21,6 +38,14 @@ export default function ShippingAddressForm() {
 		},
 		[changeNewAddress],
 	);
+
+	// ----------------------------------------------------------------
+	// useEffect & useMemo
+	// ----------------------------------------------------------------
+
+	useEffect(() => {
+		setSetAsDefault(false);
+	}, [shippingAddressMode, setSetAsDefault]);
 
 	return (
 		<article className={styles.block}>
@@ -41,7 +66,7 @@ export default function ShippingAddressForm() {
 
 				<nav className={styles.tabs}>
 					<div>
-						{defaultAddress && (
+						{shippingAddress && (
 							<button
 								type="button"
 								className={`${styles.tab} ${isModeExisting ? styles.active : ""}`}
@@ -58,13 +83,33 @@ export default function ShippingAddressForm() {
 							신규입력
 						</button>
 					</div>
-					<div className={styles.addresslist}>
-						<button className={styles.addresslistBtn}>이전 배송지 목록</button>
-					</div>
+					{shippingAddressMode === "existing" && (
+						<div className={styles.addresslist}>
+							<button
+								className={styles.addresslistBtn}
+								onClick={() => {
+									openModal("BUY_ADDRESSLIST", {});
+								}}
+							>
+								이전 배송지 목록
+							</button>
+						</div>
+					)}
 				</nav>
 			</header>
 
 			<div className={styles.form}>
+				<div className="mt-2 text-right">
+					{(!currentDefaultStatus || !inputAddress?.addressId) && (
+						<OnOffButton
+							text="기본 배송지로"
+							checked={setAsDefault}
+							name="buyDefaultAddress"
+							size="sm"
+							onChange={() => setSetAsDefault((prev) => !prev)}
+						/>
+					)}
+				</div>
 				{/* row */}
 				<div className={styles.formRow}>
 					<div className={styles.formLabel}>배송지명</div>
@@ -151,7 +196,7 @@ export default function ShippingAddressForm() {
 					<div className={styles.formField}>
 						{/* 배송 메모 셀렉터 자리 */}
 						<div className={styles.selectRow}>
-							<DeliveryMemoSelector keyName="buyShippingMemo" initMemo={initMemo} changeMemo={handleChangeMemo} />
+							<DeliveryMemoSelector keyName="buyShippingMemo" shippingMemo={shippingMemo} changeMemo={handleChangeMemo} />
 						</div>
 						{memoDirectInput && (
 							<div className="mt-2">

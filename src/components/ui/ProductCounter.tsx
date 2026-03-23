@@ -4,18 +4,18 @@ import clsx from "clsx";
 
 interface ProductCounterProps {
 	count: number;
-	setCount: (count: number) => void;
+	handleClick: (count: number) => void;
 	stock: number;
 }
 
 // 상품 수량 UI 컴포넌트
-export const ProductCounter = ({ count, setCount, stock }: ProductCounterProps) => {
+export const ProductCounter = ({ count, handleClick, stock }: ProductCounterProps) => {
 	return (
 		<div className={styles.counter}>
 			<button
 				className={clsx([styles.counterBtn, `${count === 1 && styles.off}`])}
 				onClick={() => {
-					if (count > 1) setCount(count - 1);
+					if (count > 1) handleClick(count - 1);
 				}}
 			>
 				<FiMinus />
@@ -24,7 +24,7 @@ export const ProductCounter = ({ count, setCount, stock }: ProductCounterProps) 
 			<button
 				className={clsx([styles.counterBtn, `${count === stock && styles.off}`])}
 				onClick={() => {
-					if (count < stock) setCount(count + 1);
+					if (count < stock) handleClick(count + 1);
 				}}
 			>
 				<FiPlus />

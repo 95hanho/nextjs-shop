@@ -8,7 +8,7 @@ import { money } from "@/lib/format";
 type BuyCouponSelectorProps = {
 	finalXCount: number;
 	coupon: AppliedCartCoupon;
-	setAppliedProductCoupon: (isAdd: boolean) => void;
+	handleCheckAppliedProductCoupon: (isAdd: boolean) => void;
 	couponChecked: boolean;
 	otherUsed: boolean;
 	productOptionId: number;
@@ -17,7 +17,7 @@ type BuyCouponSelectorProps = {
 export default function BuyCouponSelector(props: BuyCouponSelectorProps) {
 	const { finalXCount } = props;
 
-	const { coupon, setAppliedProductCoupon, couponChecked, otherUsed, productOptionId } = props;
+	const { coupon, handleCheckAppliedProductCoupon, couponChecked, otherUsed, productOptionId } = props;
 
 	const isDiscountApplied = calculateDiscount(finalXCount, coupon);
 	const disabled = !isDiscountApplied || otherUsed; // 할인 적용 불가 or 다른 쿠폰 사용중인 경우
@@ -31,7 +31,7 @@ export default function BuyCouponSelector(props: BuyCouponSelectorProps) {
 					disabled={disabled}
 					checked={couponChecked}
 					onChange={() => {
-						setAppliedProductCoupon(!couponChecked);
+						handleCheckAppliedProductCoupon(!couponChecked);
 					}}
 				/>
 				<label htmlFor={`coupon-${productOptionId}-${coupon.couponId}`} title={coupon.description}>

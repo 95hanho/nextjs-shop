@@ -473,7 +473,7 @@ export default function CartProductSection({
 																				coupon={coupon}
 																				couponChecked={couponChecked}
 																				finalXQuantity={initialFinalPrice}
-																				setAppliedProductCoupon={(isAdd) => {
+																				handleCheckAppliedProductCoupon={(isAdd) => {
 																					changeAppliedProductCoupon(product.cartId, coupon, isAdd);
 																				}}
 																				otherUsed={otherUsed}
@@ -510,7 +510,7 @@ export default function CartProductSection({
 																				coupon={coupon}
 																				couponChecked={couponChecked}
 																				finalXQuantity={initialFinalPrice}
-																				setAppliedProductCoupon={(isAdd) => {
+																				handleCheckAppliedProductCoupon={(isAdd) => {
 																					changeAppliedProductCoupon(product.cartId, coupon, isAdd);
 																				}}
 																				otherUsed={otherUsed}

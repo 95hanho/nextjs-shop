@@ -158,6 +158,12 @@
 		/* width: 100%; */
 		border-radius: 5px;
 	}
+	/* type="number" 숫자조절 없애기 (필요 시 유지) */
+	.noSpin::-webkit-inner-spin-button,
+	.noSpin::-webkit-outer-spin-button {
+		-webkit-appearance: none;
+		margin: 0;
+	}
 }
 /* ===============================
    Custom animations

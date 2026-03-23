@@ -1,5 +1,5 @@
 import { AddressForm } from "@/components/modal/domain/ShippingAddressEditorModal";
-import { CartItem, UserAddressListItem } from "@/types/mypage";
+import { CartItem, UserAddress, UserAddressListItem } from "@/types/mypage";
 
 // modal타입
 export type ModalType = "ALERT" | "CONFIRM" | "PRODUCT_OPTION" | "ADDRESS_SET" | "BUY_ADDRESSLIST" | null;
@@ -47,15 +47,16 @@ export type ModalPropsMap = {
 export type ModalProps<T extends ModalType = ModalType> = T extends null ? Record<string, never> : ModalPropsMap[Exclude<T, null>];
 // 모달이 닫힐 때 “무슨 동작이었는지”에 따른 “전달할 데이터”
 export type ModalResultMap = {
+	// 상품 옵션 변경
 	PRODUCT_OPTION_CHANGED: {
 		cartId: number;
 		originProductOptionId: number;
 		productOptionId: number;
 		quantity: number;
 	};
-	//
+	// 마이주소 변경
 	ADDRESS_SET: AddressForm;
-	/*  */
+	// Confirm모달
 	CONFIRM_OK:
 		| undefined
 		| {
@@ -67,6 +68,9 @@ export type ModalResultMap = {
 				result: ConfirmCancelResult;
 		  };
 	ALERT_OK: undefined;
+	// 구매)배송지 변경
+	BUY_ADDRESS_CHANGE: UserAddressListItem;
+	// 공통) 닫기
 	CLOSE:
 		| undefined
 		| {

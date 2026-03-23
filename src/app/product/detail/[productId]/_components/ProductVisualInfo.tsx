@@ -405,7 +405,7 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 																				)
 																			: appliedProductCoupon.unStackable?.couponId === coupon.couponId) || false
 																	}
-																	setAppliedProductCoupon={(isAdd) => {
+																	handleCheckAppliedProductCoupon={(isAdd) => {
 																		if (!coupon.isStackable) {
 																			setAppliedProductCoupon((prev) => ({
 																				...prev,
@@ -437,7 +437,7 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 																		? appliedProductCoupon.stackable.some((c) => c.couponId === coupon.couponId)
 																		: appliedProductCoupon.unStackable?.couponId === coupon.couponId) || false
 																}
-																setAppliedProductCoupon={(isAdd) => {
+																handleCheckAppliedProductCoupon={(isAdd) => {
 																	if (!coupon.isStackable) {
 																		setAppliedProductCoupon((prev) => ({
 																			...prev,
@@ -571,7 +571,7 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 																<span>
 																	<ProductCounter
 																		count={option.quantity}
-																		setCount={(count) => {
+																		handleClick={(count) => {
 																			setProductSelectList((prev) => {
 																				const newList = [...prev];
 																				const existingIdx = newList.findIndex(

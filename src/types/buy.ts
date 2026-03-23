@@ -91,12 +91,15 @@ export type AvailableSellerCouponAtBuy = Coupon & {
 	productId: number | null;
 	sellerName: string;
 };
+export type DefaultAddress = UserAddress & {
+	defaultAddress: boolean;
+};
 export interface GetStockHoldResponse extends BaseResponse {
 	stockHoldProductList: StockHoldProduct[];
 	availableCartCoupons: AvailableCartCouponAtBuy[];
 	availableSellerCoupons: AvailableSellerCouponAtBuy[];
 	holdCoupons: StockHoldCoupon[];
-	defaultAddress: UserAddress | null;
+	defaultAddress: DefaultAddress | null;
 }
 /* 상품 쿠폰, 마일리지, 배송비 여부의 변경에 따라 가격계산해서 보여줌.(결제화면) */
 type AvailableCoupon = {

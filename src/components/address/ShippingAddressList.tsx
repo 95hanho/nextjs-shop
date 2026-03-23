@@ -6,7 +6,7 @@ import clsx from "clsx";
 type ShippingAddressListProps = { userAddressList: UserAddressListItem[] | [] } & (
 	| {
 			page: "MYPAGE";
-			changeAddressRef: (address: UserAddressListItem) => void;
+			changeAddress: (address: UserAddressListItem) => void;
 	  }
 	| {
 			page: "BUY";
@@ -14,15 +14,27 @@ type ShippingAddressListProps = { userAddressList: UserAddressListItem[] | [] } 
 );
 
 export const ShippingAddressList = (props: ShippingAddressListProps) => {
-	const { openModal } = useModalStore();
+	const { openModal, resolveModal } = useModalStore();
 
 	return (
 		<ul className={styles.addressList}>
 			{props.userAddressList.map((userAddress) => (
 				<li
 					key={"userAddress" + userAddress.addressId}
-					className="p-3 border-solid border-gray-400 bg-[#fffdf0] rounded-[8px] mb-2 border-w border-[2px]"
+					className="relative p-3 border-solid border-gray-400 bg-[#f5f5f5] rounded-[8px] mt-2 border-w border-[2px]"
 				>
+					{props.page === "BUY" && (
+						<button
+							className={styles.buyButton}
+							onClick={() => {
+								resolveModal({
+									action: "BUY_ADDRESS_CHANGE",
+									payload: userAddress,
+								});
+							}}
+						></button>
+					)}
+
 					<h3 className={clsx(styles.addressHeader, "relative pt-[7px] pb-[2px] text-left flex justify-between")}>
 						<span className={clsx(styles.addressName, "inline-block pl-3")}>{userAddress.addressName}</span>
 						{userAddress.defaultAddress && <span className={styles.defaultMark}>기본배송지</span>}
@@ -57,12 +69,25 @@ export const ShippingAddressList = (props: ShippingAddressListProps) => {
 							</div>
 						</div>
 					</div>
+
+					{props.page === "BUY" && (
+						<div className={styles.addressActions}>
+							<button
+								onClick={() => {
+									// props.changeAddress({ ...userAddress });
+								}}
+							>
+								베송지 변경
+							</button>
+						</div>
+					)}
+
 					{props.page === "MYPAGE" && (
 						<div className={styles.addressActions}>
 							{!userAddress.defaultAddress && (
 								<button
 									onClick={() => {
-										props.changeAddressRef({
+										props.changeAddress({
 											...userAddress,
 											defaultAddress: true,
 										});
@@ -77,7 +102,7 @@ export const ShippingAddressList = (props: ShippingAddressListProps) => {
 							)}
 							<button
 								onClick={() => {
-									props.changeAddressRef({ ...userAddress });
+									props.changeAddress({ ...userAddress });
 									openModal("ADDRESS_SET", {
 										address: userAddress,
 										disableOverlayClose: true,
@@ -88,7 +113,7 @@ export const ShippingAddressList = (props: ShippingAddressListProps) => {
 							</button>
 							<button
 								onClick={() => {
-									props.changeAddressRef({
+									props.changeAddress({
 										...userAddress,
 									});
 									openModal("CONFIRM", {

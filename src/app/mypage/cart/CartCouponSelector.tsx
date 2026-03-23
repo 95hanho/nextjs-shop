@@ -20,7 +20,7 @@ type CartCouponSelectorProps =
 	| (CommonProps & {
 			type: "COUPON";
 			coupon: AppliedCartCoupon;
-			setAppliedProductCoupon: (isAdd: boolean) => void;
+			handleCheckAppliedProductCoupon: (isAdd: boolean) => void;
 			couponChecked: boolean;
 			otherUsed: boolean;
 			productOptionId: number;
@@ -61,7 +61,7 @@ export default function CartCouponSelector(props: CartCouponSelectorProps) {
 		);
 	}
 	if (type === "COUPON") {
-		const { coupon, setAppliedProductCoupon, couponChecked, otherUsed, productOptionId } = props;
+		const { coupon, handleCheckAppliedProductCoupon, couponChecked, otherUsed, productOptionId } = props;
 
 		const isDiscountApplied = calculateDiscount(finalXQuantity, coupon);
 		const disabled = !isDiscountApplied || otherUsed; // 할인 적용 불가 or 다른 쿠폰 사용중인 경우
@@ -75,7 +75,7 @@ export default function CartCouponSelector(props: CartCouponSelectorProps) {
 						disabled={disabled}
 						checked={couponChecked}
 						onChange={() => {
-							setAppliedProductCoupon(!couponChecked);
+							handleCheckAppliedProductCoupon(!couponChecked);
 						}}
 					/>
 					<label htmlFor={`coupon-${productOptionId}-${coupon.couponId}`} title={coupon.description}>

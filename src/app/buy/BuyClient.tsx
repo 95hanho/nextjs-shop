@@ -391,9 +391,7 @@ export default function BuyClient() {
 	]);
 
 	// 시작시
-	useEffect(() => {
-		openModal("BUY_ADDRESSLIST", {});
-	}, [openModal]);
+	useEffect(() => {}, []);
 
 	// =================================================================
 	// UI
@@ -421,7 +419,7 @@ export default function BuyClient() {
 	if (!stockHoldData) return null;
 	return (
 		<div className={styles.buy}>
-			<BuyProvider defaultAddress={defaultAddress}>
+			<BuyProvider initialDefaultAddress={defaultAddress}>
 				<div className={styles.page}>
 					<h1 className={styles.pageTitle}>주문서</h1>
 

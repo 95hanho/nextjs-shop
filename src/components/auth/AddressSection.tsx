@@ -10,7 +10,7 @@ type AddressForm = {
 interface AddressSectionProps<K extends string> {
 	form: AddressForm;
 	alarm: FormInputAlarm<K>;
-	setAddress: ({ zonecode, address }: { zonecode: string; address: string }) => void;
+	handleKakaoAddress: ({ zonecode, address }: { zonecode: string; address: string }) => void;
 	changeForm: ChangeFunction;
 	validateForm: ChangeFunction;
 	setAddressRef: SetFormRef;
@@ -20,7 +20,7 @@ interface AddressSectionProps<K extends string> {
 export const AddressSection = <K extends string>({
 	form,
 	alarm,
-	setAddress,
+	handleKakaoAddress,
 	changeForm,
 	validateForm,
 	setAddressRef,
@@ -31,7 +31,7 @@ export const AddressSection = <K extends string>({
 		new kakao.Postcode({
 			oncomplete: (data) => {
 				const fullAddress = data.roadAddress || data.jibunAddress;
-				setAddress({
+				handleKakaoAddress({
 					zonecode: data.zonecode,
 					address: fullAddress,
 				});

@@ -241,7 +241,7 @@ export default function OrderFormSection({
 															coupon={coupon}
 															couponChecked={couponChecked}
 															finalXCount={initialFinalPrice}
-															setAppliedProductCoupon={(isAdd) => {
+															handleCheckAppliedProductCoupon={(isAdd) => {
 																changeAppliedProductCoupon(item.holdId, coupon, isAdd);
 															}}
 															otherUsed={otherUsed}
@@ -273,7 +273,7 @@ export default function OrderFormSection({
 															coupon={coupon}
 															couponChecked={couponChecked}
 															finalXCount={initialFinalPrice}
-															setAppliedProductCoupon={(isAdd) => {
+															handleCheckAppliedProductCoupon={(isAdd) => {
 																changeAppliedProductCoupon(item.holdId, coupon, isAdd);
 															}}
 															otherUsed={otherUsed}
