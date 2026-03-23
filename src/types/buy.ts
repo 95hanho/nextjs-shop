@@ -30,13 +30,13 @@ export interface BuyHoldResponse extends BaseResponse {
 	}[];
 }
 /* 점유 쿠폰 추가/삭제 */
-export type BuyHoldCouponRequest =
-	| {
-			isAdd: true;
-			holdId: number;
-			userCouponId: number;
-	  }
-	| { isAdd: false; holdCouponId: number };
+type ManageHoldCoupon = {
+	holdId: number;
+	userCouponId: number;
+};
+export type ManageBuyHoldCouponRequest = {
+	holdCoupons: ManageHoldCoupon[];
+};
 
 /* 구매상품 점유 연장 */
 export interface ExtendStockHoldResponse extends BaseResponse {
@@ -91,12 +91,15 @@ export type AvailableSellerCouponAtBuy = Coupon & {
 	productId: number | null;
 	sellerName: string;
 };
+export type DefaultAddress = UserAddress & {
+	defaultAddress: boolean;
+};
 export interface GetStockHoldResponse extends BaseResponse {
 	stockHoldProductList: StockHoldProduct[];
 	availableCartCoupons: AvailableCartCouponAtBuy[];
 	availableSellerCoupons: AvailableSellerCouponAtBuy[];
 	holdCoupons: StockHoldCoupon[];
-	defaultAddress: UserAddress | null;
+	defaultAddress: DefaultAddress | null;
 }
 /* 상품 쿠폰, 마일리지, 배송비 여부의 변경에 따라 가격계산해서 보여줌.(결제화면) */
 type AvailableCoupon = {

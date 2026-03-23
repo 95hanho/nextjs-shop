@@ -11,25 +11,26 @@ export const memoOptionList = [
 
 interface DeliveryMemoSelectorProps {
 	keyName?: string;
-	initMemo: string;
+	shippingMemo: string;
 	changeMemo: (memo: string, directInput: boolean) => void;
 }
 
-export const DeliveryMemoSelector = ({ keyName = "deliveryMemo", initMemo, changeMemo }: DeliveryMemoSelectorProps) => {
+export const DeliveryMemoSelector = ({ keyName = "deliveryMemo", shippingMemo, changeMemo }: DeliveryMemoSelectorProps) => {
 	const [memoPickidx, setMemoPickidx] = useState(0);
 	const [memoOptionInit, setMemoOptionInit] = useState(memoOptionList[0]);
 
 	useEffect(() => {
-		const findIndex = memoOptionList.slice(0, 4).findIndex((v) => v.val === initMemo);
+		const findIndex = memoOptionList.slice(0, 4).findIndex((v) => v.val === shippingMemo);
 		if (findIndex === -1) {
 			setMemoPickidx(4);
 			setMemoOptionInit(memoOptionList[4]);
-			changeMemo(initMemo, true);
+			changeMemo(shippingMemo, true);
 		} else {
 			setMemoPickidx(findIndex);
 			setMemoOptionInit(memoOptionList[findIndex]);
+			changeMemo(shippingMemo, false);
 		}
-	}, [initMemo, changeMemo]);
+	}, [shippingMemo, changeMemo]);
 
 	return (
 		<OptionSelector

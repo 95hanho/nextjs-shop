@@ -19,7 +19,11 @@ export const GET = userWithAuth(async ({ nextRequest, userNo, params, accessToke
 		const {} = params ?? {};
 
 		const productId = nextRequest.nextUrl.searchParams.get("productId");
-		if (!userId) return NextResponse.json({ message: "아이디를 입력해주세요." }, { status: 400 });
+		if (!productId) return NextResponse.json({ message: "아이디를 입력해주세요." }, { status: 400 });
+
+		const holdCouponIds = nextRequest.nextUrl.searchParams.getAll("holdCouponIds").map(Number);
+		if (!holdCouponIds || holdCouponIds.length === 0) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
+
 		const data = await getNormal<BaseResponse>(getBackendUrl(API_URL.AUTH_ID), { userId });
 		console.log("data", data);
 

@@ -110,7 +110,7 @@ export const ProductOptionModal = ({ onClose, product }: ProductOptionModalProps
 			<div className={styles.optionBlock}>{optionSelectorEle()}</div>
 			{/* 수량/금액 */}
 			<div className={styles.optionSummary}>
-				<ProductCounter count={productCount} setCount={(count) => setProductCount(count)} stock={product.stock} />
+				<ProductCounter count={productCount} handleClick={(count) => setProductCount(count)} stock={product.stock} />
 				<b className={styles.optionSummaryPrice}>62,100원</b>
 			</div>
 			{/* 버튼 */}

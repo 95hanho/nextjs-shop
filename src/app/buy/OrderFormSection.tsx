@@ -10,11 +10,13 @@ import { scrollIntoCenter } from "@/utils/ui";
 import BuyCouponSelector from "@/app/buy/BuyCouponSelector";
 import clsx from "clsx";
 import { useBuy } from "@/hooks/buy/useBuy";
+import { OnOffButton } from "@/components/ui/OnOffButton";
 
 interface OrderFormSectionProps {
 	buyItemList: BuyItemWishCoupon[];
 	cartCouponList: CartCoupon[];
 	sellerCouponList: SellerCoupon[];
+	isMaxDiscountApplied: boolean;
 	appliedProductCouponMap: AppliedProductCouponMap;
 	changeAppliedProductCoupon: (holdId: number, coupon: CartCoupon | SellerCoupon, isAdd: boolean) => void;
 	//
@@ -25,6 +27,7 @@ export default function OrderFormSection({
 	buyItemList,
 	cartCouponList,
 	sellerCouponList,
+	isMaxDiscountApplied,
 	appliedProductCouponMap,
 	changeAppliedProductCoupon,
 	buyTotalFinalPrice,
@@ -64,9 +67,19 @@ export default function OrderFormSection({
 					</div>
 				</header>
 
-				<div className={styles.couponBanner}>
-					{/* <OnOffButton text="최대 할인이 적용됐어요." /> */}
-					<div className={styles.bannerText}>최대 할인이 적용됐어요.</div>
+				<div className={clsx(styles.couponBanner, !isMaxDiscountApplied && styles.off, "mt-3 flex justify-between")}>
+					<label htmlFor="buyMaxDiscountApplied" className={styles.bannerText}>
+						최대 할인이 적용됐어요.
+					</label>
+					<OnOffButton
+						checkId="buyMaxDiscountApplied"
+						checked={isMaxDiscountApplied}
+						size="sm"
+						name="maxDiscountApplied"
+						onOffColor={["#DAA", "#737373"]}
+						onChange={() => {}}
+						cursor={false}
+					/>
 				</div>
 
 				{buyItemList.map((item) => {
@@ -241,7 +254,7 @@ export default function OrderFormSection({
 															coupon={coupon}
 															couponChecked={couponChecked}
 															finalXCount={initialFinalPrice}
-															setAppliedProductCoupon={(isAdd) => {
+															handleCheckAppliedProductCoupon={(isAdd) => {
 																changeAppliedProductCoupon(item.holdId, coupon, isAdd);
 															}}
 															otherUsed={otherUsed}
@@ -273,7 +286,7 @@ export default function OrderFormSection({
 															coupon={coupon}
 															couponChecked={couponChecked}
 															finalXCount={initialFinalPrice}
-															setAppliedProductCoupon={(isAdd) => {
+															handleCheckAppliedProductCoupon={(isAdd) => {
 																changeAppliedProductCoupon(item.holdId, coupon, isAdd);
 															}}
 															otherUsed={otherUsed}

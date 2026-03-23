@@ -80,7 +80,7 @@ export default function UserJoinClient() {
 				<AddressSection
 					form={joinForm}
 					alarm={joinAlarm}
-					setAddress={(result) => {
+					handleKakaoAddress={(result) => {
 						setJoinForm((prev) => ({
 							...prev,
 							zonecode: result.zonecode,

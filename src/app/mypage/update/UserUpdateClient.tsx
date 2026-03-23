@@ -35,7 +35,7 @@ export default function UserInfoUpdate() {
 					<AddressSection
 						form={userUpdateForm}
 						alarm={userUpdateAlarm}
-						setAddress={(result) => {
+						handleKakaoAddress={(result) => {
 							setUserUpdateForm((prev) => ({
 								...prev,
 								zonecode: result.zonecode,

@@ -23,7 +23,7 @@ type MyPriceCheckboxTooltipProps =
 	| (CommonProps & {
 			type: "COUPON";
 			coupon: ProductCouponWithDiscount;
-			setAppliedProductCoupon: (isAdd: boolean) => void;
+			handleCheckAppliedProductCoupon: (isAdd: boolean) => void;
 			couponChecked: boolean;
 	  })
 	| (CommonProps & { type: "MILEAGE"; mileage: number; setMileageUse: () => void; couponChecked: boolean; useMileage: number });
@@ -58,7 +58,7 @@ export default function MyPriceCheckboxTooltip(props: MyPriceCheckboxTooltipProp
 		);
 	}
 	if (type === "COUPON") {
-		const { coupon, setAppliedProductCoupon, couponChecked } = props;
+		const { coupon, handleCheckAppliedProductCoupon, couponChecked } = props;
 
 		const isDiscountApplied = calculateDiscount(finalPrice, coupon);
 
@@ -71,7 +71,7 @@ export default function MyPriceCheckboxTooltip(props: MyPriceCheckboxTooltipProp
 						disabled={!isDiscountApplied}
 						checked={couponChecked}
 						onChange={() => {
-							setAppliedProductCoupon(!couponChecked);
+							handleCheckAppliedProductCoupon(!couponChecked);
 						}}
 					/>
 					<label htmlFor={"coupon-" + coupon.couponId} title={coupon.description}>

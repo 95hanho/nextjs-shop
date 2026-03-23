@@ -1,0 +1,11 @@
+.addressListContainer {
+	border: 1px solid #a3a3a3;
+	border-right: 1px solid #c5c5c5;
+	border-radius: 10px 0 0 10px;
+	overflow: hidden;
+	padding: 2px 0 0 3px;
+	padding-right: 0;
+	ul::-webkit-scrollbar-thumb {
+		background-color: rgb(167, 167, 167);
+	}
+}

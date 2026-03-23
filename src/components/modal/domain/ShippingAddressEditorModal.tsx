@@ -195,7 +195,7 @@ export const ShippingAddressEditorModal = ({ onClose, prevAddress }: ShippingAdd
 					<AddressSection
 						form={addressForm}
 						alarm={addressFormAlarm}
-						setAddress={(result) => {
+						handleKakaoAddress={(result) => {
 							setAddressForm((prev) => ({
 								...prev,
 								zonecode: result.zonecode,
