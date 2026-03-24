@@ -217,7 +217,7 @@ export const ShippingAddressEditorModal = ({ onClose, prevAddress }: ShippingAdd
 					<div className={styles.optionMemo}>
 						<span className={clsx(styles.title, "w-1/3")}>메모</span>
 						<span className={clsx(styles.memoOption, "w-2/3")}>
-							<DeliveryMemoSelector keyName="deliveryMemo" initMemo={initMemo} changeMemo={handleChangeMemo} />
+							<DeliveryMemoSelector keyName="deliveryMemo" shippingMemo={initMemo} changeMemo={handleChangeMemo} />
 						</span>
 					</div>
 					<div className={styles.addressWrite}>

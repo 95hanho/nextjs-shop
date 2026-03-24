@@ -2,11 +2,14 @@ import { FaQuestion } from "react-icons/fa";
 import styles from "./BuyClient.module.scss";
 import clsx from "clsx";
 import { DeliveryMemoSelector } from "@/components/address/DeliveryMemoSelector";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useBuy } from "@/hooks/buy/useBuy";
 import { useModalStore } from "@/store/modal.store";
 import { OnOffButton } from "@/components/ui/OnOffButton";
 import { FormInput } from "@/components/auth/FormInput";
+import { UserAddress } from "@/types/mypage";
+import { FormInputRefs } from "@/types/form";
+import { AddressSection } from "@/components/auth/AddressSection";
 
 // interface ShippingAddressFormProps {}
 
@@ -22,6 +25,10 @@ export default function ShippingAddressForm() {
 		setShippingAddressMode,
 		newAddress,
 		changeNewAddress,
+		validateNewAddress,
+		addressAlarm,
+		setAddressAlarm,
+		addressFormInputRefs,
 	} = useBuy();
 
 	const isModeExisting = shippingAddressMode === "existing";
@@ -34,7 +41,7 @@ export default function ShippingAddressForm() {
 	const [memoDirectInput, setMemoDirectInput] = useState(false); // 직접입력 show
 	const handleChangeMemo = useCallback(
 		(memo: string, directInput: boolean) => {
-			changeNewAddress(undefined, { name: "memo", value: memo });
+			changeNewAddress(undefined, { memo });
 			setMemoDirectInput(directInput);
 		},
 		[changeNewAddress],
@@ -100,7 +107,7 @@ export default function ShippingAddressForm() {
 			</header>
 
 			<div className={styles.form}>
-				<div className="mt-2 text-right">
+				<div className="mt-2 mb-1 text-right ">
 					{(!currentDefaultStatus || !inputAddress?.addressId) && (
 						<OnOffButton
 							text="기본 배송지로"
@@ -112,114 +119,120 @@ export default function ShippingAddressForm() {
 					)}
 				</div>
 				{/* row */}
-				{/* <div className={styles.formRow}>
-					<div className={styles.formLabel}>배송지명</div>
-					<div className={styles.formField}>
-						<div className={styles.inlineBetween}>
-							<input
-								className={clsx(styles.input)}
-								type="text"
-								name="addressName"
-								disabled={isModeExisting}
-								value={inputAddress?.addressName || ""}
-								onChange={changeNewAddress}
-							/>
-						</div>
-					</div>
-				</div> */}
 				<FormInput
 					name="addressName"
 					label="배송지명"
 					placeholder="배송지 이름을 입력해주세요."
 					type="text"
+					alarm={addressAlarm}
 					value={inputAddress?.addressName || ""}
 					onChange={changeNewAddress}
+					onBlur={validateNewAddress}
+					requiredMark={true}
+					readOnly={isModeExisting}
+					labelWidthPercent={28}
+					inputWidthPercent={80}
+					ref={(el) => {
+						addressFormInputRefs.current.addressName = el;
+					}}
+				/>
+
+				<FormInput
+					name="recipientName"
+					label="수령인"
+					placeholder="수령인 이름을 입력해주세요."
+					type="text"
+					alarm={addressAlarm}
+					value={inputAddress?.recipientName || ""}
+					onChange={changeNewAddress}
+					onBlur={validateNewAddress}
+					requiredMark={true}
+					readOnly={isModeExisting}
+					labelWidthPercent={28}
+					inputWidthPercent={80}
+					ref={(el) => {
+						addressFormInputRefs.current.recipientName = el;
+					}}
+				/>
+
+				<AddressSection
+					form={{
+						zonecode: inputAddress?.zonecode || "",
+						address: inputAddress?.address || "",
+						addressDetail: inputAddress?.addressDetail || "",
+					}}
+					alarm={addressAlarm}
+					handleKakaoAddress={(result) => {
+						changeNewAddress(undefined, {
+							zonecode: result.zonecode,
+							address: result.address,
+						});
+					}}
+					changeForm={changeNewAddress}
+					validateForm={validateNewAddress}
+					setAddressRef={(el) => {
+						addressFormInputRefs.current.address = el;
+					}}
+					setAddressDetailRef={(el) => {
+						addressFormInputRefs.current.addressDetail = el;
+					}}
+					requiredMark={true}
+					addressDetailReadOnly={isModeExisting}
+					labelWidthPercent={28}
+					inputWidthPercent={80}
+				/>
+
+				<FormInput
+					name="addressPhone"
+					label="연락처"
+					placeholder="연락처를 입력해주세요."
+					type="text"
+					alarm={addressAlarm}
+					value={inputAddress?.addressPhone || ""}
+					onChange={changeNewAddress}
+					onBlur={validateNewAddress}
+					requiredMark={true}
+					maxLength={11}
+					readOnly={isModeExisting}
+					labelWidthPercent={28}
+					inputWidthPercent={80}
+					ref={(el) => {
+						addressFormInputRefs.current.addressPhone = el;
+					}}
 				/>
 
 				<div className={styles.formRow}>
 					<div className={styles.formLabel}>
-						수령인 <mark className={styles.requiredMark}>*</mark>
+						메모<mark className={styles.requiredMark}>*</mark>
 					</div>
 					<div className={styles.formField}>
-						<input
-							className={styles.input}
-							type="text"
-							name="recipientName"
-							value={inputAddress?.recipientName || ""}
-							onChange={changeNewAddress}
-							disabled={isModeExisting}
-						/>
-					</div>
-				</div>
-
-				<div className={styles.formRow}>
-					<div className={styles.formLabel}>
-						배송지 <mark className={styles.requiredMark}>*</mark>
-					</div>
-
-					<div className={styles.formField}>
-						<div className={styles.addressGroup}>
-							<div className={styles.addressTop}>
-								<div className={clsx(styles.postcode, { [styles.disabled]: isModeExisting })}>{inputAddress?.zonecode || ""}</div>
-								{!isModeExisting && (
-									<button type="button" className={styles.grayBtn}>
-										우편번호 검색
-									</button>
-								)}
+						<div>
+							{/* 배송 메모 셀렉터 자리 */}
+							<div className={styles.selectRow}>
+								<DeliveryMemoSelector keyName="buyShippingMemo" shippingMemo={shippingMemo} changeMemo={handleChangeMemo} />
 							</div>
+							{memoDirectInput && (
+								<div className="mt-2">
+									<input
+										className={clsx(styles.input)}
+										type="text"
+										name="memo"
+										value={newAddress.memo || ""}
+										onChange={changeNewAddress}
+										onBlur={validateNewAddress}
+										ref={(el) => {
+											addressFormInputRefs.current.memo = el;
+										}}
+									/>
+								</div>
+							)}
 
-							<div className={clsx(styles.addressLine, { [styles.disabled]: isModeExisting })}>{inputAddress?.address || ""}</div>
-							<input
-								className={styles.input}
-								type="text"
-								name="addressDetail"
-								value={inputAddress?.addressDetail || ""}
-								onChange={changeNewAddress}
-								disabled={isModeExisting}
-							/>
+							{addressAlarm?.name === "memo" && addressAlarm.status === "FAIL" && (
+								<p className="px-3 my-2 text-[#f00] font-bold">* {addressAlarm.message}</p>
+							)}
+
+							<p className={styles.helperText}>기본 배송지입니다. 주문 시 변경하신 내용으로 기본 배송지 주소가 수정됩니다.</p>
 						</div>
-					</div>
-				</div>
-
-				<div className={styles.formRow}>
-					<div className={styles.formLabel}>
-						연락처 <mark className={styles.requiredMark}>*</mark>
-					</div>
-					<div className={styles.formField}>
-						<div className={styles.phoneGroup}>
-							<input
-								className={styles.input}
-								type="tel"
-								maxLength={11}
-								disabled={isModeExisting}
-								placeholder="휴대폰번호를 입력해주세요."
-								value={inputAddress?.addressPhone || ""}
-								onChange={changeNewAddress}
-							/>
-						</div>
-					</div>
-				</div>
-
-				<div className={styles.formRow}>
-					<div className={styles.formLabel}>메모</div>
-					<div className={styles.formField}>
-						{/* 배송 메모 셀렉터 자리 */}
-						<div className={styles.selectRow}>
-							<DeliveryMemoSelector keyName="buyShippingMemo" shippingMemo={shippingMemo} changeMemo={handleChangeMemo} />
-						</div>
-						{memoDirectInput && (
-							<div className="mt-2">
-								<input
-									className={clsx(styles.input)}
-									type="text"
-									name="memo"
-									value={newAddress.memo || ""}
-									onChange={changeNewAddress}
-								/>
-							</div>
-						)}
-
-						<p className={styles.helperText}>기본 배송지입니다. 주문 시 변경하신 내용으로 기본 배송지 주소가 수정됩니다.</p>
 					</div>
 				</div>
 			</div>

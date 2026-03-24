@@ -1,28 +1,34 @@
 import { DefaultAddress } from "@/types/buy";
-import { ChangeEvent, ChangeSet } from "@/types/event";
+import { ChangeEvent } from "@/types/event";
+import { FormInputAlarm, FormInputRefs } from "@/types/form";
 import { UserAddress } from "@/types/mypage";
 import { createContext } from "react";
 
 export type ShippingAddressMode = "existing" | "new";
 
+export type AddressAlarm = FormInputAlarm<keyof UserAddress>;
+export type AddressFormFormInputRefs = FormInputRefs<keyof UserAddress>;
+
 interface BuyContextValue {
-	shippingAddress: DefaultAddress | null;
-	setShippingAddress: React.Dispatch<React.SetStateAction<DefaultAddress | null>>;
+	shippingAddress: UserAddress | null;
+	setShippingAddress: React.Dispatch<React.SetStateAction<UserAddress | null>>;
 	currentDefaultStatus: boolean;
 	setAsDefault: boolean;
 	setSetAsDefault: React.Dispatch<React.SetStateAction<boolean>>;
-	setCurrentDefaultStatus: React.Dispatch<React.SetStateAction<boolean>>;
 	shippingAddressMode: ShippingAddressMode;
 	setShippingAddressMode: React.Dispatch<React.SetStateAction<ShippingAddressMode>>;
 	shippingMemo: string;
 	newAddress: UserAddress;
-	changeNewAddress: (e?: ChangeEvent, changeSet?: ChangeSet) => void;
-	handleBuy: () => void;
+	addressAlarm: AddressAlarm | null;
+	setAddressAlarm: React.Dispatch<React.SetStateAction<AddressAlarm | null>>;
+	addressFormInputRefs: React.MutableRefObject<Partial<AddressFormFormInputRefs>>;
 	usedMileage: number;
 	setUsedMileage: React.Dispatch<React.SetStateAction<number>>;
-	changeUsedMileage: (e: ChangeEvent, availableMileage: number) => void;
 	paymentMethod: "CARD" | "CASH";
+	changeNewAddress: (e?: ChangeEvent, changeMap?: Partial<UserAddress>) => void;
 	setPaymentMethod: React.Dispatch<React.SetStateAction<"CARD" | "CASH">>;
+	changeUsedMileage: (e: ChangeEvent, availableMileage: number) => void;
+	handleBuy: () => void;
 }
 
 export const buyContext = createContext<BuyContextValue | null>(null);

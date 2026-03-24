@@ -3,6 +3,7 @@ import { ChangeFunction } from "@/types/event";
 import { FormInputAlarm, SetFormRef } from "@/types/form";
 
 type AddressForm = {
+	zonecode?: string;
 	address: string;
 	addressDetail: string;
 };
@@ -15,6 +16,10 @@ interface AddressSectionProps<K extends string> {
 	validateForm: ChangeFunction;
 	setAddressRef: SetFormRef;
 	setAddressDetailRef: SetFormRef;
+	requiredMark?: boolean;
+	addressDetailReadOnly?: boolean;
+	labelWidthPercent?: number;
+	inputWidthPercent?: number;
 }
 
 export const AddressSection = <K extends string>({
@@ -25,6 +30,10 @@ export const AddressSection = <K extends string>({
 	validateForm,
 	setAddressRef,
 	setAddressDetailRef,
+	requiredMark,
+	addressDetailReadOnly = false,
+	labelWidthPercent,
+	inputWidthPercent,
 }: AddressSectionProps<K>) => {
 	// 주소API 팝업 띄우기
 	const addressPopup = () => {
@@ -43,6 +52,21 @@ export const AddressSection = <K extends string>({
 
 	return (
 		<>
+			{form?.zonecode !== undefined && (
+				<FormInput
+					name="zonecode"
+					label="우편번호"
+					placeholder="우편번호를 입력해주세요."
+					value={form?.zonecode || ""}
+					readOnly
+					onClick={addressPopup}
+					searchBtn={addressDetailReadOnly ? undefined : { txt: "검색", fnc: addressPopup }}
+					cursorPointer={true}
+					requiredMark={requiredMark}
+					labelWidthPercent={labelWidthPercent}
+					inputWidthPercent={50}
+				/>
+			)}
 			<FormInput
 				name="address"
 				label="주소"
@@ -55,7 +79,10 @@ export const AddressSection = <K extends string>({
 				ref={(el) => {
 					setAddressRef(el);
 				}}
-				searchBtn={{ txt: "검색", fnc: addressPopup }}
+				cursorPointer={true}
+				requiredMark={requiredMark}
+				labelWidthPercent={labelWidthPercent}
+				inputWidthPercent={inputWidthPercent}
 			/>
 			<FormInput
 				name="addressDetail"
@@ -68,6 +95,10 @@ export const AddressSection = <K extends string>({
 				ref={(el) => {
 					setAddressDetailRef(el);
 				}}
+				requiredMark={requiredMark}
+				readOnly={addressDetailReadOnly}
+				labelWidthPercent={labelWidthPercent}
+				inputWidthPercent={inputWidthPercent}
 			/>
 		</>
 	);

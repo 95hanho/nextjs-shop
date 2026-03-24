@@ -32,7 +32,7 @@ export default function PasswordChangeClient({ mode }: PasswordChangeClientProps
 						ref={(el) => {
 							pwdChangeFormInputRefs.current.curPassword = el;
 						}}
-						inputWidthFill={true}
+						inputWidthPercent={100}
 					/>
 				)}
 				<FormInput
@@ -47,7 +47,7 @@ export default function PasswordChangeClient({ mode }: PasswordChangeClientProps
 					ref={(el) => {
 						pwdChangeFormInputRefs.current.newPassword = el;
 					}}
-					inputWidthFill={true}
+					inputWidthPercent={100}
 				/>
 				<FormInput
 					name="newPasswordCheck"
@@ -61,7 +61,7 @@ export default function PasswordChangeClient({ mode }: PasswordChangeClientProps
 					ref={(el) => {
 						pwdChangeFormInputRefs.current.newPasswordCheck = el;
 					}}
-					inputWidthFill={true}
+					inputWidthPercent={100}
 				/>
 				<AuthActionButton title="완료" type="info" />
 			</form>
