@@ -146,8 +146,9 @@
 .form {
 	display: flex;
 	flex-direction: column;
-	gap: 18px;
-	font-size: 12px;
+	gap: 11px;
+	font-size: 13px;
+	padding-left: 15px;
 }
 
 .formRow {
@@ -272,7 +273,6 @@
 
 /* select */
 .selectRow {
-	margin-top: 10px;
 	font-size: 13px;
 }
 

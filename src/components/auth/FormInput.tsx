@@ -3,6 +3,17 @@ import { forwardRef } from "react";
 import clsx from "clsx";
 import { ChangeFunction } from "@/types/event";
 import { FormInputAlarm } from "@/types/form";
+import styled from "@emotion/styled";
+
+const LeftLabel = styled.div<{ $labelWidthPercent?: number }>`
+	width: ${({ $labelWidthPercent }) => $labelWidthPercent || 33.333333}%;
+`;
+const RightInput = styled.div<{ $inputWidthPercent?: number; $labelWidthPercent?: number }>`
+	width: ${({ $labelWidthPercent }) => ($labelWidthPercent ? 100 - $labelWidthPercent : 66.666667)}%;
+	> div input {
+		width: ${({ $inputWidthPercent }) => $inputWidthPercent || 70}%;
+	}
+`;
 
 interface FormInputProps<T extends string, K extends string = T> {
 	name: T;
@@ -19,7 +30,10 @@ interface FormInputProps<T extends string, K extends string = T> {
 	inputMode?: React.HTMLAttributes<HTMLInputElement>["inputMode"];
 	pattern?: string;
 	maxLength?: number;
-	inputWidthFill?: boolean;
+	labelWidthPercent?: number;
+	inputWidthPercent?: number;
+	requiredMark?: boolean;
+	cursorPointer?: boolean;
 }
 
 export const FormInput = forwardRef(<T extends string>(props: FormInputProps<T>, ref: React.ForwardedRef<HTMLInputElement>) => {
@@ -38,10 +52,13 @@ export const FormInput = forwardRef(<T extends string>(props: FormInputProps<T>,
 		inputMode,
 		pattern,
 		maxLength,
-		inputWidthFill = false,
+		labelWidthPercent,
+		inputWidthPercent,
+		requiredMark = false,
+		cursorPointer = false,
 	} = props;
 
-	let alarmStatus = "SUCCESS",
+	let alarmStatus,
 		alarmMessage = null;
 	if (alarm && name === alarm.name) {
 		alarmStatus = alarm.status || "SUCCESS";
@@ -50,11 +67,16 @@ export const FormInput = forwardRef(<T extends string>(props: FormInputProps<T>,
 
 	return (
 		<div className={styles.joinInput}>
-			<div className={clsx(styles.joinLabel, "w-1/3")}>
+			<LeftLabel className={clsx(styles.joinLabel)} $labelWidthPercent={labelWidthPercent}>
 				<label htmlFor={name}>{label}</label>
-			</div>
+				{requiredMark && <mark className={styles.requiredMark}>*</mark>}
+			</LeftLabel>
 
-			<div className={clsx(styles.joinText, alarmStatus === "FAIL" && styles.fail, alarmStatus === "SUCCESS" && styles.success, "w-2/3")}>
+			<RightInput
+				className={clsx(styles.joinText, alarmStatus === "FAIL" && styles.fail, alarmStatus === "SUCCESS" && styles.success)}
+				$labelWidthPercent={labelWidthPercent}
+				$inputWidthPercent={inputWidthPercent}
+			>
 				<div>
 					<input
 						ref={ref}
@@ -69,7 +91,7 @@ export const FormInput = forwardRef(<T extends string>(props: FormInputProps<T>,
 						inputMode={inputMode}
 						pattern={pattern}
 						maxLength={maxLength}
-						className={clsx(name === "address" && "cursor-pointer", inputWidthFill && styles.fill)}
+						className={clsx(cursorPointer && styles.cursorPointer)}
 					/>
 					{searchBtn && (
 						<button
@@ -89,7 +111,7 @@ export const FormInput = forwardRef(<T extends string>(props: FormInputProps<T>,
 						* <span>{alarmMessage}</span>
 					</p>
 				)}
-			</div>
+			</RightInput>
 		</div>
 	);
 });

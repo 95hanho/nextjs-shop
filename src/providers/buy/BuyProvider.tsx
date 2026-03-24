@@ -1,12 +1,20 @@
 "use client";
 
-import { ShippingAddressMode } from "@/context/buyContext";
-import { ChangeEvent, ChangeSet } from "@/types/event";
+import { AddressAlarm, AddressFormFormInputRefs, ShippingAddressMode } from "@/context/buyContext";
+import { ChangeEvent } from "@/types/event";
 import { UserAddress, UserAddressListItem } from "@/types/mypage";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { buyContext } from "@/context/buyContext";
 import { useModalStore } from "@/store/modal.store";
 import { DefaultAddress } from "@/types/buy";
+
+const addressFormRegex: { [key: string]: RegExp } = {
+	addressPhone: /^(010|011|016|017|018|019)\d{3,4}\d{4}$/,
+};
+const addressFormRegexFailMent: { [key: string]: string } = {
+	addressPhone: "휴대폰 번호 형식에 일치하지 않습니다.",
+};
+
 interface BuyProviderProps {
 	children: React.ReactNode;
 	initialDefaultAddress?: DefaultAddress | null;
@@ -27,8 +35,9 @@ export const BuyProvider = ({ children, initialDefaultAddress = null }: BuyProvi
 	const [setAsDefault, setSetAsDefault] = useState<boolean>(false);
 	// 모드(기존배송지/신규배송지)
 	const [shippingAddressMode, setShippingAddressMode] = useState<ShippingAddressMode>(initialDefaultAddress ? "existing" : "new");
-	//
+	// 베송 메모
 	const [shippingMemo, setShippingMemo] = useState(initialDefaultAddress ? initialDefaultAddress.memo : ""); // 기존 배송지가 있으면 그 메모를 기본값으로, 없으면 빈 문자열
+	// 신규 배송지 입력값
 	const [newAddress, setNewAddress] = useState<UserAddress>({
 		addressName: "",
 		recipientName: "",
@@ -38,11 +47,20 @@ export const BuyProvider = ({ children, initialDefaultAddress = null }: BuyProvi
 		addressDetail: "",
 		memo: "",
 	});
-	const changeNewAddress = useCallback((e?: ChangeEvent, changeSet?: ChangeSet) => {
-		if (changeSet) {
+	// 주소 폼 알람
+	const [addressAlarm, setAddressAlarm] = useState<AddressAlarm>(null);
+	const addressFormInputRefs = useRef<Partial<AddressFormFormInputRefs>>({});
+	// 마일리지 사용 금액
+	const [usedMileage, setUsedMileage] = useState(0);
+	// 결제 방법 'CARD','CASH'
+	const [paymentMethod, setPaymentMethod] = useState<"CARD" | "CASH">("CARD");
+
+	// 신규 배송지 입력값 변경
+	const changeNewAddress = useCallback((e?: ChangeEvent, changeMap?: Partial<UserAddress>) => {
+		if (changeMap) {
 			setNewAddress((prev) => ({
 				...prev,
-				[changeSet.name]: changeSet.value,
+				...changeMap,
 			}));
 		} else if (e) {
 			setNewAddress((prev) => ({
@@ -50,21 +68,51 @@ export const BuyProvider = ({ children, initialDefaultAddress = null }: BuyProvi
 				[e.target.name]: e.target.value,
 			}));
 		}
+		setAddressAlarm(null);
 	}, []);
-	// 마일리지 사용 금액
-	const [usedMileage, setUsedMileage] = useState(0);
+	// 신규 배송지 유효성 확인 ex) 정규표현식 확인
+	const validateNewAddress = useCallback((e: ChangeEvent) => {
+		const { name, value } = e.target as {
+			name: keyof UserAddress;
+			value: string;
+		};
+		const changeVal = value.trim();
+		let changeAlarm: AddressAlarm | null = null;
+
+		if (!changeVal) return;
+		if (changeVal) {
+			if (addressFormRegex[name]) {
+				if (!addressFormRegex[name].test(changeVal)) {
+					changeAlarm = { name, message: addressFormRegexFailMent[name], status: "FAIL" };
+				}
+			}
+		}
+		setAddressAlarm(changeAlarm);
+		setNewAddress((prev) => ({
+			...prev,
+			[name]: changeVal,
+		}));
+	}, []);
+	// 마일리지 입력값 변경
 	const changeUsedMileage = useCallback((e: ChangeEvent, availableMileage: number) => {
 		const numericValue = e.target.value.replace(/[^0-9]/g, "");
 		const value = Math.min(Number(numericValue), availableMileage);
 		setUsedMileage(value);
 	}, []);
-	// 결제 방법 'CARD','CASH'
-	const [paymentMethod, setPaymentMethod] = useState<"CARD" | "CASH">("CARD");
 
 	// 결제하기
 	const handleBuy = useCallback(() => {
+		console.log("[handleBuy] 실행");
+		if (addressAlarm?.status === "FAIL") {
+			addressFormInputRefs.current[addressAlarm.name]?.focus();
+			return;
+		}
 		let address: UserAddress = {} as UserAddress;
+		let changeAlarm: AddressAlarm | null = null;
 		if (shippingAddressMode === "existing" && shippingAddress) {
+			if (!newAddress.memo) {
+				changeAlarm = { name: "memo", message: "배송 메모를 입력해주세요.", status: "FAIL" };
+			}
 			address = {
 				...shippingAddress,
 				memo: newAddress.memo,
@@ -73,9 +121,32 @@ export const BuyProvider = ({ children, initialDefaultAddress = null }: BuyProvi
 			address = {
 				...newAddress,
 			};
+			const alertKeys = Object.keys(address) as (keyof UserAddress)[];
+			for (const key of alertKeys) {
+				if (!addressFormInputRefs.current[key]) continue;
+				const value = address[key];
+				// 알림 없을 때 처음 누를 때
+				if (!value) {
+					changeAlarm = { name: key, message: "해당 내용을 입력해주세요.", status: "FAIL" };
+				}
+				// 정규표현식 검사
+				else if (addressFormRegex[key] && typeof value === "string") {
+					if (!addressFormRegex[key].test(value)) {
+						changeAlarm = { name: key, message: addressFormRegexFailMent[key], status: "FAIL" };
+					}
+				}
+				if (changeAlarm) break;
+			}
 		}
+
 		console.log("구매 처리 로직 실행", { address, setAsDefault, usedMileage, paymentMethod });
-	}, [shippingAddressMode, shippingAddress, newAddress, setAsDefault, usedMileage, paymentMethod]);
+		if (changeAlarm?.status === "FAIL") {
+			setAddressAlarm(changeAlarm);
+			addressFormInputRefs.current[changeAlarm.name]?.focus();
+			return;
+		}
+		console.log("실행완료");
+	}, [shippingAddressMode, shippingAddress, newAddress, setAsDefault, usedMileage, paymentMethod, addressAlarm]);
 
 	// ----------------------------------------------------------------
 	// useEffect & useMemo
@@ -109,20 +180,23 @@ export const BuyProvider = ({ children, initialDefaultAddress = null }: BuyProvi
 			shippingAddress,
 			setShippingAddress,
 			currentDefaultStatus,
-			setCurrentDefaultStatus,
 			setAsDefault,
 			setSetAsDefault,
 			shippingAddressMode,
 			setShippingAddressMode,
 			shippingMemo,
 			newAddress,
-			changeNewAddress,
-			handleBuy,
+			addressAlarm,
+			setAddressAlarm,
+			addressFormInputRefs,
 			usedMileage,
 			setUsedMileage,
-			changeUsedMileage,
 			paymentMethod,
 			setPaymentMethod,
+			changeNewAddress,
+			validateNewAddress,
+			changeUsedMileage,
+			handleBuy,
 		}),
 		[
 			shippingAddress,
@@ -131,11 +205,14 @@ export const BuyProvider = ({ children, initialDefaultAddress = null }: BuyProvi
 			shippingAddressMode,
 			shippingMemo,
 			newAddress,
-			changeNewAddress,
-			handleBuy,
+			addressAlarm,
+			setAddressAlarm,
 			usedMileage,
-			changeUsedMileage,
 			paymentMethod,
+			changeNewAddress,
+			validateNewAddress,
+			changeUsedMileage,
+			handleBuy,
 		],
 	);
 
