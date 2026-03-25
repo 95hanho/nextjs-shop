@@ -20,6 +20,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { BuyProvider } from "@/providers/buy/BuyProvider";
 import { calculateDiscount } from "@/lib/price";
 import { useRouter } from "next/navigation";
+import { ApiError } from "next/dist/server/api-utils";
+import { useModalStore } from "@/store/modal.store";
 
 export type BuyItemWishCoupon = StockHoldProduct & {
 	discountedPrice: number; // 해당 상품에 적용된 쿠폰 할인을 반영한 가격 (finalPrice에서 할인금액을 뺀 가격)
@@ -42,6 +44,7 @@ export type AppliedProductCouponMap = Record<
 export default function BuyClient() {
 	const { loginOn } = useAuth();
 	const router = useRouter();
+	const { openModal } = useModalStore();
 
 	// =================================================================
 	// React Query
@@ -53,6 +56,7 @@ export default function BuyClient() {
 		data: stockHoldData,
 		isError,
 		isLoading,
+		error,
 	} = useQuery<GetStockHoldResponse, Error>({
 		queryKey: ["stockHold"],
 		queryFn: () => getNormal(getApiUrl(API_URL.BUY_PAY)),
@@ -200,6 +204,57 @@ export default function BuyClient() {
 	// =================================================================
 	// useEffect, useMemo
 	// =================================================================
+
+	// 점유 조회, 점유 연장 에러 처리
+	useEffect(() => {
+		if (!isError || !error) return;
+
+		console.log("stockHold 조회 또는 연장 중 에러 발생", { error });
+
+		// 해당 계정으로 점유 자체가 없을 경우 | 일반적으로 점유해제된 경우
+		// => 메인페이지로
+		if (error.message === "NO_ACTIVE_HOLDS") {
+			openModal("ALERT", {
+				content: "구매 중인 상품 정보가 없습니다. 메인 페이지로 이동합니다.",
+				handleAfterClose: () => {
+					router.replace("/");
+				},
+			});
+			return;
+		}
+		if (error.message === "ALREADY_PAID_HOLD") {
+			openModal("ALERT", {
+				content: "이미 완료된 결제입니다. 메인 페이지로 이동합니다.",
+				handleAfterClose: () => {
+					router.replace("/");
+				},
+			});
+			return;
+		}
+
+		if (error.message === "HOLD_EXPIRED" || error.message === "PRODUCT_SALE_STOPPED" || error.message === "SELLER_UNAVAILABLE") {
+			let message = "";
+			if (error.message === "HOLD_EXPIRED") message = "세션이 만료되었습니다. 결제를 다시 진행해주세요.";
+			else if (error.message === "PRODUCT_SALE_STOPPED") message = "세션이 만료되었습니다. 결제를 다시 진행해주세요.";
+			else if (error.message === "SELLER_UNAVAILABLE") message = "세션이 만료되었습니다. 결제를 다시 진행해주세요.";
+
+			console.log("결과 확인", error);
+			openModal("ALERT", {
+				content: message,
+				handleAfterClose: () => {
+					// router.replace("/");
+				},
+			});
+			return;
+		}
+
+		openModal("ALERT", {
+			content: "알 수 없는 오류가 발생했습니다. 다시 시도해주세요.",
+			handleAfterClose: () => {
+				router.replace("/");
+			},
+		});
+	}, [isError, error, openModal, router]);
 
 	// 1분마다 구매상품 점유 연장 시도 (구매페이지에 진입한 후 1분마다 연장 시도)
 	useEffect(() => {
@@ -495,12 +550,12 @@ export default function BuyClient() {
 	useEffect(() => {
 		// if (stockHoldData) console.log({ stockHoldData });
 		if (cartCouponList.length > 0 || sellerCouponList.length > 0) {
-			console.log({ /* cartCouponList */ sellerCouponList });
+			// console.log({ cartCouponList, sellerCouponList });
 		}
 		// console.log({ buyTotalOriginPrice, buyTotalFinalPrice, buySelfDiscount, cartCouponDiscount, sellerCouponDiscount });
-		if (appliedProductCouponMap) console.log({ appliedProductCouponMap });
-		if (maxDiscountAppliedProductCouponMapRef.current)
-			console.log({ maxDiscountAppliedProductCouponMapRef: maxDiscountAppliedProductCouponMapRef.current });
+		// if (appliedProductCouponMap) console.log({ appliedProductCouponMap });
+		// if (maxDiscountAppliedProductCouponMapRef.current)
+		// 	console.log({ maxDiscountAppliedProductCouponMapRef: maxDiscountAppliedProductCouponMapRef.current });
 	}, [
 		stockHoldData,
 		cartCouponList,
