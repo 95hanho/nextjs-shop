@@ -7,8 +7,6 @@ import { useBuy } from "@/hooks/buy/useBuy";
 import { useModalStore } from "@/store/modal.store";
 import { OnOffButton } from "@/components/ui/OnOffButton";
 import { FormInput } from "@/components/auth/FormInput";
-import { UserAddress } from "@/types/mypage";
-import { FormInputRefs } from "@/types/form";
 import { AddressSection } from "@/components/auth/AddressSection";
 
 // interface ShippingAddressFormProps {}
@@ -27,7 +25,6 @@ export default function ShippingAddressForm() {
 		changeNewAddress,
 		validateNewAddress,
 		addressAlarm,
-		setAddressAlarm,
 		addressFormInputRefs,
 	} = useBuy();
 
@@ -154,7 +151,6 @@ export default function ShippingAddressForm() {
 						addressFormInputRefs.current.recipientName = el;
 					}}
 				/>
-
 				<AddressSection
 					form={{
 						zonecode: inputAddress?.zonecode || "",
@@ -170,18 +166,22 @@ export default function ShippingAddressForm() {
 					}}
 					changeForm={changeNewAddress}
 					validateForm={validateNewAddress}
-					setAddressRef={(el) => {
-						addressFormInputRefs.current.address = el;
-					}}
-					setAddressDetailRef={(el) => {
-						addressFormInputRefs.current.addressDetail = el;
+					refs={{
+						zonecode(el) {
+							addressFormInputRefs.current.zonecode = el;
+						},
+						address(el) {
+							addressFormInputRefs.current.address = el;
+						},
+						addressDetail(el) {
+							addressFormInputRefs.current.addressDetail = el;
+						},
 					}}
 					requiredMark={true}
 					addressDetailReadOnly={isModeExisting}
 					labelWidthPercent={28}
 					inputWidthPercent={80}
 				/>
-
 				<FormInput
 					name="addressPhone"
 					label="연락처"

@@ -88,11 +88,13 @@ export default function SellerJoinClient() {
 					}}
 					changeForm={changeJoinForm}
 					validateForm={validateJoinForm}
-					setAddressRef={(el) => {
-						joinFormInputRefs.current.address = el;
-					}}
-					setAddressDetailRef={(el) => {
-						joinFormInputRefs.current.addressDetail = el;
+					refs={{
+						address(el) {
+							joinFormInputRefs.current.address = el;
+						},
+						addressDetail(el) {
+							joinFormInputRefs.current.addressDetail = el;
+						},
 					}}
 				/>
 				<FormInput
