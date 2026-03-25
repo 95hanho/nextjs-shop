@@ -17,6 +17,7 @@ type ModalCommon = {
 	disableOverlayClose?: boolean;
 	disableEscClose?: boolean;
 	closeResult?: string;
+	handleAfterClose?: () => void;
 };
 
 export const ModalRoot = () => {
@@ -29,6 +30,7 @@ export const ModalRoot = () => {
 	const overlayCloseAllowed = !common.disableOverlayClose;
 	const escCloseAllowed = !common.disableEscClose;
 	const closeResult = common.closeResult;
+	const handleAfterClose = common.handleAfterClose;
 
 	// Next SSR 때문에 portal은 클라이언트에서만
 	useEffect(() => {
@@ -108,10 +110,12 @@ export const ModalRoot = () => {
 				if (!overlayCloseAllowed) return;
 				handleClose();
 			}}
+			// 애니메이션 끝나면 실제로 모달 닫기
 			onAnimationEnd={() => {
 				if (!isClosing) return;
 				setIsOpen(false);
 				closeModal(closeResult);
+				if (handleAfterClose) handleAfterClose();
 			}}
 		>
 			<div className={clsx(`relative z-[1001]`, { animatePopOut: isClosing, animatePopIn: !isClosing })} onClick={(e) => e.stopPropagation()}>

@@ -17,6 +17,7 @@ type ModalCommon = {
 	disableOverlayClose?: boolean;
 	disableEscClose?: boolean;
 	closeResult?: CloseResult;
+	handleAfterClose?: () => void;
 };
 // modal이 열릴 떄 요구되는 옵션
 // modalType별로 요구하는 modalProps를 정확히 매핑
