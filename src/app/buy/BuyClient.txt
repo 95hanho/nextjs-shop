@@ -1,0 +1,38 @@
+- 해야할꺼
+BUY_PAY
+오류 : 
+1.아예 HOLD 없으면 - HOLD_NOT_FOUND -> 잘못된 접근 안내 후 router.replace("/cart")
+a.다른 로직에서 RELEASED 처리됨
+b.결제 완료 후 정리됨
+c.이상 케이스로 active_hold가 꺼짐
+=> 이 경우는 “가장 최근 점유정보”를 보고 return_url을 줄 수 있으면 좋음.
+a. 사용자가 직접 /buy/pay URL 입력getStockHoldProductList
+b. 세션 꼬임
+c. 점유 생성 없이 바로 접근
+=> 이 경우는 최근 점유정보를 억지로 보고 보내는 게 좀 애매할 수 있음. => 최근꺼가 있고 return_url있으면 거기로, 없으면 /cart or /
+
+2. 있는 데 만료면 RELEASED + active_hold = 0 처리해주기 - HOLD_EXPIRED, returnUrl 반환 -> router.replace(returnUrl || "/cart")
+
+
+- FE에러 처리방법
+useEffect(() => {
+	if (!isError || !error) return;
+
+	if (error instanceof ApiError) {
+		if (error.code === "HOLD_EXPIRED") {
+			const returnUrl = (error.data as { returnUrl?: string })?.returnUrl || "/cart";
+			alert("상품 점유 시간이 만료되었습니다.");
+			router.replace(returnUrl);
+			return;
+		}
+
+		if (error.code === "HOLD_NOT_FOUND") {
+			alert("잘못된 접근입니다.");
+			router.replace("/cart");
+			return;
+		}
+	}
+
+	alert("구매 정보를 불러오지 못했습니다.");
+	router.replace("/cart");
+}, [isError, error, router]);

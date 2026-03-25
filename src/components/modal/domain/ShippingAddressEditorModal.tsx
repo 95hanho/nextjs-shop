@@ -204,11 +204,13 @@ export const ShippingAddressEditorModal = ({ onClose, prevAddress }: ShippingAdd
 						}}
 						changeForm={changeAddressForm}
 						validateForm={validateAddressForm}
-						setAddressRef={(el) => {
-							addressFormInputRefs.current.address = el;
-						}}
-						setAddressDetailRef={(el) => {
-							addressFormInputRefs.current.addressDetail = el;
+						refs={{
+							address(el) {
+								addressFormInputRefs.current.address = el;
+							},
+							addressDetail(el) {
+								addressFormInputRefs.current.addressDetail = el;
+							},
 						}}
 					/>
 				</div>

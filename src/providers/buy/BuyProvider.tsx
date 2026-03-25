@@ -21,7 +21,7 @@ interface BuyProviderProps {
 }
 
 export const BuyProvider = ({ children, initialDefaultAddress = null }: BuyProviderProps) => {
-	const { modalResult, clearModalResult } = useModalStore();
+	const { modalResult, clearModalResult, openModal } = useModalStore();
 
 	// ----------------------------------------------------------------
 	// React
@@ -35,16 +35,16 @@ export const BuyProvider = ({ children, initialDefaultAddress = null }: BuyProvi
 	const [setAsDefault, setSetAsDefault] = useState<boolean>(false);
 	// 모드(기존배송지/신규배송지)
 	const [shippingAddressMode, setShippingAddressMode] = useState<ShippingAddressMode>(initialDefaultAddress ? "existing" : "new");
-	// 베송 메모
+	// 배송 메모
 	const [shippingMemo, setShippingMemo] = useState(initialDefaultAddress ? initialDefaultAddress.memo : ""); // 기존 배송지가 있으면 그 메모를 기본값으로, 없으면 빈 문자열
 	// 신규 배송지 입력값
 	const [newAddress, setNewAddress] = useState<UserAddress>({
 		addressName: "",
 		recipientName: "",
-		addressPhone: "",
 		zonecode: "",
 		address: "",
 		addressDetail: "",
+		addressPhone: "",
 		memo: "",
 	});
 	// 주소 폼 알람
@@ -53,7 +53,7 @@ export const BuyProvider = ({ children, initialDefaultAddress = null }: BuyProvi
 	// 마일리지 사용 금액
 	const [usedMileage, setUsedMileage] = useState(0);
 	// 결제 방법 'CARD','CASH'
-	const [paymentMethod, setPaymentMethod] = useState<"CARD" | "CASH">("CARD");
+	const [paymentMethod, setPaymentMethod] = useState<"CARD" | "CASH" | null>(null);
 
 	// 신규 배송지 입력값 변경
 	const changeNewAddress = useCallback((e?: ChangeEvent, changeMap?: Partial<UserAddress>) => {
@@ -123,6 +123,7 @@ export const BuyProvider = ({ children, initialDefaultAddress = null }: BuyProvi
 			};
 			const alertKeys = Object.keys(address) as (keyof UserAddress)[];
 			for (const key of alertKeys) {
+				console.log({ key, ele: addressFormInputRefs.current[key] });
 				if (!addressFormInputRefs.current[key]) continue;
 				const value = address[key];
 				// 알림 없을 때 처음 누를 때
@@ -145,8 +146,14 @@ export const BuyProvider = ({ children, initialDefaultAddress = null }: BuyProvi
 			addressFormInputRefs.current[changeAlarm.name]?.focus();
 			return;
 		}
+		if (paymentMethod === null) {
+			openModal("ALERT", { content: "결제 수단을 선택해주세요." });
+			document.getElementById("paymentMethod")?.scrollIntoView({ behavior: "smooth" });
+			return;
+		}
+
 		console.log("실행완료");
-	}, [shippingAddressMode, shippingAddress, newAddress, setAsDefault, usedMileage, paymentMethod, addressAlarm]);
+	}, [shippingAddressMode, shippingAddress, newAddress, setAsDefault, usedMileage, paymentMethod, addressAlarm, openModal]);
 
 	// ----------------------------------------------------------------
 	// useEffect & useMemo

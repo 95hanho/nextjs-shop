@@ -87,7 +87,7 @@ export default function OrderFormSection({
 						name="maxDiscountApplied"
 						onOffColor={["#DAA", "#737373"]}
 						onChange={() => {
-							if (!isMaxDiscountApplied) {
+							if (!isMaxDiscountStatus) {
 								changeMaxDiscountApplied();
 							}
 						}}
@@ -220,7 +220,7 @@ export default function OrderFormSection({
 								<>
 									{availableProductCouponCount > 0 ? (
 										<button
-											className={clsx(styles.outlineBtn, couponAppliedSelectorOpenSeller === item.sellerName && styles.active)}
+											className={clsx(styles.outlineBtn)}
 											onClick={(e) => {
 												if (couponAppliedSelectorOpenSeller === item.sellerName) {
 													setCouponAppliedSelectorOpenSeller("");
@@ -362,7 +362,7 @@ export default function OrderFormSection({
 			</article>
 
 			{/* 결제 방법 (2개만) */}
-			<article className={styles.block}>
+			<article id="paymentMethod" className={styles.block}>
 				<header className={styles.blockHeader}>
 					<div className={styles.blockTitleRow}>
 						<div className={styles.blockTitle}>결제 방법</div>

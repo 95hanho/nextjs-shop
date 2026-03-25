@@ -1,4 +1,3 @@
-import { DefaultAddress } from "@/types/buy";
 import { ChangeEvent } from "@/types/event";
 import { FormInputAlarm, FormInputRefs } from "@/types/form";
 import { UserAddress } from "@/types/mypage";
@@ -24,9 +23,10 @@ interface BuyContextValue {
 	addressFormInputRefs: React.MutableRefObject<Partial<AddressFormFormInputRefs>>;
 	usedMileage: number;
 	setUsedMileage: React.Dispatch<React.SetStateAction<number>>;
-	paymentMethod: "CARD" | "CASH";
+	paymentMethod: "CARD" | "CASH" | null;
+	setPaymentMethod: React.Dispatch<React.SetStateAction<"CARD" | "CASH" | null>>;
 	changeNewAddress: (e?: ChangeEvent, changeMap?: Partial<UserAddress>) => void;
-	setPaymentMethod: React.Dispatch<React.SetStateAction<"CARD" | "CASH">>;
+	validateNewAddress: (e: ChangeEvent) => void;
 	changeUsedMileage: (e: ChangeEvent, availableMileage: number) => void;
 	handleBuy: () => void;
 }

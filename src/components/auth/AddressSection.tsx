@@ -1,21 +1,21 @@
 import { FormInput } from "@/components/auth/FormInput";
 import { ChangeFunction } from "@/types/event";
 import { FormInputAlarm, SetFormRef } from "@/types/form";
-
-type AddressForm = {
-	zonecode?: string;
-	address: string;
-	addressDetail: string;
-};
-
 interface AddressSectionProps<K extends string> {
-	form: AddressForm;
+	form: {
+		zonecode?: string;
+		address: string;
+		addressDetail: string;
+	};
 	alarm: FormInputAlarm<K>;
+	refs: {
+		zonecode?: SetFormRef;
+		address: SetFormRef;
+		addressDetail: SetFormRef;
+	};
 	handleKakaoAddress: ({ zonecode, address }: { zonecode: string; address: string }) => void;
 	changeForm: ChangeFunction;
 	validateForm: ChangeFunction;
-	setAddressRef: SetFormRef;
-	setAddressDetailRef: SetFormRef;
 	requiredMark?: boolean;
 	addressDetailReadOnly?: boolean;
 	labelWidthPercent?: number;
@@ -25,11 +25,10 @@ interface AddressSectionProps<K extends string> {
 export const AddressSection = <K extends string>({
 	form,
 	alarm,
+	refs,
 	handleKakaoAddress,
 	changeForm,
 	validateForm,
-	setAddressRef,
-	setAddressDetailRef,
 	requiredMark,
 	addressDetailReadOnly = false,
 	labelWidthPercent,
@@ -58,6 +57,7 @@ export const AddressSection = <K extends string>({
 					label="우편번호"
 					placeholder="우편번호를 입력해주세요."
 					value={form?.zonecode || ""}
+					alarm={alarm}
 					readOnly
 					onClick={addressPopup}
 					searchBtn={addressDetailReadOnly ? undefined : { txt: "검색", fnc: addressPopup }}
@@ -65,6 +65,9 @@ export const AddressSection = <K extends string>({
 					requiredMark={requiredMark}
 					labelWidthPercent={labelWidthPercent}
 					inputWidthPercent={50}
+					ref={(el) => {
+						refs.zonecode?.(el);
+					}}
 				/>
 			)}
 			<FormInput
@@ -77,7 +80,7 @@ export const AddressSection = <K extends string>({
 				onClick={addressPopup}
 				onBlur={validateForm}
 				ref={(el) => {
-					setAddressRef(el);
+					refs.address?.(el);
 				}}
 				cursorPointer={true}
 				requiredMark={requiredMark}
@@ -93,7 +96,7 @@ export const AddressSection = <K extends string>({
 				onChange={changeForm}
 				onBlur={validateForm}
 				ref={(el) => {
-					setAddressDetailRef(el);
+					refs.addressDetail?.(el);
 				}}
 				requiredMark={requiredMark}
 				readOnly={addressDetailReadOnly}

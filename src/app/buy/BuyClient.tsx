@@ -1,11 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import styles from "./BuyClient.module.scss";
 import OrderFormSection from "@/app/buy/OrderFormSection";
 import OrderSummaryPanel from "@/app/buy/OrderSummaryPanel";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { deleteNormal, getNormal, postJson, putJson } from "@/api/fetchFilter";
+import { getNormal, postJson, putJson } from "@/api/fetchFilter";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import API_URL from "@/api/endpoints";
 import {
@@ -19,7 +19,7 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import { BuyProvider } from "@/providers/buy/BuyProvider";
 import { calculateDiscount } from "@/lib/price";
-import { useModalStore } from "@/store/modal.store";
+import { useRouter } from "next/navigation";
 
 export type BuyItemWishCoupon = StockHoldProduct & {
 	discountedPrice: number; // 해당 상품에 적용된 쿠폰 할인을 반영한 가격 (finalPrice에서 할인금액을 뺀 가격)
@@ -41,7 +41,7 @@ export type AppliedProductCouponMap = Record<
 
 export default function BuyClient() {
 	const { loginOn } = useAuth();
-	const { openModal } = useModalStore();
+	const router = useRouter();
 
 	// =================================================================
 	// React Query
@@ -51,14 +51,14 @@ export default function BuyClient() {
 	// invalidateQueries(["stockHold"])
 	const {
 		data: stockHoldData,
+		isError,
 		isLoading,
-		isFetching,
-		dataUpdatedAt,
 	} = useQuery<GetStockHoldResponse, Error>({
 		queryKey: ["stockHold"],
 		queryFn: () => getNormal(getApiUrl(API_URL.BUY_PAY)),
 		enabled: loginOn,
 		refetchOnWindowFocus: false,
+		retry: 1, // 실패 시 1회 재시도
 	});
 
 	// 점유 연장 handleStockHoldExtend
@@ -90,34 +90,10 @@ export default function BuyClient() {
 	// React
 	// =================================================================
 
+	// 점유 연장 가능한지
+	const canExtendHold = loginOn && !!stockHoldData && !isError && !isLoading;
 	// 점유 연장 중복 방지용 Ref (inFlightRef가 true면 점유 연장 요청이 진행 중이므로 새로운 요청을 보내지 않음)
 	const inFlightRef = useRef(false);
-
-	// =================================================================
-	// useEffect, useMemo
-	// =================================================================
-
-	// 1분마다 구매상품 점유 연장 시도 (구매페이지에 진입한 후 1분마다 연장 시도)
-	useEffect(() => {
-		const tick = async () => {
-			// 중복 요청 방지 + 탭이 백그라운드에 있을 때는 연장 시도 안함
-			// (브라우저가 백그라운드 탭의 setInterval 실행을 1분 이상 지연시킬 수 있기 때문)
-			if (inFlightRef.current || document.hidden) return;
-			inFlightRef.current = true;
-			try {
-				await handleStockHoldExtend();
-			} finally {
-				inFlightRef.current = false;
-			}
-		};
-
-		const id = window.setInterval(tick, 60_000);
-		// 필요하면 진입 직후 1회 즉시 호출
-		tick();
-
-		return () => window.clearInterval(id);
-	}, [handleStockHoldExtend]);
-
 	// 처음 계산한 최대할인 쿠폰 저장
 	const maxDiscountAppliedProductCouponMapRef = useRef<AppliedProductCouponMap>({});
 	// 최대할인 쿠폰의 할인 값 저장
@@ -220,6 +196,50 @@ export default function BuyClient() {
 			});
 		}
 	};
+
+	// =================================================================
+	// useEffect, useMemo
+	// =================================================================
+
+	// 1분마다 구매상품 점유 연장 시도 (구매페이지에 진입한 후 1분마다 연장 시도)
+	useEffect(() => {
+		if (!canExtendHold) return;
+
+		const tick = async () => {
+			// 중복 요청 방지 + 탭이 백그라운드에 있을 때는 연장 시도 안함
+			// (브라우저가 백그라운드 탭의 setInterval 실행을 1분 이상 지연시킬 수 있기 때문)
+			if (inFlightRef.current || document.hidden) return;
+			inFlightRef.current = true;
+			try {
+				await handleStockHoldExtend();
+			} finally {
+				inFlightRef.current = false;
+			}
+		};
+
+		const id = window.setInterval(tick, 60_000);
+
+		// 필요하면 진입 직후 1회 즉시 호출
+		// tick();
+
+		return () => window.clearInterval(id);
+	}, [handleStockHoldExtend, canExtendHold]);
+	// 탭이 활성화될 때마다 구매상품 점유 연장 시도 (사용자가 탭을 다시 볼 때마다 연장 시도)
+	useEffect(() => {
+		const onVisible = async () => {
+			if (document.hidden || !canExtendHold || inFlightRef.current) return;
+
+			inFlightRef.current = true;
+			try {
+				await handleStockHoldExtend();
+			} finally {
+				inFlightRef.current = false;
+			}
+		};
+
+		document.addEventListener("visibilitychange", onVisible);
+		return () => document.removeEventListener("visibilitychange", onVisible);
+	}, [canExtendHold, handleStockHoldExtend]);
 
 	// 최대 할인쿠폰 저장 및 초기 쿠폰을 통한 적용 쿠폰 저장.
 	useEffect(() => {
