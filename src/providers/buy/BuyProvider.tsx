@@ -6,7 +6,11 @@ import { UserAddress, UserAddressListItem } from "@/types/mypage";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { buyContext } from "@/context/buyContext";
 import { useModalStore } from "@/store/modal.store";
-import { DefaultAddress } from "@/types/buy";
+import { DefaultAddress, payRequest } from "@/types/buy";
+import { useMutation } from "@tanstack/react-query";
+import API_URL from "@/api/endpoints";
+import { getApiUrl } from "@/lib/getBaseUrl";
+import { postJson } from "@/api/fetchFilter";
 
 const addressFormRegex: { [key: string]: RegExp } = {
 	addressPhone: /^(010|011|016|017|018|019)\d{3,4}\d{4}$/,
@@ -17,11 +21,27 @@ const addressFormRegexFailMent: { [key: string]: string } = {
 
 interface BuyProviderProps {
 	children: React.ReactNode;
-	initialDefaultAddress?: DefaultAddress | null;
+	initialDefaultAddress: DefaultAddress | null;
+	holdIds: number[];
 }
 
-export const BuyProvider = ({ children, initialDefaultAddress = null }: BuyProviderProps) => {
+export const BuyProvider = ({ children, initialDefaultAddress = null, holdIds }: BuyProviderProps) => {
 	const { modalResult, clearModalResult, openModal } = useModalStore();
+
+	// =================================================================
+	// React Query
+	// =================================================================
+
+	// 결제하기
+	const { mutateAsync: mutateBuy } = useMutation({
+		mutationFn: (data: payRequest) => postJson(getApiUrl(API_URL.BUY_PAY), data),
+		onSuccess(data) {
+			console.log("mutateBuy success", data);
+		},
+		onError(err) {
+			console.log("mutateBuy err", err);
+		},
+	});
 
 	// ----------------------------------------------------------------
 	// React
@@ -140,7 +160,6 @@ export const BuyProvider = ({ children, initialDefaultAddress = null }: BuyProvi
 			}
 		}
 
-		console.log("구매 처리 로직 실행", { address, setAsDefault, usedMileage, paymentMethod });
 		if (changeAlarm?.status === "FAIL") {
 			setAddressAlarm(changeAlarm);
 			addressFormInputRefs.current[changeAlarm.name]?.focus();
@@ -151,9 +170,28 @@ export const BuyProvider = ({ children, initialDefaultAddress = null }: BuyProvi
 			document.getElementById("paymentMethod")?.scrollIntoView({ behavior: "smooth" });
 			return;
 		}
-
-		console.log("실행완료");
-	}, [shippingAddressMode, shippingAddress, newAddress, setAsDefault, usedMileage, paymentMethod, addressAlarm, openModal]);
+		// console.log("구매 처리 로직 실행", { shippingAddress: address, setAsDefault, usedMileage, paymentMethod, holdIds });
+		const buyData: payRequest = {
+			shippingAddress: address,
+			setAsDefault,
+			usedMileage,
+			paymentMethod,
+			holdIds,
+		};
+		mutateBuy(buyData);
+	}, [
+		shippingAddressMode,
+		shippingAddress,
+		newAddress,
+		setAsDefault,
+		usedMileage,
+		paymentMethod,
+		addressAlarm,
+		openModal,
+		holdIds,
+		addressFormInputRefs,
+		mutateBuy,
+	]);
 
 	// ----------------------------------------------------------------
 	// useEffect & useMemo

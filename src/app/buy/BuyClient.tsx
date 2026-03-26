@@ -20,8 +20,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { BuyProvider } from "@/providers/buy/BuyProvider";
 import { calculateDiscount } from "@/lib/price";
 import { useRouter } from "next/navigation";
-import { ApiError } from "next/dist/server/api-utils";
 import { useModalStore } from "@/store/modal.store";
+import { toErrorResponse } from "@/api/error";
 
 export type BuyItemWishCoupon = StockHoldProduct & {
 	discountedPrice: number; // 해당 상품에 적용된 쿠폰 할인을 반영한 가격 (finalPrice에서 할인금액을 뺀 가격)
@@ -62,7 +62,7 @@ export default function BuyClient() {
 		queryFn: () => getNormal(getApiUrl(API_URL.BUY_PAY)),
 		enabled: loginOn,
 		refetchOnWindowFocus: false,
-		retry: 1, // 실패 시 1회 재시도
+		retry: false,
 	});
 
 	// 점유 연장 handleStockHoldExtend
@@ -209,11 +209,11 @@ export default function BuyClient() {
 	useEffect(() => {
 		if (!isError || !error) return;
 
-		console.log("stockHold 조회 또는 연장 중 에러 발생", { error });
+		const { payload } = toErrorResponse(error);
 
 		// 해당 계정으로 점유 자체가 없을 경우 | 일반적으로 점유해제된 경우
 		// => 메인페이지로
-		if (error.message === "NO_ACTIVE_HOLDS") {
+		if (payload.message === "NO_ACTIVE_HOLDS") {
 			openModal("ALERT", {
 				content: "구매 중인 상품 정보가 없습니다. 메인 페이지로 이동합니다.",
 				handleAfterClose: () => {
@@ -222,7 +222,7 @@ export default function BuyClient() {
 			});
 			return;
 		}
-		if (error.message === "ALREADY_PAID_HOLD") {
+		if (payload.message === "ALREADY_PAID_HOLD") {
 			openModal("ALERT", {
 				content: "이미 완료된 결제입니다. 메인 페이지로 이동합니다.",
 				handleAfterClose: () => {
@@ -232,17 +232,16 @@ export default function BuyClient() {
 			return;
 		}
 
-		if (error.message === "HOLD_EXPIRED" || error.message === "PRODUCT_SALE_STOPPED" || error.message === "SELLER_UNAVAILABLE") {
+		if (payload.message === "HOLD_EXPIRED" || payload.message === "PRODUCT_SALE_STOPPED" || payload.message === "SELLER_UNAVAILABLE") {
 			let message = "";
-			if (error.message === "HOLD_EXPIRED") message = "세션이 만료되었습니다. 결제를 다시 진행해주세요.";
-			else if (error.message === "PRODUCT_SALE_STOPPED") message = "세션이 만료되었습니다. 결제를 다시 진행해주세요.";
-			else if (error.message === "SELLER_UNAVAILABLE") message = "세션이 만료되었습니다. 결제를 다시 진행해주세요.";
+			if (payload.message === "HOLD_EXPIRED") message = "세션이 만료되었습니다. 결제를 다시 진행해주세요.";
+			else if (payload.message === "PRODUCT_SALE_STOPPED") message = "세션이 만료되었습니다. 결제를 다시 진행해주세요.";
+			else if (payload.message === "SELLER_UNAVAILABLE") message = "세션이 만료되었습니다. 결제를 다시 진행해주세요.";
 
-			console.log("결과 확인", error);
 			openModal("ALERT", {
 				content: message,
 				handleAfterClose: () => {
-					// router.replace("/");
+					router.replace(payload.detail as string);
 				},
 			});
 			return;
@@ -255,7 +254,6 @@ export default function BuyClient() {
 			},
 		});
 	}, [isError, error, openModal, router]);
-
 	// 1분마다 구매상품 점유 연장 시도 (구매페이지에 진입한 후 1분마다 연장 시도)
 	useEffect(() => {
 		if (!canExtendHold) return;
@@ -295,11 +293,10 @@ export default function BuyClient() {
 		document.addEventListener("visibilitychange", onVisible);
 		return () => document.removeEventListener("visibilitychange", onVisible);
 	}, [canExtendHold, handleStockHoldExtend]);
-
 	// 최대 할인쿠폰 저장 및 초기 쿠폰을 통한 적용 쿠폰 저장.
 	useEffect(() => {
 		if (!stockHoldData) return;
-		console.log("최대 할인쿠폰 저장 및 초기 쿠폰을 통한 적용 쿠폰 저장.");
+		// console.log("최대 할인쿠폰 저장 및 초기 쿠폰을 통한 적용 쿠폰 저장.");
 
 		const availableCouponsWithDiscountObj = stockHoldData.availableSellerCoupons.reduce(
 			(acc, coupon) => {
@@ -404,6 +401,8 @@ export default function BuyClient() {
 		cartCouponDiscount, // 장바구니쿠폰 할인가
 		sellerCouponDiscount, // 판매자쿠폰 할인가
 		deliveryFee, // 배송비
+		//
+		holdIds, // 구매 상품들의 holdId 리스트
 	} = useMemo(() => {
 		// API 응답 전
 		if (!stockHoldData) {
@@ -419,6 +418,7 @@ export default function BuyClient() {
 				cartCouponDiscount: 0,
 				sellerCouponDiscount: 0,
 				deliveryFee: 0,
+				holdIds: [],
 			};
 		}
 		// API 응답 후 / 쿠폰 적용 변경 시
@@ -439,31 +439,31 @@ export default function BuyClient() {
 			}
 		> = {};
 
-		stockHoldData.stockHoldProductList.forEach((product) => {
-			const initPrice = (product.finalPrice + product.addPrice) * product.count;
+		stockHoldData.stockHoldProductList.forEach((stockHold) => {
+			const initPrice = (stockHold.finalPrice + stockHold.addPrice) * stockHold.count;
 			const buyItem: BuyItemWishCoupon = {
-				...product,
+				...stockHold,
 				discountedPrice: initPrice,
 				discountAmount: 0,
 			};
 
 			// 자체할인가 계산
-			buyTotalOriginPrice += product.originPrice * product.count;
-			buySelfDiscount += (product.originPrice - product.finalPrice) * product.count;
+			buyTotalOriginPrice += stockHold.originPrice * stockHold.count;
+			buySelfDiscount += (stockHold.originPrice - stockHold.finalPrice) * stockHold.count;
 
 			// 배송비 계산 정보 저장
-			if (!deliveryInfoBySeller[product.sellerName]) {
-				deliveryInfoBySeller[product.sellerName] = {
+			if (!deliveryInfoBySeller[stockHold.sellerName]) {
+				deliveryInfoBySeller[stockHold.sellerName] = {
 					totalFinalPrice: buyItem.finalPrice * buyItem.count,
-					baseShippingFee: product.baseShippingFee,
-					freeShippingMinAmount: product.freeShippingMinAmount,
+					baseShippingFee: stockHold.baseShippingFee,
+					freeShippingMinAmount: stockHold.freeShippingMinAmount,
 				};
 			} else {
-				deliveryInfoBySeller[product.sellerName].totalFinalPrice += buyItem.finalPrice * buyItem.count;
+				deliveryInfoBySeller[stockHold.sellerName].totalFinalPrice += buyItem.finalPrice * buyItem.count;
 			}
 
 			// 적용 쿠폰에 따라 discountedPrice와 discountAmount 계산
-			const appliedProductCoupon = appliedProductCouponMap[product.holdId];
+			const appliedProductCoupon = appliedProductCouponMap[stockHold.holdId];
 			if (appliedProductCoupon) {
 				if (appliedProductCoupon.unStackable) {
 					const unStackableDiscount = calculateDiscount(buyItem.discountedPrice, appliedProductCoupon.unStackable) || 0;
@@ -543,6 +543,7 @@ export default function BuyClient() {
 			deliveryFee: Object.values(deliveryInfoBySeller).reduce((fee, { totalFinalPrice, baseShippingFee, freeShippingMinAmount }) => {
 				return fee + (totalFinalPrice >= freeShippingMinAmount ? 0 : baseShippingFee);
 			}, 0),
+			holdIds: stockHoldData.stockHoldProductList.map((stockHold) => stockHold.holdId),
 		};
 	}, [stockHoldData, appliedProductCouponMap]);
 
@@ -568,8 +569,10 @@ export default function BuyClient() {
 		appliedProductCouponMap,
 	]);
 
-	// 시작시
-	useEffect(() => {}, []);
+	// 시작 시, 페이지 떠날 떄
+	useEffect(() => {
+		return () => {};
+	}, []);
 
 	// =================================================================
 	// UI
@@ -601,7 +604,7 @@ export default function BuyClient() {
 	if (!stockHoldData) return null;
 	return (
 		<div className={styles.buy}>
-			<BuyProvider initialDefaultAddress={defaultAddress}>
+			<BuyProvider initialDefaultAddress={defaultAddress} holdIds={holdIds}>
 				<div className={styles.page}>
 					<h1 className={styles.pageTitle}>주문서</h1>
 
