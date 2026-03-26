@@ -173,15 +173,9 @@ export interface payPriceResponse extends BaseResponse {
 }
 /* 상품 구매/결제 */
 export interface payRequest {
-	items: ProductWithCoupons[];
-	eachCouponDiscountTotal: number; // 각 상품쿠폰 할인값 총합
-	commonCouponDiscountTotal: number; // 공용쿠폰 할인값 총합
-	shippingFee: number; // 배송비
-	usedMileage: number; // 사용된 마일리지
-	remainingMileague: number; // 남은마일리지
-	totalFinal: number; // 총가격(배송비 포함)
-	paymentMethod: string; // 결제 방식
-
-	userCouponId: number;
-	addressId: number;
+	shippingAddress: UserAddress;
+	setAsDefault: boolean;
+	usedMileage: number;
+	paymentMethod: "CARD" | "CASH";
+	holdIds: number[];
 }

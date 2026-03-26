@@ -2,6 +2,7 @@ import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { getNormal, postJson } from "@/api/fetchFilter";
 import { userWithAuth } from "@/lib/auth/user";
+import { WRONG_REQUEST_MESSAGE } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { GetStockHoldResponse, payRequest } from "@/types/buy";
 import { BaseResponse } from "@/types/common";
@@ -27,31 +28,32 @@ export const GET = userWithAuth(async ({ accessToken }) => {
 export const POST = userWithAuth(async ({ nextRequest, accessToken }) => {
 	console.log("[API] 상품 구매/결제");
 	try {
-		const {
-			items,
-			eachCouponDiscountTotal,
-			commonCouponDiscountTotal,
-			shippingFee,
-			usedMileage,
-			remainingMileague,
-			totalFinal,
-			paymentMethod,
-			userCouponId,
-			addressId,
-		}: payRequest = await nextRequest.json();
+		const { shippingAddress, setAsDefault, usedMileage, paymentMethod, holdIds }: payRequest = await nextRequest.json();
+
+		if (
+			!shippingAddress ||
+			!shippingAddress.addressName ||
+			!shippingAddress.recipientName ||
+			!shippingAddress.addressPhone ||
+			!shippingAddress.zonecode ||
+			!shippingAddress.address ||
+			!shippingAddress.addressDetail ||
+			!shippingAddress.memo ||
+			!paymentMethod ||
+			!holdIds ||
+			holdIds.length === 0
+		) {
+			return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
+		}
+
 		const payload: payRequest = {
-			items,
-			eachCouponDiscountTotal,
-			commonCouponDiscountTotal,
-			shippingFee,
+			shippingAddress,
+			setAsDefault,
 			usedMileage,
-			remainingMileague,
-			totalFinal,
 			paymentMethod,
-			userCouponId,
-			addressId,
+			holdIds,
 		};
-		const data = await postJson<BaseResponse>(getBackendUrl(API_URL.AUTH), payload, {
+		const data = await postJson<BaseResponse>(getBackendUrl(API_URL.BUY_PAY), payload, {
 			Authorization: `Bearer ${accessToken}`,
 		});
 		// console.log("data", data);
