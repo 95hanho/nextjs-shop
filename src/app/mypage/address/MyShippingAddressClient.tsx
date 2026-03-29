@@ -14,7 +14,7 @@ import { GetUserAddressListResponse, setUserAddressRequest, UserAddressListItem 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Error from "next/error";
 import { useEffect, useRef, useState } from "react";
-import styles from "./MyShippingAddressClient.module.scss";
+import styles from "./MyShippingAddress.module.scss";
 import { ShippingAddressList } from "@/components/address/ShippingAddressList";
 
 export default function MyShippingAddressClient() {

@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import styles from "./CartClient.module.scss";
+import styles from "./Cart.module.scss";
 import clsx from "clsx";
 import { postJson } from "@/api/fetchFilter";
 import { BaseResponse } from "@/types/common";

@@ -1,4 +1,4 @@
-import styles from "./BuyClient.module.scss";
+import styles from "./Buy.module.scss";
 import clsx from "clsx";
 import { calculateDiscount } from "@/lib/price";
 import { AppliedCartCoupon } from "@/app/mypage/cart/CartClient";
