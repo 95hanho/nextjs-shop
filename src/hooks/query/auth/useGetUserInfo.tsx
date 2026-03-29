@@ -7,7 +7,7 @@ import { GetUserResponse } from "@/types/auth";
 import { useQuery } from "@tanstack/react-query";
 
 export function useGetUserInfo() {
-	const { user: initialUser, setUser, setIsAuthLoading } = useAuth();
+	const { user: initialUser, setUser, setIsAuthLoading, setCartCount, setOrderCount } = useAuth();
 
 	return useQuery({
 		queryKey: ["me"],
@@ -17,6 +17,9 @@ export function useGetUserInfo() {
 				const user = data.user ?? null; // undefined 방지
 				// console.log("user", user);
 				setUser(user);
+				setCartCount(data.cartCount);
+				setOrderCount(data.orderCount);
+
 				return user;
 			} catch (err: unknown) {
 				const { status, payload } = toErrorResponse(err);

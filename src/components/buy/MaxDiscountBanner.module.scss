@@ -1,0 +1,11 @@
+.couponBanner {
+	background: #f6eae6;
+	padding: 12px 16px;
+	font-size: 14px;
+	font-weight: bold;
+	color: #e04a2a;
+	&.off {
+		background: #eee;
+		color: #777;
+	}
+}

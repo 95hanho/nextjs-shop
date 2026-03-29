@@ -10,6 +10,10 @@ interface AuthContextType {
 	setUser: Dispatch<SetStateAction<UserInfo>>;
 	isAuthLoading: boolean;
 	setIsAuthLoading: Dispatch<SetStateAction<boolean>>;
+	cartCount: number;
+	setCartCount: Dispatch<SetStateAction<number>>;
+	orderCount: number;
+	setOrderCount: Dispatch<SetStateAction<number>>;
 }
 
 interface SellerAuthContextType {

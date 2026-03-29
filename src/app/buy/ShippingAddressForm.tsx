@@ -1,5 +1,5 @@
 import { FaQuestion } from "react-icons/fa";
-import styles from "./BuyClient.module.scss";
+import styles from "./Buy.module.scss";
 import clsx from "clsx";
 import { DeliveryMemoSelector } from "@/components/address/DeliveryMemoSelector";
 import { useCallback, useEffect, useRef, useState } from "react";

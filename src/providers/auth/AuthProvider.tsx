@@ -4,7 +4,7 @@ import { authContext } from "@/context/authContext";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { UserInfo } from "@/types/auth";
 import { useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 interface AuthProviderProps {
 	children: React.ReactNode;
@@ -28,16 +28,24 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 	const queryClient = useQueryClient();
 	const [user, setUser] = useState<UserInfo>(initUser);
 	const [isAuthLoading, setIsAuthLoading] = useState(true);
+	const [cartCount, setCartCount] = useState(0);
+	const [orderCount, setOrderCount] = useState(0);
 
 	const loginOn = !!user?.name;
 
-	const logout = async () => {
+	const logout = useCallback(async () => {
 		console.log("로그아웃");
 		setUser(initUser);
 		// React Query 캐시 무효화
 		queryClient.setQueryData(["me"], initUser); // 직접 캐시 업데이트
 		await postJson(getApiUrl(API_URL.AUTH_LOGOUT));
-	};
+	}, [queryClient]);
 
-	return <authContext.Provider value={{ loginOn, logout, user, setUser, isAuthLoading, setIsAuthLoading }}>{children}</authContext.Provider>;
+	// value ---------------------------------------
+	const value = useMemo(
+		() => ({ loginOn, logout, user, setUser, isAuthLoading, setIsAuthLoading, cartCount, setCartCount, orderCount, setOrderCount }),
+		[loginOn, logout, user, isAuthLoading, cartCount, orderCount],
+	);
+
+	return <authContext.Provider value={value}>{children}</authContext.Provider>;
 };

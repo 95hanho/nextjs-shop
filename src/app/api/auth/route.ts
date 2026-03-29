@@ -20,6 +20,8 @@ export const GET = userWithAuth(async ({ accessToken }) => {
 		const data = await getNormal<GetUserResponse>(getBackendUrl(API_URL.AUTH), undefined, {
 			Authorization: `Bearer ${accessToken}`,
 		});
+		// console.log("data", data);
+
 		return NextResponse.json({ ...data }, { status: 200 });
 	} catch (err: unknown) {
 		const { status, payload } = toErrorResponse(err);

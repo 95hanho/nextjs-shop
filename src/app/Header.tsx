@@ -20,7 +20,7 @@ export default function Header({ menuList }: HeaderProps) {
 	const pathname = usePathname();
 	const searchParams = useSearchParams();
 	const { data: user } = useGetUserInfo();
-	const { logout } = useAuth();
+	const { logout, cartCount, orderCount } = useAuth();
 	const { refresh } = useRouter();
 
 	const headerRef = useRef<HTMLInputElement | null>(null);
@@ -95,7 +95,10 @@ export default function Header({ menuList }: HeaderProps) {
 										)}
 									</>,
 									<Link key="order-history" href="/mypage/order-history" prefetch={false}>
-										주문/배송내역
+										<span>
+											주문/배송내역
+											{orderCount > 0 && <>({orderCount})</>}
+										</span>
 									</Link>,
 								]}
 							/>
@@ -103,8 +106,9 @@ export default function Header({ menuList }: HeaderProps) {
 						<Link href={"/mypage/wish"} prefetch={false}>
 							<FiStar />
 						</Link>
-						<Link href={"/mypage/cart"} prefetch={false}>
+						<Link href={"/mypage/cart"} prefetch={false} className={styles.cartIcon}>
 							<FiShoppingCart />
+							{cartCount > 0 && <div className={styles.cartCount}>{cartCount}</div>}
 						</Link>
 					</div>
 				</div>

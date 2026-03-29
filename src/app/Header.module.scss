@@ -18,5 +18,20 @@
 		svg {
 			display: inline;
 		}
+		.cartCount {
+			position: absolute;
+			background-color: #000;
+			color: #fff;
+			border-radius: 100%;
+			right: -9px;
+			bottom: -8px;
+			padding: 4px;
+			font-size: 19px;
+			width: 18px;
+			height: 18px;
+			display: inline-flex;
+			justify-content: center;
+			align-items: center;
+		}
 	}
 }

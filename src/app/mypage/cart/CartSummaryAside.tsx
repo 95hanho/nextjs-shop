@@ -1,5 +1,5 @@
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
-import styles from "./CartClient.module.scss";
+import styles from "./Cart.module.scss";
 import { useState } from "react";
 import { SmartImage } from "@/components/ui/SmartImage";
 import { discountPercent, money } from "@/lib/format";
@@ -104,31 +104,40 @@ export default function CartSummaryAside({
 					<div>
 						<div className={styles.discountLine}>
 							<div>총 할인 금액</div>
-							<div className="font-bold text-red-500">-{money(cartOriginPrice - cartTotalPrice)}원</div>
+							<div className="font-bold text-red-500">
+								{cartOriginPrice - cartTotalPrice > 0 ? `-${money(cartOriginPrice - cartTotalPrice)}` : 0}원
+							</div>
 						</div>
 
-						<div className={clsx(styles.discountLine, styles.discountRow)}>
-							<div>ㄴ 상품 자체 할인금액</div>
-							<div className="text-gray-600">-{money(cartSelfDiscount)}원</div>
-						</div>
+						{cartOriginPrice - cartTotalPrice > 0 && (
+							<>
+								<div className={clsx(styles.discountLine, styles.discountRow)}>
+									<div>ㄴ 상품 자체 할인금액</div>
+									<div className="text-gray-600">{cartSelfDiscount > 0 ? `-${money(cartSelfDiscount)}` : 0}원</div>
+								</div>
 
-						<div className={clsx(styles.discountLine, styles.discountRow)}>
-							<div>ㄴ 제품 할인 쿠폰금액</div>
-							<div className="text-gray-600">-{money(sellerCouponDiscount)}원</div>
-						</div>
+								<div className={clsx(styles.discountLine, styles.discountRow)}>
+									<div>ㄴ 제품 할인 쿠폰금액</div>
+									<div className="text-gray-600">{sellerCouponDiscount > 0 ? `-${money(sellerCouponDiscount)}` : 0}원</div>
+								</div>
 
-						<div className={clsx(styles.discountLine, styles.discountRow)}>
-							<div>ㄴ 장바구니 쿠폰 할인금액</div>
-							<div className="text-gray-600">-{money(cartCouponDiscount)}원</div>
-						</div>
+								<div className={clsx(styles.discountLine, styles.discountRow)}>
+									<div>ㄴ 장바구니 쿠폰 할인금액</div>
+									<div className="text-gray-600">{cartCouponDiscount > 0 ? `-${money(cartCouponDiscount)}` : 0}원</div>
+								</div>
+							</>
+						)}
 					</div>
 
 					<div className={`mt-4 font-bold ${styles.priceLine} ${styles.priceLineTotal}`}>
 						<div>총 구매 금액</div>
 						<div aria-live="polite">
-							<span className="mr-2 text-red-500 align-baseline summary__badge">
-								{discountPercent(cartOriginPrice, cartTotalPrice)}%
-							</span>
+							{cartOriginPrice > 0 && (
+								<span className="mr-2 text-red-500 align-baseline summary__badge">
+									{discountPercent(cartOriginPrice, cartTotalPrice)}%
+								</span>
+							)}
+
 							<span className="align-baseline" data-field="total">
 								{money(cartTotalPrice)}원
 							</span>

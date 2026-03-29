@@ -1,5 +1,5 @@
 import { FaAngleDown } from "react-icons/fa";
-import styles from "./BuyClient.module.scss";
+import styles from "./Buy.module.scss";
 import { useBuy } from "@/hooks/buy/useBuy";
 import { money } from "@/lib/format";
 import { calculateMileage } from "@/lib/price";

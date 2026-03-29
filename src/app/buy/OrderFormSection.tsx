@@ -1,4 +1,4 @@
-import styles from "./BuyClient.module.scss";
+import styles from "./Buy.module.scss";
 import { BsExclamationCircle } from "react-icons/bs";
 import ShippingAddressForm from "@/app/buy/ShippingAddressForm";
 import { AppliedProductCouponMap, BuyItemWishCoupon, CartCoupon, SellerCoupon } from "@/app/buy/BuyClient";
@@ -11,6 +11,7 @@ import BuyCouponSelector from "@/app/buy/BuyCouponSelector";
 import clsx from "clsx";
 import { useBuy } from "@/hooks/buy/useBuy";
 import { OnOffButton } from "@/components/ui/OnOffButton";
+import { MaxDiscountBanner } from "@/components/buy/MaxDiscountBanner";
 
 interface OrderFormSectionProps {
 	buyItemList: BuyItemWishCoupon[];
@@ -75,25 +76,9 @@ export default function OrderFormSection({
 					</div>
 				</header>
 
-				<label
-					htmlFor="buyMaxDiscountApplied"
-					className={clsx(styles.couponBanner, !isMaxDiscountStatus && styles.off, "mt-3 flex justify-between")}
-				>
-					<div className={styles.bannerText}>{isMaxDiscountStatus ? "최대 할인이 적용됐어요." : "최대할인 적용하기"}</div>
-					<OnOffButton
-						checkId="buyMaxDiscountApplied"
-						checked={isMaxDiscountStatus} // 최대 할인 쿠폰이 적용됐거나, 다른 쿠폰 할인 금액 합이 최대 할인 금액과 같으면 켜짐
-						size="sm"
-						name="maxDiscountApplied"
-						onOffColor={["#DAA", "#737373"]}
-						onChange={() => {
-							if (!isMaxDiscountStatus) {
-								changeMaxDiscountApplied();
-							}
-						}}
-						cursor={false}
-					/>
-				</label>
+				{sumCouponDiscount > 0 && (
+					<MaxDiscountBanner isMaxDiscountStatus={isMaxDiscountStatus} changeMaxDiscountApplied={changeMaxDiscountApplied} />
+				)}
 
 				{buyItemList.map((item) => {
 					const initialOriginPrice = (item.originPrice + item.addPrice) * item.count;
