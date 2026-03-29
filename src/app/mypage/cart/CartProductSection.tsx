@@ -1,7 +1,7 @@
 // 2열 레이아웃 컨테이너 (grid는 CSS에서)
 // 좌측: 상품 영역
 
-import styles from "./CartClient.module.scss";
+import styles from "./Cart.module.scss";
 
 import { CartItem, UpdateCartRequest, UpdateCartSelectedRequest } from "@/types/mypage";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -29,6 +29,7 @@ import {
 import Link from "next/link";
 import CartCouponSelector from "@/app/mypage/cart/CartCouponSelector";
 import { scrollIntoCenter } from "@/utils/ui";
+import { MaxDiscountBanner } from "@/components/buy/MaxDiscountBanner";
 
 interface CartProductSectionProps extends CartItemSelectCollection {
 	noResetCouponOn: () => void;
@@ -38,6 +39,11 @@ interface CartProductSectionProps extends CartItemSelectCollection {
 	sellerCouponList: SellerCoupon[];
 	appliedProductCouponMap: AppliedProductCouponMap;
 	changeAppliedProductCoupon: (cartId: number, coupon: AppliedCartCoupon, isChecked: boolean) => void;
+	/*  */
+	isMaxDiscountApplied: boolean;
+	maxDiscountPrice: number;
+	sumCouponDiscount: number;
+	changeMaxDiscountApplied: () => void;
 }
 
 export default function CartProductSection({
@@ -54,9 +60,17 @@ export default function CartProductSection({
 	anySelected,
 	unselectedCartIdList,
 	selectedCartIdList,
+	//
+	isMaxDiscountApplied,
+	maxDiscountPrice,
+	sumCouponDiscount,
+	changeMaxDiscountApplied,
 }: CartProductSectionProps) {
 	const queryClient = useQueryClient();
 	const { openModal, modalResult, clearModalResult } = useModalStore();
+
+	// 최대 할인 적용여부
+	const isMaxDiscountStatus = isMaxDiscountApplied || sumCouponDiscount === maxDiscountPrice;
 
 	// =================================================================
 	// React Query
@@ -222,6 +236,10 @@ export default function CartProductSection({
 				</div>
 
 				<hr className={styles.productOutlineDivider} />
+
+				{sumCouponDiscount > 0 && (
+					<MaxDiscountBanner isMaxDiscountStatus={isMaxDiscountStatus} changeMaxDiscountApplied={changeMaxDiscountApplied} />
+				)}
 
 				{/* 브랜드 그룹 */}
 				{brandGroupList?.map((brandGroup, brandGroupIdx) => {

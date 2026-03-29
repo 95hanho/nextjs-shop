@@ -7,10 +7,12 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { buyContext } from "@/context/buyContext";
 import { useModalStore } from "@/store/modal.store";
 import { DefaultAddress, payRequest } from "@/types/buy";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import API_URL from "@/api/endpoints";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { postJson } from "@/api/fetchFilter";
+import { toErrorResponse } from "@/api/error";
+import { useRouter } from "next/navigation";
 
 const addressFormRegex: { [key: string]: RegExp } = {
 	addressPhone: /^(010|011|016|017|018|019)\d{3,4}\d{4}$/,
@@ -27,6 +29,8 @@ interface BuyProviderProps {
 
 export const BuyProvider = ({ children, initialDefaultAddress = null, holdIds }: BuyProviderProps) => {
 	const { modalResult, clearModalResult, openModal } = useModalStore();
+	const queryClient = useQueryClient();
+	const router = useRouter();
 
 	// =================================================================
 	// React Query
@@ -37,9 +41,25 @@ export const BuyProvider = ({ children, initialDefaultAddress = null, holdIds }:
 		mutationFn: (data: payRequest) => postJson(getApiUrl(API_URL.BUY_PAY), data),
 		onSuccess(data) {
 			console.log("mutateBuy success", data);
+
+			queryClient.invalidateQueries({ queryKey: ["me"] }); // 사용자 정보 다시 가져오기(마일리지, 주문내역 등 변경된 정보 반영 위해)
+
+			// 구매 완료 페이지로
+			router.push("/buy/complete");
 		},
 		onError(err) {
 			console.log("mutateBuy err", err);
+
+			// NOT_MATCHED_HOLD : 결제 상품이 점유 상품과 일치하지 않음
+			// COUPON_UNAVAILABLE_FAILED : 쿠폰 사용 불가
+			// MILEAGE_UNAVAILABLE_FAILED : 마일리지 사용 불가
+			// STOCK_UPDATE_FAILED : 재고 업데이트 실패
+			// ORDER_ITEM_NOT_FOUND : 주문 상품을 찾을 수 없음
+			// MILEAGE_UPDATE_FAILED : 마일리지 업데이트 실패
+			// STOCK_HOLD_UPDATE_FAILED : 점유 정보 업데이트 실패
+
+			// 실패 시 재조회하여 처리
+			queryClient.invalidateQueries({ queryKey: ["stockHold"] }); // 점유 상품 정보 다시 가져오기
 		},
 	});
 
