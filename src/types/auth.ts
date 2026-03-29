@@ -16,6 +16,8 @@ export type LoginFormData<T extends string = "userId"> = {
 export type UserInfo = User & UserAdd;
 export interface GetUserResponse extends BaseResponse {
 	user: UserInfo;
+	cartCount: number;
+	orderCount: number;
 }
 /* 휴대폰 인증 */
 export interface PhoneAuthRequest {
