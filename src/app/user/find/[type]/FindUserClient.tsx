@@ -1,7 +1,7 @@
 /* 아이디, 비밀번호 찾기 클라 */
 "use client";
 
-import styles from "./FindUserClient.module.scss";
+import styles from "./FindUser.module.scss";
 import { FormInput } from "@/components/auth/FormInput";
 import { FormPageShell } from "@/components/auth/FormPageShell";
 import { PhoneAuthSection } from "@/components/auth/PhoneAuthSection";

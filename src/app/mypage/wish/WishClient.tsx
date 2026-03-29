@@ -10,7 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import { OnOffButton } from "@/components/ui/OnOffButton";
 import { ProductItem } from "@/components/product/ProductItem";
 import { ProductGrid } from "@/components/product/ProductGrid";
-import styles from "./WishClient.module.scss";
+import styles from "./Wish.module.scss";
 import clsx from "clsx";
 
 export default function WishClient() {

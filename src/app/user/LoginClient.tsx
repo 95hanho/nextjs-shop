@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { SiKakaotalk, SiNaver } from "react-icons/si";
-import styles from "./LoginClient.module.scss";
+import styles from "./Login.module.scss";
 import { LoginForm } from "@/components/auth/LoginForm";
 import clsx from "clsx";
 import { FormPageShell } from "@/components/auth/FormPageShell";

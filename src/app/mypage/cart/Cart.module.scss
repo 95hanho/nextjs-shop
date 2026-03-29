@@ -39,12 +39,13 @@
 			}
 
 			.productOutline {
+				padding: 0 16px;
 				.productToolbar {
 					background-color: var(--white);
 					z-index: 100;
 					justify-content: space-between;
 					align-items: center;
-					padding: 12px 16px;
+					padding: 12px 0;
 					font-size: 14px;
 					font-weight: 500;
 					line-height: 20px;
@@ -70,7 +71,7 @@
 
 				.productOutlineDivider {
 					border-color: #ffffff;
-					width: calc(100% - 32px);
+					width: 100%;
 					display: block;
 					justify-self: center;
 					background: #e5e5e5;
@@ -93,7 +94,7 @@
 				.brandGroup {
 					// 브랜드 헤더
 					.brandGroupHeader {
-						padding: 14px 16px 12px;
+						padding: 14px 0 12px;
 						font-size: 14px;
 						font-weight: 500;
 						display: flex;
@@ -131,18 +132,13 @@
 
 							// 상품 체크
 							.productItemCheck {
-								width: 40px;
-								text-align: right;
-
-								input[type="checkbox"] {
-									margin-right: 6px;
-								}
+								width: 23px;
 							}
 
 							// 상품 정보
 							.productItemSection {
-								width: calc(100% - 40px);
-								padding: 0 20px 0 5px;
+								width: calc(100% - 23px);
+								padding: 0 4px 0 5px;
 
 								.productItemOverview {
 									display: flex;
@@ -352,7 +348,7 @@
 							// 장바구니 제거
 							.productItemDelete {
 								position: absolute;
-								right: 15px;
+								right: 6px;
 								top: 0px;
 
 								button {

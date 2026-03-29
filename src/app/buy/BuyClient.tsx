@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import styles from "./BuyClient.module.scss";
+import styles from "./Buy.module.scss";
 import OrderFormSection from "@/app/buy/OrderFormSection";
 import OrderSummaryPanel from "@/app/buy/OrderSummaryPanel";
 import { useMutation, useQuery } from "@tanstack/react-query";
