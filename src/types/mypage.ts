@@ -39,7 +39,7 @@ export type OrderGroup = {
 };
 // 상품별 주문배송정보
 export type OrderItem = {
-	orderListId: number;
+	orderItemId: number;
 	count: number;
 	orderPrice: number;
 	discountPrice: number;
@@ -86,30 +86,27 @@ export interface UserCouponResponse extends BaseResponse {
 }
 
 /* 주문배송정보 조회 */
-export type MyOrderItem = OrderItem & {
+export type MyOrderItem = {
+	orderItemId: number;
 	orderId: number;
 	holdId: number;
-	productOptionId: number;
-	addPrice: number;
-	size: string;
-	productId: number;
 	productName: string;
-	colorName: string;
+	count: number;
+	size: string;
 	originPrice: number;
 	finalPrice: number;
-	sellerName: string;
+	addPrice: number;
+	status: "ORDERED" | "CANCELLED" | "SHIPPED" | "DELIVERED" | "PREPARING";
 	//
-	productImageId: number;
-} & Review & {
-		menuSubId: number;
-		subMenuName: string;
-		menuTopId: number;
-		topMenuName: string;
-		gender: string;
-	} & FileInfo;
+	reviewId: number | null;
+	//
+	sellerNo: number;
+	sellerName: string;
+	sellerNameEn: string | null;
+} & FileInfo;
 
 // 주문배송정보
-export type MyOrder = OrderGroup & {
+export type MyOrder = { orderId: number; orderDate: string } & {
 	items: MyOrderItem[];
 };
 // 주문배송정보 조회
@@ -175,7 +172,7 @@ export interface MyOrderDetailResponse extends BaseResponse {
 export interface writeReviewRequest {
 	content: string;
 	rating: number;
-	orderListId: number;
+	orderItemId: number;
 }
 /* 장바구니 조회 */
 export type CartItem = Cart & {
