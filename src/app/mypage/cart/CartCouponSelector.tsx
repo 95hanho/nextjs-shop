@@ -73,7 +73,7 @@ export default function CartCouponSelector(props: CartCouponSelectorProps) {
 						id={`coupon-${productOptionId}-${coupon.couponId}`}
 						type="checkbox"
 						disabled={disabled}
-						checked={couponChecked}
+						checked={couponChecked || false}
 						onChange={() => {
 							handleCheckAppliedProductCoupon(!couponChecked);
 						}}
