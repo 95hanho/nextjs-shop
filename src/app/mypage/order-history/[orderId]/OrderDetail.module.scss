@@ -1,0 +1,21 @@
+.orderDetail {
+	background-color: #fafafa;
+
+	.orderDetailWrap {
+		width: 600px;
+		margin: 0 auto;
+		.orderDetailHeader {
+			padding: 16px 16px 10px;
+			background-color: #efefef;
+			border-bottom: 1px solid #e0e0e0;
+
+			.orderDetailTitle {
+				padding: 0 0 13px;
+			}
+		}
+		.orderDetailList {
+			background-color: #fff;
+			padding: 15px 18px;
+		}
+	}
+}
