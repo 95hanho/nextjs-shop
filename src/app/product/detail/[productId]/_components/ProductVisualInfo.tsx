@@ -112,6 +112,7 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 						"재고 수량보다 많은 수량이 선택된 옵션이 있습니다.<br /> 재고가 있는 수량만 장바구니에 담겼습니다.<br /> 옵션과 수량을 확인해주세요.",
 				});
 			}
+			queryClient.invalidateQueries({ queryKey: ["me"] });
 		},
 		onError: (err) => {
 			console.error("장바구니 담기 실패", err);
@@ -381,14 +382,14 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 								<>
 									{loginOn ? (
 										<>
-											{productCoupon.length > 0 && cartCoupon.length > 0 ? (
-												<div className={styles.myPriceDetails}>
-													{productDetail.originPrice !== productDetail.finalPrice && (
-														<div>
-															<h4>상품 할인</h4>
-															<MyPriceCheckboxTooltip type="BASE" {...myPriceCheckboxCommonProps} />
-														</div>
-													)}
+											<div className={styles.myPriceDetails}>
+												{productDetail.originPrice !== productDetail.finalPrice && (
+													<div>
+														<h4>상품 할인</h4>
+														<MyPriceCheckboxTooltip type="BASE" {...myPriceCheckboxCommonProps} />
+													</div>
+												)}
+												{productCoupon.length > 0 && (
 													<div>
 														<h4>상품 쿠폰 할인</h4>
 														{productCoupon.map((coupon) => {
@@ -424,6 +425,8 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 															);
 														})}
 													</div>
+												)}
+												{cartCoupon.length > 0 && (
 													<div>
 														<h4>장바구니 쿠폰 할인</h4>
 														{cartCoupon.map((coupon) => (
@@ -455,30 +458,28 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 															/>
 														))}
 													</div>
-													<div>
-														<h4>적립금 사용</h4>
-														<MyPriceCheckboxTooltip
-															type="MILEAGE"
-															mileage={user.mileage}
-															{...myPriceCheckboxCommonProps}
-															setMileageUse={() => {
-																setMileageUsed(!mileageUsed);
-															}}
-															couponChecked={mileageUsed}
-															useMileage={useMileage}
-														/>
-													</div>
-													<div>
-														<p>
-															결제수단 할인과 보유 적립금 할인, 적립 혜택을 선택하면
-															<br />
-															다른 상품 화면의 &apos;나의 구매 가능 가격&apos;에도 기본 적용됩니다.
-														</p>
-													</div>
+												)}
+												<div>
+													<h4>적립금 사용</h4>
+													<MyPriceCheckboxTooltip
+														type="MILEAGE"
+														mileage={user.mileage}
+														{...myPriceCheckboxCommonProps}
+														setMileageUse={() => {
+															setMileageUsed(!mileageUsed);
+														}}
+														couponChecked={mileageUsed}
+														useMileage={useMileage}
+													/>
 												</div>
-											) : (
-												<p className="px-4 py-3 text-sm">나의 구매 가능 가격 계산중...</p>
-											)}
+												<div>
+													<p>
+														결제수단 할인과 보유 적립금 할인, 적립 혜택을 선택하면
+														<br />
+														다른 상품 화면의 &apos;나의 구매 가능 가격&apos;에도 기본 적용됩니다.
+													</p>
+												</div>
+											</div>
 										</>
 									) : (
 										<p className="px-4 py-3 text-sm">로그인 후 나의 구매 가격을 확인하세요!</p>
