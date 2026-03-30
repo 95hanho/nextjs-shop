@@ -25,25 +25,32 @@ export type AdminCoupon = {
 export type OrderGroup = {
 	orderId: number;
 	orderDate: string;
-	eachCouponDiscountTotal: number;
-	commonCouponDiscountTotal: number;
+	sellerCouponDiscountTotal: number;
+	cartCouponDiscountTotal: number;
 	shippingFee: number;
 	usedMileage: number;
+	remainingMileage: number;
 	totalPrice: number;
 	paymentMethod: "CARD" | "CASH";
 	paymentCode: string | null;
-	status: "ORDERED" | "CANCELLED" | "PAID" | "SHIPPED" | "DELIVERED" | "PREPARING";
-	shippingDate: string | null;
-	deliveredDate: string | null;
-	returnDate: string | null;
 };
 // 상품별 주문배송정보
 export type OrderItem = {
 	orderItemId: number;
+	orderId: number;
+	holdId: number;
+	productName: string;
 	count: number;
-	orderPrice: number;
-	discountPrice: number;
-	paidUnitPrice: number;
+	size: string;
+	originPrice: number;
+	finalPrice: number;
+	addPrice: number;
+	couponDiscountedPrice: number;
+	totalPrice: number;
+	status: "ORDERED" | "CANCELLED" | "SHIPPED" | "DELIVERED" | "PREPARING";
+	shippingDate: string | null;
+	deliveredDate: string | null;
+	returnDate: string | null;
 };
 // 리뷰
 export type Review = {
@@ -116,57 +123,31 @@ export interface MyOrderListResponse extends BaseResponse {
 /* 주문배송정보 상세조회 */
 // 주문배송정보 상세상품 정보
 export type MyOrderDetailItem = OrderItem & {
-	orderId: number;
-	userCouponId: number;
-	couponId: number;
-	description: string;
-	couponCode: string;
-	discountType: string;
-	discountValue: number;
-	maxDiscount: null;
-	minimumOrderBeforeAmount: number;
-	holdId: number;
-	productOptionId: number;
-	addPrice: number;
-	size: string;
-	productId: number;
-	productName: string;
-	colorName: string;
-	originPrice: number;
-	finalPrice: number;
-	sellerName: string;
-} & Review & {
-		menuSubId: number;
-		subMenuName: string;
-		menuTopId: number;
-		topMenuName: string;
-		productImageId: number;
-	} & FileInfo & {
-		stackable: false;
+	reviewId: number | null;
+	productImageId: number;
+} & FileInfo & {
+		coupons: {
+			orderItemCouponId: number;
+			orderItemId: number;
+			userCouponId: number;
+			discountedPrice: number;
+			couponId: number;
+			description: string;
+			couponCode: string | null;
+			discountType: "percentage" | "fixed_amount";
+			discountValue: number;
+			maxDiscount: number;
+			minimumOrderBeforeAmount: number;
+		}[];
 	};
 // 주문배송정보 상세
 export type MyOrderDetail = OrderGroup &
-	UserAddress & {
-		userId: string;
-		//
-		remainingMileage: number;
-		//
-		userCouponId: number;
-		couponId: number;
-		description: string;
-		couponCode: string;
-		discountType: string;
-		discountValue: number;
-		maxDiscount: null;
-		minimumOrderBeforeAmount: number;
-	} & {
-		item: MyOrderDetailItem[];
-	} & {
-		defaultAddress: boolean;
-		stackable: boolean;
+	Omit<UserAddress, "addressId"> & {
+		addressId: number;
 	};
 export interface MyOrderDetailResponse extends BaseResponse {
 	myOrderDetail: MyOrderDetail;
+	myOrderDetailItems: MyOrderDetailItem[];
 }
 /* 리뷰 작성 */
 export interface writeReviewRequest {
