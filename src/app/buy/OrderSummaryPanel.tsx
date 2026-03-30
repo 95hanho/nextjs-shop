@@ -47,7 +47,7 @@ export default function OrderSummaryPanel({
 					<div className={styles.priceRow}>
 						<span>쿠폰 할인 금액</span>
 						<span className={styles.minus}>
-							-{money(cartCouponDiscount + sellerCouponDiscount)}원{" "}
+							{cartCouponDiscount + sellerCouponDiscount > 0 ? `-${money(cartCouponDiscount + sellerCouponDiscount)}` : "0"}원{" "}
 							<i className={styles.chevSmall}>
 								<FaAngleDown />
 							</i>

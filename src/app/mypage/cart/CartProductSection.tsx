@@ -296,20 +296,22 @@ export default function CartProductSection({
 											productAlarm = "재고가 부족합니다. 옵션을 변경하시면 선택이 가능합니다.";
 										}
 
+										console.log({ cartCouponList, sellerCouponList });
 										// 해당 장바구니상품에 적용 가능한 장바구니 쿠폰 리스트
 										const availableCartCoupons = cartCouponList.filter(
 											(coupon) =>
 												(coupon.isProductRestricted && coupon.couponAllowedId && coupon.productId === product.productId) ||
-												(!coupon.isProductRestricted && !coupon.couponAllowedId && !coupon.productId),
+												(!coupon.isProductRestricted && !coupon.couponAllowedId),
 										);
 										// 해당 장바구니상품에 적용 가능한 판매자 쿠폰 리스트
 										const availableProductCoupons = sellerCouponList.filter(
 											(coupon) =>
 												(coupon.isProductRestricted && coupon.couponAllowedId && coupon.productId === product.productId) ||
-												(!coupon.isProductRestricted && !coupon.couponAllowedId && !coupon.productId),
+												(!coupon.isProductRestricted && !coupon.couponAllowedId),
 										);
 										// 적용 가능한 쿠폰 갯수
 										const availableProductCouponCount = availableProductCoupons.length + availableCartCoupons.length;
+										console.log({ availableProductCouponCount });
 
 										// 해당 장바구니에 적용된 쿠폰 정보 가져오기
 										const appliedProductCoupon = appliedProductCouponMap[product.cartId];

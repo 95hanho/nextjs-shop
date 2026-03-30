@@ -17,12 +17,12 @@ export const POST = userWithAuth(async ({ nextRequest, accessToken }) => {
 		// const userId = formData.get("userId");
 		// const password = formData.get("password");
 		// json으로 받으면
-		const { content, rating, orderListId }: writeReviewRequest = await nextRequest.json();
+		const { content, rating, orderItemId }: writeReviewRequest = await nextRequest.json();
 		if (!content) return NextResponse.json({ message: "내용을 입력해주세요." }, { status: 400 });
 		if (!rating) return NextResponse.json({ message: "별점을 입력해주세요." }, { status: 400 });
-		if (!orderListId) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
+		if (!orderItemId) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
 
-		const payload: writeReviewRequest = { content, rating, orderListId };
+		const payload: writeReviewRequest = { content, rating, orderItemId };
 		const data = await postUrlFormData<BaseResponse>(
 			getBackendUrl(API_URL.MY_REVIEW),
 			{ ...payload },

@@ -24,7 +24,7 @@ export default async function CategoryProductList({
 	console.log(menuSubId, menuTopId);
 
 	const accessToken = cookies().get("accessToken")?.value; // HttpOnly 쿠키 OK
-	console.log("서버에서 accessToken", accessToken);
+	// console.log("서버에서 accessToken", accessToken);
 	/* ============ */
 	menuSubId = 25; // TEST 입력
 	/* ============ */
@@ -35,8 +35,9 @@ export default async function CategoryProductList({
 		// lastProductId,
 		// lastPopularity
 	};
-	const productResponse: GetProductListResponse = await getNormal(getBackendUrl(API_URL.PRODUCT), payload);
-	console.log(productResponse.productList[0]);
+	console.log("[SSR] 제품 리스트 조회");
+	const productResponse: GetProductListResponse = await getNormal(getBackendUrl(API_URL.PRODUCT), { ...payload });
+	// console.log(productResponse.productList[0]);
 
 	return <CategoryProductListClient productList={productResponse.productList} />;
 }

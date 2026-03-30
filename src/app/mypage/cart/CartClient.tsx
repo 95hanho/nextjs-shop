@@ -16,6 +16,7 @@ import { calculateDiscount } from "@/lib/price";
 import { useModalStore } from "@/store/modal.store";
 import { BuyItem } from "@/types/buy";
 import { toErrorResponse } from "@/api/error";
+import { useRouter } from "next/navigation";
 
 type CartItemWithCoupon = CartItem & {
 	discountedPrice: number; // 해당 상품에 적용된 쿠폰 할인을 반영한 가격 (finalPrice에서 할인금액을 뺀 가격)
@@ -69,6 +70,7 @@ export type CartItemSelectCollection = {
 export default function CartClient() {
 	const { loginOn } = useAuth();
 	const { openModal } = useModalStore();
+	const router = useRouter();
 
 	// =================================================================
 	// React Query
@@ -88,6 +90,7 @@ export default function CartClient() {
 		queryFn: () => getNormal(getApiUrl(API_URL.MY_CART)),
 		enabled: loginOn,
 		refetchOnWindowFocus: false,
+		retry: false,
 	});
 
 	// =================================================================
@@ -162,7 +165,15 @@ export default function CartClient() {
 		if (!isError || !error) return;
 
 		const { status, payload } = toErrorResponse(error);
-	}, [isError, error]);
+
+		if (payload.message === "CART_EMPTY") {
+			openModal("ALERT", {
+				content: "장바구니가 비어있습니다. 상품을 담으러 가볼까요?",
+				handleAfterClose: () => router.replace("/"), // 홈으로 이동
+			});
+			return;
+		}
+	}, [isError, error, openModal, router]);
 
 	// 장바구니 데이터 초기화 및 쿠폰 자동 적용 로직
 	useEffect(() => {
