@@ -341,14 +341,14 @@ export default function BuyClient() {
 				stockHoldData.availableCartCoupons.filter(
 					(coupon) =>
 						((coupon.isProductRestricted && coupon.couponAllowedId && coupon.productId === product.productId) ||
-							(!coupon.isProductRestricted && !coupon.couponAllowedId && !coupon.productId)) &&
+							(!coupon.isProductRestricted && !coupon.couponAllowedId)) &&
 						calculateDiscount(initialFinalPrice, coupon) !== null,
 				) || [];
 			const couponsForSeller =
 				availableCouponsWithDiscountObj[product.sellerName]?.filter(
 					(coupon) =>
 						((coupon.isProductRestricted && coupon.couponAllowedId && coupon.productId === product.productId) ||
-							(!coupon.isProductRestricted && !coupon.couponAllowedId && !coupon.productId)) &&
+							(!coupon.isProductRestricted && !coupon.couponAllowedId)) &&
 						calculateDiscount(initialFinalPrice, coupon) !== null,
 				) || [];
 
@@ -368,15 +368,20 @@ export default function BuyClient() {
 				}, selectedUnStackableCoupons[0] as AppliedCoupon);
 				const selectedStackableCouponList = availableMaxDiscountBuyCoupon.filter((coupon) => coupon.isStackable);
 
-				initUsedCouponIds.push(selectedMaxUnStackable?.couponId, ...selectedStackableCouponList.map((coupon) => coupon.couponId));
-
 				initMaxDiscountAppliedProductCouponMap[product.holdId] = {
 					unStackable: selectedMaxUnStackable,
 					stackable: selectedStackableCouponList,
 				};
-				initMaxDiscountPrice +=
-					(calculateDiscount(initialFinalPrice, selectedMaxUnStackable) || 0) +
-					selectedStackableCouponList.reduce((sum, coupon) => sum + (calculateDiscount(initialFinalPrice, coupon) || 0), 0);
+
+				if (selectedMaxUnStackable) {
+					initUsedCouponIds.push(selectedMaxUnStackable.couponId);
+					initMaxDiscountPrice += calculateDiscount(initialFinalPrice, selectedMaxUnStackable) || 0;
+				}
+				initUsedCouponIds.push(...selectedStackableCouponList.map((coupon) => coupon.couponId));
+				initMaxDiscountPrice += selectedStackableCouponList.reduce(
+					(sum, coupon) => sum + (calculateDiscount(initialFinalPrice, coupon) || 0),
+					0,
+				);
 			}
 		});
 

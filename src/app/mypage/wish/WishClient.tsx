@@ -16,6 +16,10 @@ import clsx from "clsx";
 export default function WishClient() {
 	const { loginOn } = useAuth();
 
+	// =================================================================
+	// React Query
+	// =================================================================
+
 	// React Query 쓰면 위시리스트 수정(추가/삭제) 후 invalidateQueries(["wishlist"])로 새로고침 처리 가능.
 	// 위시리스트 조회
 	const { data: wishListData, isLoading } = useQuery<GetWishListResponse>({
