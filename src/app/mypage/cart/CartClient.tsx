@@ -220,13 +220,13 @@ export default function CartClient() {
 				cartData.availableCartCoupons.filter(
 					(coupon) =>
 						(coupon.isProductRestricted && coupon.couponAllowedId && coupon.productId === cart.productId) ||
-						(!coupon.isProductRestricted && !coupon.couponAllowedId && !coupon.productId),
+						(!coupon.isProductRestricted && !coupon.couponAllowedId),
 				) || [];
 			const couponsForSeller =
 				availableCouponsWithDiscountObj[cart.sellerName]?.filter(
 					(coupon) =>
 						(coupon.isProductRestricted && coupon.couponAllowedId && coupon.productId === cart.productId) ||
-						(!coupon.isProductRestricted && !coupon.couponAllowedId && !coupon.productId),
+						(!coupon.isProductRestricted && !coupon.couponAllowedId),
 				) || [];
 
 			const availableCartCoupon = [...couponsForCart, ...couponsForSeller].filter((coupon) => {

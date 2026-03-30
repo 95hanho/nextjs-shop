@@ -88,7 +88,7 @@ export default function OrderFormSection({
 					const availableCartCoupons = cartCouponList.filter(
 						(coupon) =>
 							((coupon.isProductRestricted && coupon.couponAllowedId && coupon.productId === item.productId) ||
-								(!coupon.isProductRestricted && !coupon.couponAllowedId && !coupon.productId)) &&
+								(!coupon.isProductRestricted && !coupon.couponAllowedId)) &&
 							calculateDiscount(initialFinalPrice, coupon) !== null,
 					);
 
@@ -97,7 +97,7 @@ export default function OrderFormSection({
 					const availableProductCoupons = sellerCouponList.filter(
 						(coupon) =>
 							((coupon.isProductRestricted && coupon.couponAllowedId && coupon.productId === item.productId) ||
-								(!coupon.isProductRestricted && !coupon.couponAllowedId && !coupon.productId)) &&
+								(!coupon.isProductRestricted && !coupon.couponAllowedId)) &&
 							calculateDiscount(initialFinalPrice, coupon) !== null,
 					);
 					// console.log({ name: item.productName, availableProductCoupons });
