@@ -30,6 +30,7 @@ export type OrderGroup = {
 	shippingFee: number;
 	usedMileage: number;
 	remainingMileage: number;
+	earnedMileage: number;
 	totalPrice: number;
 	paymentMethod: "CARD" | "CASH";
 	paymentCode: string | null;
@@ -124,6 +125,9 @@ export interface MyOrderListResponse extends BaseResponse {
 // 주문배송정보 상세상품 정보
 export type MyOrderDetailItem = OrderItem & {
 	reviewId: number | null;
+	sellerNo: number;
+	sellerName: string;
+	sellerNameEn: string | null;
 	productImageId: number;
 } & FileInfo & {
 		coupons: {
