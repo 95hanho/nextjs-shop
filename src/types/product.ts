@@ -66,11 +66,12 @@ export interface GetProductListResponse extends BaseResponse {
 	productList: ProductItem[];
 }
 /* 장바구니 넣기 */
+export type AddCartItem = {
+	productOptionId: number;
+	quantity: number;
+};
 export interface AddCartRequest {
-	addCartList: {
-		productOptionId: number;
-		quantity: number;
-	}[];
+	addCartList: AddCartItem[];
 	productId: number;
 }
 /* 제품 상세보기 조회 */

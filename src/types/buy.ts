@@ -14,8 +14,8 @@ export type StockHoldCoupon = {
 /* 상품 확인 및 점유(구매페이지이동) */
 export interface BuyItem {
 	productOptionId: number;
-	cartId: number | null; // 장바구니에서 온 경우 해당 cartId, 바로 구매하는 경우 null
 	count: number; // 1 이상 정수
+	cartId?: number; // 장바구니에서 온 경우 해당 cartId, 바로 구매하는 경우 null
 	couponIds: number[]; // 각 상품에 적용할 쿠폰 ID 리스트 (없으면 빈 배열)
 }
 export interface BuyHoldRequest {

@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosResponse } from "axios";
 import { useEffect, useState } from "react";
 
-export const useQuery기본형태 = (testData: string) => {
+const useQuery기본형태 = (testData: string) => {
 	return useQuery({
 		// 쿼리 키 - 바뀌는 경우 다른 요청으로 인식. 같을 경우 캐싱데이터 반환함.
 		// queryKey: ["surveyQuestion", testData],
@@ -38,7 +38,7 @@ export const useQuery기본형태 = (testData: string) => {
 	});
 };
 // 사용시
-export const Test = () => {
+const useQueryTest = () => {
 	const testData = "test";
 	const { isSuccess, data, refetch, isLoading, isFetching, error, isError, isPending } = useQuery기본형태(testData);
 
@@ -76,7 +76,44 @@ export const Test = () => {
 
 	return <>{isLoading ? <div className="loding"></div> : <div>{testData}</div>}</>;
 };
-export const QueryKey_사용 = () => {
+const useMutationTest = () => {
+	const testData = "test";
+	const { isSuccess, data, refetch, error, isError, isPending, reset } = useMutation_기본형태(testData);
+
+	// isSuccess : API요청이 성공적으로 됐는지, if(isSuccess) {} 로 성공 시 데이터 어떻게 보여줄지 작성
+	// data : 반환된 데이터
+	// refetch : 요청 재요청 하기, 수동으로 refetch()하여 요청을 다시 할 수 있음.
+	// error : 쿼리 실행 중 오류가 났을 때 throw된 오류 객체값
+	// isError : 쿼리 실행 중 오류가 났는지
+	// isPending : 캐시데이터도 없고 쿼리도 수행 전에. 최초 실행됨.
+	// reset : mutation 상태 초기화. isSuccess, isError, error 등 초기화됨.
+
+	// 예를들어 이런식으로 쓰임
+	const [view, setView] = useState<string | null>(null);
+	useEffect(() => {
+		if (isPending) {
+			// 최초 요청 전에 실행
+		}
+		if (isLoading) {
+			// 최초 요청 중에 실행
+		}
+		if (isSuccess) {
+			// 요청 성공
+			setView(testData);
+		}
+		if (isError) {
+			// 에러났을 때
+			console.log(error);
+		}
+	}, [isPending, isLoading, isSuccess, isError, testData]);
+
+	useEffect(() => {
+		// 재요청 시 마다
+	}, [isFetching]);
+
+	return <>{isLoading ? <div className="loding"></div> : <div>{testData}</div>}</>;
+};
+const QueryKey_사용 = () => {
 	const queryClient = useQueryClient();
 	//
 	queryClient.invalidateQueries({ queryKey: ["cartList"] });
@@ -86,7 +123,7 @@ export const QueryKey_사용 = () => {
 	const prevData = queryClient.getQueryData(["cartList"]);
 };
 /* ----------------------------------- */
-export const useMutation_기본형태 = (testData: string) => {
+const useMutation_기본형태 = (testData: string) => {
 	return useMutation({
 		// axios나 fetch
 		mutationFn: () => getNormal("123", { testData }, {}),

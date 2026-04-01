@@ -15,6 +15,11 @@ export const POST = userWithAuth(async ({ nextRequest, accessToken }) => {
 		const { buyList, returnUrl }: BuyHoldRequest = await nextRequest.json();
 
 		if (buyList.length === 0) return NextResponse.json({ message: "구매 상품이 없습니다." }, { status: 400 });
+		for (const item of buyList) {
+			if (item.count <= 0) {
+				return NextResponse.json({ message: "상품 수량은 1 이상이어야 합니다." }, { status: 400 });
+			}
+		}
 		if (!returnUrl) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
 
 		const payload: BuyHoldRequest = { buyList, returnUrl };

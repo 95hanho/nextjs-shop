@@ -142,6 +142,7 @@ export type MyOrderDetailItem = OrderItem & {
 			discountValue: number;
 			maxDiscount: number;
 			minimumOrderBeforeAmount: number;
+			sellerNo: number | null;
 		}[];
 	};
 // 주문배송정보 상세
