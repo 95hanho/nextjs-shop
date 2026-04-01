@@ -163,15 +163,19 @@ export default function OrderDetailClient({ orderId }: { orderId: string }) {
 															{item.coupons.map((coupon) => (
 																<div key={"orderItemCoupon-" + coupon.userCouponId} className={styles.couponList}>
 																	<div className={styles.couponContent}>
-																		<mark className={styles.cartMark}>장바구니</mark>
-																		<span>Urban Style 5천원 (스택가능)</span>
+																		{coupon.sellerNo == null ? (
+																			<mark className={styles.cartMark}>장바구니</mark>
+																		) : (
+																			<mark className={styles.sellerMark}>판매자</mark>
+																		)}
+																		<span>{coupon.description}</span>
 																	</div>
-																	<div>-5,000</div>
+																	<div className="font-bold tracking-wide">-{money(coupon.discountedPrice)}</div>
 																</div>
 															))}
 															{/* <div className={styles.couponList}>
 																<div className={styles.couponContent}>
-																	<mark className={styles.sellerMark}>판매자</mark>
+																	
 																	<span>Urban Style 5천원 (스택가능)</span>
 																</div>
 																<div>-5,000</div>
