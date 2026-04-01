@@ -4,10 +4,12 @@ import { useEffect, useState } from "react";
 
 interface AddCartPopupProps {
 	triggerKey: number;
+	productId?: number;
+	curProductId?: number;
 }
 
 // 장바구니 담기 완료 팝업
-export const AddCartPopup = ({ triggerKey }: AddCartPopupProps) => {
+export const AddCartPopup = ({ triggerKey, productId, curProductId }: AddCartPopupProps) => {
 	// 장바구니 담기 팝업
 	const [cartPopupOpen, setCartPopupOpen] = useState(false);
 	const [cartPopupClose, setCartPopupClose] = useState(false);
@@ -16,9 +18,11 @@ export const AddCartPopup = ({ triggerKey }: AddCartPopupProps) => {
 	useEffect(() => {
 		if (triggerKey === 0) return;
 
+		if (productId !== undefined && curProductId !== undefined && productId !== curProductId) return; // 현재 상품과 다른 상품의 담기 이벤트는 무시
+
 		setCartPopupOpen(true);
 		setCartPopupClose(false);
-	}, [triggerKey]);
+	}, [triggerKey, productId, curProductId]);
 
 	// 장바구니 담기 팝업 애니메이션 및 자동 닫힘
 	useEffect(() => {
