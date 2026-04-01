@@ -53,7 +53,7 @@ interface ProductVisualInfoProps {
 export default function ProductVisualInfo({ productId, productDetail, reviewCount, reviewRate, initProductOptionList }: ProductVisualInfoProps) {
 	const { loginOn, user, isAuthLoading } = useAuth();
 	const { handleAddCart, isSuccess: isAddCartSuccess, reset } = useProductCartAction(productId);
-	const { mutate: buyNowMutate, error: buyNowError } = useProductCheckAndHold(productId);
+	const { mutate: handleStockHold, error: buyNowError } = useProductCheckAndHold();
 	const queryClient = useQueryClient();
 
 	// =================================================================
@@ -564,7 +564,7 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 											<button
 												className={styles.btnBuy}
 												onClick={() => {
-													buyNowMutate({
+													handleStockHold({
 														buyList: productSelectList.map((option) => ({
 															productOptionId: option.productOptionId,
 															count: option.quantity,
