@@ -7,24 +7,22 @@ import { IoIosArrowDown, IoIosArrowUp, IoIosClose } from "react-icons/io";
 import styles from "../ProductDetail.module.scss";
 import { SmartImage } from "@/components/ui/SmartImage";
 import { discountPercent, money } from "@/lib/format";
-import { AddCartRequest, AvailableCouponAtProductDetail, ProductOption } from "@/types/product";
+import { AvailableCouponAtProductDetail, ProductOption } from "@/types/product";
 import { useEffect, useMemo, useState } from "react";
 import { GetProductDetailCouponResponse } from "@/types/product";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getNormal, postJson } from "@/api/fetchFilter";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { getNormal } from "@/api/fetchFilter";
 import API_URL from "@/api/endpoints";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { useAuth } from "@/hooks/useAuth";
 import moment from "moment";
 import MyPriceCheckboxTooltip from "@/app/product/detail/[productId]/_components/MyPriceCheckboxTooltip";
-import { useRouter } from "next/navigation";
 import { calculateDiscount, calculateMileage } from "@/lib/price";
 import { ProductCounter } from "@/components/ui/ProductCounter";
-import { BaseResponse } from "@/types/common";
-import { useModalStore } from "@/store/modal.store";
-import { ModalResultMap } from "@/store/modal.type";
-import clsx from "clsx";
-import { BuyHoldRequest, BuyHoldResponse } from "@/types/buy";
+import { GetCartOtherOptionListResponse } from "@/types/mypage";
+import { useProductCartAction } from "@/hooks/query/mypage/useProductCartAction";
+import { AddCartPopup } from "@/components/mypage/AddCartPopup";
+import { useProductCheckAndHold } from "@/hooks/query/buy/useProductCheckAndHold";
 
 export type ProductCouponWithDiscount = AvailableCouponAtProductDetail & {
 	discountAmount: number;
@@ -48,25 +46,32 @@ interface ProductVisualInfoProps {
 	};
 	reviewCount: number;
 	reviewRate: number;
-	productOptionList: ProductOption[];
+	initProductOptionList: ProductOption[];
 }
 
 // 상품 사진 및 가격배송 정보
-export default function ProductVisualInfo({ productId, productDetail, reviewCount, reviewRate, productOptionList }: ProductVisualInfoProps) {
+export default function ProductVisualInfo({ productId, productDetail, reviewCount, reviewRate, initProductOptionList }: ProductVisualInfoProps) {
 	const { loginOn, user, isAuthLoading } = useAuth();
-	const { push } = useRouter();
-	const { openModal, modalResult, clearModalResult } = useModalStore();
+	const { handleAddCart, isSuccess: isAddCartSuccess, reset } = useProductCartAction(productId);
+	const { mutate: buyNowMutate, error: buyNowError } = useProductCheckAndHold(productId);
 	const queryClient = useQueryClient();
 
-	/* ----- Query ------------------------------------------------------ */
+	// =================================================================
+	// React Query
+	// =================================================================
 
+	// 제품 옵션 리스트 (장바구니 담기 후 재고 수량 반영)
+	const { data: productOptionList = initProductOptionList } = useQuery<GetCartOtherOptionListResponse, Error, ProductOption[]>({
+		queryKey: ["productOptions", productId],
+		queryFn: () => getNormal(getApiUrl(API_URL.MY_CART_PRODUCT_OPTION), { productId }),
+		initialData: { cartOptionProductOptionList: initProductOptionList, message: "SUCCESS" },
+		staleTime: 30_000,
+		select: (data) => {
+			return data.cartOptionProductOptionList;
+		},
+	});
 	// 이용가능쿠폰 조회
-	const {
-		data: availableCouponResponse,
-		isSuccess,
-		isError,
-		isFetching,
-	} = useQuery<GetProductDetailCouponResponse, Error, GetProductDetailCouponWithDiscountData>({
+	const { data: availableCouponResponse } = useQuery<GetProductDetailCouponResponse, Error, GetProductDetailCouponWithDiscountData>({
 		queryKey: ["productCouponList", productId],
 		queryFn: () => getNormal(getApiUrl(API_URL.PRODUCT_DETAIL_COUPON), { productId }),
 		enabled: loginOn,
@@ -81,77 +86,11 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 			};
 		},
 	});
-	// 현재 제품 장바구니 확인
-	const { data: hasCart } = useQuery<BaseResponse & { hasCart: boolean }, Error, boolean>({
-		queryKey: ["productCartCheck", productId],
-		queryFn: () => getNormal(getApiUrl(API_URL.PRODUCT_CART), { productId }),
-		enabled: loginOn,
-		refetchOnWindowFocus: false,
-		select: (data) => {
-			return data.hasCart;
-		},
-	});
-	// 장바구니 담기
-	const { mutate: addCartMutate } = useMutation({
-		mutationKey: ["productDetailAddCart", productId],
-		mutationFn: () =>
-			postJson<BaseResponse, AddCartRequest>(getApiUrl(API_URL.PRODUCT_CART), {
-				addCartList: productSelectList.map((option) => ({
-					productOptionId: option.productOptionId,
-					quantity: option.quantity,
-				})),
-				productId,
-			}),
-		onSuccess: (data) => {
-			setCartPopupOpen(true);
-			setCartPopupClose(false);
-			queryClient.invalidateQueries({ queryKey: ["productCartCheck", productId] });
-			if (data.message === "CART_ADD_PARTIAL_SUCCESS") {
-				openModal("ALERT", {
-					content:
-						"재고 수량보다 많은 수량이 선택된 옵션이 있습니다.<br /> 재고가 있는 수량만 장바구니에 담겼습니다.<br /> 옵션과 수량을 확인해주세요.",
-				});
-			}
-			queryClient.invalidateQueries({ queryKey: ["me"] });
-		},
-		onError: (err) => {
-			console.error("장바구니 담기 실패", err);
-			if (err.message === "CART_ADD_OUT_OF_STOCK") {
-				openModal("ALERT", { content: "재고 수량보다 많은 수량이 선택되었습니다.<br /> 옵션과 수량을 확인해주세요." });
-			}
-		},
-		onSettled: () => {
-			setProductSelectList([]);
-			queryClient.invalidateQueries({ queryKey: ["productOptions", productId] });
-		},
-	});
-	// 상품 확인 및 점유(바로 구매하기)
-	const { mutate: buyNowMutate } = useMutation({
-		mutationKey: ["productDetailBuyNow", productId],
-		mutationFn: () =>
-			postJson<BuyHoldResponse, BuyHoldRequest>(getApiUrl(API_URL.BUY_HOLD), {
-				buyList: productSelectList.map((option) => ({
-					productOptionId: option.productOptionId,
-					count: option.quantity,
-				})),
-			}),
-		onSuccess: (data) => {
-			console.log("상품 점유 성공", data);
-		},
-		onError: (err) => {
-			console.error("상품 점유 실패", err);
-			if (err.message === "STOCK_HOLD_FAILED") {
-				openModal("ALERT", { content: "품절된 상품이 있습니다. 옵션과 수량을 다시 확인해주세요." });
-				setProductSelectList([]);
-				queryClient.invalidateQueries({ queryKey: ["productOptions", productId] });
-			}
-		},
-	});
 
-	/* ------------------------------------------------------------------ */
+	// =================================================================
+	// React
+	// =================================================================
 
-	// 나의 가격 구매 가능 가격
-	const [totalPrice, setTotalPrice] = useState(productDetail.finalPrice);
 	// 나의 가격 상세 보기 토글
 	const [showMyPriceDetail, setShowMyPriceDetail] = useState(false);
 	// 적용된 쿠폰
@@ -166,10 +105,34 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 	const [isInitialCouponApplied, setIsInitialCouponApplied] = useState(false);
 	// 적립금 사용 여부
 	const [mileageUsed, setMileageUsed] = useState(true);
-	// 사용한 적립금
-	const [useMileage, setUseMileage] = useState(0);
+	// 제품 옵션 선택
+	const optionSelectHandler = (optionIdx: number) => {
+		// console.log("선택된 옵션 id index", optionIdx, productOptionList[optionIdx - 1]);
+		const productOption = productOptionList[optionIdx - 1];
+		if (productOption) {
+			setProductSelectList((prev) => {
+				const newList = [...prev];
+				const existingIdx = newList.findIndex((option) => option.productOptionId === productOption.productOptionId);
+				if (existingIdx === -1 && productOption.stock > 0) {
+					newList.push({ ...productOption, quantity: 1 });
+				} else if (existingIdx !== -1 && newList[existingIdx].quantity < productOption.stock) {
+					newList[existingIdx] = { ...newList[existingIdx], quantity: newList[existingIdx].quantity + 1 };
+				}
+				return newList;
+			});
+		}
+	};
+	// 상품 선택리스트
+	const [productSelectList, setProductSelectList] = useState<(ProductOption & { quantity: number })[]>([]);
+	// 장바구니 담기 팝업 오픈 키
+	const [addCartPopupKey, setAddCartPopupKey] = useState(0);
+
+	// =================================================================
+	// useEffect, useMemo
+	// =================================================================
+
 	// 나의 가격 상세 정보 계산
-	useEffect(() => {
+	const { totalPrice, useMileage, appliedProductCouponIds } = useMemo(() => {
 		let totalPrice = productDetail.finalPrice;
 		if (appliedProductCoupon.unStackable) {
 			totalPrice -= appliedProductCoupon.unStackable.discountAmount;
@@ -180,11 +143,17 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 			});
 		}
 		if (mileageUsed) {
-			setUseMileage(user.mileage > totalPrice ? totalPrice : user.mileage);
-
 			totalPrice = Math.max(0, totalPrice - user.mileage);
 		}
-		setTotalPrice(totalPrice);
+
+		return {
+			totalPrice,
+			useMileage: user.mileage > totalPrice ? totalPrice : user.mileage,
+			appliedProductCouponIds: [
+				...(appliedProductCoupon.unStackable ? [appliedProductCoupon.unStackable.couponId] : []),
+				...appliedProductCoupon.stackable.map((coupon) => coupon.couponId),
+			],
+		};
 	}, [appliedProductCoupon, mileageUsed, productDetail, user]);
 	// 제품 옵션 들어갈 꺼
 	const { optionInitData, optionSelectList } = useMemo(() => {
@@ -207,23 +176,6 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 			optionSelectList: osl,
 		};
 	}, [productOptionList]);
-	// 제품 옵션 선택
-	const optionSelectHandler = (optionIdx: number) => {
-		// console.log("선택된 옵션 id index", optionIdx, productOptionList[optionIdx - 1]);
-		const productOption = productOptionList[optionIdx - 1];
-		if (productOption) {
-			setProductSelectList((prev) => {
-				const newList = [...prev];
-				const existingIdx = newList.findIndex((option) => option.productOptionId === productOption.productOptionId);
-				if (existingIdx === -1 && productOption.stock > 0) {
-					newList.push({ ...productOption, quantity: 1 });
-				} else if (existingIdx !== -1 && newList[existingIdx].quantity < productOption.stock) {
-					newList[existingIdx] = { ...newList[existingIdx], quantity: newList[existingIdx].quantity + 1 };
-				}
-				return newList;
-			});
-		}
-	};
 	// 쿠폰 리스트에서 상품쿠폰과 장바구니 쿠폰 분류
 	const { productCoupon, cartCoupon } = useMemo(() => {
 		if (!availableCouponResponse) return { productCoupon: [], cartCoupon: [] };
@@ -267,66 +219,53 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 		});
 		setIsInitialCouponApplied(true); //	 초기화 완료 표시
 	}, [availableCouponResponse, isInitialCouponApplied, productDetail.finalPrice]);
-
-	// 상품 선택리스트
-	const [productSelectList, setProductSelectList] = useState<(ProductOption & { quantity: number })[]>([]);
+	// 장바구니 담기 후 팝업 오픈 및 제품 옵션 리스트 갱신
 	useEffect(() => {
-		if (productSelectList.length === 0) return;
-		console.log({ productSelectList });
-	}, [productSelectList]);
-	// 장바구니 담기 팝업
-	const [cartPopupOpen, setCartPopupOpen] = useState(false);
-	const [cartPopupClose, setCartPopupClose] = useState(false);
-	// 장바구니 담기 버튼
-	const handleAddCart = () => {
-		if (productSelectList.length === 0) {
-			openModal("ALERT", { content: "옵션을 선택해주세요." });
-			return;
-		}
-		if (hasCart) {
-			openModal("CONFIRM", {
-				content: "이미 장바구니에 담긴 상품입니다. 추가로 담으시겠습니까?",
-				okText: "추가 담기",
-				okResult: "ADDCART",
-				reverse: true,
-			});
-			return;
-		}
-		addCartMutate();
-	};
-	//
-	useEffect(() => {
-		if (modalResult?.action === "CONFIRM_OK") {
-			const payload = modalResult.payload as ModalResultMap["CONFIRM_OK"];
-			// 장바구니 담기
-			if (payload?.result === "ADDCART") {
-				addCartMutate();
-			}
-		}
-		clearModalResult();
-	}, [modalResult, clearModalResult, addCartMutate]);
-	// 장바구니 담기 팝업 애니메이션 및 자동 닫힘
-	useEffect(() => {
-		if (!cartPopupOpen) return;
-		const closeTimer = setTimeout(() => {
-			setCartPopupClose(true);
-		}, 2000);
-		return () => clearTimeout(closeTimer);
-	}, [cartPopupOpen]);
+		if (!isAddCartSuccess) return;
 
-	/* ------------------------------------------------------------------ */
+		setAddCartPopupKey((prev) => prev + 1);
+		setProductSelectList([]); // 상품 선택 초기화
+		// 제품 옵션 리스트 갱신 (재고 수량 반영)
+		queryClient.invalidateQueries({ queryKey: ["productOptions", productId] });
 
-	const myPriceCheckboxCommonProps = {
-		originPrice: productDetail.originPrice,
-		finalPrice: productDetail.finalPrice,
-		productId,
-	};
+		reset();
+	}, [isAddCartSuccess, queryClient, productId, reset]);
+	// 상품 점유 실패 시 처리
+	useEffect(() => {
+		if (!buyNowError) return;
+
+		console.error("상품 점유 실패", buyNowError);
+		if (buyNowError.message === "STOCK_HOLD_FAILED") {
+			setProductSelectList([]);
+			queryClient.invalidateQueries({ queryKey: ["productOptions", productId] });
+		}
+	}, [buyNowError, queryClient, productId]);
 	// 로그인 상태에 가져온 후
 	useEffect(() => {
 		if (!isAuthLoading) {
 			setShowMyPriceDetail(true);
 		}
 	}, [isAuthLoading]);
+
+	// =================================================================
+	// UI
+	// =================================================================
+
+	const myPriceCheckboxCommonProps = {
+		originPrice: productDetail.originPrice,
+		finalPrice: productDetail.finalPrice,
+		productId,
+	};
+
+	// =================================================================
+	// TEST
+	// =================================================================
+
+	// 제품 옵션 선택 시 수량 초기화
+	useEffect(() => {
+		if (productSelectList.length === 0) return;
+		console.log({ productSelectList });
+	}, [productSelectList]);
 
 	return (
 		<section className={styles.productVisualInfo}>
@@ -619,13 +558,20 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 											</>
 										)}
 										<div className={styles.actionButtons}>
-											<button className={styles.btnCart} onClick={handleAddCart}>
+											<button className={styles.btnCart} onClick={() => handleAddCart(productSelectList)}>
 												장바구니 담기
 											</button>
 											<button
 												className={styles.btnBuy}
 												onClick={() => {
-													buyNowMutate();
+													buyNowMutate({
+														buyList: productSelectList.map((option) => ({
+															productOptionId: option.productOptionId,
+															count: option.quantity,
+															couponIds: appliedProductCouponIds, // 나의 가격에서 쿠폰 적용은 UI에서만 처리, 실제 구매 시에는 쿠폰 적용 안 함
+														})),
+														returnUrl: `/product/detail/${productId}`,
+													});
 												}}
 											>
 												바로 구매하기
@@ -637,22 +583,7 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 								)}
 							</>
 						)}
-						{cartPopupOpen && (
-							<div
-								className={clsx(styles.addCartPopup, cartPopupClose && "animateFadeOut")}
-								onAnimationEnd={() => {
-									if (!cartPopupClose) return;
-									setCartPopupOpen(false);
-									setCartPopupClose(false);
-								}}
-							>
-								<p>
-									장바구니에
-									<br />
-									담겼습니다.
-								</p>
-							</div>
-						)}
+						<AddCartPopup triggerKey={addCartPopupKey} />
 					</div>
 				)}
 			</div>

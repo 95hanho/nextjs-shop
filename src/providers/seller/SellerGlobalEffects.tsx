@@ -11,6 +11,7 @@ export function SellerGlobalEffects() {
 	// 로그아웃 모달 닫힌 후 처리
 	useEffect(() => {
 		if (!modalResult) return;
+
 		const run = async () => {
 			try {
 				if (modalResult.action === "CLOSE") {

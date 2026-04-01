@@ -149,6 +149,7 @@ export default function CartProductSection({
 	// 모달 닫힌 후 처리
 	useEffect(() => {
 		if (!modalResult) return;
+
 		// 장바구니 제품 옵션변경
 		if (modalResult.action === "PRODUCT_OPTION_CHANGED") {
 			const p = modalResult.payload as ModalResultMap["PRODUCT_OPTION_CHANGED"];
