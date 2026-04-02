@@ -1,7 +1,7 @@
 "use client";
 
-import { ImageFill } from "@/components/ui/SmartImage";
-import { ImageSlide, ImageSlideHandle } from "@/components/product/ImageSlide";
+import { SmartImage } from "@/components/ui/SmartImage";
+import { ImageSlide } from "@/components/product/ImageSlide";
 import { money } from "@/lib/format";
 import { Product } from "@/types/product";
 import Link from "next/link";
@@ -9,6 +9,7 @@ import { useRef, useState } from "react";
 import { FiHeart } from "react-icons/fi";
 import { RiArrowLeftSLine, RiArrowRightSLine } from "react-icons/ri";
 import styles from "../ProductDetail.module.scss";
+import { ImageSlideHandle } from "@/components/product/ImageSlide.type";
 
 // interface BrandOtherProductsProps {}
 
@@ -135,7 +136,8 @@ export default function BrandOtherProducts() {
 			<div className={styles.imageSlide}>
 				{/* 슬라이드 벨트 */}
 				<ImageSlide
-					slideItemKey="purchasedTogether"
+					mode="slide"
+					getItemKey={(item, index) => `purchasedTogether-${item.productId}-${index}`}
 					onPageChange={({ page, totalPages }) => {
 						setPageInfo({ page, totalPages });
 					}}
@@ -148,7 +150,7 @@ export default function BrandOtherProducts() {
 								<Link href={`/product/detail/${item.productId}`}></Link>
 								{/* 이미지 */}
 								<div className={styles.imageBox}>
-									{/* <ImageFill /> */}
+									<SmartImage fill={true} />
 									<button>
 										{/* <FaHeart /> */}
 										<FiHeart />

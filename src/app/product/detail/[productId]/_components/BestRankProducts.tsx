@@ -1,7 +1,7 @@
 "use client";
 
-import { ImageFill } from "@/components/ui/SmartImage";
-import { ImageSlide, ImageSlideHandle } from "@/components/product/ImageSlide";
+import { ImageFill, SmartImage } from "@/components/ui/SmartImage";
+import { ImageSlide } from "@/components/product/ImageSlide";
 import { money } from "@/lib/format";
 import { Product } from "@/types/product";
 import Link from "next/link";
@@ -10,6 +10,7 @@ import { FaHeart } from "react-icons/fa";
 import { FiHeart } from "react-icons/fi";
 import { RiArrowLeftSLine, RiArrowRightSLine } from "react-icons/ri";
 import styles from "../ProductDetail.module.scss";
+import { ImageSlideHandle } from "@/components/product/ImageSlide.type";
 
 export default function BestRankProducts() {
 	const slideHandleRef = useRef<ImageSlideHandle | null>(null);
@@ -131,7 +132,8 @@ export default function BestRankProducts() {
 	return (
 		<>
 			<ImageSlide
-				slideItemKey="bestRank"
+				mode="slide"
+				getItemKey={(item, index) => `bestRank-${item.productId}-${index}`}
 				onPageChange={({ page, totalPages }) => {
 					setPageInfo({ page, totalPages });
 				}}
@@ -143,7 +145,7 @@ export default function BestRankProducts() {
 							{/* 전체 링크 */}
 							<Link href={`/product/detail/${item.productId}`}></Link>
 							<div className={styles.imageBox}>
-								{/* <ImageFill /> */}
+								<SmartImage fill={true} />
 								<mark>{index + 1}</mark>
 								<button>
 									{/* <FaHeart /> */}
