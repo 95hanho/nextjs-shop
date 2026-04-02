@@ -6,7 +6,7 @@ import { getNormal } from "@/api/fetchFilter";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import API_URL from "@/api/endpoints";
 import { useAuth } from "@/hooks/useAuth";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { MyOrderDetailItem, MyOrderDetailResponse } from "@/types/mypage";
 import { BsClipboard2Minus } from "react-icons/bs";
 import { money } from "@/lib/format";
@@ -16,6 +16,8 @@ import Link from "next/link";
 import { getOrderStatusLabel } from "@/lib/order";
 import moment from "moment";
 import "moment/locale/ko"; // 한국어 로케일 추가
+import { AddCartPopup } from "@/components/mypage/AddCartPopup";
+import { useProductCartAction } from "@/hooks/query/mypage/useProductCartAction";
 
 type ItemSellerMap = {
 	[sellerName: string]: MyOrderDetailItem[];
@@ -23,6 +25,7 @@ type ItemSellerMap = {
 
 export default function OrderDetailClient({ orderId }: { orderId: string }) {
 	const { loginOn } = useAuth();
+	const { handleAddCart, isSuccess: isAddCartSuccess, reset } = useProductCartAction();
 
 	// =================================================================
 	// React Query
@@ -41,6 +44,8 @@ export default function OrderDetailClient({ orderId }: { orderId: string }) {
 	// =================================================================
 
 	const [openCouponInfo, setOpenCouponInfo] = useState<number | null>(null); // 열린 쿠폰 정보의 orderItemId
+	const [addCartCurProductId, setAddCartCurProductId] = useState<number>(0); // 장바구니 담기 트리거 상품 ID
+	const [addCartTriggerKey, setAddCartTriggerKey] = useState<number>(0); // 장바구니 담기 트리거 키
 
 	// =================================================================
 	// useEffect, useMemo
@@ -83,6 +88,13 @@ export default function OrderDetailClient({ orderId }: { orderId: string }) {
 		console.log("result", result);
 		return result;
 	}, [orderDetailData]);
+	// 장바구니 담기 성공 시 트리거 키 업데이트
+	useEffect(() => {
+		if (!isAddCartSuccess) return;
+
+		setAddCartTriggerKey((prev) => prev + 1); // 장바구니 담기 트리거 키 업데이트
+		reset();
+	}, [isAddCartSuccess, reset]);
 
 	if (!orderDetailData) return null;
 	return (
@@ -184,7 +196,28 @@ export default function OrderDetailClient({ orderId }: { orderId: string }) {
 													)}
 													<div className={styles.orderItemActions}>
 														<button className={styles.active}>배송조회</button>
-														<button>장바구니 담기</button>
+														<button
+															className="relative"
+															onClick={() => {
+																setAddCartCurProductId(item.productId);
+																handleAddCart(
+																	[
+																		{
+																			productOptionId: item.productOptionId,
+																			quantity: 1,
+																		},
+																	],
+																	item.productId,
+																);
+															}}
+														>
+															장바구니 담기
+															<AddCartPopup
+																triggerKey={addCartTriggerKey}
+																productId={item.productId}
+																curProductId={addCartCurProductId}
+															/>
+														</button>
 														<button>리뷰 작성</button>
 													</div>
 												</section>

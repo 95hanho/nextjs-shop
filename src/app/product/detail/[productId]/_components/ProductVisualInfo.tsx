@@ -52,8 +52,8 @@ interface ProductVisualInfoProps {
 // 상품 사진 및 가격배송 정보
 export default function ProductVisualInfo({ productId, productDetail, reviewCount, reviewRate, initProductOptionList }: ProductVisualInfoProps) {
 	const { loginOn, user, isAuthLoading } = useAuth();
-	const { handleAddCart, isSuccess: isAddCartSuccess, reset } = useProductCartAction(productId);
-	const { mutate: buyNowMutate, error: buyNowError } = useProductCheckAndHold(productId);
+	const { handleAddCart, isSuccess: isAddCartSuccess, reset } = useProductCartAction();
+	const { mutate: handleStockHold, error: buyNowError } = useProductCheckAndHold();
 	const queryClient = useQueryClient();
 
 	// =================================================================
@@ -558,13 +558,13 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 											</>
 										)}
 										<div className={styles.actionButtons}>
-											<button className={styles.btnCart} onClick={() => handleAddCart(productSelectList)}>
+											<button className={styles.btnCart} onClick={() => handleAddCart(productSelectList, productId)}>
 												장바구니 담기
 											</button>
 											<button
 												className={styles.btnBuy}
 												onClick={() => {
-													buyNowMutate({
+													handleStockHold({
 														buyList: productSelectList.map((option) => ({
 															productOptionId: option.productOptionId,
 															count: option.quantity,
@@ -583,7 +583,7 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 								)}
 							</>
 						)}
-						<AddCartPopup triggerKey={addCartPopupKey} />
+						<AddCartPopup triggerKey={addCartPopupKey} productId={productId} />
 					</div>
 				)}
 			</div>

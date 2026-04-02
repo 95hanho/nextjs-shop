@@ -1,18 +1,14 @@
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import styles from "./Cart.module.scss";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SmartImage } from "@/components/ui/SmartImage";
 import { discountPercent, money } from "@/lib/format";
 import { calculateMileage } from "@/lib/price";
 import clsx from "clsx";
-import { useMutation } from "@tanstack/react-query";
-import { BaseResponse } from "@/types/common";
-import API_URL from "@/api/endpoints";
-import { postJson } from "@/api/fetchFilter";
-import { getApiUrl } from "@/lib/getBaseUrl";
-import { BuyHoldRequest, BuyItem } from "@/types/buy";
 import { useModalStore } from "@/store/modal.store";
 import { useRouter } from "next/navigation";
+import { useProductCheckAndHold } from "@/hooks/query/buy/useProductCheckAndHold";
+import { BuyItem } from "@/types/buy";
 
 interface CartSummaryAsideProps {
 	cartOriginPrice: number; // 장바구니 제품 원래 가격 총합
@@ -42,32 +38,11 @@ export default function CartSummaryAside({
 }: CartSummaryAsideProps) {
 	const { openModal } = useModalStore();
 	const { push } = useRouter();
+	const { mutate: handleStockHold, isSuccess } = useProductCheckAndHold();
 
 	// =================================================================
 	// React Query
 	// =================================================================
-
-	// 상품 확인 및 점유(구매페이지에서는 다운로드 쿠폰만 조회하기)
-	const handleStockHold = useMutation<BaseResponse, Error>({
-		mutationFn: () =>
-			postJson<BaseResponse & { holds: number[] }, BuyHoldRequest>(getApiUrl(API_URL.BUY_HOLD), {
-				buyList,
-				returnUrl: "/mypage/cart",
-			}),
-		// Mutation이 시작되기 직전에 특정 작업을 수행
-		// onMutate(variables) {
-		// 	console.log(variables);
-		// },
-		onSuccess() {
-			// console.log(data, variables, context);
-			push("/buy");
-		},
-		onError(err, variables, context) {
-			console.log(err, variables, context);
-		},
-		// 결과에 관계 없이 무언가 실행됨
-		// onSettled(data, error, variables, context) {},
-	});
 
 	// =================================================================
 	// React
@@ -85,8 +60,18 @@ export default function CartSummaryAside({
 			return;
 		}
 		// console.log("buyList", buyList);
-		handleStockHold.mutate();
+		handleStockHold({ buyList, returnUrl: "/mypage/cart" });
 	};
+
+	// =================================================================
+	// useEffect, useMemo
+	// =================================================================
+
+	// 상품 점유 성공 시 결제 페이지로 이동
+	useEffect(() => {
+		if (!isSuccess) return;
+		push("/buy");
+	}, [isSuccess, push]);
 
 	return (
 		<aside className={styles.priceWrap} aria-label="주문 요약">

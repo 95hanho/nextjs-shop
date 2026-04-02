@@ -6,11 +6,11 @@ import { BuyHoldRequest, BuyHoldResponse } from "@/types/buy";
 import { useMutation } from "@tanstack/react-query";
 
 // 상품 확인 및 점유(바로 구매하기)
-export function useProductCheckAndHold(productId: number) {
+export function useProductCheckAndHold() {
 	const { openModal } = useModalStore();
 
 	return useMutation({
-		mutationKey: ["productDetailBuyNow", productId],
+		mutationKey: ["productDetailBuyNow"],
 		mutationFn: ({ buyList, returnUrl }: BuyHoldRequest) =>
 			postJson<BuyHoldResponse, BuyHoldRequest>(getApiUrl(API_URL.BUY_HOLD), {
 				buyList,
@@ -23,7 +23,9 @@ export function useProductCheckAndHold(productId: number) {
 			console.error("상품 점유 실패", err);
 			if (err.message === "STOCK_HOLD_FAILED") {
 				openModal("ALERT", { content: "품절된 상품이 있습니다. 옵션과 수량을 다시 확인해주세요." });
+				return;
 			}
+			openModal("ALERT", { content: "상품 점유에 실패했습니다. 다시 시도해주세요." });
 		},
 	});
 }
