@@ -15,25 +15,13 @@ interface ProductDetailClientProps {
 export default function ProductDetailClient({ productDetailResponse }: ProductDetailClientProps) {
 	// SSR 데이터 정리
 	const productId = productDetailResponse.productDetail.productId;
-	const productDetailData = productDetailResponse.productDetail;
 	const productReviewSummary = productDetailResponse.productReviewSummary;
 	const productOptionList = productDetailResponse.productOptionList;
 
 	//
 	const productVisualInfoProps = {
 		productId,
-		productDetail: {
-			...productDetailData,
-			// name: productDetailData.name,
-			// originPrice: productDetailData.originPrice,
-			// finalPrice: productDetailData.finalPrice,
-			// baseShippingFee: productDetailData.baseShippingFee,
-			// freeShippingMinAmount: productDetailData.freeShippingMinAmount,
-			// extraShippingFee: productDetailData.extraShippingFee,
-			// shippingType: productDetailData.shippingType,
-			// shippingDueDate: productDetailData.shippingDueDate,
-			// shippingNote: productDetailData.shippingNote,
-		},
+		productDetail: productDetailResponse.productDetail,
 		reviewCount: productReviewSummary.reviewCount,
 		reviewRate: productReviewSummary.avgRating,
 		initProductOptionList: productOptionList,

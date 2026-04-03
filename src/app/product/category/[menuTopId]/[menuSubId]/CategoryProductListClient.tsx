@@ -50,7 +50,6 @@ export default function CategoryProductListClient({ productList }: CategoryProdu
 									id: productItem.productId,
 									productId: productItem.productId,
 									productImageList: productItem.productImageList,
-									filePath: productItem.productImageList[0]?.filePath || "",
 									sellerName: productItem.sellerName,
 									productName: productItem.name,
 									originPrice: productItem.originPrice,

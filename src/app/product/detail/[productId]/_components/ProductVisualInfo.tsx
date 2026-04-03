@@ -5,9 +5,8 @@ import { FaHeart } from "react-icons/fa";
 import { GoQuestion } from "react-icons/go";
 import { IoIosArrowDown, IoIosArrowUp, IoIosClose } from "react-icons/io";
 import styles from "../ProductDetail.module.scss";
-import { SmartImage } from "@/components/ui/SmartImage";
 import { discountPercent, money } from "@/lib/format";
-import { AvailableCouponAtProductDetail, ProductOption } from "@/types/product";
+import { AvailableCouponAtProductDetail, ProductDetailResponse, ProductOption } from "@/types/product";
 import { useEffect, useMemo, useState } from "react";
 import { GetProductDetailCouponResponse } from "@/types/product";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -23,6 +22,7 @@ import { GetCartOtherOptionListResponse } from "@/types/mypage";
 import { useProductCartAction } from "@/hooks/query/mypage/useProductCartAction";
 import { AddCartPopup } from "@/components/mypage/AddCartPopup";
 import { useProductCheckAndHold } from "@/hooks/query/buy/useProductCheckAndHold";
+import ThumbnailImageSection from "@/app/product/detail/[productId]/_components/ThumbnailImageSection";
 
 export type ProductCouponWithDiscount = AvailableCouponAtProductDetail & {
 	discountAmount: number;
@@ -33,17 +33,7 @@ export type GetProductDetailCouponWithDiscountData = Omit<GetProductDetailCoupon
 
 interface ProductVisualInfoProps {
 	productId: number;
-	productDetail: {
-		name: string;
-		originPrice: number;
-		finalPrice: number;
-		baseShippingFee: number; // 기본 배송비
-		freeShippingMinAmount: number; // 무료배송 최소 주문금액
-		extraShippingFee: number; // 제주/도서산간 추가 배송비
-		shippingType: "IMMEDIATE" | "RESERVED"; // 출고 방식('IMMEDIATE','RESERVED')
-		shippingDueDate: string; // 출고 예정일
-		shippingNote: string; // 출고 관련 추가 안내 문구
-	};
+	productDetail: ProductDetailResponse;
 	reviewCount: number;
 	reviewRate: number;
 	initProductOptionList: ProductOption[];
@@ -247,6 +237,10 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 		}
 	}, [isAuthLoading]);
 
+	useEffect(() => {
+		console.log({ productDetail });
+	}, [productDetail]);
+
 	// =================================================================
 	// UI
 	// =================================================================
@@ -269,10 +263,9 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 
 	return (
 		<section className={styles.productVisualInfo}>
-			<div className={styles.productImageArea}>
-				<SmartImage width={900} height={900} objectFit="contain" />
-			</div>
-
+			{/* 왼쪽 -------------------------------------- */}
+			<ThumbnailImageSection productImageList={productDetail.productImageList} />
+			{/* 오른쪽 -------------------------------------- */}
 			<div className={styles.productTextInfo}>
 				<div className={styles.productMetaInfo}>
 					<div className={styles.productTitleWishlist}>

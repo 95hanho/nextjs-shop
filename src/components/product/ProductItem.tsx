@@ -12,7 +12,6 @@ interface ProductItemProps {
 		id: number;
 		productId: number;
 		productImageList: FileInfo[];
-		filePath: string;
 		sellerName: string;
 		productName: string;
 		originPrice: number;

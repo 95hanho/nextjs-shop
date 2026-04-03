@@ -57,7 +57,7 @@ export const SmartImage = ({ className = "", src = "", alt, sizes, priority, qua
 			sizes={sizes ?? "(max-width: 650px) 100vw, 50vw"}
 			priority={priority}
 			quality={quality}
-			style={{ width: "100%", height: "auto", objectFit }}
+			// style={{ width: "100%", height: "auto", objectFit }}
 		/>
 	);
 };
