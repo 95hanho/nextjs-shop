@@ -45,7 +45,7 @@ export const Nav = ({ menuList }: { menuList: Menu[] }) => {
 				</div>
 			</div>
 			{showMenu && (
-				<div className="absolute bg-white z-[1] shadow-md">
+				<div className="absolute bg-white z-[100] shadow-md">
 					<div className="mb-4 ml-10 mr-6">
 						<ul className={styles.menuListUi}>
 							{showMenuList.map((menu) => {

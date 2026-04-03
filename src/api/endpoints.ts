@@ -88,7 +88,7 @@ const API_URL = {
 	PRODUCT: "/product",
 	/** 좋아요/취소 */
 	PRODUCT_LIKE: "/product/like",
-	/** 위시 등록/해제 */
+	/** 현재 회원 위시 productId 목록 조회, 위시 등록/해제 */
 	PRODUCT_WISH: "/product/wish",
 	/** 장바구니 확인, 장바구니 넣기 */
 	PRODUCT_CART: "/product/cart",

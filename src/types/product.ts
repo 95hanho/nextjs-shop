@@ -75,18 +75,18 @@ export interface AddCartRequest {
 	productId: number;
 }
 /* 제품 상세보기 조회 */
+export type ProductDetailResponse = ProductDetail & {
+	productImageList: (FileInfo & { productId: number })[];
+} & {
+	baseShippingFee: number; // 기본 배송비
+	freeShippingMinAmount: number; // 무료배송 최소 주문금액
+	extraShippingFee: number; // 제주/도서산간 추가 배송비
+	shippingType: "IMMEDIATE" | "RESERVED"; // 출고 방식('IMMEDIATE','RESERVED')
+	shippingDueDate: string; // 출고 예정일
+	shippingNote: string; // 출고 관련 추가 안내 문구
+};
 export interface GetProductDetailResponse extends BaseResponse {
-	productDetail: Product &
-		ProductDetail & {
-			productImageList: (FileInfo & { productId: number })[];
-		} & {
-			baseShippingFee: number; // 기본 배송비
-			freeShippingMinAmount: number; // 무료배송 최소 주문금액
-			extraShippingFee: number; // 제주/도서산간 추가 배송비
-			shippingType: "IMMEDIATE" | "RESERVED"; // 출고 방식('IMMEDIATE','RESERVED')
-			shippingDueDate: string; // 출고 예정일
-			shippingNote: string; // 출고 관련 추가 안내 문구
-		};
+	productDetail: ProductDetailResponse;
 	productOptionList: ProductOption[];
 	productReviewSummary: {
 		avgRating: number;

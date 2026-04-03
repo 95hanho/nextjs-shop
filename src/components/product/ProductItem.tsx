@@ -1,32 +1,51 @@
 import styles from "./ProductItem.module.scss";
 import { WishButton } from "@/components/product/WishButton";
 import { SmartImage } from "@/components/ui/SmartImage";
-import { FaHeart, FaStar } from "react-icons/fa";
+import { FaEye, FaStar } from "react-icons/fa";
 import { discountPercent, money } from "@/lib/format";
 import Link from "next/link";
+import { ImageSlide } from "@/components/product/ImageSlide";
+import { FileInfo } from "@/types/file";
 
 interface ProductItemProps {
 	product: {
 		id: number;
 		productId: number;
-		filePath: string;
+		productImageList: FileInfo[];
 		sellerName: string;
 		productName: string;
 		originPrice: number;
 		finalPrice: number;
-		likeCount: number;
+		viewCount: number;
 		wishCount: number;
 	};
+	wishProductIds: number[];
 }
 
-export const ProductItem = ({ product }: ProductItemProps) => {
+export const ProductItem = ({ product, wishProductIds }: ProductItemProps) => {
 	return (
 		<div className={styles.productItem}>
 			<Link href={`/product/detail/${product.productId}`} className={styles.productThumb}>
-				<SmartImage src={product.filePath} fill={true} className={styles.productImg} />
-
-				{/* WishButton 내부에서 className을 못 받는 구조면 유지, 받을 수 있으면 아래 주석처럼 */}
-				<WishButton productId={product.productId} initWishOn={true} right={6} bottom={6} />
+				<ImageSlide
+					mode="fade"
+					getItemKey={(item, index) => `product-${product.productId}-image-${index}`}
+					items={product.productImageList}
+					renderItem={(item) => (
+						<div className={styles.imageBox}>
+							<SmartImage src={item.filePath} fill={true} objectFit={"cover"} className={styles.productImg} />
+						</div>
+					)}
+					pagination={true}
+				/>
+				{wishProductIds.length > 0 && (
+					<WishButton
+						productId={product.productId}
+						initWishOn={wishProductIds.includes(product.productId)}
+						right={6}
+						bottom={6}
+						clickHandler={() => {}}
+					/>
+				)}
 			</Link>
 
 			{/* 하단 상품설명 */}
@@ -48,9 +67,9 @@ export const ProductItem = ({ product }: ProductItemProps) => {
 				<div className={styles.productMeta}>
 					<div className={styles.metaWish}>
 						<span className={styles.metaIcon}>
-							<FaHeart />
+							<FaEye />
 						</span>
-						<span className={styles.metaCount}>{product.likeCount}</span>
+						<span className={styles.metaCount}>{product.viewCount}</span>
 					</div>
 
 					<div className={styles.metaRate}>

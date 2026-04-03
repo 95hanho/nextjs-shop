@@ -222,10 +222,9 @@ export type wishlistItem = {
 	likeCount: number;
 	viewCount: number;
 	wishCount: number;
-	productImageId: number;
-} & FileInfo & {
-		sellerName: string;
-	};
+	productImageList: FileInfo[];
+	sellerName: string;
+};
 export interface GetWishListResponse extends BaseResponse {
 	wishlistItems: wishlistItem[];
 }

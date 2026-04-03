@@ -75,14 +75,15 @@ export default function WishClient() {
 								product={{
 									id: wishItem.wishId,
 									productId: wishItem.productId,
-									filePath: wishItem.filePath || "",
+									productImageList: wishItem.productImageList,
 									sellerName: wishItem.sellerName,
 									productName: wishItem.name,
 									originPrice: wishItem.originPrice,
 									finalPrice: wishItem.finalPrice,
-									likeCount: wishItem.likeCount,
+									viewCount: wishItem.viewCount,
 									wishCount: wishItem.wishCount,
 								}}
+								wishProductIds={[]}
 							/>
 						);
 					})}

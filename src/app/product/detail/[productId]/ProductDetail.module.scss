@@ -13,15 +13,61 @@
 		display: flex;
 		padding: 30px 0;
 
-		.productImageArea {
+		.productImageSection {
 			position: relative;
-			max-width: 550px;
-
-			img {
-				display: block;
-				width: 100%;
-				height: auto;
-				object-fit: contain; // or cover
+			.productImageArea {
+				position: relative;
+				max-width: 550px;
+				border: 1px solid #e4e4e4;
+				img {
+					display: block;
+					width: 100%;
+					height: auto;
+					object-fit: contain; // or cover
+				}
+				.productImageEnlargeMouse {
+					position: absolute;
+					top: 0;
+					left: 0;
+					width: 100px;
+					height: 100px;
+					background-color: rgba(0, 0, 0, 0.2);
+					border: 1px solid #757575;
+					cursor: zoom-in;
+					pointer-events: none;
+					display: none;
+				}
+			}
+			.productImageList {
+				display: flex;
+				gap: 10px;
+				margin-top: 30px;
+				justify-content: center;
+				.productImageItem {
+					border: 1px solid #e4e4e4;
+					cursor: pointer;
+					&.active {
+						border: 2px solid #000;
+						padding: 0;
+						img {
+							width: 38px; // active 상태에서는 테두리가 2px이므로 이미지 크기를 줄여서 전체 크기를 유지
+							height: 38px;
+						}
+					}
+				}
+			}
+			.productImageEnlargeView {
+				position: absolute;
+				width: 80%;
+				// 1:1 비율로 설정하여 정사각형 영역 확보
+				aspect-ratio: 1 / 1;
+				background-color: #000;
+				top: 0;
+				right: -80%;
+				border: 1px solid #e4e4e4;
+				background-color: #fff;
+				overflow: hidden;
+				z-index: 10;
 			}
 		}
 
