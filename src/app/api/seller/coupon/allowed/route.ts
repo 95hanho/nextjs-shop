@@ -9,15 +9,24 @@ import { GetSellerCouponAllowResponse, SetSellerCouponAllowRequest } from "@/typ
 import { NextResponse } from "next/server";
 
 // 쿠폰 허용제품 조회
-export const GET = sellerWithAuth(async ({ sellerToken }) => {
+export const GET = sellerWithAuth(async ({ nextRequest, sellerToken }) => {
 	console.log("[API] 쿠폰 허용제품 조회");
 	try {
-		const data = await getNormal<GetSellerCouponAllowResponse>(getBackendUrl(API_URL.SELLER_COUPON_ALLOWED), undefined, {
-			Authorization: `Bearer ${sellerToken}`,
-		});
+		const couponId = nextRequest.nextUrl.searchParams.get("couponId");
+		if (!couponId) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
+
+		const data = await getNormal<GetSellerCouponAllowResponse>(
+			getBackendUrl(API_URL.SELLER_COUPON_ALLOWED),
+			{
+				couponId: Number(couponId),
+			},
+			{
+				Authorization: `Bearer ${sellerToken}`,
+			},
+		);
 		// console.log("data", data);
 
-		return NextResponse.json({ message: data.message }, { status: 200 });
+		return NextResponse.json({ ...data }, { status: 200 });
 	} catch (err: unknown) {
 		const { status, payload } = toErrorResponse(err);
 		return NextResponse.json(payload, { status });
@@ -28,11 +37,12 @@ export const POST = sellerWithAuth(async ({ nextRequest, sellerToken }) => {
 	console.log("[API] 쿠폰 허용제품 변경");
 	try {
 		// json으로 받으면
-		const { couponId, productIds, allow }: SetSellerCouponAllowRequest = await nextRequest.json();
-		if (!couponId || !productIds || productIds.length === 0 || !allow)
+		const { couponId, addProductIds = [], removeProductIds = [] }: SetSellerCouponAllowRequest = await nextRequest.json();
+		console.log("request body", { couponId, addProductIds, removeProductIds });
+		if (!couponId || (addProductIds.length === 0 && removeProductIds.length === 0))
 			return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
 
-		const payload: SetSellerCouponAllowRequest = { couponId, productIds, allow };
+		const payload: SetSellerCouponAllowRequest = { couponId, addProductIds, removeProductIds };
 		const data = await postUrlFormData<BaseResponse>(
 			getBackendUrl(API_URL.SELLER_COUPON_ALLOWED),
 			{ ...payload },

@@ -115,14 +115,12 @@
 		-webkit-user-drag: none;
 		user-select: none;
 	}
-
 	audio,
 	canvas,
 	embed,
 	iframe,
 	img,
 	object,
-	svg,
 	video {
 		display: block;
 		vertical-align: middle;
