@@ -12,6 +12,7 @@ export type Coupon = {
 	isStackable: boolean;
 	isProductRestricted: boolean;
 	amount: number;
+	usedCount: number;
 	startDate: string;
 	endDate: string;
 	issueMethod: "CLAIM" | "AUTO" | "MANUAL";

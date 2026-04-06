@@ -1,0 +1,123 @@
+// 공통
+.sellerMainContainer {
+	h2 {
+		display: flex;
+		justify-content: space-between;
+		margin: 5px 0;
+		padding: 0 10px;
+		button {
+			border: none;
+			padding: 5px 10px;
+			cursor: pointer;
+			border-radius: 6px;
+			font-size: 15px;
+			&.changeButton {
+				background-color: #e78223;
+				color: #fff;
+				margin-left: 5px;
+			}
+			&.deleteButton {
+				background-color: #f00;
+				color: #fff;
+				margin-left: 5px;
+			}
+		}
+	}
+	table,
+	th,
+	td {
+		border: 1px solid rgb(170, 170, 170);
+		border-collapse: collapse;
+		text-align: center;
+	}
+	table {
+		width: 100%;
+		tbody tr {
+			&.sellerListTr {
+				cursor: pointer;
+				&:hover {
+					border: 2px solid #000;
+				}
+				&.disabled:hover {
+					border: none;
+					cursor: default;
+				}
+			}
+			th,
+			td {
+				text-align: center;
+			}
+		}
+		.checkboxCell {
+			input[type="checkbox"] {
+				width: 15px;
+				height: 15px;
+				accent-color: #000;
+			}
+		}
+	}
+}
+
+// 쿠폰 목록
+.sellerCouponList {
+	h2 {
+		.cancelProductRestrictionButton {
+			background-color: #f00;
+			color: #fff;
+		}
+	}
+	.couponTableWrapper {
+		.couponTable {
+			thead {
+			}
+			tbody {
+				tr {
+					&.selectedCouponRow {
+						background-color: #eee782;
+					}
+				}
+			}
+		}
+	}
+	.statusButton {
+		text-decoration: underline;
+		color: rgb(247, 159, 29);
+	}
+	.productRestrictionButton {
+		text-decoration: underline;
+		color: #00f;
+	}
+}
+
+// 상품 목록
+.sellerProductList {
+	h2 {
+		button {
+			background-color: #e9ec18;
+			color: #000000;
+		}
+	}
+	.productTableWrapper {
+		.productTable {
+			thead {
+			}
+			tbody {
+				tr {
+					&.selectedProductRow {
+						background-color: #cce5ff;
+					}
+					&.couponAllowedProductHighlight {
+						background-color: rgb(165, 250, 116);
+						/* 다른 스타일도 추가 가능 */
+					}
+					&.selectedProductRow.couponAllowedProductHighlight {
+						background-color: #f00;
+						color: #fff;
+					}
+				}
+			}
+		}
+	}
+	.productOptionTable {
+	}
+}

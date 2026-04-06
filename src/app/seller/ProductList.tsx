@@ -1,40 +1,33 @@
-"use client";
-
-import API_URL from "@/api/endpoints";
-import { getNormal } from "@/api/fetchFilter";
-import { useSellerAuth } from "@/hooks/useSellerAuth";
 import { getGender } from "@/lib/format";
-import { getApiUrl } from "@/lib/getBaseUrl";
-import { GetSellerProductListResponse, sellerProduct } from "@/types/seller";
-import { useQuery } from "@tanstack/react-query";
 import moment from "moment";
-import React, { useEffect, useState } from "react";
-import { FaCaretSquareDown } from "react-icons/fa";
-import styles from "./ProductList.module.scss";
+import { Fragment, useEffect, useState } from "react";
+import { FaCaretSquareDown, FaCaretSquareUp } from "react-icons/fa";
+import styles from "./SellerMain.module.scss";
+import { sellerProduct } from "@/types/seller";
+import clsx from "clsx";
 
-export default function ProductList() {
-	const { loginOn } = useSellerAuth();
+interface ProductListProps {
+	sellerProductList: sellerProduct[];
+	allowedSelectedCouponId: number | null; // 현재 쿠폰 허용 제품 조회에 사용 중인 쿠폰 ID (null이면 조회 모드 아님)
+	couponAllowedProductIds: number[]; // 쿠폰 허용 제품 ID 리스트
+	updateCouponAllowedProducts: (productIds: number[]) => void; // 쿠폰 허용 제품 업데이트 함수 (선택적으로 전달)
+	isCouponAllowedProductIdsLoading: boolean; // 쿠폰 허용 제품 ID 조회 로딩 상태
+	selectedProductIds: number[]; // 현재 선택된 제품 ID 리스트
+	changeSelectedProductIds: (productId: number) => void; // 선택된 제품 ID 리스트 변경 함수
+	changeAllSelectedProductIds: (isChecked: boolean) => void; // 모든 제품 선택/해제 함수
+}
 
-	// ------------------------------------------------
-	// React Query
-	// ------------------------------------------------
-
-	// 판매자 제품 리스트 조회
-	// invalidateQueries(["cartList"])
-	const {
-		data: sellerProductList = [],
-		isLoading: isProductLoading,
-		// isFetching,
-	} = useQuery<GetSellerProductListResponse, Error, sellerProduct[]>({
-		queryKey: ["sellerProductList"],
-		queryFn: () => getNormal(getApiUrl(API_URL.SELLER_PRODUCT)),
-		select: (data) => {
-			return data.sellerProductList;
-		},
-
-		enabled: loginOn,
-		refetchOnWindowFocus: false,
-	});
+export default function ProductList({
+	sellerProductList,
+	allowedSelectedCouponId,
+	couponAllowedProductIds,
+	updateCouponAllowedProducts,
+	isCouponAllowedProductIdsLoading,
+	selectedProductIds,
+	changeSelectedProductIds,
+	changeAllSelectedProductIds,
+}: ProductListProps) {
+	const couponAllowedMode = allowedSelectedCouponId !== null; // 쿠폰 허용 제품이 하나라도 있으면 true
 
 	// ------------------------------------------------
 	// React
@@ -43,18 +36,32 @@ export default function ProductList() {
 	const [openProductId, setOpenProductId] = useState<number | null>(null);
 
 	useEffect(() => {
-		if (sellerProductList.length > 0) {
-			// console.log("sellerProductList", sellerProductList);
+		if (couponAllowedProductIds.length > 0) {
+			console.log("쿠폰 허용 제품 ID 리스트:", couponAllowedProductIds);
 		}
-	}, [sellerProductList]);
+	}, [couponAllowedProductIds]);
 
+	if (isCouponAllowedProductIdsLoading) return null;
 	return (
-		<div id="sellerProductList">
-			<h2>상품 목록</h2>
-			<div>
-				<table>
+		<div id="sellerProductList" className={styles.sellerProductList}>
+			<h2>
+				상품 목록
+				{couponAllowedMode && <button onClick={() => updateCouponAllowedProducts(selectedProductIds)}>상품제한변경</button>}
+			</h2>
+			<div className={styles.productTableWrapper}>
+				<table className={styles.productTable}>
 					<thead>
 						<tr>
+							<th className={styles.checkboxCell}>
+								<input
+									type="checkbox"
+									checked={selectedProductIds.length === sellerProductList.length}
+									onChange={(e) => {
+										changeAllSelectedProductIds(e.target.checked);
+									}}
+								/>
+							</th>
+							<th>productId</th>
 							<th>상품명</th>
 							<th>등록일</th>
 							<th>수정일</th>
@@ -63,16 +70,38 @@ export default function ProductList() {
 							<th>wish</th>
 							<th>구분{/* 남-아우터-재킷 */}</th>
 							<th>판매중단</th>
-							<th>옵션</th>
+							{!couponAllowedMode && <th>옵션</th>}
 						</tr>
 					</thead>
 					<tbody>
-						{!isProductLoading && (
-							<>
-								{sellerProductList.length > 0 &&
-									sellerProductList.map((product) => (
-										<React.Fragment key={product.productId}>
-											<tr key={product.productId}>
+						<>
+							{sellerProductList.length > 0 &&
+								sellerProductList.map((product) => {
+									const isChecked = selectedProductIds.includes(product.productId);
+
+									return (
+										<Fragment key={product.productId}>
+											<tr
+												key={product.productId}
+												className={clsx(
+													styles.sellerListTr,
+													isChecked && styles.selectedProductRow,
+													couponAllowedProductIds.includes(product.productId) && styles.couponAllowedProductHighlight,
+												)}
+												onClick={() => {
+													changeSelectedProductIds(product.productId);
+												}}
+											>
+												<td className={styles.checkboxCell}>
+													<input
+														type="checkbox"
+														checked={selectedProductIds.includes(product.productId)}
+														onChange={() => {
+															changeSelectedProductIds(product.productId);
+														}}
+													/>
+												</td>
+												<td>{product.productId}</td>
 												<td>{product.name}</td>
 												<td>{moment(product.createdAt).format("YYYY-MM-DD")}</td>
 												<td>{moment(product.updatedAt).format("YYYY-MM-DD HH:mm")}</td>
@@ -81,19 +110,22 @@ export default function ProductList() {
 												<td>{product.wishCount}</td>
 												<td>{`${getGender(product.gender)}-${product.topMenuName}-${product.subMenuName}`}</td>
 												<td>{product.saleStop && "O"}</td>
-												<td>
-													<button
-														onClick={() =>
-															setOpenProductId(openProductId === product.productId ? null : product.productId)
-														}
-													>
-														<FaCaretSquareDown />
-													</button>
-												</td>
+												{!couponAllowedMode && (
+													<td>
+														<button
+															onClick={(e) => {
+																e.stopPropagation(); // 행 클릭 이벤트와 중복 방지
+																setOpenProductId(openProductId === product.productId ? null : product.productId);
+															}}
+														>
+															{openProductId === product.productId ? <FaCaretSquareUp /> : <FaCaretSquareDown />}
+														</button>
+													</td>
+												)}
 											</tr>
 											{openProductId === product.productId && (
 												<tr>
-													<td colSpan={10}>
+													<td colSpan={11}>
 														<div>
 															<h4>옵션 목록</h4>
 															<div className={styles.productOptionTable}>
@@ -124,10 +156,10 @@ export default function ProductList() {
 													</td>
 												</tr>
 											)}
-										</React.Fragment>
-									))}
-							</>
-						)}
+										</Fragment>
+									);
+								})}
+						</>
 					</tbody>
 				</table>
 			</div>

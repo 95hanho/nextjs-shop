@@ -127,20 +127,14 @@ export interface UpdateCouponRequest {
 	endDate: string;
 }
 /* 쿠폰 허용제품 조회 */
-export type CouponAllowedProductListItem = {
-	couponAllowedId: number;
-	couponId: number;
-	productId: number;
-	name: string;
-};
 export interface GetSellerCouponAllowResponse extends BaseResponse {
-	CouponAllowedProductList: CouponAllowedProductListItem[];
+	couponAllowedProductIds: number[];
 }
 /* 쿠폰 허용제품 변경 */
 export interface SetSellerCouponAllowRequest {
 	couponId: number;
-	productIds: number[];
-	allow: boolean;
+	addProductIds: number[];
+	removeProductIds: number[];
 }
 /*  */
 export interface IssueCouponsToUsersRequest {

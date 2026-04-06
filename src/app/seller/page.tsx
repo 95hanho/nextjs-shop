@@ -1,12 +1,9 @@
-import CouponList from "@/app/seller/CouponList";
-import ProductList from "@/app/seller/ProductList";
+import SellerMainClient from "@/app/seller/SellerMainClient";
 
-export default function SellerPage() {
+export default function SellerMainPage() {
 	return (
-		<>
-			<h1>Seller Page</h1>
-			<CouponList />
-			<ProductList />
-		</>
+		<main className="mx-3">
+			<SellerMainClient />
+		</main>
 	);
 }
