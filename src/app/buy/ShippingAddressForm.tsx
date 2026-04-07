@@ -6,7 +6,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useBuy } from "@/hooks/buy/useBuy";
 import { useModalStore } from "@/store/modal.store";
 import { OnOffButton } from "@/components/ui/OnOffButton";
-import { FormInput } from "@/components/auth/FormInput";
+import { FormInput } from "@/components/form/FormInput";
 import { AddressSection } from "@/components/auth/AddressSection";
 
 // interface ShippingAddressFormProps {}

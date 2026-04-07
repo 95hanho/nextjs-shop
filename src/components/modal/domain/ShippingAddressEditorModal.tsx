@@ -4,7 +4,7 @@ import { useModalStore } from "@/store/modal.store";
 import { ModalFrame } from "@/components/modal/frame/ModalFrame";
 import styles from "../Modal.module.scss";
 import { ChangeEvent, FormEvent } from "@/types/event";
-import { FormInput } from "@/components/auth/FormInput";
+import { FormInput } from "@/components/form/FormInput";
 import { FormInputAlarm, FormInputRefs } from "@/types/form";
 import { AddressSection } from "@/components/auth/AddressSection";
 import clsx from "clsx";

@@ -1,6 +1,7 @@
 import SellerHeader from "@/app/seller/SellerHeader";
 import SellerRootProvider from "@/app/seller/SellerRootProvider";
 import { Metadata } from "next";
+import "react-datepicker/dist/react-datepicker.css";
 
 export const metadata: Metadata = {
 	title: "nextjs-shop - 판매자 페이지",

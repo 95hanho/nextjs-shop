@@ -3,7 +3,7 @@ import { FiEye, FiEyeOff } from "react-icons/fi";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import clsx from "clsx";
-import { AuthActionButton } from "@/components/auth/AuthActionButton";
+import { FormActionButton } from "@/components/form/FormActionButton";
 import styles from "./LoginForm.module.scss";
 import { BaseResponse } from "@/types/common";
 import { FormEvent } from "@/types/event";
@@ -197,7 +197,7 @@ export const CommonLoginForm = ({ apiUrl, redirectTo, invalidateKeys, loginIdFie
 				)}
 			</div>
 			{alarmMessage && <p>* {alarmMessage}</p>}
-			<AuthActionButton title="로그인" />
+			<FormActionButton title="로그인" />
 		</form>
 	);
 };

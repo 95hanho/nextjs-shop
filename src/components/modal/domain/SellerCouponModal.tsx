@@ -1,5 +1,5 @@
-import { FormInput } from "@/components/auth/FormInput";
-import { InfoMark } from "@/components/auth/InfoMark";
+import { FormInput } from "@/components/form/FormInput";
+import { InfoMark } from "@/components/form/InfoMark";
 import { ModalFrame } from "@/components/modal/frame/ModalFrame";
 import { ChangeEvent, FormEvent } from "@/types/event";
 import { FormInputAlarm, FormInputRefs } from "@/types/form";
@@ -12,6 +12,8 @@ import { money } from "@/lib/format";
 import { getNormal } from "@/api/fetchFilter";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import API_URL from "@/api/endpoints";
+import { useModalStore } from "@/store/modal.store";
+import { DateInput } from "@/components/form/DateInput";
 
 interface SellerCouponModalProps {
 	onClose: () => void;
@@ -32,7 +34,7 @@ const initCouponForm: SellerCoupon = {
 	status: "ACTIVE",
 	isStackable: false,
 	isProductRestricted: false,
-	amount: 0,
+	amount: 100,
 	usedCount: 0,
 	startDate: new Date().toISOString(),
 	endDate: new Date().toISOString(),
@@ -42,6 +44,8 @@ const initCouponForm: SellerCoupon = {
 };
 
 export const SellerCouponModal = ({ onClose, prevSellerCoupon }: SellerCouponModalProps) => {
+	const { resolveModal } = useModalStore();
+
 	// ------------------------------------------------
 	// React
 	// ------------------------------------------------
@@ -56,7 +60,7 @@ export const SellerCouponModal = ({ onClose, prevSellerCoupon }: SellerCouponMod
 			name: CouponFormInputKeys;
 			value: string;
 		};
-		let changeVal = value.trim();
+		let changeVal = value;
 		// 숫자만 허용해야하는 input은 숫자만 입력받도록
 		if (["discountValue", "maxDiscount", "minimumOrderBeforeAmount", "amount"].includes(name)) {
 			changeVal = changeVal.replace(/[^0-9]/g, "");
@@ -78,20 +82,27 @@ export const SellerCouponModal = ({ onClose, prevSellerCoupon }: SellerCouponMod
 		let changeAlarm: CouponFormAlarm | null = null;
 
 		// 쿠폰 이름 중복 확인
-		if (name === "description") {
-			console.log("쿠폰 이름 중복 확인");
-			await getNormal(getApiUrl(API_URL.SELLER_COUPON_DESCRIPTION_DUPLICATE), {
-				description: changeVal,
-			}).catch((err) => {
-				console.log(err);
-				changeAlarm = { name: "description", message: "이미 존재하는 쿠폰 이름입니다.", status: "FAIL" };
-				couponFormInputRefs.current.description?.focus();
-			});
+		if (name === "description" && changeVal) {
+			if (couponFormAlarm?.message !== "이미 존재하는 쿠폰 이름입니다.") {
+				await getNormal(getApiUrl(API_URL.SELLER_COUPON_DESCRIPTION_DUPLICATE), {
+					description: changeVal,
+				}).catch((err) => {
+					if (err.message === "SELLER_COUPON_DESCRIPTION_DUPLICATED") {
+						changeAlarm = { name: "description", message: "이미 존재하는 쿠폰 이름입니다.", status: "FAIL" };
+						couponFormInputRefs.current.description?.focus();
+					}
+				});
+			}
 		}
-
 		// 숫자만 허용해야하는 input은 숫자만 입력받도록
 		if (["discountValue", "maxDiscount", "minimumOrderBeforeAmount", "amount"].includes(name)) {
 			changeVal = changeVal.replace(/[^0-9]/g, "");
+		}
+		// 할인타입이 percentage일 때 discountValue는 100을 넘을 수 없음
+		if (couponForm.discountType === "percentage") {
+			if (name === "discountValue" && Number(changeVal) > 100) {
+				changeVal = "100";
+			}
 		}
 
 		if (!changeVal) return;
@@ -108,9 +119,11 @@ export const SellerCouponModal = ({ onClose, prevSellerCoupon }: SellerCouponMod
 			[name]: changeVal,
 		}));
 	};
+	// 쿠폰 등록/수정 제출
 	const couponSetSubmit = (e: FormEvent) => {
 		console.log("couponSetSubmit");
 		e.preventDefault();
+		// 알람이 있을 때는 해당 input으로 focus
 		if (couponFormAlarm?.status === "FAIL") {
 			couponFormInputRefs.current[couponFormAlarm.name]?.focus();
 			return;
@@ -124,15 +137,30 @@ export const SellerCouponModal = ({ onClose, prevSellerCoupon }: SellerCouponMod
 			if (!value) {
 				changeAlarm = { name: key, message: "해당 내용을 입력해주세요.", status: "FAIL" };
 			}
+			// 숫자값들은 0보다 커야함
+			if (["discountValue", "maxDiscount", "minimumOrderBeforeAmount", "amount"].includes(key)) {
+				if (Number(value) <= 0) {
+					changeAlarm = { name: key, message: "값은 0보다 커야 합니다.", status: "FAIL" };
+				}
+			}
 			if (changeAlarm) break;
 		}
+		// 최대 할인금액 < 최소 주문금액
+		if (Number(couponForm.maxDiscount) > Number(couponForm.minimumOrderBeforeAmount)) {
+			changeAlarm = { name: "maxDiscount", message: "최대 할인금액은 최소 주문금액보다 클 수 없습니다.", status: "FAIL" };
+		}
+
 		if (changeAlarm) {
 			setCouponFormAlarm(changeAlarm);
+			couponFormInputRefs.current[changeAlarm.name]?.focus();
 			return;
 		}
-		console.log({
+		console.log("쿠폰 등록/수정 제출", {
 			couponForm,
 		});
+		// resolveModal({
+		// 	action:"ALERT_OK"
+		// })
 	};
 
 	return (
@@ -147,6 +175,9 @@ export const SellerCouponModal = ({ onClose, prevSellerCoupon }: SellerCouponMod
 						alarm={couponFormAlarm}
 						onChange={changeCouponForm}
 						onBlur={validateCouponForm}
+						ref={(el) => {
+							couponFormInputRefs.current.description = el;
+						}}
 					/>
 				) : (
 					<InfoMark title="이름" infoVal={<span>{couponForm.description}</span>} />
@@ -175,16 +206,19 @@ export const SellerCouponModal = ({ onClose, prevSellerCoupon }: SellerCouponMod
 					}
 				/>
 				<FormInput
+					type={couponForm.discountType === "fixed_amount" ? "text" : "number"}
 					label="할인값"
 					name="discountValue"
-					value={couponForm.discountValue}
+					value={couponForm.discountType === "fixed_amount" ? money(couponForm.discountValue) : couponForm.discountValue}
 					placeholder=""
 					onChange={changeCouponForm}
 					onBlur={validateCouponForm}
+					alarm={couponFormAlarm}
 					ref={(el) => {
 						couponFormInputRefs.current.discountValue = el;
 					}}
 					unit={couponForm.discountType === "fixed_amount" ? "원" : "%"}
+					max={couponForm.discountType === "percentage" ? 100 : undefined}
 				/>
 				{couponForm.maxDiscount && (
 					<FormInput
@@ -194,6 +228,7 @@ export const SellerCouponModal = ({ onClose, prevSellerCoupon }: SellerCouponMod
 						placeholder=""
 						onChange={changeCouponForm}
 						onBlur={validateCouponForm}
+						alarm={couponFormAlarm}
 						ref={(el) => {
 							couponFormInputRefs.current.maxDiscount = el;
 						}}
@@ -207,6 +242,7 @@ export const SellerCouponModal = ({ onClose, prevSellerCoupon }: SellerCouponMod
 					placeholder=""
 					onChange={changeCouponForm}
 					onBlur={validateCouponForm}
+					alarm={couponFormAlarm}
 					ref={(el) => {
 						couponFormInputRefs.current.minimumOrderBeforeAmount = el;
 					}}
@@ -284,10 +320,12 @@ export const SellerCouponModal = ({ onClose, prevSellerCoupon }: SellerCouponMod
 					placeholder=""
 					onChange={changeCouponForm}
 					onBlur={validateCouponForm}
+					alarm={couponFormAlarm}
 					ref={(el) => {
 						couponFormInputRefs.current.amount = el;
 					}}
 				/>
+				<DateInput name="example" label="예시 날짜" />
 				{/* 버튼 */}
 				<div className={styles.optionActions}>
 					<button type="button" onClick={onClose}>

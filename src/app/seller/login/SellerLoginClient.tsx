@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { FormPageShell } from "@/components/auth/FormPageShell";
+import { FormPageShell } from "@/components/form/FormPageShell";
 import { SellerLoginForm } from "@/components/seller/SellerLoginForm";
 
 export default function SellerLoginClient() {

@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { ReactNode } from "react";
-import styles from "./InfoMark.module.scss";
+import styles from "./Form.module.scss";
 
 interface InfoMarkProps {
 	title: string;
