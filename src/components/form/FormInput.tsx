@@ -1,4 +1,4 @@
-import styles from "./FormInput.module.scss";
+import styles from "./Form.module.scss";
 import { forwardRef } from "react";
 import clsx from "clsx";
 import { ChangeFunction } from "@/types/event";
@@ -29,6 +29,7 @@ interface FormInputProps<T extends string, K extends string = T> {
 	searchBtn?: { txt: string; fnc: () => void };
 	inputMode?: React.HTMLAttributes<HTMLInputElement>["inputMode"];
 	pattern?: string;
+	max?: number;
 	maxLength?: number;
 	labelWidthPercent?: number;
 	inputWidthPercent?: number;
@@ -52,6 +53,7 @@ export const FormInput = forwardRef(<T extends string>(props: FormInputProps<T>,
 		searchBtn,
 		inputMode,
 		pattern,
+		max,
 		maxLength,
 		labelWidthPercent,
 		inputWidthPercent,
@@ -68,14 +70,14 @@ export const FormInput = forwardRef(<T extends string>(props: FormInputProps<T>,
 	}
 
 	return (
-		<div className={styles.joinInput}>
-			<LeftLabel className={clsx(styles.joinLabel)} $labelWidthPercent={labelWidthPercent}>
+		<div className={styles.formInput}>
+			<LeftLabel className={clsx(styles.formInputLabel)} $labelWidthPercent={labelWidthPercent}>
 				<label htmlFor={name}>{label}</label>
 				{requiredMark && <mark className={styles.requiredMark}>*</mark>}
 			</LeftLabel>
 
 			<RightInput
-				className={clsx(styles.joinText, alarmStatus === "FAIL" && styles.fail, alarmStatus === "SUCCESS" && styles.success)}
+				className={clsx(styles.formInputText, alarmStatus === "FAIL" && styles.fail, alarmStatus === "SUCCESS" && styles.success)}
 				$labelWidthPercent={labelWidthPercent}
 				$inputWidthPercent={inputWidthPercent}
 			>
@@ -92,6 +94,7 @@ export const FormInput = forwardRef(<T extends string>(props: FormInputProps<T>,
 						onClick={onClick}
 						inputMode={inputMode}
 						pattern={pattern}
+						max={max}
 						maxLength={maxLength}
 						className={clsx(cursorPointer && styles.cursorPointer)}
 					/>

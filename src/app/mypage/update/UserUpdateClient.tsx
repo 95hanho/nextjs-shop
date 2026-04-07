@@ -2,10 +2,10 @@
 "use client";
 
 import { AddressSection } from "@/components/auth/AddressSection";
-import { AuthActionButton } from "@/components/auth/AuthActionButton";
-import { FormInput } from "@/components/auth/FormInput";
-import { FormPageShell } from "@/components/auth/FormPageShell";
-import { InfoMark } from "@/components/auth/InfoMark";
+import { FormActionButton } from "@/components/form/FormActionButton";
+import { FormInput } from "@/components/form/FormInput";
+import { FormPageShell } from "@/components/form/FormPageShell";
+import { InfoMark } from "@/components/form/InfoMark";
 import { PhoneAuthSection } from "@/components/auth/PhoneAuthSection";
 import { useUserUpdateForm } from "@/hooks/query/auth/form/useUserUpdateForm";
 import { useAuth } from "@/hooks/useAuth";
@@ -82,7 +82,7 @@ export default function UserInfoUpdate() {
 							userUpdateFormInputRefs.current.email = el;
 						}}
 					/>
-					<AuthActionButton title="완료" type="info" />
+					<FormActionButton title="완료" type="info" />
 				</div>
 			</form>
 		</FormPageShell>

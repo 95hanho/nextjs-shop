@@ -5,7 +5,7 @@ import { SiKakaotalk, SiNaver } from "react-icons/si";
 import styles from "./Login.module.scss";
 import { LoginForm } from "@/components/auth/LoginForm";
 import clsx from "clsx";
-import { FormPageShell } from "@/components/auth/FormPageShell";
+import { FormPageShell } from "@/components/form/FormPageShell";
 
 export default function LoginClient() {
 	return (

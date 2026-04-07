@@ -2,7 +2,7 @@
 
 import API_URL from "@/api/endpoints";
 import { deleteNormal, getNormal, postJson, putJson } from "@/api/fetchFilter";
-import { FormPageShell } from "@/components/auth/FormPageShell";
+import { FormPageShell } from "@/components/form/FormPageShell";
 import { LodingWrap } from "@/components/common/LodingWrap";
 import { AddressForm } from "@/components/modal/domain/ShippingAddressEditorModal";
 import { useAuth } from "@/hooks/useAuth";

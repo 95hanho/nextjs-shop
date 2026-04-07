@@ -1,9 +1,9 @@
 "use client";
 
 import { AddressSection } from "@/components/auth/AddressSection";
-import { AuthActionButton } from "@/components/auth/AuthActionButton";
-import { FormInput } from "@/components/auth/FormInput";
-import { FormPageShell } from "@/components/auth/FormPageShell";
+import { FormActionButton } from "@/components/form/FormActionButton";
+import { FormInput } from "@/components/form/FormInput";
+import { FormPageShell } from "@/components/form/FormPageShell";
 import { PhoneAuthSection } from "@/components/auth/PhoneAuthSection";
 import { useUserJoinForm } from "@/hooks/query/auth/form/useUserJoinForm";
 import Link from "next/link";
@@ -139,7 +139,7 @@ export default function SellerJoinClient() {
 						joinFormInputRefs.current.email = el;
 					}}
 				/>
-				<AuthActionButton title="회원가입" />
+				<FormActionButton title="회원가입" />
 			</form>
 		</FormPageShell>
 	);

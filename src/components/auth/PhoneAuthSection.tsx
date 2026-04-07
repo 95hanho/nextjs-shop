@@ -1,4 +1,4 @@
-import { FormInput } from "@/components/auth/FormInput";
+import { FormInput } from "@/components/form/FormInput";
 import { ChangeFunction } from "@/types/event";
 import { FormInputAlarm, SetFormRef } from "@/types/form";
 

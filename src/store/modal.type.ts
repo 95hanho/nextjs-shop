@@ -76,6 +76,8 @@ export type ModalResultMap = {
 	ALERT_OK: undefined;
 	// 구매)배송지 변경
 	BUY_ADDRESS_CHANGE: UserAddressListItem;
+	// 판매자 쿠폰 등록/수정
+	SELLER_COUPON_SET: SellerCoupon;
 	// 공통) 닫기
 	CLOSE:
 		| undefined

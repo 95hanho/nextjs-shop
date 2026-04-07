@@ -1,9 +1,9 @@
 /* 비밀번호바꾸기 클라 */
 "use client";
 
-import { AuthActionButton } from "@/components/auth/AuthActionButton";
-import { FormInput } from "@/components/auth/FormInput";
-import { FormPageShell } from "@/components/auth/FormPageShell";
+import { FormActionButton } from "@/components/form/FormActionButton";
+import { FormInput } from "@/components/form/FormInput";
+import { FormPageShell } from "@/components/form/FormPageShell";
 import { usePasswordChangeForm } from "@/hooks/query/auth/form/usePasswordChangeForm";
 
 interface PasswordChangeClientProps {
@@ -63,7 +63,7 @@ export default function PasswordChangeClient({ mode }: PasswordChangeClientProps
 					}}
 					inputWidthPercent={100}
 				/>
-				<AuthActionButton title="완료" type="info" />
+				<FormActionButton title="완료" type="info" />
 			</form>
 		</FormPageShell>
 	);

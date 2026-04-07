@@ -2,7 +2,7 @@
 
 import API_URL from "@/api/endpoints";
 import { getNormal, postJson } from "@/api/fetchFilter";
-import { InfoMark } from "@/components/auth/InfoMark";
+import { InfoMark } from "@/components/form/InfoMark";
 import { NormalButton } from "@/components/ui/NormalButton";
 import { useAuth } from "@/hooks/useAuth";
 import { getApiUrl } from "@/lib/getBaseUrl";
@@ -10,8 +10,8 @@ import { BaseResponse } from "@/types/common";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import moment from "moment";
-import { FormPageShell } from "@/components/auth/FormPageShell";
-import { AuthActionButton } from "@/components/auth/AuthActionButton";
+import { FormPageShell } from "@/components/form/FormPageShell";
+import { FormActionButton } from "@/components/form/FormActionButton";
 
 export default function UserInfoClient() {
 	const { user, loginOn } = useAuth();
@@ -84,7 +84,7 @@ export default function UserInfoClient() {
 					}
 				/>
 			)}
-			<AuthActionButton
+			<FormActionButton
 				type="info"
 				title="정보수정하기"
 				btnType="button"
