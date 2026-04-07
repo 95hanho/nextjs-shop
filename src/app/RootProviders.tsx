@@ -1,6 +1,7 @@
 "use client";
 
 import { toErrorResponse } from "@/api/error";
+import { ModalRoot } from "@/components/modal/core/ModalRoot";
 import { AuthGlobalEffects } from "@/providers/auth/AuthGlobalEffects";
 import { AuthProvider } from "@/providers/auth/AuthProvider";
 import { OpenModal, useModalStore } from "@/store/modal.store";

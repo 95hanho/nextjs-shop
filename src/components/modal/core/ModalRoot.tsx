@@ -12,6 +12,8 @@ import { ModalPropsMap } from "@/store/modal.type";
 import clsx from "clsx";
 import { ShippingAddressEditorModal } from "@/components/modal/domain/ShippingAddressEditorModal";
 import { BuyShippingAddressListModal } from "@/components/modal/domain/BuyShippingAddressListModal";
+import { SellerCoupon } from "@/types/seller";
+import { SellerCouponModal } from "@/components/modal/domain/SellerCouponModal";
 
 type ModalCommon = {
 	disableOverlayClose?: boolean;
@@ -91,6 +93,11 @@ export const ModalRoot = () => {
 			break;
 		case "BUY_ADDRESSLIST":
 			childrenModal = <BuyShippingAddressListModal onClose={handleClose} />;
+			break;
+		case "SELLER_COUPON":
+			const { coupon } = modalProps as { coupon?: SellerCoupon };
+
+			childrenModal = <SellerCouponModal onClose={handleClose} prevSellerCoupon={coupon} />;
 			break;
 		default:
 			return null;

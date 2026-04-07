@@ -126,6 +126,8 @@ const API_URL = {
 	SELLER_COUPON: "/seller/coupon",
 	/** 쿠폰삭제 */
 	SELLER_COUPON_DELETE: "/seller/coupon/:couponId",
+	/** 쿠폰 설명 중복 확인 */
+	SELLER_COUPON_DESCRIPTION_DUPLICATE: "/seller/coupon/description/duplicate",
 	/** 쿠폰 상태 변경 */
 	SELLER_COUPON_STATUS: "/seller/coupon/status",
 	/** 쿠폰 허용제품 조회, 쿠폰 허용제품 변경 */

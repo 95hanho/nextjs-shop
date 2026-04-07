@@ -29,6 +29,9 @@
 		&.address {
 			width: 430px;
 		}
+		&.coupon {
+			width: 430px;
+		}
 	}
 }
 // =========================
@@ -126,5 +129,26 @@
 
 	.optionSummaryPrice {
 		font-size: 14px;
+	}
+}
+// =========================
+// SellerCouponModal.tsx
+// =========================
+.couponForm {
+	* {
+		font-family: "NotoSansKR";
+	}
+	position: relative;
+	font-size: 15px;
+	.off {
+		color: #aaa;
+	}
+	.button {
+		display: inline-flex;
+		padding: 8px 10px;
+		margin-left: 5px;
+		border-radius: 6px;
+		background-color: #e78223;
+		color: #fff;
 	}
 }

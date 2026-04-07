@@ -2,9 +2,11 @@ import { SellerCoupon } from "@/types/seller";
 import styles from "./SellerMain.module.scss";
 import moment from "moment";
 import { IoMdSettings } from "react-icons/io";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import clsx from "clsx";
 import { FaExchangeAlt } from "react-icons/fa";
+import { useModalStore } from "@/store/modal.store";
+import { ModalResultMap } from "@/store/modal.type";
 
 interface CouponListProps {
 	sellerCouponList: SellerCoupon[];
@@ -13,6 +15,7 @@ interface CouponListProps {
 	selectedCouponIds: number[];
 	changeSelectedCouponIds: (id: number) => void;
 	changeAllSelectedCouponIds: (isChecked: boolean) => void;
+	updateCouponStatus: (params: { activeCouponIds?: number[]; suspendedCouponIds?: number[] }) => void;
 }
 
 export default function CouponList({
@@ -22,12 +25,40 @@ export default function CouponList({
 	selectedCouponIds,
 	changeSelectedCouponIds,
 	changeAllSelectedCouponIds,
+	updateCouponStatus,
 }: CouponListProps) {
 	const couponAllowedMode = allowedSelectedCouponId !== null; // 쿠폰 허용 제품이 하나라도 있으면 true
+	const { openModal, clearModalResult, modalResult } = useModalStore();
 
 	// ------------------------------------------------
 	// React
 	// ------------------------------------------------
+
+	// 상태 변경중 쿠폰
+	const [changingCoupon, setChangingCoupon] = useState<SellerCoupon | null>(null);
+
+	// ------------------------------------------------
+	// useEffect, useMemo
+	// ------------------------------------------------
+
+	// 모달 결과 처리
+	useEffect(() => {
+		if (!modalResult) return;
+
+		if (modalResult.action === "CONFIRM_OK") {
+			const payload = modalResult.payload as ModalResultMap["CONFIRM_OK"];
+			if (payload?.result === "COUPON_STATUS_CHANGE") {
+				if (changingCoupon) {
+					updateCouponStatus({
+						activeCouponIds: changingCoupon.status === "ACTIVE" ? [changingCoupon.couponId] : [],
+						suspendedCouponIds: changingCoupon.status === "SUSPENDED" ? [changingCoupon.couponId] : [],
+					});
+				}
+			}
+		}
+
+		clearModalResult();
+	}, [clearModalResult, modalResult, updateCouponStatus, changingCoupon]);
 
 	return (
 		<div id="sellerCouponList" className={styles.sellerCouponList}>
@@ -38,7 +69,16 @@ export default function CouponList({
 						상품제한취소
 					</button>
 				) : (
-					<></>
+					<button
+						className={styles.registerCouponButton}
+						onClick={() => {
+							openModal("SELLER_COUPON", {
+								disableOverlayClose: true,
+							});
+						}}
+					>
+						쿠폰등록
+					</button>
 				)}
 			</h2>
 			<div className={styles.couponTableWrapper}>
@@ -87,6 +127,14 @@ export default function CouponList({
 													changeSelectedCouponIds(coupon.couponId);
 												}
 											}}
+											onDoubleClick={() => {
+												if (!couponAllowedMode) {
+													openModal("SELLER_COUPON", {
+														coupon,
+														disableOverlayClose: true,
+													});
+												}
+											}}
 										>
 											<td className={styles.checkboxCell}>
 												<input
@@ -99,11 +147,30 @@ export default function CouponList({
 											<td>{coupon.couponId}</td>
 											<td>{coupon.description}</td>
 											<td>{coupon.discountType}</td>
-											<td>{coupon.discountValue}</td>
+											<td>
+												{coupon.discountValue}
+												{coupon.discountType === "fixed_amount" ? "원" : "%"}
+											</td>
 											<td>{coupon.maxDiscount}</td>
 											<td>{coupon.minimumOrderBeforeAmount}</td>
 											<td>
-												<button className={styles.statusButton}>
+												<button
+													className={clsx(
+														styles.statusButton,
+														coupon.status === "ACTIVE" ? styles.active : styles.suspended,
+													)}
+													onClick={(e) => {
+														e.stopPropagation();
+														setChangingCoupon(coupon);
+														openModal("CONFIRM", {
+															content: "쿠폰 상태를 변경하시겠습니까?",
+															okResult: "COUPON_STATUS_CHANGE",
+															handleAfterClose: () => {
+																setChangingCoupon(null);
+															},
+														});
+													}}
+												>
 													{coupon.status}
 													<FaExchangeAlt />
 												</button>
