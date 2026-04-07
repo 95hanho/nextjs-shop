@@ -12,6 +12,7 @@ import {
 	SellerCoupon,
 	sellerProduct,
 	SetSellerCouponAllowRequest,
+	UpdateCouponStatusRequest,
 } from "@/types/seller";
 import { useQuery } from "@tanstack/react-query";
 import { useSellerAuth } from "@/hooks/useSellerAuth";
@@ -105,6 +106,22 @@ export default function SellerMainClient() {
 			console.log("쿠폰 허용제품 변경 실패:", error.message);
 		},
 	});
+	// 쿠폰 상태 변경
+	const { mutate: updateCouponStatus } = useMutation({
+		mutationKey: ["updateCouponStatus"],
+		mutationFn: async ({ activeCouponIds = [], suspendedCouponIds = [] }: UpdateCouponStatusRequest) => {
+			return postJson<BaseResponse, UpdateCouponStatusRequest>(getApiUrl(API_URL.SELLER_COUPON_STATUS), {
+				activeCouponIds,
+				suspendedCouponIds, // 실제로는 기존 허용 제품과 비교해서 제거할 제품 ID 리스트 생성 필요
+			});
+		},
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ["sellerCouponList"] });
+		},
+		onError: (error) => {
+			console.log("쿠폰 상태 변경 실패:", error.message);
+		},
+	});
 
 	// ------------------------------------------------
 	// React
@@ -141,6 +158,7 @@ export default function SellerMainClient() {
 				setSelectedCouponIds([]);
 			}
 		},
+		updateCouponStatus,
 	};
 	const productListProps = {
 		sellerProductList,

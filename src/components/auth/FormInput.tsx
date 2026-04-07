@@ -20,7 +20,7 @@ interface FormInputProps<T extends string, K extends string = T> {
 	label: string;
 	placeholder: string;
 	type?: string;
-	value: string;
+	value: string | number;
 	alarm?: FormInputAlarm<K>;
 	onChange?: ChangeFunction;
 	onBlur?: ChangeFunction;
@@ -34,6 +34,7 @@ interface FormInputProps<T extends string, K extends string = T> {
 	inputWidthPercent?: number;
 	requiredMark?: boolean;
 	cursorPointer?: boolean;
+	unit?: string; // 단위
 }
 
 export const FormInput = forwardRef(<T extends string>(props: FormInputProps<T>, ref: React.ForwardedRef<HTMLInputElement>) => {
@@ -56,6 +57,7 @@ export const FormInput = forwardRef(<T extends string>(props: FormInputProps<T>,
 		inputWidthPercent,
 		requiredMark = false,
 		cursorPointer = false,
+		unit,
 	} = props;
 
 	let alarmStatus,
@@ -93,6 +95,7 @@ export const FormInput = forwardRef(<T extends string>(props: FormInputProps<T>,
 						maxLength={maxLength}
 						className={clsx(cursorPointer && styles.cursorPointer)}
 					/>
+					{unit && <span className={clsx(styles.unit, "ml-1")}>{unit}</span>}
 					{searchBtn && (
 						<button
 							type="button"

@@ -1,8 +1,9 @@
 import { AddressForm } from "@/components/modal/domain/ShippingAddressEditorModal";
 import { CartItem, UserAddress, UserAddressListItem } from "@/types/mypage";
+import { SellerCoupon } from "@/types/seller";
 
 // modal타입
-export type ModalType = "ALERT" | "CONFIRM" | "PRODUCT_OPTION" | "ADDRESS_SET" | "BUY_ADDRESSLIST" | null;
+export type ModalType = "ALERT" | "CONFIRM" | "PRODUCT_OPTION" | "ADDRESS_SET" | "BUY_ADDRESSLIST" | "SELLER_COUPON" | null;
 //
 export type CloseResult = "NEED_LOGIN_CANCEL" | "SELLER_LOGOUT";
 /** confirm 모달에서 ok 눌렀을 때, “어떤 상황인지”에 대한 결과값 */
@@ -10,7 +11,8 @@ export type ConfirmOkResult =
 	| "NEED_LOGIN" // RootProvider - 로그인 필요
 	| "ADDCART" // 상품상세조회 - 추가로 담으시겠습니까?
 	| "ADDRESS_DEFAULT_CHANGE" // 마이페이지 - 배송주소 기본값 변경
-	| "ADDRESS_DELETE"; // 마이페이지 - 배송주소 삭제
+	| "ADDRESS_DELETE" // 마이페이지 - 배송주소 삭제
+	| "COUPON_STATUS_CHANGE"; // 판매자페이지 - 쿠폰 상태 변경
 export type ConfirmCancelResult = string;
 //
 type ModalCommon = {
@@ -43,6 +45,9 @@ export type ModalPropsMap = {
 		address?: UserAddressListItem;
 	};
 	BUY_ADDRESSLIST: ModalCommon & {};
+	SELLER_COUPON: ModalCommon & {
+		coupon?: SellerCoupon;
+	};
 };
 
 export type ModalProps<T extends ModalType = ModalType> = T extends null ? Record<string, never> : ModalPropsMap[Exclude<T, null>];

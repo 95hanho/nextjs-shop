@@ -8,7 +8,7 @@ type ModalFrameProps = {
 	onClose: () => void;
 	children: ReactNode;
 	modalWrapVariant?: "productOption" | ""; // 추가 예정
-	contentVariant?: "address" | ""; // 추가 예정
+	contentVariant?: "address" | "coupon" | ""; // 추가 예정
 };
 
 export const ModalFrame = ({ title = "", onClose, children, modalWrapVariant, contentVariant }: ModalFrameProps) => {

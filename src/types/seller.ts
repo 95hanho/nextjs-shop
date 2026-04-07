@@ -136,6 +136,11 @@ export interface SetSellerCouponAllowRequest {
 	addProductIds: number[];
 	removeProductIds: number[];
 }
+/* 쿠폰 상태 변경 */
+export interface UpdateCouponStatusRequest {
+	activeCouponIds?: number[];
+	suspendedCouponIds?: number[];
+}
 /*  */
 export interface IssueCouponsToUsersRequest {
 	couponId: number;

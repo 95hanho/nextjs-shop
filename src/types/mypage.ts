@@ -7,7 +7,7 @@ export type Coupon = {
 	description: string;
 	discountType: "percentage" | "fixed_amount";
 	discountValue: number;
-	maxDiscount: number;
+	maxDiscount: number | null;
 	minimumOrderBeforeAmount: number;
 	isStackable: boolean;
 	isProductRestricted: boolean;
