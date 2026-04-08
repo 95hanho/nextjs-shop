@@ -143,12 +143,19 @@
 	.off {
 		color: #aaa;
 	}
-	.button {
+	.changeButton {
 		display: inline-flex;
 		padding: 8px 10px;
 		margin-left: 5px;
 		border-radius: 6px;
 		background-color: #e78223;
+		color: #fff;
+	}
+	.deleteButton {
+		display: inline-flex;
+		padding: 5px 10px;
+		border-radius: 6px;
+		background-color: #f00;
 		color: #fff;
 	}
 }

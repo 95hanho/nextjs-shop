@@ -1,10 +1,9 @@
-import { ChangeFunction } from "@/types/event";
 import { FormInputAlarm } from "@/types/form";
 import DatePicker from "react-datepicker";
 import styled from "@emotion/styled";
 import clsx from "clsx";
 import styles from "./Form.module.scss";
-import { useState } from "react";
+import { forwardRef } from "react";
 
 const LeftLabel = styled.div<{ $labelWidthPercent?: number }>`
 	width: ${({ $labelWidthPercent }) => $labelWidthPercent || 33.333333}%;
@@ -23,10 +22,12 @@ interface DateInputProps<T extends string, K extends string = T> {
 	labelWidthPercent?: number;
 	inputWidthPercent?: number;
 	requiredMark?: boolean;
+	selectedDate: Date | null;
+	changeDate: (date: Date | null) => void;
 }
 
-export const DateInput = (props: DateInputProps<string>) => {
-	const { name, label, alarm, labelWidthPercent, inputWidthPercent, requiredMark = false } = props;
+export const DateInput = forwardRef(<T extends string>(props: DateInputProps<T>, ref: React.ForwardedRef<DatePicker>) => {
+	const { name, label, alarm, labelWidthPercent, inputWidthPercent, requiredMark = false, selectedDate, changeDate } = props;
 
 	let alarmStatus,
 		alarmMessage = null;
@@ -34,8 +35,6 @@ export const DateInput = (props: DateInputProps<string>) => {
 		alarmStatus = alarm.status || "SUCCESS";
 		alarmMessage = alarm.message;
 	}
-
-	const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
 
 	return (
 		<div className={styles.formInput}>
@@ -51,14 +50,14 @@ export const DateInput = (props: DateInputProps<string>) => {
 			>
 				<div>
 					<DatePicker
-						dateFormat="yyyy.MM.dd hh:mm" // 날짜 형태
+						dateFormat="yyyy.MM.dd HH:mm" // 날짜 형태
 						shouldCloseOnSelect // 날짜를 선택하면 datepicker가 자동으로 닫힘
-						minDate={new Date("2000-01-01")} // minDate 이전 날짜 선택 불가
-						maxDate={new Date()} // maxDate 이후 날짜 선택 불가
 						selected={selectedDate}
-						onChange={(date: Date | null) => setSelectedDate(date)}
+						onChange={(date: Date | null) => changeDate(date)}
 						showTimeSelect // 시간 선택 기능 활성화
-						maxTime={new Date()} // maxTime은 3년 뒤까지 가능
+						minDate={new Date(new Date().setFullYear(new Date().getFullYear() - 3))} // minTime은 현재 시간 3년전까지 가능
+						maxDate={new Date(new Date().setFullYear(new Date().getFullYear() + 3))} // maxTime은 3년 뒤까지 가능
+						ref={ref}
 					/>
 				</div>
 				{alarmMessage && (
@@ -69,4 +68,5 @@ export const DateInput = (props: DateInputProps<string>) => {
 			</RightInput>
 		</div>
 	);
-};
+});
+DateInput.displayName = "DateInput";

@@ -1,6 +1,6 @@
 import { AddressForm } from "@/components/modal/domain/ShippingAddressEditorModal";
 import { CartItem, UserAddress, UserAddressListItem } from "@/types/mypage";
-import { SellerCoupon } from "@/types/seller";
+import { AddCouponRequest, SellerCoupon, UpdateCouponRequest } from "@/types/seller";
 
 // modal타입
 export type ModalType = "ALERT" | "CONFIRM" | "PRODUCT_OPTION" | "ADDRESS_SET" | "BUY_ADDRESSLIST" | "SELLER_COUPON" | null;
@@ -12,7 +12,8 @@ export type ConfirmOkResult =
 	| "ADDCART" // 상품상세조회 - 추가로 담으시겠습니까?
 	| "ADDRESS_DEFAULT_CHANGE" // 마이페이지 - 배송주소 기본값 변경
 	| "ADDRESS_DELETE" // 마이페이지 - 배송주소 삭제
-	| "COUPON_STATUS_CHANGE"; // 판매자페이지 - 쿠폰 상태 변경
+	| "COUPON_STATUS_CHANGE" // 판매자페이지 - 쿠폰 상태 변경
+	| "SELLER_COUPON_DELETE_OK"; // 판매자페이지 - 쿠폰 삭제 확인
 export type ConfirmCancelResult = string;
 //
 type ModalCommon = {
@@ -77,7 +78,17 @@ export type ModalResultMap = {
 	// 구매)배송지 변경
 	BUY_ADDRESS_CHANGE: UserAddressListItem;
 	// 판매자 쿠폰 등록/수정
-	SELLER_COUPON_SET: SellerCoupon;
+	SELLER_COUPON_SET:
+		| {
+				addCoupon: AddCouponRequest;
+		  }
+		| {
+				updateCoupon: UpdateCouponRequest;
+		  };
+	// 판매자 쿠폰 삭제
+	SELLER_COUPON_DELETE: {
+		couponId: number;
+	};
 	// 공통) 닫기
 	CLOSE:
 		| undefined

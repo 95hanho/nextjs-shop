@@ -3,7 +3,7 @@ import { InfoMark } from "@/components/form/InfoMark";
 import { ModalFrame } from "@/components/modal/frame/ModalFrame";
 import { ChangeEvent, FormEvent } from "@/types/event";
 import { FormInputAlarm, FormInputRefs } from "@/types/form";
-import { SellerCoupon } from "@/types/seller";
+import { AddCouponRequest, SellerCoupon, UpdateCouponRequest } from "@/types/seller";
 import { useEffect, useRef, useState } from "react";
 import styles from "../Modal.module.scss";
 import clsx from "clsx";
@@ -14,6 +14,8 @@ import { getApiUrl } from "@/lib/getBaseUrl";
 import API_URL from "@/api/endpoints";
 import { useModalStore } from "@/store/modal.store";
 import { DateInput } from "@/components/form/DateInput";
+import DatePicker from "react-datepicker";
+import { ModalResultMap } from "@/store/modal.type";
 
 interface SellerCouponModalProps {
 	onClose: () => void;
@@ -21,40 +23,54 @@ interface SellerCouponModalProps {
 }
 
 type CouponFormInputKeys = "description" | "discountValue" | "maxDiscount" | "minimumOrderBeforeAmount" | "amount";
-type CouponFormAlarm = FormInputAlarm<CouponFormInputKeys>;
-type CouponFormInputRefs = FormInputRefs<CouponFormInputKeys>;
+type CouponFormAlarm = FormInputAlarm<CouponFormInputKeys | "startDate" | "endDate">;
+type CouponFormInputRefs = FormInputRefs<CouponFormInputKeys> & {
+	startDate: DatePicker | null;
+	endDate: DatePicker | null;
+};
 
-const initCouponForm: SellerCoupon = {
-	couponId: 0,
+const initCouponForm: Partial<SellerCoupon> = {
 	description: "",
 	discountType: "fixed_amount",
 	discountValue: 1000,
 	maxDiscount: null,
 	minimumOrderBeforeAmount: 10000,
-	status: "ACTIVE",
 	isStackable: false,
 	isProductRestricted: false,
 	amount: 100,
-	usedCount: 0,
 	startDate: new Date().toISOString(),
 	endDate: new Date().toISOString(),
-	issueMethod: "CLAIM",
-	createdAt: new Date().toISOString(),
-	updatedAt: new Date().toISOString(),
+	// issueMethod: "CLAIM",
 };
 
 export const SellerCouponModal = ({ onClose, prevSellerCoupon }: SellerCouponModalProps) => {
-	const { resolveModal } = useModalStore();
+	const { openModal, resolveModal, modalResult, clearModalResult } = useModalStore();
 
 	// ------------------------------------------------
 	// React
 	// ------------------------------------------------
 
 	// 쿠폰 입력값
-	const [couponForm, setCouponForm] = useState<SellerCoupon>(prevSellerCoupon || initCouponForm);
+	const [couponForm, setCouponForm] = useState<Partial<SellerCoupon>>(prevSellerCoupon || initCouponForm);
 	const [couponFormAlarm, setCouponFormAlarm] = useState<CouponFormAlarm | null>(null);
 	const couponFormInputRefs = useRef<Partial<CouponFormInputRefs>>({});
 
+	// 알람이 있을 때 해당 input으로 focus | 날짜는 datepicker 열기
+	const focusCouponField = (name: CouponFormInputKeys | "startDate" | "endDate", refs: React.MutableRefObject<Partial<CouponFormInputRefs>>) => {
+		const target = refs.current[name];
+
+		if (!target) return;
+
+		if ("setFocus" in target) {
+			target.setFocus();
+			target.setOpen?.(true);
+			return;
+		}
+
+		target.focus();
+	};
+
+	// couponForm 변경
 	const changeCouponForm = (e: ChangeEvent) => {
 		const { name, value } = e.target as {
 			name: CouponFormInputKeys;
@@ -125,7 +141,7 @@ export const SellerCouponModal = ({ onClose, prevSellerCoupon }: SellerCouponMod
 		e.preventDefault();
 		// 알람이 있을 때는 해당 input으로 focus
 		if (couponFormAlarm?.status === "FAIL") {
-			couponFormInputRefs.current[couponFormAlarm.name]?.focus();
+			focusCouponField(couponFormAlarm.name, couponFormInputRefs);
 			return;
 		}
 		let changeAlarm: CouponFormAlarm | null = null;
@@ -149,19 +165,84 @@ export const SellerCouponModal = ({ onClose, prevSellerCoupon }: SellerCouponMod
 		if (Number(couponForm.maxDiscount) > Number(couponForm.minimumOrderBeforeAmount)) {
 			changeAlarm = { name: "maxDiscount", message: "최대 할인금액은 최소 주문금액보다 클 수 없습니다.", status: "FAIL" };
 		}
-
+		// 시작일 < 종료일
+		if (couponForm.startDate && couponForm.endDate) {
+			if (new Date(couponForm.startDate) >= new Date(couponForm.endDate)) {
+				changeAlarm = { name: "endDate", message: "사용 시작일은 사용 종료일보다 이전이어야 합니다.", status: "FAIL" };
+			}
+		}
 		if (changeAlarm) {
 			setCouponFormAlarm(changeAlarm);
-			couponFormInputRefs.current[changeAlarm.name]?.focus();
+			focusCouponField(changeAlarm.name, couponFormInputRefs);
 			return;
 		}
-		console.log("쿠폰 등록/수정 제출", {
-			couponForm,
-		});
-		// resolveModal({
-		// 	action:"ALERT_OK"
-		// })
+		// couponId가 없으면 등록, 있으면 수정
+		if (!couponForm.couponId) {
+			const addCoupon: AddCouponRequest = {
+				description: couponForm.description,
+				discountType: couponForm.discountType,
+				discountValue: couponForm.discountValue,
+				maxDiscount: couponForm.maxDiscount,
+				minimumOrderBeforeAmount: couponForm.minimumOrderBeforeAmount,
+				isStackable: couponForm.isStackable,
+				isProductRestricted: couponForm.isProductRestricted,
+				amount: couponForm.amount,
+				startDate: couponForm.startDate?.replace(/\//g, "-"),
+				endDate: couponForm.endDate?.replace(/\//g, "-"),
+			} as AddCouponRequest;
+			resolveModal({
+				action: "SELLER_COUPON_SET",
+				payload: { addCoupon },
+			});
+		} else {
+			const updateCoupon: UpdateCouponRequest = {
+				couponId: couponForm.couponId,
+				description: couponForm.description,
+				discountType: couponForm.discountType,
+				discountValue: couponForm.discountValue,
+				maxDiscount: couponForm.maxDiscount,
+				minimumOrderBeforeAmount: couponForm.minimumOrderBeforeAmount,
+				status: couponForm.status,
+				isStackable: couponForm.isStackable,
+				isProductRestricted: couponForm.isProductRestricted,
+				amount: couponForm.amount,
+				startDate: couponForm.startDate?.replace(/\//g, "-"),
+				endDate: couponForm.endDate?.replace(/\//g, "-"),
+			} as UpdateCouponRequest;
+			resolveModal({
+				action: "SELLER_COUPON_SET",
+				payload: { updateCoupon },
+			});
+		}
 	};
+
+	// ------------------------------------------------
+	// useEffect, useMemo
+	// ------------------------------------------------
+
+	useEffect(() => {
+		console.log({ prevSellerCoupon });
+	}, [prevSellerCoupon]);
+
+	// 모달 결과 처리
+	useEffect(() => {
+		if (!prevSellerCoupon || !modalResult) return;
+
+		// 쿠폰 상태 변경 후 처리
+		if (modalResult.action === "CONFIRM_OK") {
+			const payload = modalResult.payload as ModalResultMap["CONFIRM_OK"];
+			if (payload?.result === "SELLER_COUPON_DELETE_OK") {
+				resolveModal({
+					action: "SELLER_COUPON_DELETE",
+					payload: {
+						couponId: prevSellerCoupon?.couponId,
+					},
+				});
+			}
+		}
+
+		clearModalResult();
+	}, [clearModalResult, modalResult, prevSellerCoupon, resolveModal]);
 
 	return (
 		<ModalFrame title={!prevSellerCoupon ? "쿠폰 추가" : "쿠폰 수정"} onClose={onClose} contentVariant="coupon">
@@ -170,7 +251,7 @@ export const SellerCouponModal = ({ onClose, prevSellerCoupon }: SellerCouponMod
 					<FormInput
 						label="이름"
 						name="description"
-						value={couponForm.description}
+						value={couponForm.description || ""}
 						placeholder="쿠폰 설명을 입력해주세요."
 						alarm={couponFormAlarm}
 						onChange={changeCouponForm}
@@ -190,7 +271,7 @@ export const SellerCouponModal = ({ onClose, prevSellerCoupon }: SellerCouponMod
 							{couponForm.discountType === "fixed_amount" ? "고정값" : "퍼센트"}
 							<button
 								type="button"
-								className={clsx(styles.button)}
+								className={clsx(styles.changeButton)}
 								onClick={() => {
 									setCouponForm({
 										...couponForm,
@@ -209,7 +290,7 @@ export const SellerCouponModal = ({ onClose, prevSellerCoupon }: SellerCouponMod
 					type={couponForm.discountType === "fixed_amount" ? "text" : "number"}
 					label="할인값"
 					name="discountValue"
-					value={couponForm.discountType === "fixed_amount" ? money(couponForm.discountValue) : couponForm.discountValue}
+					value={(couponForm.discountType === "fixed_amount" ? money(couponForm.discountValue || 0) : couponForm.discountValue) || ""}
 					placeholder=""
 					onChange={changeCouponForm}
 					onBlur={validateCouponForm}
@@ -238,7 +319,7 @@ export const SellerCouponModal = ({ onClose, prevSellerCoupon }: SellerCouponMod
 				<FormInput
 					label="최소 주문금액"
 					name="minimumOrderBeforeAmount"
-					value={money(couponForm.minimumOrderBeforeAmount)}
+					value={money(couponForm.minimumOrderBeforeAmount || "")}
 					placeholder=""
 					onChange={changeCouponForm}
 					onBlur={validateCouponForm}
@@ -256,7 +337,7 @@ export const SellerCouponModal = ({ onClose, prevSellerCoupon }: SellerCouponMod
 								{couponForm.status === "ACTIVE" ? "활성" : "비활성"}
 								<button
 									type="button"
-									className={clsx(styles.button)}
+									className={clsx(styles.changeButton)}
 									onClick={() => {
 										setCouponForm({
 											...couponForm,
@@ -278,7 +359,7 @@ export const SellerCouponModal = ({ onClose, prevSellerCoupon }: SellerCouponMod
 							{!prevSellerCoupon && (
 								<button
 									type="button"
-									className={styles.button}
+									className={styles.changeButton}
 									onClick={() => {
 										setCouponForm({
 											...couponForm,
@@ -299,7 +380,7 @@ export const SellerCouponModal = ({ onClose, prevSellerCoupon }: SellerCouponMod
 							{couponForm.isProductRestricted ? "가능" : "없음"}
 							<button
 								type="button"
-								className={clsx(styles.button)}
+								className={clsx(styles.changeButton)}
 								onClick={() => {
 									setCouponForm({
 										...couponForm,
@@ -316,7 +397,7 @@ export const SellerCouponModal = ({ onClose, prevSellerCoupon }: SellerCouponMod
 					label="수량"
 					type="number"
 					name="amount"
-					value={couponForm.amount}
+					value={couponForm.amount || ""}
 					placeholder=""
 					onChange={changeCouponForm}
 					onBlur={validateCouponForm}
@@ -325,7 +406,61 @@ export const SellerCouponModal = ({ onClose, prevSellerCoupon }: SellerCouponMod
 						couponFormInputRefs.current.amount = el;
 					}}
 				/>
-				<DateInput name="example" label="예시 날짜" />
+				<DateInput
+					name="startDate"
+					label="사용 시작일"
+					alarm={couponFormAlarm}
+					selectedDate={couponForm.startDate ? new Date(couponForm.startDate) : null}
+					changeDate={(date) => {
+						setCouponFormAlarm(null);
+						if (date) {
+							setCouponForm({
+								...couponForm,
+								startDate: date.toISOString(),
+							});
+						}
+					}}
+					ref={(el) => {
+						couponFormInputRefs.current.startDate = el;
+					}}
+				/>
+				<DateInput
+					name="endDate"
+					label="사용 종료일"
+					alarm={couponFormAlarm}
+					selectedDate={couponForm.endDate ? new Date(couponForm.endDate) : null}
+					changeDate={(date) => {
+						setCouponFormAlarm(null);
+						if (date) {
+							setCouponForm({
+								...couponForm,
+								endDate: date.toISOString(),
+							});
+						}
+					}}
+					ref={(el) => {
+						couponFormInputRefs.current.endDate = el;
+					}}
+				/>
+				{prevSellerCoupon && (
+					<InfoMark
+						title="삭제"
+						infoVal={
+							<button
+								type="button"
+								className={styles.deleteButton}
+								onClick={() => {
+									openModal("CONFIRM", {
+										content: "쿠폰을 삭제하시겠습니까?",
+										okResult: "SELLER_COUPON_DELETE_OK",
+									});
+								}}
+							>
+								삭제하기
+							</button>
+						}
+					/>
+				)}
 				{/* 버튼 */}
 				<div className={styles.optionActions}>
 					<button type="button" onClick={onClose}>
