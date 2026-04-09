@@ -1,3 +1,4 @@
+import { FileInfo } from "@/types/file";
 import { BaseResponse } from "./common";
 import { AdminCoupon, Coupon } from "./mypage";
 import { ProductDetail, ProductOption } from "./product";
@@ -45,11 +46,9 @@ export interface SellerRegisterRequest extends SellerLoginForm, SellerInfo {}
 type SellerProductOptionAdd = { salesCount: number; createdAt: string; updatedAt: string; displayed: boolean };
 export type SellerProductOption = ProductOption & SellerProductOptionAdd;
 export type SellerProduct = ProductDetail & {
-	sellerId: string;
 	updatedAt: string;
 	subMenuName: string;
 	topMenuName: string;
-	gender: string;
 	optionList: SellerProductOption[];
 	saleStop: boolean;
 };
@@ -78,8 +77,28 @@ export interface UpdateSellerProductRequest extends AddSellerProductRequest {
 	productId: number;
 	saleStop: boolean;
 }
+// "productImageId": 1,
+// "productId": 0,
+// "sortKey": 100.000000,
+// "thumbnail": true
 
-/* 제품 상세보기(개발) */
+/* 제품 상세보기 */
+export type ProductImage = FileInfo & {
+	productImageId: number;
+	productId: number;
+	sortKey: number;
+	thumbnail: boolean;
+};
+export type SellerProductDetail = ProductDetail & {
+	updatedAt: string;
+	subMenuName: string;
+	topMenuName: string;
+	saleStop: boolean;
+	productImages: ProductImage[];
+};
+export interface GetSellerProductDetailResponse extends BaseResponse {
+	productDetail: SellerProductDetail;
+}
 /* 제품 상세 사진수정(개발) */
 
 /* 제품 옵션 추가 */
