@@ -188,8 +188,8 @@ export const SellerCouponModal = ({ onClose, prevSellerCoupon }: SellerCouponMod
 				isStackable: couponForm.isStackable,
 				isProductRestricted: couponForm.isProductRestricted,
 				amount: couponForm.amount,
-				startDate: couponForm.startDate?.replace(/\//g, "-"),
-				endDate: couponForm.endDate?.replace(/\//g, "-"),
+				startDate: couponForm.startDate,
+				endDate: couponForm.endDate,
 			} as AddCouponRequest;
 			resolveModal({
 				action: "SELLER_COUPON_SET",
@@ -207,8 +207,8 @@ export const SellerCouponModal = ({ onClose, prevSellerCoupon }: SellerCouponMod
 				isStackable: couponForm.isStackable,
 				isProductRestricted: couponForm.isProductRestricted,
 				amount: couponForm.amount,
-				startDate: couponForm.startDate?.replace(/\//g, "-"),
-				endDate: couponForm.endDate?.replace(/\//g, "-"),
+				startDate: couponForm.startDate,
+				endDate: couponForm.endDate,
 			} as UpdateCouponRequest;
 			resolveModal({
 				action: "SELLER_COUPON_SET",

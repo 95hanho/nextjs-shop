@@ -122,6 +122,16 @@
 						background-color: #f00;
 						color: #fff;
 					}
+					.saleStopButton {
+						text-decoration: underline;
+						color: rgb(105, 105, 105);
+						&.on {
+							color: #f00;
+						}
+						svg {
+							margin-left: 3px;
+						}
+					}
 				}
 			}
 		}

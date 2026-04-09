@@ -63,19 +63,20 @@ export interface AddSellerProductRequest {
 	originPrice: number;
 	finalPrice: number;
 	menuSubId: number;
-	materialInfo: string;
-	manufacturerName: string;
-	countryOfOrigin: string;
-	washCareInfo: string;
-	manufacturedYm: string;
-	qualityGuaranteeInfo: string;
-	afterServiceContact: string;
-	afterServiceManager: string;
-	afterServicePhone: string;
+	materialInfo?: string;
+	manufacturerName?: string;
+	countryOfOrigin?: string;
+	washCareInfo?: string;
+	manufacturedYm?: string;
+	qualityGuaranteeInfo?: string;
+	afterServiceContact?: string;
+	afterServiceManager?: string;
+	afterServicePhone?: string;
 }
 /* 제품 수정 */
 export interface UpdateSellerProductRequest extends AddSellerProductRequest {
 	productId: number;
+	saleStop: boolean;
 }
 
 /* 제품 상세보기(개발) */

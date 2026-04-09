@@ -6,12 +6,14 @@ import styles from "./SellerMain.module.scss";
 import clsx from "clsx";
 import { AddProductOptionBase, AddSellerProductOptionRequest, SellerProduct, UpdateSellerProductOptionRequest } from "@/types/seller";
 import { useModalStore } from "@/store/modal.store";
-import { DomainModalResultMap } from "@/store/modal.type";
+import { DialogResultMap, DomainModalResultMap } from "@/store/modal.type";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteNormal, postJson, putJson } from "@/api/fetchFilter";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import API_URL from "@/api/endpoints";
 import { BaseResponse } from "@/types/common";
+import { useUpdateSellerProduct } from "@/hooks/query/seller/useUpdateSellerProduct";
+import { useGlobalDialogStore } from "@/store/globalDialog.store";
 
 interface ProductListProps {
 	sellerProductList: SellerProduct[];
@@ -36,12 +38,15 @@ export default function ProductList({
 }: ProductListProps) {
 	const queryClient = useQueryClient();
 	const { openModal, clearModalResult, modalResult } = useModalStore();
+	const { openDialog, dialogResult, clearDialogResult } = useGlobalDialogStore();
 	const couponAllowedMode = allowedSelectedCouponId !== null; // 쿠폰 허용 제품이 하나라도 있으면 true
 
 	// ------------------------------------------------
 	// React Query
 	// ------------------------------------------------
 
+	// 제품 수정
+	const { mutate: updateSellerProduct, isSuccess: isUpdateSellerProductSuccess, reset: resetUpdateSellerProduct } = useUpdateSellerProduct();
 	// 제품 옵션 추가
 	const { mutate: addProductOption } = useMutation({
 		mutationFn: (optionForm: AddProductOptionBase) =>
@@ -79,6 +84,8 @@ export default function ProductList({
 	const theadRef = useRef<HTMLTableSectionElement | null>(null); // 제품 thead th 갯수를 세기 위한 ref
 	// 제품 옵션 추가/수정 시 productId 보관 ref
 	const productIdForOptionRef = useRef<number | null>(null);
+	// 제품 판매중단 상태 변경용 제품 저장
+	const [changingSaleStopProduct, setChangingSaleStopProduct] = useState<SellerProduct | null>(null);
 
 	// ------------------------------------------------
 	// useEffect, useMemo
@@ -89,10 +96,34 @@ export default function ProductList({
 			// console.log("쿠폰 허용 제품 ID 리스트:", couponAllowedProductIds);
 		}
 		if (sellerProductList.length > 0) {
-			// console.log("판매자 제품 목록:", sellerProductList);
+			console.log("판매자 제품 목록:", sellerProductList);
 		}
 	}, [couponAllowedProductIds, sellerProductList]);
 
+	// 제품 수정 성공 시 제품 목록 리패치
+	useEffect(() => {
+		if (!isUpdateSellerProductSuccess) return;
+
+		queryClient.invalidateQueries({ queryKey: ["sellerProductList"] });
+		resetUpdateSellerProduct();
+	}, [isUpdateSellerProductSuccess, queryClient, resetUpdateSellerProduct]);
+
+	// 모달 동작
+	useEffect(() => {
+		if (!dialogResult) return;
+
+		if (dialogResult.action === "CONFIRM_OK") {
+			const payload = dialogResult.payload as DialogResultMap["CONFIRM_OK"];
+			if (payload?.result === "SALE_STOP_CONFIRM" && changingSaleStopProduct) {
+				updateSellerProduct({
+					...changingSaleStopProduct,
+					saleStop: !changingSaleStopProduct?.saleStop,
+				});
+			}
+		}
+
+		clearDialogResult();
+	}, [changingSaleStopProduct, clearDialogResult, dialogResult, updateSellerProduct]);
 	useEffect(() => {
 		if (!modalResult) return;
 
@@ -193,7 +224,25 @@ export default function ProductList({
 												<td>{product.likeCount}</td>
 												<td>{product.wishCount}</td>
 												<td>{`${getGender(product.gender)}-${product.topMenuName}-${product.subMenuName}`}</td>
-												<td>{product.saleStop && "O"}</td>
+												<td>
+													<button
+														className={clsx(styles.saleStopButton, product.saleStop ? styles.on : styles.off)}
+														onClick={(e) => {
+															e.stopPropagation();
+															setChangingSaleStopProduct(product);
+															openDialog("CONFIRM", {
+																content: "상품의 판매 상태를 변경하시겠습니까?",
+																okResult: "SALE_STOP_CONFIRM",
+																handleAfterClose() {
+																	setChangingSaleStopProduct(null);
+																},
+															});
+														}}
+													>
+														{product.saleStop && "중단됨"}
+														<FaExchangeAlt />
+													</button>
+												</td>
 												{!couponAllowedMode && (
 													<td>
 														<button
