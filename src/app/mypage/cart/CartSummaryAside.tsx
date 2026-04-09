@@ -5,7 +5,6 @@ import { SmartImage } from "@/components/ui/SmartImage";
 import { discountPercent, money } from "@/lib/format";
 import { calculateMileage } from "@/lib/price";
 import clsx from "clsx";
-import { useModalStore } from "@/store/modal.store";
 import { useRouter } from "next/navigation";
 import { useProductCheckAndHold } from "@/hooks/query/buy/useProductCheckAndHold";
 import { BuyItem } from "@/types/buy";

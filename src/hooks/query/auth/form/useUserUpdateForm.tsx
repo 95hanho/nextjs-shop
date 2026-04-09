@@ -259,8 +259,7 @@ export function useUserUpdateForm() {
 			setUserUpdateAlarm(changeAlarm);
 			return;
 		}
-		console.log("내 정보 변경 완료");
-		// handleUserUpdate.mutate();
+		handleUserUpdate.mutate();
 	};
 	/* ------------------------------------ */
 	// 휴대폰 인증 보내기 버튼

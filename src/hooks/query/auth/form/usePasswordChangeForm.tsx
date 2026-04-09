@@ -198,7 +198,7 @@ export function usePasswordChangeForm({ mode }: usePasswordChangeFormProps) {
 		}
 		//
 		console.log("비밀번호변경 완료");
-		// handlePasswordChange.mutate();
+		handlePasswordChange.mutate();
 	};
 
 	return {

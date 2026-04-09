@@ -12,7 +12,6 @@ import API_URL from "@/api/endpoints";
 import { postJson, putJson } from "@/api/fetchFilter";
 import { useGlobalDialogStore } from "@/store/globalDialog.store";
 import { DialogResultMap, DomainModalResultMap } from "@/store/modal.type";
-import { clear } from "console";
 
 interface CouponListProps {
 	sellerCouponList: SellerCoupon[];

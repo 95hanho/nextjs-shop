@@ -165,6 +165,13 @@ export default function CartProductSection({
 			};
 			deleteCart();
 		}
+		if (dialogResult?.action === "DIALOG_CLOSE") {
+			const payload = dialogResult.payload as DialogResultMap["DIALOG_CLOSE"];
+			if (payload?.result === "CART_DELETE_CANCEL") {
+				// 옵션 변경 모달이 닫혔을 때
+				modalOpenSelectedState.current = false;
+			}
+		}
 
 		// ✅ 한 번 처리했으면 비워주기 (중복 처리 방지)
 		clearDialogResult();
@@ -192,7 +199,7 @@ export default function CartProductSection({
 		}
 		if (modalResult?.action === "DOMAIN_CLOSE") {
 			const payload = modalResult.payload as DomainModalResultMap["DOMAIN_CLOSE"];
-			if (payload?.result === "PRODUCT_OPTION_CHANGE_CANCEL" || payload?.result === "CART_DELETE_CANCEL") {
+			if (payload?.result === "PRODUCT_OPTION_CHANGE_CANCEL") {
 				// 옵션 변경 모달이 닫혔을 때
 				modalOpenSelectedState.current = false;
 			}

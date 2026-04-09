@@ -8,9 +8,9 @@ import { DomainModalRoot } from "@/components/modal/core/DomainModalRoot";
 import RootProviders from "@/app/RootProviders";
 import DynamicHeader from "@/app/DynamicHeader";
 import { getBackendUrl } from "@/lib/getBaseUrl";
-import { redirect } from "next/navigation";
-import { cookies } from "next/headers";
-import { ModalTest } from "@/components/modal/ModalTest";
+// import { redirect } from "next/navigation";
+// import { cookies } from "next/headers";
+// import { ModalTest } from "@/components/modal/ModalTest";
 
 const inter = Inter({
 	subsets: ["latin"],
