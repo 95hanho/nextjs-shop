@@ -4,7 +4,7 @@ import "@/styles/css/globals.css";
 import { MenuResponse } from "@/types/main";
 import API_URL from "@/api/endpoints";
 import { getNormal } from "@/api/fetchFilter";
-import { ModalRoot } from "@/components/modal/core/ModalRoot";
+import { DomainModalRoot } from "@/components/modal/core/DomainModalRoot";
 import RootProviders from "@/app/RootProviders";
 import DynamicHeader from "@/app/DynamicHeader";
 import { getBackendUrl } from "@/lib/getBaseUrl";
@@ -44,7 +44,7 @@ export default async function RootLayout({
 					<RootProviders>
 						<DynamicHeader menuList={menuList} />
 						{children}
-						<ModalRoot />
+						<DomainModalRoot />
 						{/* 모달테스트용 */}
 						{/* <ModalTest /> */}
 					</RootProviders>

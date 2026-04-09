@@ -20,8 +20,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { BuyProvider } from "@/providers/buy/BuyProvider";
 import { calculateDiscount } from "@/lib/price";
 import { useRouter } from "next/navigation";
-import { useModalStore } from "@/store/modal.store";
 import { toErrorResponse } from "@/api/error";
+import { useGlobalDialogStore } from "@/store/globalDialog.store";
 
 export type BuyItemWishCoupon = StockHoldProduct & {
 	discountedPrice: number; // 해당 상품에 적용된 쿠폰 할인을 반영한 가격 (finalPrice에서 할인금액을 뺀 가격)
@@ -44,7 +44,7 @@ export type AppliedProductCouponMap = Record<
 export default function BuyClient() {
 	const { loginOn } = useAuth();
 	const router = useRouter();
-	const { openModal } = useModalStore();
+	const { openDialog } = useGlobalDialogStore();
 
 	// =================================================================
 	// React Query
@@ -214,7 +214,7 @@ export default function BuyClient() {
 		// 해당 계정으로 점유 자체가 없을 경우 | 일반적으로 점유해제된 경우
 		// => 메인페이지로
 		if (payload.message === "NO_ACTIVE_HOLDS") {
-			openModal("ALERT", {
+			openDialog("ALERT", {
 				content: "구매 중인 상품 정보가 없습니다. 메인 페이지로 이동합니다.",
 				handleAfterClose: () => {
 					router.replace("/");
@@ -223,7 +223,7 @@ export default function BuyClient() {
 			return;
 		}
 		if (payload.message === "ALREADY_PAID_HOLD") {
-			openModal("ALERT", {
+			openDialog("ALERT", {
 				content: "이미 완료된 결제입니다. 메인 페이지로 이동합니다.",
 				handleAfterClose: () => {
 					router.replace("/");
@@ -238,7 +238,7 @@ export default function BuyClient() {
 			else if (payload.message === "PRODUCT_SALE_STOPPED") message = "세션이 만료되었습니다. 결제를 다시 진행해주세요.";
 			else if (payload.message === "SELLER_UNAVAILABLE") message = "세션이 만료되었습니다. 결제를 다시 진행해주세요.";
 
-			openModal("ALERT", {
+			openDialog("ALERT", {
 				content: message,
 				handleAfterClose: () => {
 					router.replace(payload.detail as string);
@@ -247,13 +247,13 @@ export default function BuyClient() {
 			return;
 		}
 
-		openModal("ALERT", {
+		openDialog("ALERT", {
 			content: "알 수 없는 오류가 발생했습니다. 다시 시도해주세요.",
 			handleAfterClose: () => {
 				router.replace("/");
 			},
 		});
-	}, [isError, error, openModal, router]);
+	}, [isError, error, openDialog, router]);
 	// 1분마다 구매상품 점유 연장 시도 (구매페이지에 진입한 후 1분마다 연장 시도)
 	useEffect(() => {
 		if (!canExtendHold) return;

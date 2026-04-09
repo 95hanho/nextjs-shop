@@ -3,7 +3,8 @@
 import { toErrorResponse } from "@/api/error";
 import { SellerGlobalEffects } from "@/providers/seller/SellerGlobalEffects";
 import { SellerProvider } from "@/providers/seller/SellerProvider";
-import { OpenModal, useModalStore } from "@/store/modal.store";
+import { useGlobalDialogStore } from "@/store/globalDialog.store";
+import { OpenDialog } from "@/store/modal.type";
 import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactNode, useEffect, useRef, useState } from "react";
 
@@ -12,7 +13,7 @@ interface SellerRootProviderProps {
 }
 
 // 공통 에러 핸들러 (전역 모달/토스트 등)
-function handleGlobalError(error: unknown, errorHandlers: { openModal: OpenModal }) {
+function handleGlobalError(error: unknown, errorHandlers: { openDialog: OpenDialog }) {
 	const { payload } = toErrorResponse(error);
 
 	// 표준화된 서버 에러 바디 { message, code }도 고려
@@ -21,7 +22,7 @@ function handleGlobalError(error: unknown, errorHandlers: { openModal: OpenModal
 		case "UNAUTHORIZED":
 		case "SESSION_EXPIRED":
 		case "REFRESH_UNAUTHORIZED":
-			errorHandlers.openModal("ALERT", {
+			errorHandlers.openDialog("ALERT", {
 				content: "로그아웃 되었습니다. 다시 로그인해주세요.",
 				closeResult: "SELLER_LOGOUT",
 			});
@@ -46,13 +47,13 @@ function handleGlobalError(error: unknown, errorHandlers: { openModal: OpenModal
 }
 
 export default function SellerRootProvider({ children }: SellerRootProviderProps) {
-	const { openModal } = useModalStore();
+	const { openDialog } = useGlobalDialogStore();
 
 	// ✅ QueryClient 내부 onError에서 stale closure 방지
-	const handlersRef = useRef<{ openModal: OpenModal }>({ openModal });
+	const handlersRef = useRef<{ openDialog: OpenDialog }>({ openDialog });
 	useEffect(() => {
-		handlersRef.current = { openModal };
-	}, [openModal]);
+		handlersRef.current = { openDialog };
+	}, [openDialog]);
 
 	const [queryClient] = useState(
 		() =>

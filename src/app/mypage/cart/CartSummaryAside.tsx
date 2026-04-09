@@ -9,6 +9,7 @@ import { useModalStore } from "@/store/modal.store";
 import { useRouter } from "next/navigation";
 import { useProductCheckAndHold } from "@/hooks/query/buy/useProductCheckAndHold";
 import { BuyItem } from "@/types/buy";
+import { useGlobalDialogStore } from "@/store/globalDialog.store";
 
 interface CartSummaryAsideProps {
 	cartOriginPrice: number; // 장바구니 제품 원래 가격 총합
@@ -36,7 +37,7 @@ export default function CartSummaryAside({
 	//
 	buyList,
 }: CartSummaryAsideProps) {
-	const { openModal } = useModalStore();
+	const { openDialog } = useGlobalDialogStore();
 	const { push } = useRouter();
 	const { mutate: handleStockHold, isSuccess } = useProductCheckAndHold();
 
@@ -54,7 +55,7 @@ export default function CartSummaryAside({
 	// 상품 구매하기 버튼 - 상품 확인 및 점유 -> 성공 시 결제 페이지로 이동, 실패 시 에러 메시지 노출
 	const handlePurchaseClick = () => {
 		if (buyList.length === 0) {
-			openModal("ALERT", {
+			openDialog("ALERT", {
 				content: "선택된 상품이 없습니다.",
 			});
 			return;

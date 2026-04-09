@@ -1,17 +1,15 @@
 import { create } from "zustand";
-import { ModalProps, ModalPropsMap, ModalResult, ModalType } from "./modal.type";
+import { DomainModalCloseResult, DomainModalProps, DomainModalResult, DomainModalType, OpenDomainModal } from "./modal.type";
 
 interface ModalState {
-	modalType: ModalType;
-	modalProps: ModalProps;
-	modalResult: ModalResult | null; // ✅ 결과 저장
+	modalType: DomainModalType;
+	modalProps: DomainModalProps;
+	modalResult: DomainModalResult | null; // ✅ 결과 저장
 }
-
-export type OpenModal = <T extends Exclude<ModalType, null>>(type: T, props: ModalPropsMap[T]) => void;
 interface ModalAction {
-	openModal: OpenModal;
-	closeModal: (closeResult?: string) => void;
-	resolveModal: (result: ModalResult) => void;
+	openModal: OpenDomainModal;
+	closeModal: (closeResult?: DomainModalCloseResult) => void;
+	resolveModal: (result: DomainModalResult) => void;
 	clearModalResult: () => void;
 }
 
@@ -25,7 +23,7 @@ export const useModalStore = create<ModalState & ModalAction>((set) => ({
 			modalType: null,
 			modalProps: {},
 			modalResult: {
-				action: "CLOSE",
+				action: "DOMAIN_CLOSE",
 				payload: closeResult ? { result: closeResult } : undefined,
 			},
 		}),

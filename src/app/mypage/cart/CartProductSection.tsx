@@ -14,7 +14,6 @@ import { discountPercent, money } from "@/lib/format";
 import { BaseResponse } from "@/types/common";
 import React, { useEffect, useRef, useState } from "react";
 import { useModalStore } from "@/store/modal.store";
-import { ModalResultMap } from "@/store/modal.type";
 import Error from "next/error";
 import { SmartImage } from "@/components/ui/SmartImage";
 import { WishButton } from "@/components/product/WishButton";
@@ -30,6 +29,8 @@ import Link from "next/link";
 import CartCouponSelector from "@/app/mypage/cart/CartCouponSelector";
 import { scrollIntoCenter } from "@/utils/ui";
 import { MaxDiscountBanner } from "@/components/buy/MaxDiscountBanner";
+import { useGlobalDialogStore } from "@/store/globalDialog.store";
+import { DialogResultMap, DomainModalResultMap } from "@/store/modal.type";
 
 interface CartProductSectionProps extends CartItemSelectCollection {
 	noResetCouponOn: () => void;
@@ -68,6 +69,7 @@ export default function CartProductSection({
 }: CartProductSectionProps) {
 	const queryClient = useQueryClient();
 	const { openModal, modalResult, clearModalResult } = useModalStore();
+	const { openDialog, dialogResult, clearDialogResult } = useGlobalDialogStore();
 
 	// 최대 할인 적용여부
 	const isMaxDiscountStatus = isMaxDiscountApplied || sumCouponDiscount === maxDiscountPrice;
@@ -137,22 +139,43 @@ export default function CartProductSection({
 		if (!product.selected) modalOpenSelectedState.current = true; // 모달 열 때의 selected 상태 저장
 		openModal("PRODUCT_OPTION", {
 			product,
+			closeResult: "PRODUCT_OPTION_CHANGE_CANCEL",
 		});
 	};
 	// 장바구니 제품삭제 모달 오픈
 	const [deletingCartIdList, setDeletingCartIdList] = useState<number[]>([]);
 	const cartDeleteModalOpen = (content: string) => {
-		openModal("CONFIRM", {
+		openDialog("CONFIRM", {
 			content,
+			closeResult: "CART_DELETE_CANCEL",
 		});
 	};
-	// 모달 닫힌 후 처리
+	// 공통모달 닫힌 후 처리
+	useEffect(() => {
+		if (!dialogResult) return;
+
+		// 장바구니 제품삭제
+		if (dialogResult.action === "CONFIRM_OK") {
+			const deleteCart = async () => {
+				await handleCartProductDelete.mutateAsync({ cartIdList: deletingCartIdList });
+				if (modalOpenSelectedState.current) {
+					noResetCouponOn(); // 삭제 시 selected 상태가 안된 경우 쿠폰 초기화 방지
+				}
+				queryClient.invalidateQueries({ queryKey: ["cartList"] });
+			};
+			deleteCart();
+		}
+
+		// ✅ 한 번 처리했으면 비워주기 (중복 처리 방지)
+		clearDialogResult();
+	}, [clearDialogResult, dialogResult, deletingCartIdList, handleCartProductDelete, queryClient, noResetCouponOn]);
+	// 도메인 모달 닫힌 후 처리
 	useEffect(() => {
 		if (!modalResult) return;
 
 		// 장바구니 제품 옵션변경
 		if (modalResult.action === "PRODUCT_OPTION_CHANGED") {
-			const p = modalResult.payload as ModalResultMap["PRODUCT_OPTION_CHANGED"];
+			const p = modalResult.payload as DomainModalResultMap["PRODUCT_OPTION_CHANGED"];
 
 			// ✅ 여기서 장바구니 상태 갱신 / react-query invalidate / toast 등 처리
 			// await mutateOptionChange(p.nextProductOptionId) ...
@@ -167,23 +190,17 @@ export default function CartProductSection({
 			};
 			changeCartOption();
 		}
-		// 장바구니 제품삭제
-		if (modalResult.action === "CONFIRM_OK") {
-			const deleteCart = async () => {
-				await handleCartProductDelete.mutateAsync({ cartIdList: deletingCartIdList });
-				if (modalOpenSelectedState.current) {
-					noResetCouponOn(); // 삭제 시 selected 상태가 안된 경우 쿠폰 초기화 방지
-				}
-				queryClient.invalidateQueries({ queryKey: ["cartList"] });
-			};
-			deleteCart();
+		if (modalResult?.action === "DOMAIN_CLOSE") {
+			const payload = modalResult.payload as DomainModalResultMap["DOMAIN_CLOSE"];
+			if (payload?.result === "PRODUCT_OPTION_CHANGE_CANCEL" || payload?.result === "CART_DELETE_CANCEL") {
+				// 옵션 변경 모달이 닫혔을 때
+				modalOpenSelectedState.current = false;
+			}
 		}
-		if (modalResult?.action === "CLOSE") {
-			modalOpenSelectedState.current = false;
-		}
+
 		// ✅ 한 번 처리했으면 비워주기 (중복 처리 방지)
 		clearModalResult();
-	}, [modalResult, clearModalResult, deletingCartIdList, handleCartProductDelete, handleChangeQuantity, queryClient, noResetCouponOn]);
+	}, [modalResult, clearModalResult, handleChangeQuantity, queryClient, noResetCouponOn]);
 
 	// 쿠폰변경 UI 열기(판매자이름)
 	const [couponAppliedSelectorOpenSeller, setCouponAppliedSelectorOpenSeller] = useState<string>("");
@@ -246,8 +263,8 @@ export default function CartProductSection({
 				{brandGroupList?.map((brandGroup, brandGroupIdx) => {
 					const brandName = brandGroup[0];
 					const productList = brandGroup[1];
-					const brnadSelectedCount = productList.filter((v) => v.selected).length;
-					const brandAllchecked = brnadSelectedCount === productList.length;
+					const brandSelectedCount = productList.filter((v) => v.selected).length;
+					const brandAllchecked = brandSelectedCount === productList.length;
 					const brandAllCartIdList = productList.filter((v) => (brandAllchecked ? true : !v.selected)).map((v) => v.cartId);
 
 					return (
@@ -441,7 +458,7 @@ export default function CartProductSection({
 															<button
 																className="bg-gray-200 opacity-60"
 																onClick={() => {
-																	openModal("ALERT", {
+																	openDialog("ALERT", {
 																		content: "쿠폰을 적용하려면 상품을 선택해주세요.",
 																	});
 																}}

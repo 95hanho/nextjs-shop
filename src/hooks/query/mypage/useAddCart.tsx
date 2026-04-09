@@ -1,14 +1,14 @@
 import API_URL from "@/api/endpoints";
 import { postJson } from "@/api/fetchFilter";
 import { getApiUrl } from "@/lib/getBaseUrl";
-import { useModalStore } from "@/store/modal.store";
+import { useGlobalDialogStore } from "@/store/globalDialog.store";
 import { BaseResponse } from "@/types/common";
 import { AddCartRequest } from "@/types/product";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export function useAddCart() {
 	const queryClient = useQueryClient();
-	const { openModal } = useModalStore();
+	const { openDialog } = useGlobalDialogStore();
 
 	return useMutation({
 		mutationKey: ["productDetailAddCart"],
@@ -23,7 +23,7 @@ export function useAddCart() {
 			// 유저 정보 갱신 (장바구니 수량)
 			queryClient.invalidateQueries({ queryKey: ["me"] });
 			if (data.message === "CART_ADD_PARTIAL_SUCCESS") {
-				openModal("ALERT", {
+				openDialog("ALERT", {
 					content:
 						"재고 수량보다 많은 수량이 선택된 옵션이 있습니다.<br /> 재고가 있는 수량만 장바구니에 담겼습니다.<br /> 옵션과 수량을 확인해주세요.",
 				});
@@ -32,7 +32,7 @@ export function useAddCart() {
 		onError: (err) => {
 			console.error("장바구니 담기 실패", err);
 			if (err.message === "CART_ADD_OUT_OF_STOCK") {
-				openModal("ALERT", { content: "재고 수량보다 많은 수량이 선택되었습니다.<br /> 옵션과 수량을 확인해주세요." });
+				openDialog("ALERT", { content: "재고 수량보다 많은 수량이 선택되었습니다.<br /> 옵션과 수량을 확인해주세요." });
 			}
 		},
 	});

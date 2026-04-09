@@ -2,7 +2,7 @@ import API_URL from "@/api/endpoints";
 import { getNormal, postJson, putJson } from "@/api/fetchFilter";
 import { useAuth } from "@/hooks/useAuth";
 import { getApiUrl } from "@/lib/getBaseUrl";
-import { useModalStore } from "@/store/modal.store";
+import { useGlobalDialogStore } from "@/store/globalDialog.store";
 import { PhoneAuthRequest, UserUpdateRequest } from "@/types/auth";
 import { BaseResponse } from "@/types/common";
 import { ChangeEvent, FormEvent } from "@/types/event";
@@ -45,7 +45,7 @@ const userUpdateFormRegexFailMent: { [key: string]: string } = {
 
 export function useUserUpdateForm() {
 	const { replace } = useRouter();
-	const { openModal } = useModalStore();
+	const { openDialog } = useGlobalDialogStore();
 	const { user, setUser, loginOn } = useAuth();
 	useEffect(() => {
 		if (user.name) {
@@ -149,7 +149,7 @@ export function useUserUpdateForm() {
 				email: userUpdateForm.email,
 			}));
 
-			openModal("ALERT", {
+			openDialog("ALERT", {
 				content: "내 정보 수정이 완료되었습니다.",
 			});
 			replace("/mypage/info");

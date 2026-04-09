@@ -2,6 +2,7 @@ import { useModalStore } from "@/store/modal.store";
 import styles from "./ShippingAddressList.module.scss";
 import { UserAddressListItem } from "@/types/mypage";
 import clsx from "clsx";
+import { useGlobalDialogStore } from "@/store/globalDialog.store";
 
 type ShippingAddressListProps = { userAddressList: UserAddressListItem[] | [] } & (
 	| {
@@ -10,11 +11,13 @@ type ShippingAddressListProps = { userAddressList: UserAddressListItem[] | [] } 
 	  }
 	| {
 			page: "BUY";
+			changeBuyAddress: (address: UserAddressListItem) => void;
 	  }
 );
 
 export const ShippingAddressList = (props: ShippingAddressListProps) => {
-	const { openModal, resolveModal } = useModalStore();
+	const { openModal } = useModalStore();
+	const { openDialog } = useGlobalDialogStore();
 
 	return (
 		<ul className={styles.addressList}>
@@ -27,10 +30,7 @@ export const ShippingAddressList = (props: ShippingAddressListProps) => {
 						<button
 							className={styles.buyButton}
 							onClick={() => {
-								resolveModal({
-									action: "BUY_ADDRESS_CHANGE",
-									payload: userAddress,
-								});
+								props.changeBuyAddress(userAddress);
 							}}
 						></button>
 					)}
@@ -91,7 +91,7 @@ export const ShippingAddressList = (props: ShippingAddressListProps) => {
 											...userAddress,
 											defaultAddress: true,
 										});
-										openModal("CONFIRM", {
+										openDialog("CONFIRM", {
 											content: "기본배송지를 변경하시겠습니까??",
 											okResult: "ADDRESS_DEFAULT_CHANGE",
 										});
@@ -116,7 +116,7 @@ export const ShippingAddressList = (props: ShippingAddressListProps) => {
 									props.changeAddress({
 										...userAddress,
 									});
-									openModal("CONFIRM", {
+									openDialog("CONFIRM", {
 										content: `'${userAddress.addressName}' 배송지를 삭제하시겠습니까?`,
 										okResult: "ADDRESS_DELETE",
 									});
