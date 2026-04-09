@@ -11,7 +11,7 @@ type CouponDiscountInfo = {
 	minimumOrderBeforeAmount: number;
 	discountType: "fixed_amount" | "percentage";
 	discountValue: number;
-	maxDiscount: number;
+	maxDiscount: number | null;
 };
 /**
  * 쿠폰을 적용한 가격
@@ -27,7 +27,7 @@ export const calculateDiscount = (price: number, coupon: CouponDiscountInfo): nu
 	}
 	if (coupon.discountType === "percentage") {
 		const discount = Math.floor(price * (coupon.discountValue / 100));
-		if (discount > coupon.maxDiscount) {
+		if (coupon.maxDiscount !== null && discount > coupon.maxDiscount) {
 			return coupon.maxDiscount;
 		}
 		return discount;
