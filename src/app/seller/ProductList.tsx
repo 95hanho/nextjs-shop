@@ -14,6 +14,7 @@ import API_URL from "@/api/endpoints";
 import { BaseResponse } from "@/types/common";
 import { useUpdateSellerProduct } from "@/hooks/query/seller/useUpdateSellerProduct";
 import { useGlobalDialogStore } from "@/store/globalDialog.store";
+import { useRouter } from "next/navigation";
 
 interface ProductListProps {
 	sellerProductList: SellerProduct[];
@@ -36,6 +37,7 @@ export default function ProductList({
 	changeSelectedProductIds,
 	changeAllSelectedProductIds,
 }: ProductListProps) {
+	const router = useRouter();
 	const queryClient = useQueryClient();
 	const { openModal, clearModalResult, modalResult } = useModalStore();
 	const { openDialog, dialogResult, clearDialogResult } = useGlobalDialogStore();
@@ -205,6 +207,9 @@ export default function ProductList({
 												)}
 												onClick={() => {
 													changeSelectedProductIds(product.productId);
+												}}
+												onDoubleClick={() => {
+													router.push(`/seller/product/${product.productId}`);
 												}}
 											>
 												<td className={styles.checkboxCell}>
