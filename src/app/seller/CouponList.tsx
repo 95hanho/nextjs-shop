@@ -187,7 +187,7 @@ export default function CouponList({
 											onDoubleClick={() => {
 												if (!couponAllowedMode) {
 													openModal("SELLER_COUPON", {
-														coupon,
+														prevSellerCoupon: coupon,
 														disableOverlayClose: true,
 													});
 												}

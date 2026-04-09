@@ -16,12 +16,7 @@ import { useModalStore } from "@/store/modal.store";
 import { DateInput } from "@/components/form/DateInput";
 import DatePicker from "react-datepicker";
 import { useGlobalDialogStore } from "@/store/globalDialog.store";
-import { DialogResultMap } from "@/store/modal.type";
-
-interface SellerCouponModalProps {
-	onClose: () => void;
-	prevSellerCoupon?: SellerCoupon;
-}
+import { DialogResultMap, DomainModalPropsMap } from "@/store/modal.type";
 
 type CouponFormInputKeys = "description" | "discountValue" | "maxDiscount" | "minimumOrderBeforeAmount" | "amount";
 type CouponFormAlarm = FormInputAlarm<CouponFormInputKeys | "startDate" | "endDate">;
@@ -44,6 +39,10 @@ const initCouponForm: Partial<SellerCoupon> = {
 	// issueMethod: "CLAIM",
 };
 
+type SellerCouponModalProps = {
+	onClose: () => void;
+} & DomainModalPropsMap["SELLER_COUPON"];
+//
 export const SellerCouponModal = ({ onClose, prevSellerCoupon }: SellerCouponModalProps) => {
 	const { openDialog, dialogResult, clearDialogResult } = useGlobalDialogStore();
 	const { resolveModal } = useModalStore();
@@ -248,7 +247,7 @@ export const SellerCouponModal = ({ onClose, prevSellerCoupon }: SellerCouponMod
 
 	return (
 		<ModalFrame title={!prevSellerCoupon ? "쿠폰 추가" : "쿠폰 수정"} onClose={onClose} contentVariant="coupon">
-			<form onSubmit={couponSetSubmit} className={styles.couponForm}>
+			<form onSubmit={couponSetSubmit} className={clsx(styles.settingForm, styles.couponForm)}>
 				{!prevSellerCoupon ? (
 					<FormInput
 						label="이름"

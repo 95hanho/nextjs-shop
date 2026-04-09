@@ -10,6 +10,7 @@ import { ShippingAddressEditorModal } from "@/components/modal/domain/ShippingAd
 import { BuyShippingAddressListModal } from "@/components/modal/domain/BuyShippingAddressListModal";
 import { SellerCouponModal } from "@/components/modal/domain/SellerCouponModal";
 import { DomainModalCloseResult, DomainModalPropsMap } from "@/store/modal.type";
+import { SellerProductOptionModal } from "@/components/modal/domain/SellerProductOptionModal";
 
 type ModalCommon = {
 	disableOverlayClose?: boolean;
@@ -73,17 +74,28 @@ export const DomainModalRoot = () => {
 			childrenModal = <ProductOptionModal onClose={handleClose} product={product} />;
 			break;
 		case "ADDRESS_SET":
-			const { address } = modalProps as DomainModalPropsMap["ADDRESS_SET"];
+			const { prevAddress } = modalProps as DomainModalPropsMap["ADDRESS_SET"];
 
-			childrenModal = <ShippingAddressEditorModal onClose={handleClose} prevAddress={address} />;
+			childrenModal = <ShippingAddressEditorModal onClose={handleClose} prevAddress={prevAddress} />;
 			break;
 		case "BUY_ADDRESSLIST":
 			childrenModal = <BuyShippingAddressListModal onClose={handleClose} />;
 			break;
 		case "SELLER_COUPON":
-			const { coupon } = modalProps as DomainModalPropsMap["SELLER_COUPON"];
+			const { prevSellerCoupon } = modalProps as DomainModalPropsMap["SELLER_COUPON"];
 
-			childrenModal = <SellerCouponModal onClose={handleClose} prevSellerCoupon={coupon} />;
+			childrenModal = <SellerCouponModal onClose={handleClose} prevSellerCoupon={prevSellerCoupon} />;
+			break;
+		case "SELLER_PRODUCT_OPTION":
+			const { prevSellerProductOption, productOptionSizeDuplicateList } = modalProps as DomainModalPropsMap["SELLER_PRODUCT_OPTION"];
+
+			childrenModal = (
+				<SellerProductOptionModal
+					onClose={handleClose}
+					prevSellerProductOption={prevSellerProductOption}
+					productOptionSizeDuplicateList={productOptionSizeDuplicateList}
+				/>
+			);
 			break;
 		default:
 			return null;

@@ -1,13 +1,20 @@
 import { getGender } from "@/lib/format";
 import moment from "moment";
-import { Fragment, useEffect, useState } from "react";
-import { FaCaretSquareDown, FaCaretSquareUp } from "react-icons/fa";
+import { Fragment, useEffect, useRef, useState } from "react";
+import { FaCaretSquareDown, FaCaretSquareUp, FaExchangeAlt } from "react-icons/fa";
 import styles from "./SellerMain.module.scss";
-import { sellerProduct } from "@/types/seller";
 import clsx from "clsx";
+import { AddProductOptionBase, AddSellerProductOptionRequest, SellerProduct, UpdateSellerProductOptionRequest } from "@/types/seller";
+import { useModalStore } from "@/store/modal.store";
+import { DomainModalResultMap } from "@/store/modal.type";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { deleteNormal, postJson, putJson } from "@/api/fetchFilter";
+import { getApiUrl } from "@/lib/getBaseUrl";
+import API_URL from "@/api/endpoints";
+import { BaseResponse } from "@/types/common";
 
 interface ProductListProps {
-	sellerProductList: sellerProduct[];
+	sellerProductList: SellerProduct[];
 	allowedSelectedCouponId: number | null; // 현재 쿠폰 허용 제품 조회에 사용 중인 쿠폰 ID (null이면 조회 모드 아님)
 	couponAllowedProductIds: number[]; // 쿠폰 허용 제품 ID 리스트
 	updateCouponAllowedProducts: (productIds: number[]) => void; // 쿠폰 허용 제품 업데이트 함수 (선택적으로 전달)
@@ -27,31 +34,107 @@ export default function ProductList({
 	changeSelectedProductIds,
 	changeAllSelectedProductIds,
 }: ProductListProps) {
+	const queryClient = useQueryClient();
+	const { openModal, clearModalResult, modalResult } = useModalStore();
 	const couponAllowedMode = allowedSelectedCouponId !== null; // 쿠폰 허용 제품이 하나라도 있으면 true
+
+	// ------------------------------------------------
+	// React Query
+	// ------------------------------------------------
+
+	// 제품 옵션 추가
+	const { mutate: addProductOption } = useMutation({
+		mutationFn: (optionForm: AddProductOptionBase) =>
+			postJson<BaseResponse, AddSellerProductOptionRequest>(getApiUrl(API_URL.SELLER_PRODUCT_OPTION), {
+				...optionForm,
+				productId: productIdForOptionRef.current!,
+			}),
+		onSuccess() {
+			queryClient.invalidateQueries({ queryKey: ["sellerProductList"] });
+		},
+	});
+	// 제품 옵션 수정
+	const { mutate: updateProductOption } = useMutation({
+		mutationFn: (optionForm: UpdateSellerProductOptionRequest) => putJson(getApiUrl(API_URL.SELLER_PRODUCT_OPTION), { ...optionForm }),
+		onSuccess() {
+			queryClient.invalidateQueries({ queryKey: ["sellerProductList"] });
+		},
+	});
+	// 제품 옵션 삭제
+	const { mutate: deleteProductOption } = useMutation({
+		mutationFn: (productOptionId: number) =>
+			deleteNormal(getApiUrl(API_URL.SELLER_PRODUCT_OPTION_DELETE), {
+				productOptionId,
+			}),
+		onSuccess() {
+			queryClient.invalidateQueries({ queryKey: ["sellerProductList"] });
+		},
+	});
 
 	// ------------------------------------------------
 	// React
 	// ------------------------------------------------
 
 	const [openProductId, setOpenProductId] = useState<number | null>(null);
+	const theadRef = useRef<HTMLTableSectionElement | null>(null); // 제품 thead th 갯수를 세기 위한 ref
+	// 제품 옵션 추가/수정 시 productId 보관 ref
+	const productIdForOptionRef = useRef<number | null>(null);
+
+	// ------------------------------------------------
+	// useEffect, useMemo
+	// ------------------------------------------------
 
 	useEffect(() => {
 		if (couponAllowedProductIds.length > 0) {
-			console.log("쿠폰 허용 제품 ID 리스트:", couponAllowedProductIds);
+			// console.log("쿠폰 허용 제품 ID 리스트:", couponAllowedProductIds);
 		}
-	}, [couponAllowedProductIds]);
+		if (sellerProductList.length > 0) {
+			// console.log("판매자 제품 목록:", sellerProductList);
+		}
+	}, [couponAllowedProductIds, sellerProductList]);
+
+	useEffect(() => {
+		if (!modalResult) return;
+
+		// 제품 옵션 추가/수정 후 처리
+		if (modalResult.action === "SELLER_PRODUCT_OPTION_SET") {
+			const payload = modalResult.payload as DomainModalResultMap["SELLER_PRODUCT_OPTION_SET"];
+			console.log("제품 옵션 추가/수정 결과 처리", { payload });
+			if ("addProductOption" in payload) {
+				addProductOption(payload.addProductOption);
+			} else if ("updateProductOption" in payload) {
+				updateProductOption(payload.updateProductOption);
+			}
+		}
+		// 제품 옵션 삭제 후 처리
+		if (modalResult.action === "SELLER_PRODUCT_OPTION_DELETE") {
+			const { productOptionId } = modalResult.payload as DomainModalResultMap["SELLER_PRODUCT_OPTION_DELETE"];
+			console.log("제품 옵션 삭제 결과 처리", { productOptionId });
+			deleteProductOption(productOptionId);
+		}
+
+		// 모달 닫힐 시 옵션 변경 취소 처리
+		if (modalResult.action === "DOMAIN_CLOSE") {
+			const payload = modalResult.payload as DomainModalResultMap["DOMAIN_CLOSE"];
+			if (payload?.result === "SELLER_PRODUCT_OPTION_SET_CANCEL") {
+				productIdForOptionRef.current = null;
+			}
+		}
+
+		clearModalResult();
+	}, [modalResult, addProductOption, updateProductOption, deleteProductOption, clearModalResult]);
 
 	if (isCouponAllowedProductIdsLoading) return null;
 	return (
 		<div id="sellerProductList" className={styles.sellerProductList}>
 			<h2>
-				<span>상품 목록 - {allowedSelectedCouponId && <span className="text-red-600 underline">{`쿠폰 허용 제품 선택 중`}</span>}</span>
+				<span>상품 목록{allowedSelectedCouponId && <span className="text-red-600 underline">{` - 쿠폰 허용 제품 선택 중`}</span>}</span>
 
 				{couponAllowedMode && <button onClick={() => updateCouponAllowedProducts(selectedProductIds)}>상품제한변경</button>}
 			</h2>
 			<div className={styles.productTableWrapper}>
 				<table className={styles.productTable}>
-					<thead>
+					<thead ref={theadRef}>
 						<tr>
 							<th className={styles.checkboxCell}>
 								<input
@@ -126,28 +209,78 @@ export default function ProductList({
 											</tr>
 											{openProductId === product.productId && (
 												<tr>
-													<td colSpan={11}>
-														<div>
-															<h4>옵션 목록</h4>
+													<td colSpan={theadRef?.current?.children[0]?.children.length || 10}>
+														<div className={styles.productOptionContainer}>
+															<h4>
+																<span>옵션 목록</span>
+																<button
+																	className={styles.addButton}
+																	onClick={() => {
+																		productIdForOptionRef.current = product.productId;
+																		openModal("SELLER_PRODUCT_OPTION", {
+																			productOptionSizeDuplicateList: product.optionList.map((opt) => opt.size),
+																			disableOverlayClose: true,
+																			closeResult: "SELLER_PRODUCT_OPTION_SET_CANCEL",
+																		});
+																	}}
+																>
+																	옵션 추가
+																</button>
+															</h4>
 															<div className={styles.productOptionTable}>
 																<table className="w-full">
 																	<thead>
 																		<tr>
+																			<th>productOptionId</th>
 																			<th>사이즈</th>
 																			<th>추가금액</th>
 																			<th>재고</th>
 																			<th>판매량</th>
-																			<th>숨김</th>
+																			<th>숨김여부</th>
 																		</tr>
 																	</thead>
 																	<tbody>
 																		{product.optionList.map((option) => (
-																			<tr key={option.productOptionId}>
+																			<tr
+																				key={option.productOptionId}
+																				className={styles.productOptionRow}
+																				onClick={() => {
+																					productIdForOptionRef.current = product.productId;
+																					openModal("SELLER_PRODUCT_OPTION", {
+																						prevSellerProductOption: option,
+																						productOptionSizeDuplicateList: product.optionList.map(
+																							(opt) => opt.size,
+																						),
+																						disableOverlayClose: true,
+																						closeResult: "SELLER_PRODUCT_OPTION_SET_CANCEL",
+																					});
+																				}}
+																			>
+																				<td>{option.productOptionId}</td>
 																				<td>{option.size}</td>
 																				<td>{option.addPrice}</td>
 																				<td>{option.stock}</td>
 																				<td>{option.salesCount}</td>
-																				<td>{!option.displayed && "O"}</td>
+																				<td>
+																					<button
+																						className={clsx(
+																							styles.displayedButton,
+																							option.displayed ? styles.on : styles.off,
+																						)}
+																						onClick={(e) => {
+																							e.stopPropagation();
+																							updateProductOption({
+																								productOptionId: option.productOptionId,
+																								addPrice: option.addPrice,
+																								stock: option.stock,
+																								isDisplayed: !option.displayed,
+																							});
+																						}}
+																					>
+																						{option.displayed ? "X" : "숨겨짐"}
+																						<FaExchangeAlt />
+																					</button>
+																				</td>
 																			</tr>
 																		))}
 																	</tbody>

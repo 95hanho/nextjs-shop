@@ -5,17 +5,18 @@ import { WRONG_REQUEST_MESSAGE } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { sellerWithAuth } from "@/lib/auth/seller";
 import { BaseResponse } from "@/types/common";
-import { AddSellerProductOption, UpdateSellerProductOption } from "@/types/seller";
+import { AddSellerProductOptionRequest, UpdateSellerProductOptionRequest } from "@/types/seller";
 import { NextResponse } from "next/server";
 
 // 제품 옵션 추가
 export const POST = sellerWithAuth(async ({ nextRequest, sellerToken }) => {
 	console.log("[API] 제품 옵션 추가");
 	try {
-		const { productId, addPrice, stock, size }: AddSellerProductOption = await nextRequest.json();
-		if (!productId || !addPrice || !stock || !size) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
+		const { productId, addPrice, stock, size }: AddSellerProductOptionRequest = await nextRequest.json();
+		if (!productId || addPrice === undefined || stock === undefined || !size)
+			return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
 
-		const payload: AddSellerProductOption = {
+		const payload: AddSellerProductOptionRequest = {
 			productId,
 			addPrice,
 			stock,
@@ -41,10 +42,11 @@ export const POST = sellerWithAuth(async ({ nextRequest, sellerToken }) => {
 export const PUT = sellerWithAuth(async ({ nextRequest, sellerToken }) => {
 	console.log("[API] 제품 옵션 수정");
 	try {
-		const { productOptionId, addPrice, stock, isDisplayed }: UpdateSellerProductOption = await nextRequest.json();
-		if (!productOptionId || !addPrice || !stock || !isDisplayed) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
+		const { productOptionId, addPrice, stock, isDisplayed }: UpdateSellerProductOptionRequest = await nextRequest.json();
+		if (!productOptionId || addPrice === undefined || stock === undefined || isDisplayed === undefined)
+			return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
 
-		const payload: UpdateSellerProductOption = {
+		const payload: UpdateSellerProductOptionRequest = {
 			productOptionId,
 			addPrice,
 			stock,

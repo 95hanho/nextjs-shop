@@ -1,16 +1,23 @@
 import { AddressForm } from "@/components/modal/domain/ShippingAddressEditorModal";
 import { CartItem, UserAddressListItem } from "@/types/mypage";
-import { AddCouponRequest, SellerCoupon, UpdateCouponRequest } from "@/types/seller";
+import {
+	AddCouponRequest,
+	AddProductOptionBase,
+	SellerCoupon,
+	SellerProductOption,
+	UpdateCouponRequest,
+	UpdateSellerProductOptionRequest,
+} from "@/types/seller";
 
 // -- modal타입
 // dialog.type.ts
 export type DialogType = "ALERT" | "CONFIRM" | null;
 // modal.type.ts
-export type DomainModalType = "PRODUCT_OPTION" | "ADDRESS_SET" | "BUY_ADDRESSLIST" | "SELLER_COUPON" | null;
+export type DomainModalType = "PRODUCT_OPTION" | "ADDRESS_SET" | "BUY_ADDRESSLIST" | "SELLER_COUPON" | "SELLER_PRODUCT_OPTION" | null;
 
 // -- modal이 닫힐 때 동작 구분
 export type DialogCloseResult = "NEED_LOGIN_CANCEL" | "SELLER_LOGOUT" | "CART_DELETE_CANCEL";
-export type DomainModalCloseResult = "PRODUCT_OPTION_CHANGE_CANCEL";
+export type DomainModalCloseResult = "PRODUCT_OPTION_CHANGE_CANCEL" | "SELLER_PRODUCT_OPTION_SET_CANCEL";
 
 // 모달 오픈 시 공통 옵션
 type ModalCommon = {
@@ -32,7 +39,8 @@ export type ConfirmOkResult =
 	| "ADDRESS_DEFAULT_CHANGE" // 마이페이지 - 배송주소 기본값 변경
 	| "ADDRESS_DELETE" // 마이페이지 - 배송주소 삭제
 	| "COUPON_STATUS_CHANGE" // 판매자페이지 - 쿠폰 상태 변경
-	| "SELLER_COUPON_DELETE_OK"; // 판매자페이지 - 쿠폰 삭제 확인
+	| "SELLER_COUPON_DELETE_OK" // 판매자페이지 - 쿠폰 삭제 확인
+	| "SELLER_PRODUCT_OPTION_DELETE_OK"; // 판매자페이지 - 제품 옵션 삭제 확인
 export type ConfirmCancelResult = string; // 아직 사용하는 대가 없어서 string으로 둠
 
 // -- modal이 열릴 떄 요구되는 옵션
@@ -58,11 +66,15 @@ export type DomainModalPropsMap = {
 		product: CartItem;
 	};
 	ADDRESS_SET: DomainModalCommon & {
-		address?: UserAddressListItem;
+		prevAddress?: UserAddressListItem;
 	};
 	BUY_ADDRESSLIST: DomainModalCommon & {};
 	SELLER_COUPON: DomainModalCommon & {
-		coupon?: SellerCoupon;
+		prevSellerCoupon?: SellerCoupon;
+	};
+	SELLER_PRODUCT_OPTION: DomainModalCommon & {
+		prevSellerProductOption?: SellerProductOption;
+		productOptionSizeDuplicateList?: string[]; // 판매자 제품 옵션 사이즈 중복 확인 리스트
 	};
 };
 // -- modal이 열릴 때 요구되는 옵션
@@ -118,6 +130,18 @@ export type DomainModalResultMap = {
 	// 판매자 쿠폰 삭제
 	SELLER_COUPON_DELETE: {
 		couponId: number;
+	};
+	// 판매자 제품 옵션 추가/수정
+	SELLER_PRODUCT_OPTION_SET:
+		| {
+				addProductOption: AddProductOptionBase;
+		  }
+		| {
+				updateProductOption: UpdateSellerProductOptionRequest;
+		  };
+	// 판매자 제품 옵션 삭제
+	SELLER_PRODUCT_OPTION_DELETE: {
+		productOptionId: number;
 	};
 	// 공통) 닫기
 	DOMAIN_CLOSE:

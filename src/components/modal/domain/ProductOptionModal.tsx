@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { OptionSelector } from "../../ui/OptionSelector";
-import { CartItem, GetCartOtherOptionListResponse } from "@/types/mypage";
+import { GetCartOtherOptionListResponse } from "@/types/mypage";
 import { useQuery } from "@tanstack/react-query";
 import API_URL from "@/api/endpoints";
 import { getApiUrl } from "@/lib/getBaseUrl";
@@ -10,11 +10,11 @@ import { ModalFrame } from "@/components/modal/frame/ModalFrame";
 import styles from "../Modal.module.scss";
 import { ConfirmButton } from "@/components/modal/frame/ConfirmButton";
 import { ProductCounter } from "@/components/ui/ProductCounter";
+import { DomainModalPropsMap } from "@/store/modal.type";
 
-interface ProductOptionModalProps {
+type ProductOptionModalProps = {
 	onClose: () => void;
-	product: CartItem;
-}
+} & DomainModalPropsMap["PRODUCT_OPTION"];
 
 export const ProductOptionModal = ({ onClose, product }: ProductOptionModalProps) => {
 	const { resolveModal } = useModalStore();

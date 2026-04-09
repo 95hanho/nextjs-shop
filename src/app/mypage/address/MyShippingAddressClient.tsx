@@ -144,7 +144,7 @@ export default function MyShippingAddressClient() {
 							onClick={() => {
 								changingDefaultAddressRef.current = null;
 								openModal("ADDRESS_SET", {
-									address: undefined,
+									prevAddress: undefined,
 									disableOverlayClose: true,
 								});
 							}}

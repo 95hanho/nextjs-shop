@@ -104,7 +104,7 @@ export const ShippingAddressList = (props: ShippingAddressListProps) => {
 								onClick={() => {
 									props.changeAddress({ ...userAddress });
 									openModal("ADDRESS_SET", {
-										address: userAddress,
+										prevAddress: userAddress,
 										disableOverlayClose: true,
 									});
 								}}
