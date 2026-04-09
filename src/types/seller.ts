@@ -105,8 +105,10 @@ export interface AddCouponRequest {
 	description: string;
 	discountType: "percentage" | "fixed_amount";
 	discountValue: number;
-	maxDiscount: number;
+	maxDiscount?: number;
 	minimumOrderBeforeAmount?: number;
+	isStackable: boolean;
+	isProductRestricted: boolean;
 	amount: number;
 	startDate: string;
 	endDate: string;
@@ -117,8 +119,8 @@ export interface UpdateCouponRequest {
 	description: string;
 	discountType: "percentage" | "fixed_amount";
 	discountValue: number;
-	maxDiscount: number;
-	minimumOrderBeforeAmount?: number;
+	maxDiscount?: number;
+	minimumOrderBeforeAmount: number;
 	status: "ACTIVE" | "SUSPENDED" | "DELETED";
 	isStackable: boolean;
 	isProductRestricted: boolean;

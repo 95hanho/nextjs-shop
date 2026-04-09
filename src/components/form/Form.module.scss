@@ -142,6 +142,11 @@
 	font-size: 1.15em;
 	margin-bottom: 10px;
 }
-.infoVal * {
-	font-size: 1em;
+.infoVal {
+	* {
+		font-size: 1em;
+	}
+	> span {
+		margin-left: 8px;
+	}
 }

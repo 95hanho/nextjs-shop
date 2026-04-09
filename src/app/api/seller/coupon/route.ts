@@ -1,6 +1,6 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
-import { getNormal, postUrlFormData } from "@/api/fetchFilter";
+import { getNormal, postUrlFormData, putUrlFormData } from "@/api/fetchFilter";
 import { WRONG_REQUEST_MESSAGE } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { sellerWithAuth } from "@/lib/auth/seller";
@@ -28,21 +28,43 @@ export const POST = sellerWithAuth(async ({ nextRequest, sellerToken }) => {
 	console.log("[API] 쿠폰 등록");
 	try {
 		// json으로 받으면
-		const { description, discountType, discountValue, maxDiscount, minimumOrderBeforeAmount, amount, startDate, endDate }: AddCouponRequest =
-			await nextRequest.json();
-		if (!description || !discountType || !discountValue || !maxDiscount || !minimumOrderBeforeAmount || !amount || !startDate || !endDate)
+		const {
+			description,
+			discountType,
+			discountValue,
+			maxDiscount,
+			minimumOrderBeforeAmount,
+			isStackable,
+			isProductRestricted,
+			amount,
+			startDate,
+			endDate,
+		}: AddCouponRequest = await nextRequest.json();
+		if (
+			!description ||
+			!discountType ||
+			!discountValue ||
+			!minimumOrderBeforeAmount ||
+			isStackable === undefined ||
+			isProductRestricted === undefined ||
+			!amount ||
+			!startDate ||
+			!endDate
+		)
 			return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
 
 		const payload: AddCouponRequest = {
 			description,
 			discountType,
 			discountValue,
-			maxDiscount,
+			minimumOrderBeforeAmount,
+			isStackable,
+			isProductRestricted,
 			amount,
 			startDate: startDate.replace(/\//g, "-"),
 			endDate: endDate.replace(/\//g, "-"),
 		};
-		if (minimumOrderBeforeAmount) payload.minimumOrderBeforeAmount = minimumOrderBeforeAmount;
+		if (maxDiscount) payload.maxDiscount = maxDiscount;
 		const data = await postUrlFormData<BaseResponse>(
 			getBackendUrl(API_URL.SELLER_COUPON),
 			{ ...payload },
@@ -77,7 +99,19 @@ export const PUT = sellerWithAuth(async ({ nextRequest, sellerToken }) => {
 			startDate,
 			endDate,
 		}: UpdateCouponRequest = await nextRequest.json();
-		if (!description || !discountType || !discountValue || !maxDiscount || !minimumOrderBeforeAmount || !amount || !startDate || !endDate)
+		if (
+			couponId === undefined ||
+			!description ||
+			!discountType ||
+			!discountValue ||
+			!minimumOrderBeforeAmount ||
+			!status ||
+			isStackable === undefined ||
+			isProductRestricted === undefined ||
+			!amount ||
+			!startDate ||
+			!endDate
+		)
 			return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
 
 		const payload: UpdateCouponRequest = {
@@ -85,7 +119,7 @@ export const PUT = sellerWithAuth(async ({ nextRequest, sellerToken }) => {
 			description,
 			discountType,
 			discountValue,
-			maxDiscount,
+			minimumOrderBeforeAmount,
 			status,
 			isStackable,
 			isProductRestricted,
@@ -93,8 +127,8 @@ export const PUT = sellerWithAuth(async ({ nextRequest, sellerToken }) => {
 			startDate: startDate.replace(/\//g, "-"),
 			endDate: endDate.replace(/\//g, "-"),
 		};
-		if (minimumOrderBeforeAmount) payload.minimumOrderBeforeAmount = minimumOrderBeforeAmount;
-		const data = await postUrlFormData<BaseResponse>(
+		if (maxDiscount) payload.maxDiscount = maxDiscount;
+		const data = await putUrlFormData<BaseResponse>(
 			getBackendUrl(API_URL.SELLER_COUPON),
 			{ ...payload },
 			{

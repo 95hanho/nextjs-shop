@@ -1,4 +1,4 @@
-import { SellerCoupon } from "@/types/seller";
+import { AddCouponRequest, SellerCoupon, UpdateCouponRequest } from "@/types/seller";
 import styles from "./SellerMain.module.scss";
 import moment from "moment";
 import { IoMdSettings } from "react-icons/io";
@@ -7,6 +7,10 @@ import clsx from "clsx";
 import { FaExchangeAlt } from "react-icons/fa";
 import { useModalStore } from "@/store/modal.store";
 import { ModalResultMap } from "@/store/modal.type";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { getApiUrl } from "@/lib/getBaseUrl";
+import API_URL from "@/api/endpoints";
+import { postJson, putJson } from "@/api/fetchFilter";
 
 interface CouponListProps {
 	sellerCouponList: SellerCoupon[];
@@ -27,8 +31,28 @@ export default function CouponList({
 	changeAllSelectedCouponIds,
 	updateCouponStatus,
 }: CouponListProps) {
+	const queryClient = useQueryClient();
 	const couponAllowedMode = allowedSelectedCouponId !== null; // 쿠폰 허용 제품이 하나라도 있으면 true
 	const { openModal, clearModalResult, modalResult } = useModalStore();
+
+	// ------------------------------------------------
+	// React Query
+	// ------------------------------------------------
+
+	// 쿠폰 등록
+	const { mutate: registerCoupon } = useMutation({
+		mutationFn: (couponForm: AddCouponRequest) => postJson(getApiUrl(API_URL.SELLER_COUPON), { ...couponForm }),
+		onSuccess() {
+			queryClient.invalidateQueries({ queryKey: ["sellerCouponList"] });
+		},
+	});
+	// 쿠폰 수정
+	const { mutate: updateCoupon } = useMutation({
+		mutationFn: (couponForm: UpdateCouponRequest) => putJson(getApiUrl(API_URL.SELLER_COUPON), { ...couponForm }),
+		onSuccess() {
+			queryClient.invalidateQueries({ queryKey: ["sellerCouponList"] });
+		},
+	});
 
 	// ------------------------------------------------
 	// React
@@ -45,6 +69,7 @@ export default function CouponList({
 	useEffect(() => {
 		if (!modalResult) return;
 
+		// 쿠폰 상태 변경 후 처리
 		if (modalResult.action === "CONFIRM_OK") {
 			const payload = modalResult.payload as ModalResultMap["CONFIRM_OK"];
 			if (payload?.result === "COUPON_STATUS_CHANGE") {
@@ -56,9 +81,24 @@ export default function CouponList({
 				}
 			}
 		}
+		// 쿠폰 등록/수정 후 처리
+		if (modalResult.action === "SELLER_COUPON_SET") {
+			const payload = modalResult.payload as ModalResultMap["SELLER_COUPON_SET"];
+			console.log("쿠폰 등록/수정 결과 처리", { payload });
+			if ("addCoupon" in payload) {
+				registerCoupon(payload.addCoupon);
+			} else if ("updateCoupon" in payload) {
+				updateCoupon(payload.updateCoupon);
+			}
+		}
+		// 쿠폰 삭제 후 처리
+		if (modalResult.action === "SELLER_COUPON_DELETE") {
+			const payload = modalResult.payload as ModalResultMap["SELLER_COUPON_DELETE"];
+			console.log("쿠폰 삭제 결과 처리", { payload });
+		}
 
 		clearModalResult();
-	}, [clearModalResult, modalResult, updateCouponStatus, changingCoupon]);
+	}, [clearModalResult, modalResult, updateCouponStatus, changingCoupon, registerCoupon, updateCoupon]);
 
 	return (
 		<div id="sellerCouponList" className={styles.sellerCouponList}>
@@ -198,7 +238,8 @@ export default function CouponList({
 											<td>{coupon.amount}</td>
 											<td>{coupon.usedCount}</td>
 											<td>
-												{moment(coupon.startDate).format("YYYY-MM-DD")} ~ {moment(coupon.endDate).format("YYYY-MM-DD")}
+												{moment(coupon.startDate).format("YYYY-MM-DD HH:mm")} ~{" "}
+												{moment(coupon.endDate).format("YYYY-MM-DD HH:mm")}
 											</td>
 										</tr>
 									);

@@ -13,7 +13,7 @@ export const InfoMark = ({ title, infoVal }: InfoMarkProps) => {
 			<div className="w-1/3 text-left">
 				<label>{title}</label>
 			</div>
-			<div className="w-2/3 px-2 text-left">
+			<div className="w-2/3 text-left">
 				<div className={clsx(styles.infoVal, "font-semibold")}>{infoVal}</div>
 			</div>
 		</div>
