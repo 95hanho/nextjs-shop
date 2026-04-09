@@ -1,6 +1,6 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
-import { getNormal, postUrlFormData } from "@/api/fetchFilter";
+import { getNormal, postUrlFormData, putUrlFormData } from "@/api/fetchFilter";
 import { WRONG_REQUEST_MESSAGE } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { sellerWithAuth } from "@/lib/auth/seller";
@@ -107,6 +107,7 @@ export const PUT = sellerWithAuth(async ({ nextRequest, sellerToken }) => {
 			colorName,
 			originPrice,
 			finalPrice,
+			saleStop,
 			menuSubId,
 			materialInfo,
 			manufacturerName,
@@ -119,21 +120,7 @@ export const PUT = sellerWithAuth(async ({ nextRequest, sellerToken }) => {
 			afterServicePhone,
 		}: UpdateSellerProductRequest = await nextRequest.json();
 
-		if (
-			!productId ||
-			!name ||
-			!colorName ||
-			!originPrice ||
-			!finalPrice ||
-			!menuSubId ||
-			!materialInfo ||
-			!manufacturerName ||
-			!countryOfOrigin ||
-			!washCareInfo ||
-			!manufacturedYm ||
-			!qualityGuaranteeInfo ||
-			!afterServiceContact
-		)
+		if (!productId || !name || !colorName || !originPrice || !finalPrice || !saleStop === undefined || !menuSubId)
 			return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
 
 		const payload: UpdateSellerProductRequest = {
@@ -142,19 +129,22 @@ export const PUT = sellerWithAuth(async ({ nextRequest, sellerToken }) => {
 			colorName,
 			originPrice,
 			finalPrice,
+			saleStop,
 			menuSubId,
-			materialInfo,
-			manufacturerName,
-			countryOfOrigin,
-			washCareInfo,
-			manufacturedYm: manufacturedYm.replace(/\//g, "-"),
-			qualityGuaranteeInfo,
-			afterServiceContact,
-			afterServiceManager,
-			afterServicePhone,
 		};
+		if (materialInfo) payload.materialInfo = materialInfo;
+		if (manufacturerName) payload.manufacturerName = manufacturerName;
+		if (countryOfOrigin) payload.countryOfOrigin = countryOfOrigin;
+		if (washCareInfo) payload.washCareInfo = washCareInfo;
+		if (manufacturedYm) payload.manufacturedYm = manufacturedYm;
+		if (qualityGuaranteeInfo) payload.qualityGuaranteeInfo = qualityGuaranteeInfo;
+		if (afterServiceContact) payload.afterServiceContact = afterServiceContact;
+		if (afterServiceManager) payload.afterServiceManager = afterServiceManager;
+		if (afterServicePhone) payload.afterServicePhone = afterServicePhone;
 
-		const data = await postUrlFormData<BaseResponse>(
+		console.log("payload", payload);
+
+		const data = await putUrlFormData<BaseResponse>(
 			getBackendUrl(API_URL.SELLER_PRODUCT),
 			{ ...payload },
 			{

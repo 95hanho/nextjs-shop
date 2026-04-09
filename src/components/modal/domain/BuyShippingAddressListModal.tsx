@@ -7,6 +7,7 @@ import { getApiUrl } from "@/lib/getBaseUrl";
 import { GetUserAddressListResponse, UserAddressListItem } from "@/types/mypage";
 import { useQuery } from "@tanstack/react-query";
 import styles from "./BuyShippingAddressListModal.module.scss";
+import { useModalStore } from "@/store/modal.store";
 
 interface ShippingAddressListProps {
 	onClose: () => void;
@@ -14,6 +15,7 @@ interface ShippingAddressListProps {
 
 export const BuyShippingAddressListModal = ({ onClose }: ShippingAddressListProps) => {
 	const { loginOn } = useAuth();
+	const { resolveModal } = useModalStore();
 
 	// 유저 배송지 조회
 	const { data: userAddressData } = useQuery<GetUserAddressListResponse, Error, UserAddressListItem[]>({
@@ -27,7 +29,16 @@ export const BuyShippingAddressListModal = ({ onClose }: ShippingAddressListProp
 	return (
 		<ModalFrame title="배송지 목록" onClose={onClose} contentVariant="address">
 			<div className={styles.addressListContainer}>
-				<ShippingAddressList page="BUY" userAddressList={userAddressData} />
+				<ShippingAddressList
+					page="BUY"
+					userAddressList={userAddressData}
+					changeBuyAddress={(address) => {
+						resolveModal({
+							action: "BUY_ADDRESS_CHANGE",
+							payload: address,
+						});
+					}}
+				/>
 			</div>
 		</ModalFrame>
 	);

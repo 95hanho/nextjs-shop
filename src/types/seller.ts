@@ -43,17 +43,18 @@ export interface SellerRegisterRequest extends SellerLoginForm, SellerInfo {}
 
 /* 판매자 제품 조회 */
 type SellerProductOptionAdd = { salesCount: number; createdAt: string; updatedAt: string; displayed: boolean };
-export type sellerProduct = ProductDetail & {
+export type SellerProductOption = ProductOption & SellerProductOptionAdd;
+export type SellerProduct = ProductDetail & {
 	sellerId: string;
 	updatedAt: string;
 	subMenuName: string;
 	topMenuName: string;
 	gender: string;
-	optionList: (ProductOption & SellerProductOptionAdd)[];
+	optionList: SellerProductOption[];
 	saleStop: boolean;
 };
 export interface GetSellerProductListResponse extends BaseResponse {
-	sellerProductList: sellerProduct[];
+	sellerProductList: SellerProduct[];
 }
 /* 제품 추가 */
 export interface AddSellerProductRequest {
@@ -62,37 +63,44 @@ export interface AddSellerProductRequest {
 	originPrice: number;
 	finalPrice: number;
 	menuSubId: number;
-	materialInfo: string;
-	manufacturerName: string;
-	countryOfOrigin: string;
-	washCareInfo: string;
-	manufacturedYm: string;
-	qualityGuaranteeInfo: string;
-	afterServiceContact: string;
-	afterServiceManager: string;
-	afterServicePhone: string;
+	materialInfo?: string;
+	manufacturerName?: string;
+	countryOfOrigin?: string;
+	washCareInfo?: string;
+	manufacturedYm?: string;
+	qualityGuaranteeInfo?: string;
+	afterServiceContact?: string;
+	afterServiceManager?: string;
+	afterServicePhone?: string;
 }
 /* 제품 수정 */
 export interface UpdateSellerProductRequest extends AddSellerProductRequest {
 	productId: number;
+	saleStop: boolean;
 }
 
 /* 제품 상세보기(개발) */
 /* 제품 상세 사진수정(개발) */
 
 /* 제품 옵션 추가 */
-export interface AddSellerProductOption {
-	productId: number;
+export type AddProductOptionBase = {
 	addPrice: number;
 	stock: number;
 	size: string;
+};
+export interface AddSellerProductOptionRequest extends AddProductOptionBase {
+	productId: number;
 }
 /* 제품 옵션 수정 */
-export interface UpdateSellerProductOption {
+export interface UpdateSellerProductOptionRequest {
 	productOptionId: number;
 	addPrice: number;
 	stock: number;
 	isDisplayed: boolean;
+}
+/* 제품 옵션 삭제 */
+export interface DeleteSellerProductOptionRequest {
+	productOptionId: number;
 }
 /* 쿠폰 조회 */
 export type SellerCoupon = Coupon & AdminCoupon;

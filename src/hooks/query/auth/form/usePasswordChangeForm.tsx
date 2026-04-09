@@ -1,7 +1,7 @@
 import API_URL from "@/api/endpoints";
 import { getNormal, putJson } from "@/api/fetchFilter";
 import { getApiUrl } from "@/lib/getBaseUrl";
-import { useModalStore } from "@/store/modal.store";
+import { useGlobalDialogStore } from "@/store/globalDialog.store";
 import { BaseResponse } from "@/types/common";
 import { ChangeEvent, FormEvent } from "@/types/event";
 import { FormInputAlarm, FormInputRefs } from "@/types/form";
@@ -34,7 +34,7 @@ interface usePasswordChangeFormProps {
 
 export function usePasswordChangeForm({ mode }: usePasswordChangeFormProps) {
 	const router = useRouter();
-	const { openModal } = useModalStore();
+	const { openDialog } = useGlobalDialogStore();
 
 	/* --------- */
 
@@ -45,7 +45,7 @@ export function usePasswordChangeForm({ mode }: usePasswordChangeFormProps) {
 				...pwdChangeForm,
 			}),
 		onSuccess() {
-			openModal("ALERT", {
+			openDialog("ALERT", {
 				content: `비밀번호가 변경되었습니다.`,
 			});
 			if (mode === "LOGGED_IN") router.replace("/mypage/info");
@@ -54,20 +54,20 @@ export function usePasswordChangeForm({ mode }: usePasswordChangeFormProps) {
 		onError(err) {
 			console.log(err);
 			if (err.message === "PWDRESET_UNAUTHORIZED") {
-				openModal("ALERT", {
+				openDialog("ALERT", {
 					content: `인증이 만료되었습니다.${mode === "RESET" ? "다시 비밀번호 찾기 인증을 진행해주세요." : ""}`,
 				});
 				if (mode === "LOGGED_IN") router.replace("/mypage/info");
 				if (mode === "RESET") router.replace("/user/find/password");
 			}
 			if (err.message === "CURRENT_PASSWORD_MISMATCH") {
-				openModal("ALERT", {
+				openDialog("ALERT", {
 					content: `현재 비밀번호가 일치하지 않습니다.`,
 				});
 				pwdChangeFormInputRefs.current.curPassword?.focus();
 			}
 			if (err.message === "CURRENT_PASSWORD_EQUAL") {
-				openModal("ALERT", {
+				openDialog("ALERT", {
 					content: `기존 비밀번호와 다른 비밀번호를 입력해주세요.`,
 				});
 				setPwdChangeForm((prev) => ({
@@ -90,20 +90,20 @@ export function usePasswordChangeForm({ mode }: usePasswordChangeFormProps) {
 			.catch((err) => {
 				console.log(err);
 				if (err.message === "REFRESH_UNAUTHORIZED") {
-					openModal("ALERT", {
+					openDialog("ALERT", {
 						content: "로그인이 만료되었습니다. 다시 로그인 해주세요.",
 					});
 					router.replace("/user?next=/mypage/info");
 				}
 				if (err.message === "PWDRESET_UNAUTHORIZED") {
-					openModal("ALERT", {
+					openDialog("ALERT", {
 						content: `인증이 만료되었습니다.${mode === "RESET" ? "다시 비밀번호 찾기 인증을 진행해주세요." : ""}`,
 					});
 					if (mode === "LOGGED_IN") router.replace("/mypage/info");
 					if (mode === "RESET") router.replace("/user/find/password");
 				}
 			});
-	}, [mode, router, openModal]);
+	}, [mode, router, openDialog]);
 
 	/* --------- */
 
@@ -198,7 +198,7 @@ export function usePasswordChangeForm({ mode }: usePasswordChangeFormProps) {
 		}
 		//
 		console.log("비밀번호변경 완료");
-		// handlePasswordChange.mutate();
+		handlePasswordChange.mutate();
 	};
 
 	return {

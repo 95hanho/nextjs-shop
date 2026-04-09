@@ -8,12 +8,18 @@ import { BaseResponse } from "@/types/common";
 import { NextResponse } from "next/server";
 
 // 제품 옵션 삭제
-export const DELETE = sellerWithAuth<{ productOptionId: string }>(async ({ params }) => {
+export const DELETE = sellerWithAuth<{ productOptionId: string }>(async ({ params, sellerToken }) => {
 	console.log("[API] 제품 옵션 삭제");
 	try {
 		const productOptionId = Number(params.productOptionId);
 		if (!productOptionId) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
-		const data = await deleteNormal<BaseResponse>(getBackendUrl(API_URL.SELLER_PRODUCT_OPTION_DELETE), { productOptionId });
+		const data = await deleteNormal<BaseResponse>(
+			getBackendUrl(API_URL.SELLER_PRODUCT_OPTION_DELETE),
+			{ productOptionId },
+			{
+				Authorization: `Bearer ${sellerToken}`,
+			},
+		);
 		// console.log("data", data);
 
 		return NextResponse.json({ message: data.message }, { status: 200 });

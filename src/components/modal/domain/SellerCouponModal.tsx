@@ -15,12 +15,8 @@ import API_URL from "@/api/endpoints";
 import { useModalStore } from "@/store/modal.store";
 import { DateInput } from "@/components/form/DateInput";
 import DatePicker from "react-datepicker";
-import { ModalResultMap } from "@/store/modal.type";
-
-interface SellerCouponModalProps {
-	onClose: () => void;
-	prevSellerCoupon?: SellerCoupon;
-}
+import { useGlobalDialogStore } from "@/store/globalDialog.store";
+import { DialogResultMap, DomainModalPropsMap } from "@/store/modal.type";
 
 type CouponFormInputKeys = "description" | "discountValue" | "maxDiscount" | "minimumOrderBeforeAmount" | "amount";
 type CouponFormAlarm = FormInputAlarm<CouponFormInputKeys | "startDate" | "endDate">;
@@ -43,8 +39,13 @@ const initCouponForm: Partial<SellerCoupon> = {
 	// issueMethod: "CLAIM",
 };
 
+type SellerCouponModalProps = {
+	onClose: () => void;
+} & DomainModalPropsMap["SELLER_COUPON"];
+//
 export const SellerCouponModal = ({ onClose, prevSellerCoupon }: SellerCouponModalProps) => {
-	const { openModal, resolveModal, modalResult, clearModalResult } = useModalStore();
+	const { openDialog, dialogResult, clearDialogResult } = useGlobalDialogStore();
+	const { resolveModal } = useModalStore();
 
 	// ------------------------------------------------
 	// React
@@ -187,8 +188,8 @@ export const SellerCouponModal = ({ onClose, prevSellerCoupon }: SellerCouponMod
 				isStackable: couponForm.isStackable,
 				isProductRestricted: couponForm.isProductRestricted,
 				amount: couponForm.amount,
-				startDate: couponForm.startDate?.replace(/\//g, "-"),
-				endDate: couponForm.endDate?.replace(/\//g, "-"),
+				startDate: couponForm.startDate,
+				endDate: couponForm.endDate,
 			} as AddCouponRequest;
 			resolveModal({
 				action: "SELLER_COUPON_SET",
@@ -206,8 +207,8 @@ export const SellerCouponModal = ({ onClose, prevSellerCoupon }: SellerCouponMod
 				isStackable: couponForm.isStackable,
 				isProductRestricted: couponForm.isProductRestricted,
 				amount: couponForm.amount,
-				startDate: couponForm.startDate?.replace(/\//g, "-"),
-				endDate: couponForm.endDate?.replace(/\//g, "-"),
+				startDate: couponForm.startDate,
+				endDate: couponForm.endDate,
 			} as UpdateCouponRequest;
 			resolveModal({
 				action: "SELLER_COUPON_SET",
@@ -226,11 +227,11 @@ export const SellerCouponModal = ({ onClose, prevSellerCoupon }: SellerCouponMod
 
 	// 모달 결과 처리
 	useEffect(() => {
-		if (!prevSellerCoupon || !modalResult) return;
+		if (!prevSellerCoupon || !dialogResult) return;
 
 		// 쿠폰 상태 변경 후 처리
-		if (modalResult.action === "CONFIRM_OK") {
-			const payload = modalResult.payload as ModalResultMap["CONFIRM_OK"];
+		if (dialogResult.action === "CONFIRM_OK") {
+			const payload = dialogResult.payload as DialogResultMap["CONFIRM_OK"];
 			if (payload?.result === "SELLER_COUPON_DELETE_OK") {
 				resolveModal({
 					action: "SELLER_COUPON_DELETE",
@@ -241,12 +242,12 @@ export const SellerCouponModal = ({ onClose, prevSellerCoupon }: SellerCouponMod
 			}
 		}
 
-		clearModalResult();
-	}, [clearModalResult, modalResult, prevSellerCoupon, resolveModal]);
+		clearDialogResult();
+	}, [clearDialogResult, dialogResult, prevSellerCoupon, resolveModal]);
 
 	return (
 		<ModalFrame title={!prevSellerCoupon ? "쿠폰 추가" : "쿠폰 수정"} onClose={onClose} contentVariant="coupon">
-			<form onSubmit={couponSetSubmit} className={styles.couponForm}>
+			<form onSubmit={couponSetSubmit} className={clsx(styles.settingForm, styles.couponForm)}>
 				{!prevSellerCoupon ? (
 					<FormInput
 						label="이름"
@@ -450,7 +451,7 @@ export const SellerCouponModal = ({ onClose, prevSellerCoupon }: SellerCouponMod
 								type="button"
 								className={styles.deleteButton}
 								onClick={() => {
-									openModal("CONFIRM", {
+									openDialog("CONFIRM", {
 										content: "쿠폰을 삭제하시겠습니까?",
 										okResult: "SELLER_COUPON_DELETE_OK",
 									});

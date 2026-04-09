@@ -9,7 +9,7 @@ import { BaseResponse } from "@/types/common";
 import { FormEvent } from "@/types/event";
 import { LoginFormData } from "@/types/auth";
 import { postJson } from "@/api/fetchFilter";
-import { useModalStore } from "@/store/modal.store";
+import { useGlobalDialogStore } from "@/store/globalDialog.store";
 
 interface CommonLoginFormProps {
 	apiUrl: string;
@@ -22,7 +22,7 @@ export const CommonLoginForm = ({ apiUrl, redirectTo, invalidateKeys, loginIdFie
 	const router = useRouter();
 	const queryClient = useQueryClient();
 	const searchParams = useSearchParams();
-	const { openModal } = useModalStore();
+	const { openDialog } = useGlobalDialogStore();
 	const pathname = usePathname();
 
 	const message = searchParams.get("message");
@@ -113,7 +113,7 @@ export const CommonLoginForm = ({ apiUrl, redirectTo, invalidateKeys, loginIdFie
 		// 로그인 필요 페이지 접근 시
 		if (message === "need_login") {
 			// ✅ returnUrl을 state에 저장 (로그인 후 사용)
-			openModal("ALERT", { content: "로그인이 필요한 서비스입니다." });
+			openDialog("ALERT", { content: "로그인이 필요한 서비스입니다." });
 
 			// ✅ query parameter 제거 (페이지 새로고침 시 모달 안 띄워짐)
 			params.delete("message");
@@ -126,7 +126,7 @@ export const CommonLoginForm = ({ apiUrl, redirectTo, invalidateKeys, loginIdFie
 			const newUrl = params.toString() ? `?${params.toString()}` : window.location.pathname;
 			router.replace(newUrl);
 		}
-	}, [message, openModal, router, searchParams]);
+	}, [message, openDialog, router, searchParams]);
 
 	return (
 		<form action="" onSubmit={loginSubmit}>

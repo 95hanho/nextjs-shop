@@ -13,10 +13,10 @@ import styles from "./Cart.module.scss";
 import CartSummaryAside from "@/app/mypage/cart/CartSummaryAside";
 import CartProductSection from "@/app/mypage/cart/CartProductSection";
 import { calculateDiscount } from "@/lib/price";
-import { useModalStore } from "@/store/modal.store";
 import { BuyItem } from "@/types/buy";
 import { toErrorResponse } from "@/api/error";
 import { useRouter } from "next/navigation";
+import { useGlobalDialogStore } from "@/store/globalDialog.store";
 
 type CartItemWithCoupon = CartItem & {
 	discountedPrice: number; // 해당 상품에 적용된 쿠폰 할인을 반영한 가격 (finalPrice에서 할인금액을 뺀 가격)
@@ -69,7 +69,7 @@ export type CartItemSelectCollection = {
 
 export default function CartClient() {
 	const { loginOn } = useAuth();
-	const { openModal } = useModalStore();
+	const { openDialog } = useGlobalDialogStore();
 	const router = useRouter();
 
 	// =================================================================
@@ -164,16 +164,16 @@ export default function CartClient() {
 	useEffect(() => {
 		if (!isError || !error) return;
 
-		const { status, payload } = toErrorResponse(error);
+		const { payload } = toErrorResponse(error);
 
 		if (payload.message === "CART_EMPTY") {
-			openModal("ALERT", {
+			openDialog("ALERT", {
 				content: "장바구니가 비어있습니다. 상품을 담으러 가볼까요?",
 				handleAfterClose: () => router.replace("/"), // 홈으로 이동
 			});
 			return;
 		}
-	}, [isError, error, openModal, router]);
+	}, [isError, error, openDialog, router]);
 
 	// 장바구니 데이터 초기화 및 쿠폰 자동 적용 로직
 	useEffect(() => {
@@ -191,7 +191,7 @@ export default function CartClient() {
 
 		// 쿠폰 유저 조작이 있었을 시에 자동 적용 로직 수행 전에 알림창 띄우기
 		if (userCouponChanged.current) {
-			openModal("ALERT", {
+			openDialog("ALERT", {
 				content: "장바구니 쿠폰 적용이 초기화됩니다. 상품 선택 및 옵션 변경 시 쿠폰 적용이 초기화되며, 재적용이 필요합니다.",
 			});
 			userCouponChanged.current = false;
@@ -255,7 +255,7 @@ export default function CartClient() {
 		setAppliedProductCouponMap(initialAppliedProductCouponMap);
 		maxDiscountAppliedProductCouponMapRef.current = initialAppliedProductCouponMap; // 최초 계산한 최대 할인 쿠폰 저장
 		lastInitAtRef.current = dataUpdatedAt; // 초기 적용 완료 시점 기록
-	}, [cartData, dataUpdatedAt, openModal, userCouponChanged]);
+	}, [cartData, dataUpdatedAt, openDialog, userCouponChanged]);
 
 	// used붙인 쿠폰 리스트 계산
 	const {
@@ -459,11 +459,11 @@ export default function CartClient() {
 	// 장바구니 내 상품 중 재고 수량보다 주문 수량이 초과된 상품이 있는지 여부에 따른 모달 띄우기
 	useEffect(() => {
 		if (cartData && cartData.isExceedQuantity) {
-			openModal("ALERT", {
+			openDialog("ALERT", {
 				content: "장바구니 내 상품 중 재고 수량보다 주문 수량이 초과된 상품이 있습니다. 주문 수량을 확인해주세요.",
 			});
 		}
-	}, [openModal, cartData]);
+	}, [openDialog, cartData]);
 
 	useEffect(() => {
 		// if (cartCouponList.length > 0) console.log({ cartCouponList });

@@ -10,7 +10,7 @@ import {
 	GetSellerCouponListResponse,
 	GetSellerProductListResponse,
 	SellerCoupon,
-	sellerProduct,
+	SellerProduct,
 	SetSellerCouponAllowRequest,
 	UpdateCouponStatusRequest,
 } from "@/types/seller";
@@ -34,7 +34,7 @@ export default function SellerMainClient() {
 	const {
 		data: sellerProductList = [],
 		// isFetching,
-	} = useQuery<GetSellerProductListResponse, Error, sellerProduct[]>({
+	} = useQuery<GetSellerProductListResponse, Error, SellerProduct[]>({
 		queryKey: ["sellerProductList"],
 		queryFn: () => getNormal(getApiUrl(API_URL.SELLER_PRODUCT)),
 		select: (data) => {

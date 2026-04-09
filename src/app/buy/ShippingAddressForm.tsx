@@ -2,7 +2,7 @@ import { FaQuestion } from "react-icons/fa";
 import styles from "./Buy.module.scss";
 import clsx from "clsx";
 import { DeliveryMemoSelector } from "@/components/address/DeliveryMemoSelector";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useBuy } from "@/hooks/buy/useBuy";
 import { useModalStore } from "@/store/modal.store";
 import { OnOffButton } from "@/components/ui/OnOffButton";

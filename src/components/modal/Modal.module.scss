@@ -132,14 +132,13 @@
 	}
 }
 // =========================
-// SellerCouponModal.tsx
+// SellerCouponModal.tsx, SellerProductOptionModal.tsx
 // =========================
-.couponForm {
+.settingForm {
 	* {
 		font-family: "NotoSansKR";
 	}
 	position: relative;
-	font-size: 15px;
 	.off {
 		color: #aaa;
 	}
@@ -158,4 +157,10 @@
 		background-color: #f00;
 		color: #fff;
 	}
+}
+.couponForm {
+	font-size: 15px;
+}
+.optionForm {
+	font-size: 14px;
 }

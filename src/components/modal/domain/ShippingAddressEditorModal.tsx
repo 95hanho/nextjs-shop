@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { UserAddressListItem } from "@/types/mypage";
 import { useModalStore } from "@/store/modal.store";
 import { ModalFrame } from "@/components/modal/frame/ModalFrame";
 import styles from "../Modal.module.scss";
@@ -9,6 +8,7 @@ import { FormInputAlarm, FormInputRefs } from "@/types/form";
 import { AddressSection } from "@/components/auth/AddressSection";
 import clsx from "clsx";
 import { DeliveryMemoSelector } from "@/components/address/DeliveryMemoSelector";
+import { DomainModalPropsMap } from "@/store/modal.type";
 
 export type AddressForm = {
 	addressName: string;
@@ -40,10 +40,9 @@ const addressFormRegexFailMent: { [key: string]: string } = {
 	addressPhone: "휴대폰 번호 형식에 일치하지 않습니다.",
 };
 
-interface ShippingAddressEditorModalProps {
+type ShippingAddressEditorModalProps = {
 	onClose: () => void;
-	prevAddress?: UserAddressListItem;
-}
+} & DomainModalPropsMap["ADDRESS_SET"];
 
 export const ShippingAddressEditorModal = ({ onClose, prevAddress }: ShippingAddressEditorModalProps) => {
 	const { resolveModal } = useModalStore();

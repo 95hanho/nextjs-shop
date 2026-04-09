@@ -4,11 +4,9 @@ import API_URL from "@/api/endpoints";
 import { deleteNormal, getNormal, postJson, putJson } from "@/api/fetchFilter";
 import { FormPageShell } from "@/components/form/FormPageShell";
 import { LodingWrap } from "@/components/common/LodingWrap";
-import { AddressForm } from "@/components/modal/domain/ShippingAddressEditorModal";
 import { useAuth } from "@/hooks/useAuth";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { useModalStore } from "@/store/modal.store";
-import { ModalResultMap } from "@/store/modal.type";
 import { BaseResponse } from "@/types/common";
 import { GetUserAddressListResponse, setUserAddressRequest, UserAddressListItem } from "@/types/mypage";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -16,11 +14,14 @@ import Error from "next/error";
 import { useEffect, useRef, useState } from "react";
 import styles from "./MyShippingAddress.module.scss";
 import { ShippingAddressList } from "@/components/address/ShippingAddressList";
+import { DialogResultMap, DomainModalResultMap } from "@/store/modal.type";
+import { useGlobalDialogStore } from "@/store/globalDialog.store";
 
 export default function MyShippingAddressClient() {
 	const { loginOn } = useAuth();
 	const queryClient = useQueryClient();
 	const { openModal, clearModalResult, modalResult } = useModalStore();
+	const { clearDialogResult, dialogResult } = useGlobalDialogStore();
 
 	// 유저 배송지 조회
 	const { data: userAddressData, isLoading } = useQuery<GetUserAddressListResponse, Error, GetUserAddressListResponse>({
@@ -75,12 +76,11 @@ export default function MyShippingAddressClient() {
 	}, [isLoading, userAddressData]);
 	// 기본배송지 변경
 	const changingDefaultAddressRef = useRef(null as UserAddressListItem | null);
-	// Confirm
-	useEffect(() => {
-		if (!modalResult) return;
 
-		if (modalResult?.action === "CONFIRM_OK") {
-			const payload = modalResult.payload as ModalResultMap["CONFIRM_OK"];
+	useEffect(() => {
+		if (!dialogResult) return;
+		if (dialogResult?.action === "CONFIRM_OK") {
+			const payload = dialogResult.payload as DialogResultMap["CONFIRM_OK"];
 			// 기본값 변경
 			if (payload?.result === "ADDRESS_DEFAULT_CHANGE") {
 				const changing = async () => {
@@ -100,11 +100,16 @@ export default function MyShippingAddressClient() {
 				deleting();
 			}
 		}
+
+		clearDialogResult();
+	}, [dialogResult, clearDialogResult, handleAddressUpdate, handleAddressDelete, queryClient]);
+	// 모달에서 확인 누른 후 처리할 작업들 (기본배송지 변경, 배송지 삭제, 배송지 추가/수정)
+	useEffect(() => {
+		if (!modalResult) return;
+
 		// 주소 추가
 		if (modalResult?.action === "ADDRESS_SET") {
-			const payload = modalResult.payload as AddressForm;
-			console.log("payload", payload);
-			// console.log("changingDefaultAddressRef", changingDefaultAddressRef.current);
+			const payload = modalResult.payload as DomainModalResultMap["ADDRESS_SET"];
 			const addressUpdating = async () => {
 				const nextAddress = { ...changingDefaultAddressRef.current, ...payload };
 				if (nextAddress) {
@@ -116,7 +121,7 @@ export default function MyShippingAddressClient() {
 			addressUpdating();
 		}
 		clearModalResult();
-	}, [modalResult, clearModalResult, handleAddressAdd, handleAddressUpdate, handleAddressDelete, queryClient]);
+	}, [modalResult, clearModalResult, handleAddressAdd, handleAddressUpdate, queryClient]);
 
 	// if (isLoading && !userAddressList.length) return null;
 	return (
@@ -139,7 +144,7 @@ export default function MyShippingAddressClient() {
 							onClick={() => {
 								changingDefaultAddressRef.current = null;
 								openModal("ADDRESS_SET", {
-									address: undefined,
+									prevAddress: undefined,
 									disableOverlayClose: true,
 								});
 							}}

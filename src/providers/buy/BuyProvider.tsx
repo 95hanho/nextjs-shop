@@ -11,8 +11,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import API_URL from "@/api/endpoints";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { postJson } from "@/api/fetchFilter";
-import { toErrorResponse } from "@/api/error";
 import { useRouter } from "next/navigation";
+import { useGlobalDialogStore } from "@/store/globalDialog.store";
 
 const addressFormRegex: { [key: string]: RegExp } = {
 	addressPhone: /^(010|011|016|017|018|019)\d{3,4}\d{4}$/,
@@ -28,7 +28,8 @@ interface BuyProviderProps {
 }
 
 export const BuyProvider = ({ children, initialDefaultAddress = null, holdIds }: BuyProviderProps) => {
-	const { modalResult, clearModalResult, openModal } = useModalStore();
+	const { modalResult, clearModalResult } = useModalStore();
+	const { openDialog } = useGlobalDialogStore();
 	const queryClient = useQueryClient();
 	const router = useRouter();
 
@@ -186,7 +187,7 @@ export const BuyProvider = ({ children, initialDefaultAddress = null, holdIds }:
 			return;
 		}
 		if (paymentMethod === null) {
-			openModal("ALERT", { content: "결제 수단을 선택해주세요." });
+			openDialog("ALERT", { content: "결제 수단을 선택해주세요." });
 			document.getElementById("paymentMethod")?.scrollIntoView({ behavior: "smooth" });
 			return;
 		}
@@ -207,7 +208,7 @@ export const BuyProvider = ({ children, initialDefaultAddress = null, holdIds }:
 		usedMileage,
 		paymentMethod,
 		addressAlarm,
-		openModal,
+		openDialog,
 		holdIds,
 		addressFormInputRefs,
 		mutateBuy,

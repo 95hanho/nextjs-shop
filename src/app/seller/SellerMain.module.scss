@@ -122,10 +122,66 @@
 						background-color: #f00;
 						color: #fff;
 					}
+					.saleStopButton {
+						text-decoration: underline;
+						color: rgb(105, 105, 105);
+						&.on {
+							color: #f00;
+						}
+						svg {
+							margin-left: 3px;
+						}
+					}
+				}
+			}
+		}
+	}
+	.productOptionContainer {
+		padding: 10px;
+		> h4 {
+			text-align: left;
+			font-size: 20px;
+			padding: 0 10px;
+			display: flex;
+			justify-content: space-between;
+			button {
+				border: none;
+				padding: 3px 10px;
+				cursor: pointer;
+				border-radius: 6px;
+				font-size: 15px;
+				letter-spacing: 1px;
+				&.addButton {
+					background-color: #3677f1;
+					color: #fff;
+					margin-left: 5px;
 				}
 			}
 		}
 	}
 	.productOptionTable {
+		margin-top: 5px;
+		table {
+			thead {
+			}
+			tbody {
+				.productOptionRow {
+					cursor: pointer;
+					&:hover {
+						border: 2px solid #000;
+					}
+					.displayedButton {
+						text-decoration: underline;
+						color: rgb(110, 167, 104);
+						&.off {
+							color: rgb(105, 105, 105);
+						}
+						svg {
+							margin-left: 3px;
+						}
+					}
+				}
+			}
+		}
 	}
 }

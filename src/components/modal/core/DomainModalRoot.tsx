@@ -4,25 +4,22 @@ import { useCallback, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 // 예시용 모달 컴포넌트들
 import { useModalStore } from "@/store/modal.store";
-import { AlertModal } from "../variants/AlertModal";
-import { ConfirmModal } from "../variants/ConfirmModal";
 import { ProductOptionModal } from "../domain/ProductOptionModal";
-import { CartItem, UserAddressListItem } from "@/types/mypage";
-import { ModalPropsMap } from "@/store/modal.type";
 import clsx from "clsx";
 import { ShippingAddressEditorModal } from "@/components/modal/domain/ShippingAddressEditorModal";
 import { BuyShippingAddressListModal } from "@/components/modal/domain/BuyShippingAddressListModal";
-import { SellerCoupon } from "@/types/seller";
 import { SellerCouponModal } from "@/components/modal/domain/SellerCouponModal";
+import { DomainModalCloseResult, DomainModalPropsMap } from "@/store/modal.type";
+import { SellerProductOptionModal } from "@/components/modal/domain/SellerProductOptionModal";
 
 type ModalCommon = {
 	disableOverlayClose?: boolean;
 	disableEscClose?: boolean;
-	closeResult?: string;
+	closeResult?: DomainModalCloseResult;
 	handleAfterClose?: () => void;
 };
 
-export const ModalRoot = () => {
+export const DomainModalRoot = () => {
 	const { modalType, modalProps, closeModal } = useModalStore();
 	const [mounted, setMounted] = useState(false);
 	const [isClosing, setIsClosing] = useState(false);
@@ -71,33 +68,34 @@ export const ModalRoot = () => {
 	let childrenModal: React.ReactNode = null;
 
 	switch (modalType) {
-		case "ALERT": {
-			const props = modalProps as ModalPropsMap["ALERT"]; // 여기서 타입 보장
-			childrenModal = <AlertModal {...props} onClose={handleClose} />;
-			break;
-		}
-		case "CONFIRM": {
-			const props = modalProps as ModalPropsMap["CONFIRM"];
-			childrenModal = <ConfirmModal {...props} onClose={handleClose} />;
-			break;
-		}
 		case "PRODUCT_OPTION":
-			const { product } = modalProps as { product: CartItem };
+			const { product } = modalProps as DomainModalPropsMap["PRODUCT_OPTION"];
 
 			childrenModal = <ProductOptionModal onClose={handleClose} product={product} />;
 			break;
 		case "ADDRESS_SET":
-			const { address } = modalProps as { address: UserAddressListItem };
+			const { prevAddress } = modalProps as DomainModalPropsMap["ADDRESS_SET"];
 
-			childrenModal = <ShippingAddressEditorModal onClose={handleClose} prevAddress={address} />;
+			childrenModal = <ShippingAddressEditorModal onClose={handleClose} prevAddress={prevAddress} />;
 			break;
 		case "BUY_ADDRESSLIST":
 			childrenModal = <BuyShippingAddressListModal onClose={handleClose} />;
 			break;
 		case "SELLER_COUPON":
-			const { coupon } = modalProps as { coupon?: SellerCoupon };
+			const { prevSellerCoupon } = modalProps as DomainModalPropsMap["SELLER_COUPON"];
 
-			childrenModal = <SellerCouponModal onClose={handleClose} prevSellerCoupon={coupon} />;
+			childrenModal = <SellerCouponModal onClose={handleClose} prevSellerCoupon={prevSellerCoupon} />;
+			break;
+		case "SELLER_PRODUCT_OPTION":
+			const { prevSellerProductOption, productOptionSizeDuplicateList } = modalProps as DomainModalPropsMap["SELLER_PRODUCT_OPTION"];
+
+			childrenModal = (
+				<SellerProductOptionModal
+					onClose={handleClose}
+					prevSellerProductOption={prevSellerProductOption}
+					productOptionSizeDuplicateList={productOptionSizeDuplicateList}
+				/>
+			);
 			break;
 		default:
 			return null;
@@ -108,7 +106,7 @@ export const ModalRoot = () => {
 	// createPortal(요소, document.body) : DOM 구조는 여기지만, 실제 출력은 body 바로 아래에 그려라
 	return createPortal(
 		<div
-			id="modalRoot"
+			id="domainModalRoot"
 			className={clsx(`fixed inset-0 z-[1000] flex items-center justify-center bg-black/50`, {
 				animateFadeOut: isClosing,
 				animateFadeIn: !isClosing,

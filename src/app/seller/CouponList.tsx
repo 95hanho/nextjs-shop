@@ -6,11 +6,12 @@ import React, { useEffect, useState } from "react";
 import clsx from "clsx";
 import { FaExchangeAlt } from "react-icons/fa";
 import { useModalStore } from "@/store/modal.store";
-import { ModalResultMap } from "@/store/modal.type";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import API_URL from "@/api/endpoints";
-import { postJson, putJson } from "@/api/fetchFilter";
+import { deleteNormal, postJson, putJson } from "@/api/fetchFilter";
+import { useGlobalDialogStore } from "@/store/globalDialog.store";
+import { DialogResultMap, DomainModalResultMap } from "@/store/modal.type";
 
 interface CouponListProps {
 	sellerCouponList: SellerCoupon[];
@@ -34,6 +35,7 @@ export default function CouponList({
 	const queryClient = useQueryClient();
 	const couponAllowedMode = allowedSelectedCouponId !== null; // 쿠폰 허용 제품이 하나라도 있으면 true
 	const { openModal, clearModalResult, modalResult } = useModalStore();
+	const { openDialog, clearDialogResult, dialogResult } = useGlobalDialogStore();
 
 	// ------------------------------------------------
 	// React Query
@@ -53,6 +55,13 @@ export default function CouponList({
 			queryClient.invalidateQueries({ queryKey: ["sellerCouponList"] });
 		},
 	});
+	// 쿠폰 삭제
+	const { mutate: deleteCoupon } = useMutation({
+		mutationFn: (couponId: number) => deleteNormal(getApiUrl(API_URL.SELLER_COUPON_DELETE), { couponId }),
+		onSuccess() {
+			queryClient.invalidateQueries({ queryKey: ["sellerCouponList"] });
+		},
+	});
 
 	// ------------------------------------------------
 	// React
@@ -65,13 +74,13 @@ export default function CouponList({
 	// useEffect, useMemo
 	// ------------------------------------------------
 
-	// 모달 결과 처리
+	// 공통 모달 결과 처리
 	useEffect(() => {
-		if (!modalResult) return;
+		if (!dialogResult) return;
 
 		// 쿠폰 상태 변경 후 처리
-		if (modalResult.action === "CONFIRM_OK") {
-			const payload = modalResult.payload as ModalResultMap["CONFIRM_OK"];
+		if (dialogResult.action === "CONFIRM_OK") {
+			const payload = dialogResult.payload as DialogResultMap["CONFIRM_OK"];
 			if (payload?.result === "COUPON_STATUS_CHANGE") {
 				if (changingCoupon) {
 					updateCouponStatus({
@@ -81,9 +90,16 @@ export default function CouponList({
 				}
 			}
 		}
+
+		clearDialogResult();
+	}, [clearDialogResult, dialogResult, updateCouponStatus, changingCoupon]);
+	// 도메인 모달 결과 처리
+	useEffect(() => {
+		if (!modalResult) return;
+
 		// 쿠폰 등록/수정 후 처리
 		if (modalResult.action === "SELLER_COUPON_SET") {
-			const payload = modalResult.payload as ModalResultMap["SELLER_COUPON_SET"];
+			const payload = modalResult.payload as DomainModalResultMap["SELLER_COUPON_SET"];
 			console.log("쿠폰 등록/수정 결과 처리", { payload });
 			if ("addCoupon" in payload) {
 				registerCoupon(payload.addCoupon);
@@ -93,12 +109,13 @@ export default function CouponList({
 		}
 		// 쿠폰 삭제 후 처리
 		if (modalResult.action === "SELLER_COUPON_DELETE") {
-			const payload = modalResult.payload as ModalResultMap["SELLER_COUPON_DELETE"];
-			console.log("쿠폰 삭제 결과 처리", { payload });
+			const { couponId } = modalResult.payload as DomainModalResultMap["SELLER_COUPON_DELETE"];
+			console.log("쿠폰 삭제 결과 처리", { couponId });
+			deleteCoupon(couponId);
 		}
 
 		clearModalResult();
-	}, [clearModalResult, modalResult, updateCouponStatus, changingCoupon, registerCoupon, updateCoupon]);
+	}, [clearModalResult, modalResult, registerCoupon, updateCoupon, deleteCoupon]);
 
 	return (
 		<div id="sellerCouponList" className={styles.sellerCouponList}>
@@ -170,7 +187,7 @@ export default function CouponList({
 											onDoubleClick={() => {
 												if (!couponAllowedMode) {
 													openModal("SELLER_COUPON", {
-														coupon,
+														prevSellerCoupon: coupon,
 														disableOverlayClose: true,
 													});
 												}
@@ -202,7 +219,7 @@ export default function CouponList({
 													onClick={(e) => {
 														e.stopPropagation();
 														setChangingCoupon(coupon);
-														openModal("CONFIRM", {
+														openDialog("CONFIRM", {
 															content: "쿠폰 상태를 변경하시겠습니까?",
 															okResult: "COUPON_STATUS_CHANGE",
 															handleAfterClose: () => {

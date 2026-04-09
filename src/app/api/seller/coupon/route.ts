@@ -61,8 +61,8 @@ export const POST = sellerWithAuth(async ({ nextRequest, sellerToken }) => {
 			isStackable,
 			isProductRestricted,
 			amount,
-			startDate: startDate.replace(/\//g, "-"),
-			endDate: endDate.replace(/\//g, "-"),
+			startDate,
+			endDate: endDate,
 		};
 		if (maxDiscount) payload.maxDiscount = maxDiscount;
 		const data = await postUrlFormData<BaseResponse>(
@@ -124,8 +124,8 @@ export const PUT = sellerWithAuth(async ({ nextRequest, sellerToken }) => {
 			isStackable,
 			isProductRestricted,
 			amount,
-			startDate: startDate.replace(/\//g, "-"),
-			endDate: endDate.replace(/\//g, "-"),
+			startDate,
+			endDate,
 		};
 		if (maxDiscount) payload.maxDiscount = maxDiscount;
 		const data = await putUrlFormData<BaseResponse>(

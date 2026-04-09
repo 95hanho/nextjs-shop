@@ -4,13 +4,14 @@ import "@/styles/css/globals.css";
 import { MenuResponse } from "@/types/main";
 import API_URL from "@/api/endpoints";
 import { getNormal } from "@/api/fetchFilter";
-import { ModalRoot } from "@/components/modal/core/ModalRoot";
+import { DomainModalRoot } from "@/components/modal/core/DomainModalRoot";
 import RootProviders from "@/app/RootProviders";
 import DynamicHeader from "@/app/DynamicHeader";
 import { getBackendUrl } from "@/lib/getBaseUrl";
-import { redirect } from "next/navigation";
-import { cookies } from "next/headers";
-import { ModalTest } from "@/components/modal/ModalTest";
+import { DialogRoot } from "@/components/modal/core/DialogRoot";
+// import { redirect } from "next/navigation";
+// import { cookies } from "next/headers";
+// import { ModalTest } from "@/components/modal/ModalTest";
 
 const inter = Inter({
 	subsets: ["latin"],
@@ -44,7 +45,10 @@ export default async function RootLayout({
 					<RootProviders>
 						<DynamicHeader menuList={menuList} />
 						{children}
-						<ModalRoot />
+						{/* 공통 모달(alert, confirm 등) */}
+						<DialogRoot />
+						{/* 도메인 모달(도메인 관련 모달) */}
+						<DomainModalRoot />
 						{/* 모달테스트용 */}
 						{/* <ModalTest /> */}
 					</RootProviders>

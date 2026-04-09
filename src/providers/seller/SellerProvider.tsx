@@ -2,7 +2,7 @@ import API_URL from "@/api/endpoints";
 import { postJson } from "@/api/fetchFilter";
 import { sellerAuthContext } from "@/context/authContext";
 import { getApiUrl } from "@/lib/getBaseUrl";
-import { useModalStore } from "@/store/modal.store";
+import { useGlobalDialogStore } from "@/store/globalDialog.store";
 import { SellerInfo } from "@/types/seller";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
@@ -30,7 +30,7 @@ export const SellerProvider = ({ children }: SellerProviderProps) => {
 	const queryClient = useQueryClient();
 	const [seller, setSeller] = useState<SellerInfo>(initSeller);
 	const { replace, refresh } = useRouter();
-	const { openModal } = useModalStore();
+	const { openDialog } = useGlobalDialogStore();
 
 	const loginOn = !!seller;
 
@@ -40,7 +40,7 @@ export const SellerProvider = ({ children }: SellerProviderProps) => {
 		queryClient.setQueryData(["sellerInfo"], initSeller); // 직접 캐시 업데이트
 		await postJson(getApiUrl(API_URL.SELLER_LOGOUT));
 		replace("/seller/login"); // 로그아웃 후 로그인 페이지로 이동
-		openModal("ALERT", { content: "로그아웃 되었습니다." });
+		openDialog("ALERT", { content: "로그아웃 되었습니다." });
 
 		// replace가 완료되기 전에 refresh가 섞이는 걸 피함
 		setTimeout(
