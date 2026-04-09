@@ -45,7 +45,8 @@ export default function ProductList({
 	return (
 		<div id="sellerProductList" className={styles.sellerProductList}>
 			<h2>
-				상품 목록
+				<span>상품 목록 - {allowedSelectedCouponId && <span className="text-red-600 underline">{`쿠폰 허용 제품 선택 중`}</span>}</span>
+
 				{couponAllowedMode && <button onClick={() => updateCouponAllowedProducts(selectedProductIds)}>상품제한변경</button>}
 			</h2>
 			<div className={styles.productTableWrapper}>

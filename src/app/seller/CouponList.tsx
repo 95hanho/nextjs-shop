@@ -9,7 +9,7 @@ import { useModalStore } from "@/store/modal.store";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import API_URL from "@/api/endpoints";
-import { postJson, putJson } from "@/api/fetchFilter";
+import { deleteNormal, postJson, putJson } from "@/api/fetchFilter";
 import { useGlobalDialogStore } from "@/store/globalDialog.store";
 import { DialogResultMap, DomainModalResultMap } from "@/store/modal.type";
 
@@ -51,6 +51,13 @@ export default function CouponList({
 	// 쿠폰 수정
 	const { mutate: updateCoupon } = useMutation({
 		mutationFn: (couponForm: UpdateCouponRequest) => putJson(getApiUrl(API_URL.SELLER_COUPON), { ...couponForm }),
+		onSuccess() {
+			queryClient.invalidateQueries({ queryKey: ["sellerCouponList"] });
+		},
+	});
+	// 쿠폰 삭제
+	const { mutate: deleteCoupon } = useMutation({
+		mutationFn: (couponId: number) => deleteNormal(getApiUrl(API_URL.SELLER_COUPON_DELETE), { couponId }),
 		onSuccess() {
 			queryClient.invalidateQueries({ queryKey: ["sellerCouponList"] });
 		},
@@ -102,12 +109,13 @@ export default function CouponList({
 		}
 		// 쿠폰 삭제 후 처리
 		if (modalResult.action === "SELLER_COUPON_DELETE") {
-			const payload = modalResult.payload as DomainModalResultMap["SELLER_COUPON_DELETE"];
-			console.log("쿠폰 삭제 결과 처리", { payload });
+			const { couponId } = modalResult.payload as DomainModalResultMap["SELLER_COUPON_DELETE"];
+			console.log("쿠폰 삭제 결과 처리", { couponId });
+			deleteCoupon(couponId);
 		}
 
 		clearModalResult();
-	}, [clearModalResult, modalResult, registerCoupon, updateCoupon]);
+	}, [clearModalResult, modalResult, registerCoupon, updateCoupon, deleteCoupon]);
 
 	return (
 		<div id="sellerCouponList" className={styles.sellerCouponList}>
