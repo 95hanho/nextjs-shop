@@ -1,4 +1,8 @@
 // -----------------------------------------
+// FormPageShell.tsx
+// -----------------------------------------
+
+// -----------------------------------------
 // FormActionButton.tsx
 // -----------------------------------------
 .submitWrap {
@@ -148,5 +152,9 @@
 	}
 	> span {
 		margin-left: 8px;
+		vertical-align: -webkit-baseline-middle;
+	}
+	&.noMargin > span {
+		margin-left: 0;
 	}
 }

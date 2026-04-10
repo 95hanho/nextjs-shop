@@ -4,10 +4,32 @@ import { BaseResponse } from "@/types/common";
 
 /* MODEL ----------------------------------------------------------------- */
 
+export type ProductSize = "XS" | "S" | "M" | "L" | "XL" | "XXL";
+export type ProductColorName =
+	| "BLACK"
+	| "WHITE"
+	| "GRAY"
+	| "NAVY"
+	| "BEIGE"
+	| "RED"
+	| "PINK"
+	| "ORANGE"
+	| "YELLOW"
+	| "GREEN"
+	| "KHAKI"
+	| "MINT"
+	| "BLUE"
+	| "SKYBLUE"
+	| "PURPLE"
+	| "BROWN"
+	| "IVORY"
+	| "CHARCOAL"
+	| "DENIM";
+
 export type Product = {
 	productId: number;
 	name: string;
-	colorName: string;
+	colorName: ProductColorName;
 	originPrice: number;
 	finalPrice: number;
 	createdAt: string;
@@ -35,7 +57,7 @@ export type ProductOption = {
 	productId: number;
 	addPrice: number;
 	stock: number;
-	size: string;
+	size: ProductSize;
 };
 export type ProductQna = {
 	productQnaId: number;

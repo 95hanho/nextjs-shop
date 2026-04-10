@@ -59,7 +59,9 @@ export function useUserUpdateForm() {
 			}));
 		}
 	}, [user]);
-	/* ------------------------------------ */
+	// ------------------------------------------------
+	// React Query
+	// ------------------------------------------------
 	// 회원아이디 조회
 	const { data: userIdData } = useQuery<BaseResponse & { userId: string }>({
 		queryKey: ["wishList"],
@@ -155,7 +157,9 @@ export function useUserUpdateForm() {
 			replace("/mypage/info");
 		},
 	});
-	/* ------------------------------------ */
+	// ------------------------------------------------
+	// React
+	// ------------------------------------------------
 	// 유저업데이트 폼
 	const [userUpdateForm, setUserUpdateForm] = useState<UserUpdateForm>(initUpdateForm);
 	// 유저업데이트 알람
@@ -257,6 +261,7 @@ export function useUserUpdateForm() {
 		}
 		if (changeAlarm) {
 			setUserUpdateAlarm(changeAlarm);
+			userUpdateFormInputRefs.current[changeAlarm.name]?.focus();
 			return;
 		}
 		handleUserUpdate.mutate();

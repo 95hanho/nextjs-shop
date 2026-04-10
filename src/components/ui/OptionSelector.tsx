@@ -45,7 +45,7 @@ export const OptionSelector = ({
 	}, [openOptionList]);
 
 	return (
-		<div className={clsx(styles.optionSelector, styles[variant])} ref={optionSelectorRef}>
+		<div className={clsx(styles.optionSelector, styles[variant], openOptionList && styles.open)} ref={optionSelectorRef}>
 			<div
 				className={styles.optionSelectBox}
 				onClick={() => {
@@ -53,6 +53,7 @@ export const OptionSelector = ({
 				}}
 			>
 				<input
+					id={optionSelectorName}
 					type="text"
 					value={optionList ? optionList[pickIdx].val : initData.val}
 					readOnly
@@ -69,7 +70,7 @@ export const OptionSelector = ({
 							if (option.id === 0) return null; // 초기값은 옵션에서 제외
 							return (
 								<li
-									key={optionSelectorName + "-optionItem" + optionIdx}
+									key={optionSelectorName + "-optionItem" + option.id}
 									className={`${pickIdx === optionIdx ? styles.on : ""}`}
 									onClick={() => {
 										if (changeOption) changeOption(optionIdx, option.id);

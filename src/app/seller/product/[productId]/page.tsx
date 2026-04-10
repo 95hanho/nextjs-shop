@@ -1,12 +1,12 @@
-import ProductSetClient from "@/app/seller/product/[productId]/ProductSetClient";
+import ProductUpdateClient from "@/app/seller/product/[productId]/ProductUpdateClient";
 
-// 상품 설정 페이지
-export default function ProductSetPage({
+// 상품 수정 페이지
+export default function ProductUpdatePage({
 	params: { productId },
 }: {
 	params: {
 		productId: number;
 	};
 }) {
-	return <ProductSetClient productId={productId} />;
+	return <ProductUpdateClient productId={productId} />;
 }
