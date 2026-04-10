@@ -1,5 +1,6 @@
 import { Coupon, UserAddress } from "@/types/mypage";
 import { BaseResponse } from "./common";
+import { ProductColorName, ProductSize } from "@/types/product";
 
 /* ---- MODEL --------------------------------------------- */
 
@@ -58,13 +59,13 @@ export type StockHoldProduct = {
 	//
 	productOptionId: number;
 	addPrice: number;
-	size: string;
+	size: ProductSize;
 	//
 	productId: number;
 	productName: string;
 	originPrice: number;
 	finalPrice: number;
-	colorName: string;
+	colorName: ProductColorName;
 	//
 	wishId: number | null;
 	//

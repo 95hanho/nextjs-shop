@@ -12,7 +12,7 @@ export type SubMenu = {
 export type Menu = {
 	menuTopId: number;
 	menuName: string;
-	gender: string;
+	gender: "M" | "F";
 	menuSubList: SubMenu[];
 };
 export interface MenuResponse extends BaseResponse {

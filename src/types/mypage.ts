@@ -1,6 +1,6 @@
 import { BaseResponse } from "./common";
 import { FileInfo } from "./file";
-import { ProductOption } from "./product";
+import { ProductOption, ProductSize } from "./product";
 // 쿠폰
 export type Coupon = {
 	couponId: number;
@@ -43,7 +43,7 @@ export type OrderItem = {
 	holdId: number;
 	productName: string;
 	count: number;
-	size: string;
+	size: ProductSize;
 	originPrice: number;
 	finalPrice: number;
 	addPrice: number;
@@ -101,7 +101,7 @@ export type MyOrderItem = {
 	holdId: number;
 	productName: string;
 	count: number;
-	size: string;
+	size: ProductSize;
 	originPrice: number;
 	finalPrice: number;
 	addPrice: number;
@@ -168,7 +168,7 @@ export type CartItem = Cart & {
 	productOptionId: number;
 	addPrice: number;
 	stock: number;
-	size: string;
+	size: ProductSize;
 	productId: number;
 	productName: string;
 	originPrice: number;

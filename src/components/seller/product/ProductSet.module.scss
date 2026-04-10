@@ -1,0 +1,106 @@
+.productSetFormWrap {
+}
+.productSetContent {
+	display: flex;
+	> div {
+		width: 50%;
+		padding: 15px;
+	}
+	.productSetForm {
+		padding: 15px 0 15px 50px;
+	}
+}
+
+.optionSelectorWrap {
+	display: inline-block;
+	position: relative;
+	font-size: 15px;
+	width: 80%;
+}
+.genderOptionWrap {
+	> span {
+		margin-right: 15px;
+		label {
+			margin-right: 5px;
+		}
+		input[type="radio"] {
+			width: 20px;
+			height: 20px;
+		}
+	}
+}
+// ------------------------------------------------
+// 제품 상세이미지
+// ------------------------------------------------
+.productImageSetWrap {
+	border-left: 1px solid #ccc;
+	> div {
+		h3 {
+			text-align: left;
+			padding: 10px;
+			display: flex;
+			justify-content: space-between;
+		}
+	}
+
+	.productImageGrid {
+		// display: grid;
+		// grid-template-columns: repeat(5, 1fr);
+		// gap: 10px;
+		// margin-top: 10px;
+		background: url(https://ehfqntuqntu.cdn1.cafe24.com/ui/image-empty.png);
+		background-repeat: no-repeat;
+		background-size: 100% 290px;
+		background-position: 100% 50%;
+		width: 100%;
+		min-height: 350px;
+		border: 1px solid #ccc;
+		padding: 5px 10px;
+		&.filePutting {
+			background: url(https://ehfqntuqntu.cdn1.cafe24.com/ui/image-put.png);
+		}
+	}
+	.fileButtonWrap {
+		margin-top: 5px;
+		text-align: right;
+		padding: 0 5px;
+		button {
+			background-color: #1267c9;
+			color: #fff;
+			border: none;
+			padding: 5px 10px;
+			cursor: pointer;
+			font-size: 15px;
+			border-radius: 5px;
+		}
+	}
+}
+// ------------------------------------------------
+// 제품 등록/수정 완료 버튼
+// ------------------------------------------------
+.formActionWrap {
+	margin-top: 20px;
+	text-align: right;
+	button {
+		font-size: 25px;
+		background-color: #21d72a;
+		color: #fff;
+		border: none;
+		width: 112px;
+		height: 50px;
+		cursor: pointer;
+		border-radius: 5px;
+		box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+		&:hover {
+			background-color: #1ec527;
+			color: #eee;
+			font-size: 30px;
+			transition: all 0.3s;
+		}
+		&:active {
+			box-shadow: none;
+			transition: all 0s;
+			transform: translate(1px, 1px);
+		}
+	}
+}

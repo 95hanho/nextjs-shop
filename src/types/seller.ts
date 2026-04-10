@@ -1,7 +1,9 @@
 import { FileInfo } from "@/types/file";
 import { BaseResponse } from "./common";
 import { AdminCoupon, Coupon } from "./mypage";
-import { ProductDetail, ProductOption } from "./product";
+import { ProductColorName, ProductDetail, ProductOption, ProductSize } from "./product";
+
+/* -- MODEL ----------------------------------------------------------------- */
 
 /* -- FE -------------------------------------------------------- */
 
@@ -58,7 +60,7 @@ export interface GetSellerProductListResponse extends BaseResponse {
 /* 제품 추가 */
 export interface AddSellerProductRequest {
 	name: string;
-	colorName: string;
+	colorName: ProductColorName;
 	originPrice: number;
 	finalPrice: number;
 	menuSubId: number;
@@ -82,7 +84,7 @@ export interface UpdateSellerProductRequest extends AddSellerProductRequest {
 // "sortKey": 100.000000,
 // "thumbnail": true
 
-/* 제품 상세보기 */
+/* 제품 상세보기 조회 */
 export type ProductImage = FileInfo & {
 	productImageId: number;
 	productId: number;
@@ -90,6 +92,7 @@ export type ProductImage = FileInfo & {
 	thumbnail: boolean;
 };
 export type SellerProductDetail = ProductDetail & {
+	menuTopId: number;
 	updatedAt: string;
 	subMenuName: string;
 	topMenuName: string;
@@ -105,7 +108,7 @@ export interface GetSellerProductDetailResponse extends BaseResponse {
 export type AddProductOptionBase = {
 	addPrice: number;
 	stock: number;
-	size: string;
+	size: ProductSize;
 };
 export interface AddSellerProductOptionRequest extends AddProductOptionBase {
 	productId: number;
@@ -115,6 +118,7 @@ export interface UpdateSellerProductOptionRequest {
 	productOptionId: number;
 	addPrice: number;
 	stock: number;
+	size: ProductSize;
 	isDisplayed: boolean;
 }
 /* 제품 옵션 삭제 */
