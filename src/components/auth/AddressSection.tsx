@@ -61,7 +61,7 @@ export const AddressSection = <K extends string>({
 					readOnly
 					onClick={addressPopup}
 					searchBtn={addressDetailReadOnly ? undefined : { txt: "검색", fnc: addressPopup }}
-					cursorPointer={true}
+					cursorPointer
 					requiredMark={requiredMark}
 					labelWidthPercent={labelWidthPercent}
 					inputWidthPercent={50}
@@ -82,7 +82,7 @@ export const AddressSection = <K extends string>({
 				ref={(el) => {
 					refs.address?.(el);
 				}}
-				cursorPointer={true}
+				cursorPointer
 				requiredMark={requiredMark}
 				labelWidthPercent={labelWidthPercent}
 				inputWidthPercent={inputWidthPercent}

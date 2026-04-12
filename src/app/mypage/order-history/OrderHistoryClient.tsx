@@ -161,7 +161,7 @@ export default function OrderHistoryClient() {
 														{/* 상품 정보 */}
 														<div className={styles.orderHistoryProduct}>
 															<div className={styles.orderHistoryThumb}>
-																<SmartImage fill={true} src={item.filePath} alt={item.productName + " 이미지"} />
+																<SmartImage fill src={item.filePath} alt={item.productName + " 이미지"} />
 															</div>
 
 															<div className={styles.orderHistoryInfo}>

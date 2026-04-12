@@ -43,23 +43,55 @@
 		}
 	}
 
-	.productImageGrid {
-		// display: grid;
-		// grid-template-columns: repeat(5, 1fr);
-		// gap: 10px;
-		// margin-top: 10px;
-		background: url(https://ehfqntuqntu.cdn1.cafe24.com/ui/image-empty.png);
-		background-repeat: no-repeat;
-		background-size: 100% 290px;
-		background-position: 100% 50%;
+	.productImageArea {
+		position: relative;
 		width: 100%;
-		min-height: 350px;
 		border: 1px solid #ccc;
-		padding: 5px 10px;
-		&.filePutting {
-			background: url(https://ehfqntuqntu.cdn1.cafe24.com/ui/image-put.png);
+		cursor: pointer;
+		.productImageScroll {
+			min-height: 350px;
+			max-height: 500px;
+			overflow: auto;
+			&.fileEmpty {
+				background: url(https://ehfqntuqntu.cdn1.cafe24.com/ui/image-empty.png) no-repeat 100% 50% / 100% 290px;
+			}
+			.productImageGrid {
+				display: grid;
+				grid-template-columns: repeat(4, 1fr);
+				gap: 10px;
+				padding: 5px 10px;
+				align-content: start;
+				.imageItem {
+					border-radius: 3px;
+					position: relative;
+					width: 100%;
+					aspect-ratio: 1 / 1;
+					overflow: hidden;
+					background-color: #fdfdfd;
+					border: 1px solid #e7e7e7;
+					.imageIndex {
+						position: absolute;
+						top: 0;
+						left: 0;
+						background-color: #000;
+						color: #fff;
+						padding: 0px 7px;
+						font-size: 16px;
+						border-radius: 0 0 3px 0;
+					}
+				}
+			}
+		}
+		.draggingImage {
+			position: absolute;
+			inset: 0;
+			background: url(https://ehfqntuqntu.cdn1.cafe24.com/ui/image-put.png) no-repeat 100% 50% / 100% 290px;
+			background-color: rgba(253, 253, 254, 0.95);
+			pointer-events: none;
+			z-index: 20;
 		}
 	}
+
 	.fileButtonWrap {
 		margin-top: 5px;
 		text-align: right;

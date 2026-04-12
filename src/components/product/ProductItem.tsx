@@ -32,10 +32,10 @@ export const ProductItem = ({ product, wishProductIds }: ProductItemProps) => {
 					items={product.productImageList}
 					renderItem={(item) => (
 						<div className={styles.imageBox}>
-							<SmartImage src={item.filePath} fill={true} objectFit={"cover"} className={styles.productImg} />
+							<SmartImage src={item.filePath} fill objectFit={"cover"} className={styles.productImg} />
 						</div>
 					)}
-					pagination={true}
+					pagination
 				/>
 				{wishProductIds.length > 0 && (
 					<WishButton

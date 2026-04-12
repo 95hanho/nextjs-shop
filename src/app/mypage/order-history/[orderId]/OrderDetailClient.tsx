@@ -140,7 +140,7 @@ export default function OrderDetailClient({ orderId }: { orderId: string }) {
 														</div>
 														<div className={styles.orderItemContent}>
 															<div className={styles.productImage}>
-																<SmartImage fill={true} src={item.filePath} />
+																<SmartImage fill src={item.filePath} />
 															</div>
 															<div className={styles.productInfo}>
 																<h4>{item.productName}</h4>

@@ -19,7 +19,7 @@ export default async function Home() {
 		<main id="main">
 			<div>
 				<ProductSlider productList={productList} />
-				<ProductSlider productList={productList} right={true} />
+				<ProductSlider productList={productList} right />
 				<ProductSlider productList={productList} />
 			</div>
 		</main>

@@ -63,7 +63,7 @@ export default function WishClient() {
 				{/* 상품 필터 on/off 버튼 */}
 				{/* <div className="wish__filters">
 					<OnOffButton text="세일중" checked={false} />
-					<OnOffButton text="판매 중 상품만 보기" checked={true} />
+					<OnOffButton text="판매 중 상품만 보기" checked />
 				</div> */}
 				{/* 상품 리스트 */}
 				<ProductGrid>

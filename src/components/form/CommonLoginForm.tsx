@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import clsx from "clsx";
 import { FormActionButton } from "@/components/form/FormActionButton";
-import styles from "./LoginForm.module.scss";
+import styles from "./Form.module.scss";
 import { BaseResponse } from "@/types/common";
 import { FormEvent } from "@/types/event";
 import { LoginFormData } from "@/types/auth";
