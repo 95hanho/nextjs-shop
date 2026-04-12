@@ -368,7 +368,7 @@ export default function CartProductSection({
 													<div className={styles.productItemOverview}>
 														<div className={styles.productItemMedia}>
 															<Link href={`/product/detail/${product.productId}`} className={styles.productItemThumb}>
-																<SmartImage src={product.filePath} alt={product.fileName} fill={true} />
+																<SmartImage src={product.filePath} alt={product.fileName} fill />
 
 																{selectDisabled && (
 																	<div className={styles.productOutOfStockCover}>

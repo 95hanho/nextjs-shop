@@ -145,7 +145,7 @@ export default function BestRankProducts() {
 							{/* 전체 링크 */}
 							<Link href={`/product/detail/${item.productId}`}></Link>
 							<div className={styles.imageBox}>
-								<SmartImage fill={true} />
+								<SmartImage fill />
 								<mark>{index + 1}</mark>
 								<button>
 									{/* <FaHeart /> */}

@@ -125,7 +125,7 @@ export default function ShippingAddressForm() {
 					value={inputAddress?.addressName || ""}
 					onChange={changeNewAddress}
 					onBlur={validateNewAddress}
-					requiredMark={true}
+					requiredMark
 					readOnly={isModeExisting}
 					labelWidthPercent={28}
 					inputWidthPercent={80}
@@ -143,7 +143,7 @@ export default function ShippingAddressForm() {
 					value={inputAddress?.recipientName || ""}
 					onChange={changeNewAddress}
 					onBlur={validateNewAddress}
-					requiredMark={true}
+					requiredMark
 					readOnly={isModeExisting}
 					labelWidthPercent={28}
 					inputWidthPercent={80}
@@ -177,7 +177,7 @@ export default function ShippingAddressForm() {
 							addressFormInputRefs.current.addressDetail = el;
 						},
 					}}
-					requiredMark={true}
+					requiredMark
 					addressDetailReadOnly={isModeExisting}
 					labelWidthPercent={28}
 					inputWidthPercent={80}
@@ -191,7 +191,7 @@ export default function ShippingAddressForm() {
 					value={inputAddress?.addressPhone || ""}
 					onChange={changeNewAddress}
 					onBlur={validateNewAddress}
-					requiredMark={true}
+					requiredMark
 					maxLength={11}
 					readOnly={isModeExisting}
 					labelWidthPercent={28}

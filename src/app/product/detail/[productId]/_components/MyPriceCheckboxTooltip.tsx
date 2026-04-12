@@ -48,7 +48,7 @@ export default function MyPriceCheckboxTooltip(props: MyPriceCheckboxTooltipProp
 		return (
 			<div className={styles.myPriceCheckboxTooltip}>
 				<div className={styles.checkbox}>
-					<input type="checkbox" checked={true} disabled />
+					<input type="checkbox" checked disabled />
 					<span>기본 할인 {discountPercent(originPrice, finalPrice)}%</span>
 				</div>
 				<div className={styles.discountInfo}>
