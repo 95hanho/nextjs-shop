@@ -10,7 +10,23 @@
 		padding: 15px 0 15px 50px;
 	}
 }
-
+.alarmText {
+	color: #f00;
+	font-size: 15px;
+	margin-top: 5px;
+	font-weight: 500;
+}
+.saleStop {
+	color: #aaa;
+}
+.changeButton {
+	display: inline-flex;
+	padding: 8px 10px;
+	margin-left: 5px;
+	border-radius: 6px;
+	background-color: #e78223;
+	color: #fff;
+}
 .optionSelectorWrap {
 	display: inline-block;
 	position: relative;
@@ -66,7 +82,7 @@
 					position: relative;
 					width: 100%;
 					aspect-ratio: 1 / 1;
-					overflow: hidden;
+					// overflow: hidden;
 					background-color: #fdfdfd;
 					border: 1px solid #e7e7e7;
 					.imageIndex {
@@ -78,6 +94,43 @@
 						padding: 0px 7px;
 						font-size: 16px;
 						border-radius: 0 0 3px 0;
+					}
+					.imageDelete {
+						position: absolute;
+						top: 0;
+						right: 0;
+						background-color: #f00;
+						color: #fff;
+						padding: 0px 7px;
+						font-size: 16px;
+						border-radius: 0 0 3px 0;
+					}
+					.imageDeleting {
+						position: absolute;
+						inset: 0;
+						background: rgba(253, 253, 254, 0.75);
+						font-size: 80px;
+						align-content: center;
+						color: rgb(175 175 175 / 50%);
+					}
+					.imageRestore {
+						position: absolute;
+						top: 0;
+						right: 0;
+						background-color: #00f;
+						color: #fff;
+						padding: 0px 4px;
+						font-size: 16px;
+						border-radius: 0 0 3px 0;
+						z-index: 10;
+					}
+					.imageMove {
+						position: absolute;
+						inset: 0;
+						background: rgba(253, 253, 254, 0.95);
+						font-size: 40px;
+						align-content: center;
+						color: rgb(175 175 175 / 50%);
 					}
 				}
 			}
@@ -91,7 +144,37 @@
 			z-index: 20;
 		}
 	}
+	.dragPreview {
+		position: fixed;
+		width: 120px;
+		aspect-ratio: 1 / 1;
+		pointer-events: none;
+		z-index: 9999;
+		border-radius: 6px;
+		overflow: hidden;
+		background-color: #fff;
+		border: 1px solid #ddd;
+		box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+	}
+	.insertLine {
+		position: absolute;
+		left: -8px;
+		width: 4px;
+		height: 100%;
+		background: #727272;
+		z-index: 50;
+		pointer-events: none;
+	}
 
+	.insertLineLast {
+		position: absolute;
+		right: -8px;
+		width: 4px;
+		height: 100%;
+		background: #727272;
+		z-index: 50;
+		pointer-events: none;
+	}
 	.fileButtonWrap {
 		margin-top: 5px;
 		text-align: right;

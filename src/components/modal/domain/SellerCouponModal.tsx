@@ -137,7 +137,7 @@ export const SellerCouponModal = ({ onClose, prevSellerCoupon }: SellerCouponMod
 		}));
 	};
 	// 쿠폰 등록/수정 제출
-	const couponSetSubmit = (e: FormEvent) => {
+	const couponSetSubmit = async (e: FormEvent) => {
 		console.log("couponSetSubmit");
 		e.preventDefault();
 		// 알람이 있을 때는 해당 input으로 focus
@@ -162,12 +162,23 @@ export const SellerCouponModal = ({ onClose, prevSellerCoupon }: SellerCouponMod
 			}
 			if (changeAlarm) break;
 		}
+		// 쿠폰 이름 중복 확인
+		await getNormal(getApiUrl(API_URL.SELLER_COUPON_DESCRIPTION_DUPLICATE), {
+			description: couponForm.description,
+		}).catch((err) => {
+			if (err.message === "SELLER_COUPON_DESCRIPTION_DUPLICATED") {
+				changeAlarm = { name: "description", message: "이미 존재하는 쿠폰 이름입니다.", status: "FAIL" };
+				couponFormInputRefs.current.description?.focus();
+			}
+		});
+		if (changeAlarm) {
+		}
 		// 최대 할인금액 < 최소 주문금액
-		if (Number(couponForm.maxDiscount) > Number(couponForm.minimumOrderBeforeAmount)) {
+		else if (Number(couponForm.maxDiscount) > Number(couponForm.minimumOrderBeforeAmount)) {
 			changeAlarm = { name: "maxDiscount", message: "최대 할인금액은 최소 주문금액보다 클 수 없습니다.", status: "FAIL" };
 		}
 		// 시작일 < 종료일
-		if (couponForm.startDate && couponForm.endDate) {
+		else if (couponForm.startDate && couponForm.endDate) {
 			if (new Date(couponForm.startDate) >= new Date(couponForm.endDate)) {
 				changeAlarm = { name: "endDate", message: "사용 시작일은 사용 종료일보다 이전이어야 합니다.", status: "FAIL" };
 			}
@@ -177,6 +188,7 @@ export const SellerCouponModal = ({ onClose, prevSellerCoupon }: SellerCouponMod
 			focusCouponField(changeAlarm.name, couponFormInputRefs);
 			return;
 		}
+
 		// couponId가 없으면 등록, 있으면 수정
 		if (!couponForm.couponId) {
 			const addCoupon: AddCouponRequest = {

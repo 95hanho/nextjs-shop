@@ -25,10 +25,6 @@ export const GET = sellerWithAuth(async ({ sellerToken }) => {
 	}
 });
 
-type AddSellerProductPayloadForSpring = Omit<AddSellerProductRequest, "manufacturedYm"> & {
-	manufacturedYm: ISODate;
-};
-
 // 제품 추가
 export const POST = sellerWithAuth(async ({ nextRequest, sellerToken }) => {
 	console.log("[API] 제품 추가");
@@ -50,37 +46,24 @@ export const POST = sellerWithAuth(async ({ nextRequest, sellerToken }) => {
 			afterServicePhone,
 		}: AddSellerProductRequest = await nextRequest.json();
 
-		if (
-			!name ||
-			!colorName ||
-			!originPrice ||
-			!finalPrice ||
-			!menuSubId ||
-			!materialInfo ||
-			!manufacturerName ||
-			!countryOfOrigin ||
-			!washCareInfo ||
-			!manufacturedYm ||
-			!qualityGuaranteeInfo ||
-			!afterServiceContact
-		)
+		if (!name || !colorName || !originPrice || !finalPrice || !menuSubId)
 			return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
-		const payload: AddSellerProductPayloadForSpring = {
+		const payload: AddSellerProductRequest = {
 			name,
 			colorName,
 			originPrice,
 			finalPrice,
 			menuSubId,
-			materialInfo,
-			manufacturerName,
-			countryOfOrigin,
-			washCareInfo,
-			manufacturedYm: parseISODate(manufacturedYm),
-			qualityGuaranteeInfo,
-			afterServiceContact,
-			afterServiceManager,
-			afterServicePhone,
 		};
+		if (materialInfo) payload.materialInfo = materialInfo;
+		if (manufacturerName) payload.manufacturerName = manufacturerName;
+		if (countryOfOrigin) payload.countryOfOrigin = countryOfOrigin;
+		if (washCareInfo) payload.washCareInfo = washCareInfo;
+		if (manufacturedYm) payload.manufacturedYm = manufacturedYm;
+		if (qualityGuaranteeInfo) payload.qualityGuaranteeInfo = qualityGuaranteeInfo;
+		if (afterServiceContact) payload.afterServiceContact = afterServiceContact;
+		if (afterServiceManager) payload.afterServiceManager = afterServiceManager;
+		if (afterServicePhone) payload.afterServicePhone = afterServicePhone;
 
 		const data = await postUrlFormData<BaseResponse>(
 			getBackendUrl(API_URL.SELLER_PRODUCT),

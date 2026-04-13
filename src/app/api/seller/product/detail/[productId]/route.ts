@@ -9,6 +9,7 @@ import { NextResponse } from "next/server";
 
 // 판매자 제품 상세보기 조회
 export const GET = sellerWithAuth<{ productId: string }>(async ({ params, sellerToken }) => {
+	console.log("[API] 판매자 제품 상세보기 조회");
 	try {
 		const { productId } = params ?? {};
 

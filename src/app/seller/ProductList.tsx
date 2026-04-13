@@ -12,9 +12,10 @@ import { deleteNormal, postJson, putJson } from "@/api/fetchFilter";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import API_URL from "@/api/endpoints";
 import { BaseResponse } from "@/types/common";
-import { useUpdateSellerProduct } from "@/hooks/query/seller/useUpdateSellerProduct";
+import { useSellerProductUpdate } from "@/hooks/query/seller/useSellerProductUpdate";
 import { useGlobalDialogStore } from "@/store/globalDialog.store";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface ProductListProps {
 	sellerProductList: SellerProduct[];
@@ -48,7 +49,7 @@ export default function ProductList({
 	// ------------------------------------------------
 
 	// 제품 수정
-	const { mutate: updateSellerProduct, isSuccess: isUpdateSellerProductSuccess, reset: resetUpdateSellerProduct } = useUpdateSellerProduct();
+	const { mutate: updateSellerProduct, isSuccess: isUpdateSellerProductSuccess, reset: resetUpdateSellerProduct } = useSellerProductUpdate();
 	// 제품 옵션 추가
 	const { mutate: addProductOption } = useMutation({
 		mutationFn: (optionForm: AddProductOptionBase) =>
@@ -163,7 +164,17 @@ export default function ProductList({
 			<h2>
 				<span>상품 목록{allowedSelectedCouponId && <span className="text-red-600 underline">{` - 쿠폰 허용 제품 선택 중`}</span>}</span>
 
-				{couponAllowedMode && <button onClick={() => updateCouponAllowedProducts(selectedProductIds)}>상품제한변경</button>}
+				{!couponAllowedMode ? (
+					<>
+						<Link href="/seller/product" className={styles.addButton}>
+							상품 추가
+						</Link>
+					</>
+				) : (
+					<button className={styles.changeButton} onClick={() => updateCouponAllowedProducts(selectedProductIds)}>
+						상품제한변경
+					</button>
+				)}
 			</h2>
 			<div className={styles.productTableWrapper}>
 				<table className={styles.productTable}>
@@ -328,6 +339,7 @@ export default function ProductList({
 																								addPrice: option.addPrice,
 																								stock: option.stock,
 																								isDisplayed: !option.displayed,
+																								size: option.size,
 																							});
 																						}}
 																					>
