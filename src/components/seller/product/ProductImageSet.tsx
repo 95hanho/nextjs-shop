@@ -529,7 +529,7 @@ export const ProductImageSet = forwardRef<ProductImageSetHandle, ProductImageSet
 			<div>
 				<h3>제품 썸네일 이미지</h3>
 				<div
-					className={styles.productImageArea}
+					className={clsx(styles.productImageArea, { [styles.fileEmpty]: thumbnailList.length === 0 })}
 					onClick={() => thumbnailInputRef.current?.click()}
 					onDragEnter={() => handleDragEnter("thumbnail")}
 					onDragOver={handleDragOver}
@@ -664,7 +664,7 @@ export const ProductImageSet = forwardRef<ProductImageSetHandle, ProductImageSet
 			<div>
 				<h3>제품 상세 이미지</h3>
 				<div
-					className={styles.productImageArea}
+					className={clsx(styles.productImageArea, { [styles.fileEmpty]: detailImageList.length === 0 })}
 					onClick={() => detailInputRef.current?.click()}
 					onDragEnter={() => handleDragEnter("detail")}
 					onDragOver={handleDragOver}

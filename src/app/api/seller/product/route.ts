@@ -65,7 +65,7 @@ export const POST = sellerWithAuth(async ({ nextRequest, sellerToken }) => {
 		if (afterServiceManager) payload.afterServiceManager = afterServiceManager;
 		if (afterServicePhone) payload.afterServicePhone = afterServicePhone;
 
-		const data = await postUrlFormData<BaseResponse>(
+		const data = await postUrlFormData<BaseResponse & { productId: number }>(
 			getBackendUrl(API_URL.SELLER_PRODUCT),
 			{ ...payload },
 			{
@@ -74,7 +74,7 @@ export const POST = sellerWithAuth(async ({ nextRequest, sellerToken }) => {
 		);
 		// console.log("data", data);
 
-		return NextResponse.json({ message: data.message }, { status: 200 });
+		return NextResponse.json({ message: data.message, productId: data.productId }, { status: 200 });
 	} catch (err: unknown) {
 		const { status, payload } = toErrorResponse(err);
 		return NextResponse.json(payload, { status });

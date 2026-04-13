@@ -5,7 +5,7 @@ import { FormPageShell } from "@/components/form/FormPageShell";
 import { InfoMark } from "@/components/form/InfoMark";
 import { OptionSelector } from "@/components/ui/OptionSelector";
 import { getApiUrl } from "@/lib/getBaseUrl";
-import { ChangeEvent, FormEvent } from "@/types/event";
+import { ChangeEvent } from "@/types/event";
 import { FormInputAlarm, FormInputRefs } from "@/types/form";
 import { Menu, MenuResponse } from "@/types/main";
 import { ProductColorName } from "@/types/product";
@@ -13,12 +13,13 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef, useState } from "react";
 import styles from "./ProductSet.module.scss";
 import { DateInput } from "@/components/form/DateInput";
-import DatePicker from "react-datepicker";
 import { SellerProductDetail } from "@/types/seller";
 import { ProductImageSet, ProductImageSetHandle } from "@/components/seller/product/ProductImageSet";
 import { money } from "@/lib/format";
 import clsx from "clsx";
 import { FaExchangeAlt } from "react-icons/fa";
+import { useSellerProductSubmit } from "@/hooks/query/seller/useSellerProductSubmit";
+import { useGlobalDialogStore } from "@/store/globalDialog.store";
 
 export type ProductSetForm = {
 	name: string;
@@ -90,9 +91,11 @@ interface ProductSetFormProps {
 }
 
 export const ProductSetForm = ({ productId, prevProductSetData }: ProductSetFormProps) => {
+	const { openDialog } = useGlobalDialogStore();
 	// ------------------------------------------------
 	// React Query
 	// ------------------------------------------------
+	const { sellerProductSubmit } = useSellerProductSubmit();
 
 	// 메뉴 카테고리 조회 getNormal<MenuResponse>(getBackendUrl(API_URL.MAIN_MENU));
 	const { data: menuList } = useQuery<MenuResponse, Error, Menu[]>({
@@ -114,7 +117,7 @@ export const ProductSetForm = ({ productId, prevProductSetData }: ProductSetForm
 	// ------------------------------------------------
 
 	// 제품수정 폼
-	const [productSetForm, setProductSetForm] = useState<ProductSetForm>(prevProductSetData || initProductSetForm);
+	const [productSetForm, setProductSetForm] = useState<ProductSetForm>(initProductSetForm);
 	const [productSetAlarm, setProductSetAlarm] = useState<ProductSetAlarm | null>(null);
 	const productSetInputRefs = useRef<Partial<ProductSetInputRefs>>({});
 	//
@@ -216,6 +219,17 @@ export const ProductSetForm = ({ productId, prevProductSetData }: ProductSetForm
 		console.log("제품 추가/수정 API 요청");
 		const imageSubmitData = productImageSetRef.current?.getSubmitData();
 		console.log(imageSubmitData);
+		if (!imageSubmitData) {
+			openDialog("ALERT", {
+				content: "이미지 데이터가 없습니다. 다시 시도해주세요.",
+			});
+		} else {
+			sellerProductSubmit({
+				productId,
+				productSetForm,
+				...imageSubmitData,
+			});
+		}
 	};
 
 	// ------------------------------------------------
@@ -229,8 +243,28 @@ export const ProductSetForm = ({ productId, prevProductSetData }: ProductSetForm
 	}, [menuList, productSetForm.menuTopId]);
 
 	useEffect(() => {
-		console.log({ subMenuList });
-	}, [subMenuList]);
+		if (prevProductSetData) {
+			setProductSetForm({
+				name: prevProductSetData.name,
+				colorName: prevProductSetData.colorName,
+				originPrice: prevProductSetData.originPrice,
+				finalPrice: prevProductSetData.finalPrice,
+				gender: prevProductSetData.gender,
+				menuTopId: prevProductSetData.menuTopId,
+				menuSubId: prevProductSetData.menuSubId,
+				saleStop: prevProductSetData.saleStop,
+				materialInfo: prevProductSetData.materialInfo || "",
+				manufacturerName: prevProductSetData.manufacturerName || "",
+				countryOfOrigin: prevProductSetData.countryOfOrigin || "",
+				washCareInfo: prevProductSetData.washCareInfo || "",
+				manufacturedYm: prevProductSetData.manufacturedYm || "",
+				qualityGuaranteeInfo: prevProductSetData.qualityGuaranteeInfo || "",
+				afterServiceContact: prevProductSetData.afterServiceContact || "",
+				afterServiceManager: prevProductSetData.afterServiceManager || "",
+				afterServicePhone: prevProductSetData.afterServicePhone || "",
+			});
+		}
+	}, [prevProductSetData]);
 
 	if (!menuList) return null;
 	return (

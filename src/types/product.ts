@@ -42,15 +42,15 @@ export type ProductDetail = Product & {
 	subMenuName: string;
 	topMenuName: string;
 	gender: "M" | "F";
-	materialInfo: string;
-	manufacturerName: string;
-	countryOfOrigin: string;
-	washCareInfo: string;
-	manufacturedYm: string;
-	qualityGuaranteeInfo: string;
-	afterServiceContact: string;
-	afterServiceManager: string;
-	afterServicePhone: string;
+	materialInfo: string | null;
+	manufacturerName: string | null;
+	countryOfOrigin: string | null;
+	washCareInfo: string | null;
+	manufacturedYm: string | null;
+	qualityGuaranteeInfo: string | null;
+	afterServiceContact: string | null;
+	afterServiceManager: string | null;
+	afterServicePhone: string | null;
 };
 export type ProductOption = {
 	productOptionId: number;
