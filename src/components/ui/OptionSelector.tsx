@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import styles from "./OptionSelector.module.scss";
 
-import { useEffect, useRef, useState } from "react";
+import { forwardRef, useEffect, useRef, useState } from "react";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 
 interface OptionSelectorProps {
@@ -14,15 +14,9 @@ interface OptionSelectorProps {
 	inputColor?: string;
 }
 
-export const OptionSelector = ({
-	optionSelectorName,
-	initData,
-	pickIdx = 0,
-	optionList,
-	changeOption,
-	variant = "default",
-	inputColor,
-}: OptionSelectorProps) => {
+export const OptionSelector = forwardRef((props: OptionSelectorProps, ref: React.ForwardedRef<HTMLInputElement>) => {
+	const { optionSelectorName, initData, pickIdx = 0, optionList, changeOption, variant = "default", inputColor } = props;
+
 	const optionSelectorRef = useRef<HTMLDivElement>(null);
 	const [openOptionList, setOpenOptionList] = useState<boolean>(false);
 
@@ -54,6 +48,7 @@ export const OptionSelector = ({
 			>
 				<input
 					id={optionSelectorName}
+					ref={ref}
 					type="text"
 					value={optionList ? optionList[pickIdx].val : initData.val}
 					readOnly
@@ -86,4 +81,5 @@ export const OptionSelector = ({
 			)}
 		</div>
 	);
-};
+});
+OptionSelector.displayName = "OptionSelector";

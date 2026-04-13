@@ -102,7 +102,22 @@ export type SellerProductDetail = ProductDetail & {
 export interface GetSellerProductDetailResponse extends BaseResponse {
 	productDetail: SellerProductDetail;
 }
-/* 제품 상세 사진수정(개발) */
+/* 제품 이미지 세팅 */
+export type AddFile = {
+	file: File;
+	sortKey: number;
+	isThumbnail: boolean;
+};
+export type UpdateFile = {
+	productImageId: number;
+	sortKey: number;
+};
+export interface SetSellerProductImageRequest {
+	productId: number;
+	addFiles: AddFile[];
+	updateFiles: UpdateFile[];
+	deleteImageIds: number[];
+}
 
 /* 제품 옵션 추가 */
 export type AddProductOptionBase = {

@@ -5,6 +5,7 @@
 		justify-content: space-between;
 		margin: 5px 0;
 		padding: 0 10px;
+		a,
 		button {
 			border: none;
 			padding: 5px 10px;
@@ -12,6 +13,10 @@
 			border-radius: 6px;
 			font-size: 15px;
 			letter-spacing: 1px;
+			&.addButton {
+				background-color: #4134ec;
+				color: #fff;
+			}
 			&.changeButton {
 				background-color: #e78223;
 				color: #fff;
@@ -37,7 +42,7 @@
 			&.sellerListTr {
 				cursor: pointer;
 				&:hover {
-					border: 2px solid #000;
+					border: 3px solid #000;
 				}
 				&.disabled:hover {
 					border: none;
@@ -99,12 +104,6 @@
 
 // 상품 목록
 .sellerProductList {
-	h2 {
-		button {
-			background-color: #e9ec18;
-			color: #000000;
-		}
-	}
 	.productTableWrapper {
 		.productTable {
 			thead {

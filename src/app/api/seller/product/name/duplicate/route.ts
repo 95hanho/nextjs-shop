@@ -7,16 +7,16 @@ import { getBackendUrl } from "@/lib/getBaseUrl";
 import { BaseResponse } from "@/types/common";
 import { NextResponse } from "next/server";
 
-// 쿠폰 설명 중복 확인
+// 제품명 중복 확인
 export const GET = sellerWithAuth(async ({ nextRequest, sellerToken }) => {
-	console.log("[API] 쿠폰 설명 중복 확인");
+	console.log("[API] 제품명 중복 확인");
 	try {
-		const description = nextRequest.nextUrl.searchParams.get("description");
-		if (!description) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
+		const productName = nextRequest.nextUrl.searchParams.get("productName");
+		if (!productName) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
 
 		const data = await getNormal<BaseResponse>(
-			getBackendUrl(API_URL.SELLER_COUPON_DESCRIPTION_DUPLICATE),
-			{ description },
+			getBackendUrl(API_URL.SELLER_PRODUCT_NAME_DUPLICATE),
+			{ productName },
 			{
 				Authorization: `Bearer ${sellerToken}`,
 			},

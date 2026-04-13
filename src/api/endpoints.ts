@@ -118,8 +118,12 @@ const API_URL = {
 	SELLER_REGISTRATION: "/seller/registration",
 	/** 제품 조회, 제품추가, 제품수정 */
 	SELLER_PRODUCT: "/seller/product",
+	/** 제품 이미지 설정 */
+	SELLER_PRODUCT_IMAGE: "/seller/product/image",
 	/** 제품 상세보기 조회 */
 	SELLER_PRODUCT_DETAIL: "/seller/product/detail/:productId",
+	/** 제품명 중복확인 */
+	SELLER_PRODUCT_NAME_DUPLICATE: "/seller/product/name/duplicate",
 	/** 제품옵션추가, 판매자제품옵션변경 */
 	SELLER_PRODUCT_OPTION: "/seller/product/option",
 	/** 옵션삭제 */
