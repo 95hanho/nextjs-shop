@@ -64,13 +64,14 @@
 		width: 100%;
 		border: 1px solid #ccc;
 		cursor: pointer;
+		&.fileEmpty {
+			background: url(https://ehfqntuqntu.cdn1.cafe24.com/ui/image-empty.png) no-repeat 100% 50% / 100% 290px;
+		}
 		.productImageScroll {
 			min-height: 350px;
 			max-height: 500px;
 			overflow: auto;
-			&.fileEmpty {
-				background: url(https://ehfqntuqntu.cdn1.cafe24.com/ui/image-empty.png) no-repeat 100% 50% / 100% 290px;
-			}
+
 			.productImageGrid {
 				display: grid;
 				grid-template-columns: repeat(4, 1fr);
