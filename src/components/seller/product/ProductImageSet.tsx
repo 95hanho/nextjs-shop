@@ -509,7 +509,7 @@ export const ProductImageSet = forwardRef<ProductImageSetHandle, ProductImageSet
 
 	useEffect(() => {
 		if (!prevImageList) return;
-		console.log({ isThumbnailDragging });
+		console.log({ prevImageList });
 	}, [prevImageList, isThumbnailDragging]);
 
 	useEffect(() => {

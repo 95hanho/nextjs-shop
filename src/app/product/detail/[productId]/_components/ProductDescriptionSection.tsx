@@ -18,7 +18,7 @@ export default function ProductDescriptionSection({ productId }: ProductDescript
 
 	return (
 		<section className={styles.productDescription}>
-			<ProductDescription />
+			<ProductDescription productId={productId} />
 			{/* 광고이미지 */}
 			<div className={styles.advertisementImage}>
 				<img src="" alt="광고 이미지" />

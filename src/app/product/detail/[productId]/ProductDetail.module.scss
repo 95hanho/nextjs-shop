@@ -493,7 +493,11 @@
 
 			.productBlogWrap {
 				padding: 0 60px;
-
+				max-height: 300px;
+				overflow: hidden;
+				&.open {
+					max-height: none;
+				}
 				.productBlogImagesWrap {
 					place-items: center;
 					margin: 20px 0;
@@ -516,6 +520,7 @@
 				font-size: 15px;
 				font-weight: bold;
 				width: 100%;
+				margin-top: 20px;
 
 				> div {
 					display: flex;
