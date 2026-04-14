@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { CircleLoader, ClipLoader } from "react-spinners";
+import { ClipLoader } from "react-spinners";
 
 const LodingWrapDiv = styled.div<{ bgColor?: string }>`
 	position: absolute;

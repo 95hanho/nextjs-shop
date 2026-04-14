@@ -78,6 +78,7 @@ export interface AddSellerProductRequest {
 export interface UpdateSellerProductRequest extends AddSellerProductRequest {
 	productId: number;
 	saleStop: boolean;
+	imageUpdate: boolean; // 이미지수정날짜 최신화 여부
 }
 // "productImageId": 1,
 // "productId": 0,
@@ -94,6 +95,7 @@ export type ProductImage = FileInfo & {
 export type SellerProductDetail = ProductDetail & {
 	menuTopId: number;
 	updatedAt: string;
+	productImageUpdatedAt: string;
 	subMenuName: string;
 	topMenuName: string;
 	saleStop: boolean;
@@ -102,7 +104,7 @@ export type SellerProductDetail = ProductDetail & {
 export interface GetSellerProductDetailResponse extends BaseResponse {
 	productDetail: SellerProductDetail;
 }
-/* 제품 이미지 세팅 */
+/* 제품 이미지 설정 */
 export type AddFile = {
 	file: File;
 	sortKey: number;
@@ -112,13 +114,19 @@ export type UpdateFile = {
 	productImageId: number;
 	sortKey: number;
 };
+export type addFilesMeta = {
+	clientKey: string;
+	sortKey: number;
+	isThumbnail: boolean;
+	fileName: string;
+};
 export interface SetSellerProductImageRequest {
+	files: File[];
 	productId: number;
-	addFiles: AddFile[];
+	addFiles: addFilesMeta[];
 	updateFiles: UpdateFile[];
 	deleteImageIds: number[];
 }
-
 /* 제품 옵션 추가 */
 export type AddProductOptionBase = {
 	addPrice: number;

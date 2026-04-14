@@ -192,6 +192,7 @@ export function postJson<TRes, TBody extends object = object>(url: string, body?
 }
 
 // POST FormData (Content-Type 설정 X: 브라우저가 boundary 포함 설정)
+/** POST FormData 단순 파라미터만 가능 */
 export function postFormData<T>(url: string, params: Params, headers?: RequestHeaders) {
 	const [u2, body] = applyPathParams(url, cloneParams(params));
 	const formData = new FormData();
@@ -211,6 +212,14 @@ export function postFormData<T>(url: string, params: Params, headers?: RequestHe
 	return http<T>(u2, {
 		method: "POST",
 		headers, // Content-Type 넣지 마세요
+		body: formData,
+	});
+}
+/** POST FormData 복잡한 파라미터용 */
+export function postMultipart<T>(url: string, formData: FormData, headers?: RequestHeaders) {
+	return http<T>(url, {
+		method: "POST",
+		headers,
 		body: formData,
 	});
 }

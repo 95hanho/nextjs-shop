@@ -96,6 +96,8 @@ const API_URL = {
 	PRODUCT_DETAIL: "/product/detail/:productId",
 	/** 제품 사용가능 쿠폰 조회 */
 	PRODUCT_DETAIL_COUPON: "/product/detail/:productId/coupon",
+	/** 제품 상세보기 상세이미지(상품소개) 조회 */
+	PRODUCT_DETAIL_IMAGE: "/product/detail/:productId/image",
 	/** 쿠폰 다운로드 */
 	PRODUCT_COUPON_DOWNLOAD: "/product/coupon/download",
 	/** 제품 리뷰 조회 */

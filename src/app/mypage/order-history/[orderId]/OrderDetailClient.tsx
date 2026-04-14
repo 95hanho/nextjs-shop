@@ -32,7 +32,7 @@ export default function OrderDetailClient({ orderId }: { orderId: string }) {
 	// =================================================================
 
 	const { data: orderDetailData } = useQuery<MyOrderDetailResponse>({
-		queryKey: ["orderDetail", orderId],
+		queryKey: ["orderDetail", Number(orderId)],
 		queryFn: async () => getNormal(getApiUrl(API_URL.MY_ORDER_DETAIL), { orderId: Number(orderId) }),
 		enabled: loginOn,
 		refetchOnWindowFocus: false,

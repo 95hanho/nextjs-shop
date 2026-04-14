@@ -14,7 +14,9 @@ export default async function ProductDetail({
 	};
 }) {
 	try {
-		const productDetailResponse = await getNormal<GetProductDetailResponse>(getBackendUrl(API_URL.PRODUCT_DETAIL), { productId: 56 });
+		const productDetailResponse = await getNormal<GetProductDetailResponse>(getBackendUrl(API_URL.PRODUCT_DETAIL), {
+			productId: Number(productId),
+		});
 
 		return <ProductDetailClient productDetailResponse={productDetailResponse} />;
 	} catch (err: unknown) {

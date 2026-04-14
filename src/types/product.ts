@@ -97,8 +97,11 @@ export interface AddCartRequest {
 	productId: number;
 }
 /* 제품 상세보기 조회 */
+export type ProductImage = FileInfo & {
+	productId: number;
+};
 export type ProductDetailResponse = ProductDetail & {
-	productImageList: (FileInfo & { productId: number })[];
+	productImageList: ProductImage[];
 } & {
 	baseShippingFee: number; // 기본 배송비
 	freeShippingMinAmount: number; // 무료배송 최소 주문금액
@@ -124,6 +127,10 @@ export type AvailableCouponAtProductDetail = Coupon & {
 };
 export interface GetProductDetailCouponResponse extends BaseResponse {
 	availableProductCoupon: AvailableCouponAtProductDetail[];
+}
+/* 제품 상세보기 상세이미지(상품소개) 조회 */
+export interface GetProductDetailImageResponse extends BaseResponse {
+	productDetailImageList: ProductImage[];
 }
 /* 제품 상세보기 리뷰 조회 */
 export interface GetProductDetailReviewResponse extends BaseResponse {

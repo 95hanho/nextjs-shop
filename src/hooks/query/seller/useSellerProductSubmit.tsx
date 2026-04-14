@@ -1,15 +1,16 @@
 import API_URL from "@/api/endpoints";
-import { postJson, putJson } from "@/api/fetchFilter";
+import { postJson, postMultipart, putJson } from "@/api/fetchFilter";
 import { ProductSetForm } from "@/components/seller/product/ProductSetForm";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { BaseResponse } from "@/types/common";
 import { AddFile, AddSellerProductRequest, SetSellerProductImageRequest, UpdateFile, UpdateSellerProductRequest } from "@/types/seller";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 
 // 판매자제품 추가/수정
 export function useSellerProductSubmit() {
 	const router = useRouter();
+	const queryClient = useQueryClient();
 
 	// ------------------------------------------------
 	// React Query
@@ -30,12 +31,22 @@ export function useSellerProductSubmit() {
 	});
 	// 제품 이미지 설정
 	const { mutateAsync: setSellerProductImage } = useMutation<BaseResponse, Error, SetSellerProductImageRequest>({
-		mutationFn: ({ addFiles, updateFiles, deleteImageIds }: SetSellerProductImageRequest) => {
-			return postJson(getApiUrl(API_URL.SELLER_PRODUCT_IMAGE), {
-				addFiles: [...addFiles],
-				updateFiles: [...updateFiles],
-				deleteImageIds: [...deleteImageIds],
+		mutationFn: ({ files, productId, addFiles, updateFiles, deleteImageIds }: SetSellerProductImageRequest) => {
+			const formData = new FormData();
+			formData.append(
+				"request",
+				JSON.stringify({
+					productId,
+					addFiles,
+					updateFiles,
+					deleteImageIds,
+				}),
+			);
+			files.forEach((file) => {
+				formData.append("files", file);
 			});
+
+			return postMultipart(getApiUrl(API_URL.SELLER_PRODUCT_IMAGE), formData);
 		},
 	});
 
@@ -66,15 +77,38 @@ export function useSellerProductSubmit() {
 				productId,
 				...productSetForm,
 				saleStop: productSetForm.saleStop || false,
+				// updateFiles는 순서만 바뀐거므로 제외
+				imageUpdate: addFiles.length > 0 || deleteImageIds.length > 0, // 이미지 변경사항이 있을 때만 true
 			}).then(() => {
-				productImageSubmit("UPDATE", undefined);
+				productImageSubmit("UPDATE", productId);
 			});
 		}
-		function productImageSubmit(type: "ADD" | "UPDATE", productId?: number) {
-			if (type === "ADD" && productId) {
-				router.push(`/seller/product/${productId}`);
-			} else if (type === "UPDATE" && productId) {
-			}
+		function productImageSubmit(type: "ADD" | "UPDATE", productId: number) {
+			console.log({ type, productId });
+			const addFilesMeta = addFiles.map((item, index) => {
+				const clientKey = `new-file-${index}-${item.sortKey}`;
+
+				return {
+					clientKey,
+					sortKey: item.sortKey,
+					isThumbnail: item.isThumbnail,
+					fileName: item.file.name,
+				};
+			});
+			setSellerProductImage({
+				files: [...addFiles.map((file) => file.file)], // File 객체 배열로 변환
+				productId: productId || 0,
+				addFiles: addFilesMeta,
+				updateFiles,
+				deleteImageIds,
+			}).then(() => {
+				if (type === "ADD") {
+					router.push(`/seller/product/${productId}`);
+				} else if (type === "UPDATE") {
+					console.log("이미지 설정 API 요청");
+					queryClient.invalidateQueries({ queryKey: ["sellerProductDetail", productId] });
+				}
+			});
 		}
 		return true;
 	};

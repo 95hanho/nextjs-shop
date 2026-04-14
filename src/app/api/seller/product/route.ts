@@ -4,9 +4,8 @@ import { getNormal, postUrlFormData, putUrlFormData } from "@/api/fetchFilter";
 import { WRONG_REQUEST_MESSAGE } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { sellerWithAuth } from "@/lib/auth/seller";
-import { BaseResponse, ISODate } from "@/types/common";
+import { BaseResponse } from "@/types/common";
 import { AddSellerProductRequest, GetSellerProductListResponse, UpdateSellerProductRequest } from "@/types/seller";
-import { parseISODate } from "@/utils/date";
 import { NextResponse } from "next/server";
 
 // 제품 조회
@@ -101,9 +100,10 @@ export const PUT = sellerWithAuth(async ({ nextRequest, sellerToken }) => {
 			afterServiceContact,
 			afterServiceManager,
 			afterServicePhone,
+			imageUpdate,
 		}: UpdateSellerProductRequest = await nextRequest.json();
 
-		if (!productId || !name || !colorName || !originPrice || !finalPrice || !saleStop === undefined || !menuSubId)
+		if (!productId || !name || !colorName || !originPrice || !finalPrice || !saleStop === undefined || !menuSubId || imageUpdate === undefined)
 			return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
 
 		const payload: UpdateSellerProductRequest = {
@@ -114,6 +114,7 @@ export const PUT = sellerWithAuth(async ({ nextRequest, sellerToken }) => {
 			finalPrice,
 			saleStop,
 			menuSubId,
+			imageUpdate,
 		};
 		if (materialInfo) payload.materialInfo = materialInfo;
 		if (manufacturerName) payload.manufacturerName = manufacturerName;
@@ -124,8 +125,6 @@ export const PUT = sellerWithAuth(async ({ nextRequest, sellerToken }) => {
 		if (afterServiceContact) payload.afterServiceContact = afterServiceContact;
 		if (afterServiceManager) payload.afterServiceManager = afterServiceManager;
 		if (afterServicePhone) payload.afterServicePhone = afterServicePhone;
-
-		console.log("payload", payload);
 
 		const data = await putUrlFormData<BaseResponse>(
 			getBackendUrl(API_URL.SELLER_PRODUCT),

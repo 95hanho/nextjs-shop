@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import styles from "../ProductDetail.module.scss";

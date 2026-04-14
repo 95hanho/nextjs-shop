@@ -5,6 +5,7 @@ import React, { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, use
 import clsx from "clsx";
 import { FiMove } from "react-icons/fi";
 import { useGlobalDialogStore } from "@/store/globalDialog.store";
+import { getUploadImageUrl } from "@/lib/image";
 
 type PrevImageItem = ProductImage & {
 	type: "prev";
@@ -21,6 +22,7 @@ type ImageItem = {
 
 interface ProductImageSetProps {
 	prevImageList?: ProductImage[];
+	imageUpdatedAt?: string;
 }
 
 export type ProductImageSetHandle = {
@@ -33,7 +35,7 @@ export type ProductImageSetHandle = {
 		| undefined;
 };
 
-export const ProductImageSet = forwardRef<ProductImageSetHandle, ProductImageSetProps>(({ prevImageList }, ref) => {
+export const ProductImageSet = forwardRef<ProductImageSetHandle, ProductImageSetProps>(({ prevImageList, imageUpdatedAt }, ref) => {
 	const { openDialog } = useGlobalDialogStore();
 
 	// ------------------------------------------------
@@ -80,7 +82,6 @@ export const ProductImageSet = forwardRef<ProductImageSetHandle, ProductImageSet
 			return mimeOk && extOk;
 		});
 	};
-
 	const addFiles = (files: File[], type: "thumbnail" | "detail") => {
 		const validFiles = validateImageFiles(files);
 
@@ -119,7 +120,6 @@ export const ProductImageSet = forwardRef<ProductImageSetHandle, ProductImageSet
 			]);
 		}
 	};
-
 	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const files = e.target.files;
 		if (!files) return;
@@ -130,12 +130,10 @@ export const ProductImageSet = forwardRef<ProductImageSetHandle, ProductImageSet
 		addFiles(fileArray, type);
 		e.target.value = "";
 	};
-
 	const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
 		e.preventDefault();
 		e.stopPropagation();
 	};
-
 	const handleDragEnter = (type: "thumbnail" | "detail") => {
 		if (draggingItemKey) return; // 드래그 중인 이미지 있을 때는 무시
 		if (type === "thumbnail") {
@@ -191,7 +189,6 @@ export const ProductImageSet = forwardRef<ProductImageSetHandle, ProductImageSet
 			setIsDetailDragging(false);
 		}
 	};
-
 	const getItemKey = (item: PrevImageItem | ImageItem) => {
 		if (item.type === "prev") {
 			return `prev-${item.fileId}`;
@@ -206,7 +203,7 @@ export const ProductImageSet = forwardRef<ProductImageSetHandle, ProductImageSet
 	) => {
 		e.stopPropagation();
 
-		const src = item.type === "prev" ? item.filePath : item.previewUrl;
+		const src = item.type === "prev" ? getUploadImageUrl(item.storeName) : item.previewUrl;
 		const itemKey = getItemKey(item);
 
 		setDraggingItemKey(itemKey);
@@ -226,7 +223,6 @@ export const ProductImageSet = forwardRef<ProductImageSetHandle, ProductImageSet
 		emptyImage.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
 		e.dataTransfer.setDragImage(emptyImage, 0, 0);
 	};
-
 	const handleImageDrag = (e: React.DragEvent<HTMLDivElement>) => {
 		if (e.clientX === 0 && e.clientY === 0) return;
 
@@ -456,7 +452,6 @@ export const ProductImageSet = forwardRef<ProductImageSetHandle, ProductImageSet
 				});
 				return;
 			}
-
 			return {
 				addFiles: [
 					...newThumbnailFiles
@@ -519,10 +514,17 @@ export const ProductImageSet = forwardRef<ProductImageSetHandle, ProductImageSet
 
 	useEffect(() => {
 		if (!prevImageList) return;
+		console.log("초기 이미지 리스트 세팅");
 
+		// 초기 데이터 세팅 및 초기화
+		thumbnailDragCountRef.current = 0;
+		detailDragCountRef.current = 0;
 		setPrevThumbnailList(prevImageList.filter((image) => image.thumbnail).map((image) => ({ ...image, type: "prev", deleting: false })));
 		setPrevDetailList(prevImageList.filter((image) => !image.thumbnail).map((image) => ({ ...image, type: "prev", deleting: false })));
-	}, [prevImageList]);
+		setNewThumbnailFiles([]);
+		setNewDetailFiles([]);
+		setDeleteImageIds([]);
+	}, [prevImageList, imageUpdatedAt]);
 
 	return (
 		<div className={styles.productImageSetWrap}>
@@ -547,7 +549,14 @@ export const ProductImageSet = forwardRef<ProductImageSetHandle, ProductImageSet
 							{thumbnailList.map((item, index) => {
 								let image;
 								if (item.type === "prev") {
-									image = <SmartImage src={item.filePath} alt={`${item.fileName}-${index}`} fill objectFit="contain" />;
+									image = (
+										<SmartImage
+											src={getUploadImageUrl(item.storeName)}
+											alt={`${item.fileName}-${index}`}
+											fill
+											objectFit="contain"
+										/>
+									);
 								} else {
 									image = <SmartImage src={item.previewUrl} alt={`${item.file.name}-${index}`} fill objectFit="contain" />;
 								}
@@ -599,7 +608,14 @@ export const ProductImageSet = forwardRef<ProductImageSetHandle, ProductImageSet
 							{deletingThumbnailList.map((item, index) => {
 								let image;
 								if (item.type === "prev") {
-									image = <SmartImage src={item.filePath} alt={`${item.fileName}-${index}`} fill objectFit="contain" />;
+									image = (
+										<SmartImage
+											src={getUploadImageUrl(item.storeName)}
+											alt={`${item.fileName}-${index}`}
+											fill
+											objectFit="contain"
+										/>
+									);
 								} else {
 									image = <SmartImage src={item.previewUrl} alt={`${item.file.name}-${index}`} fill objectFit="contain" />;
 								}
@@ -682,7 +698,14 @@ export const ProductImageSet = forwardRef<ProductImageSetHandle, ProductImageSet
 							{detailImageList.map((item, index) => {
 								let image;
 								if (item.type === "prev") {
-									image = <SmartImage src={item.filePath} alt={`${item.fileName}-${index}`} fill objectFit="contain" />;
+									image = (
+										<SmartImage
+											src={getUploadImageUrl(item.storeName)}
+											alt={`${item.fileName}-${index}`}
+											fill
+											objectFit="contain"
+										/>
+									);
 								} else {
 									image = <SmartImage src={item.previewUrl} alt={`${item.file.name}-${index}`} fill objectFit="contain" />;
 								}
@@ -734,7 +757,14 @@ export const ProductImageSet = forwardRef<ProductImageSetHandle, ProductImageSet
 							{deletingDetailList.map((item, index) => {
 								let image;
 								if (item.type === "prev") {
-									image = <SmartImage src={item.filePath} alt={`${item.fileName}-${index}`} fill objectFit="contain" />;
+									image = (
+										<SmartImage
+											src={getUploadImageUrl(item.storeName)}
+											alt={`${item.fileName}-${index}`}
+											fill
+											objectFit="contain"
+										/>
+									);
 								} else {
 									image = <SmartImage src={item.previewUrl} alt={`${item.file.name}-${index}`} fill objectFit="contain" />;
 								}
