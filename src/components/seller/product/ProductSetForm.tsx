@@ -198,11 +198,14 @@ export const ProductSetForm = ({ productId, prevProductSetData }: ProductSetForm
 		}
 
 		// 제품명 중복체크
-		await checkProductNameDuplicate(productSetForm.name).catch((err) => {
-			if (err.message === "SELLER_PRODUCT_NAME_DUPLICATED") {
-				changeAlarm = { name: "name", message: "이미 존재하는 제품명 입니다.", status: "FAIL" };
-			}
-		});
+		if (!productId) {
+			await checkProductNameDuplicate(productSetForm.name).catch((err) => {
+				if (err.message === "SELLER_PRODUCT_NAME_DUPLICATED") {
+					changeAlarm = { name: "name", message: "이미 존재하는 제품명 입니다.", status: "FAIL" };
+				}
+			});
+		}
+		// changeAlarm 있으면 넘어가기
 		if (changeAlarm) {
 		}
 		// 원가 > 판매가
@@ -210,20 +213,16 @@ export const ProductSetForm = ({ productId, prevProductSetData }: ProductSetForm
 			changeAlarm = { name: "finalPrice", message: "판매가는 원가보다 작아야 합니다.", status: "FAIL" };
 		}
 
+		// 알람 있으면 알림띄우고 return
 		if (changeAlarm) {
 			setProductSetAlarm(changeAlarm);
 			productSetInputRefs.current[changeAlarm.name]?.focus();
 			return;
 		}
-
 		console.log("제품 추가/수정 API 요청");
 		const imageSubmitData = productImageSetRef.current?.getSubmitData();
-		console.log(imageSubmitData);
-		if (!imageSubmitData) {
-			openDialog("ALERT", {
-				content: "이미지 데이터가 없습니다. 다시 시도해주세요.",
-			});
-		} else {
+		// 없을 때는 ProductImageSet에서 처리
+		if (imageSubmitData) {
 			sellerProductSubmit({
 				productId,
 				productSetForm,
@@ -244,6 +243,8 @@ export const ProductSetForm = ({ productId, prevProductSetData }: ProductSetForm
 
 	useEffect(() => {
 		if (prevProductSetData) {
+			console.log("제품 상세정보로 폼 초기화");
+			// 초기값 넣어주고 다른 값들은 초기화
 			setProductSetForm({
 				name: prevProductSetData.name,
 				colorName: prevProductSetData.colorName,
@@ -263,8 +264,9 @@ export const ProductSetForm = ({ productId, prevProductSetData }: ProductSetForm
 				afterServiceManager: prevProductSetData.afterServiceManager || "",
 				afterServicePhone: prevProductSetData.afterServicePhone || "",
 			});
+			setProductSetAlarm(null);
 		}
-	}, [prevProductSetData]);
+	}, [prevProductSetData, prevProductSetData?.updatedAt]);
 
 	if (!menuList) return null;
 	return (
@@ -400,6 +402,7 @@ export const ProductSetForm = ({ productId, prevProductSetData }: ProductSetForm
 														...prev,
 														gender: e.target.value as "M" | "F",
 														menuTopId: 0, // 성별 변경 시 상위 카테고리 초기화
+														menuSubId: 0, // 성별 변경 시 하위 카테고리 초기화
 													}));
 												}}
 											/>
@@ -618,7 +621,11 @@ export const ProductSetForm = ({ productId, prevProductSetData }: ProductSetForm
 							/>
 						</form>
 					</div>
-					<ProductImageSet ref={productImageSetRef} prevImageList={prevProductSetData?.productImages} />
+					<ProductImageSet
+						ref={productImageSetRef}
+						prevImageList={prevProductSetData?.productImages}
+						imageUpdatedAt={prevProductSetData?.productImageUpdatedAt}
+					/>
 				</div>
 				<div className={styles.formActionWrap}>
 					<button

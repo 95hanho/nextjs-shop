@@ -119,8 +119,23 @@ export default function ProductList({
 			const payload = dialogResult.payload as DialogResultMap["CONFIRM_OK"];
 			if (payload?.result === "SALE_STOP_CONFIRM" && changingSaleStopProduct) {
 				updateSellerProduct({
-					...changingSaleStopProduct,
+					productId: changingSaleStopProduct.productId,
+					name: changingSaleStopProduct.name,
+					colorName: changingSaleStopProduct.colorName,
+					originPrice: changingSaleStopProduct.originPrice,
+					finalPrice: changingSaleStopProduct.finalPrice,
+					menuSubId: changingSaleStopProduct.menuSubId,
+					materialInfo: changingSaleStopProduct.materialInfo || "",
+					manufacturerName: changingSaleStopProduct.manufacturerName || "",
+					countryOfOrigin: changingSaleStopProduct.countryOfOrigin || "",
+					washCareInfo: changingSaleStopProduct.washCareInfo || "",
+					manufacturedYm: changingSaleStopProduct.manufacturedYm || "",
+					qualityGuaranteeInfo: changingSaleStopProduct.qualityGuaranteeInfo || "",
+					afterServiceContact: changingSaleStopProduct.afterServiceContact || "",
+					afterServiceManager: changingSaleStopProduct.afterServiceManager || "",
+					afterServicePhone: changingSaleStopProduct.afterServicePhone || "",
 					saleStop: !changingSaleStopProduct?.saleStop,
+					imageUpdate: false, // 판매중단 상태 변경은 이미지 변경과 무관하므로 false
 				});
 			}
 		}

@@ -23,13 +23,17 @@ export default function ProductUpdateClient({ productId }: ProductSetClientProps
 	// ------------------------------------------------
 
 	// 판매자 제품 상세보기 조회
-	const { data: productDetail, error } = useQuery<GetSellerProductDetailResponse, Error, SellerProductDetail>({
-		queryKey: ["sellerProductDetail", productId],
+	const {
+		data: productDetail,
+		error,
+		isFetching,
+	} = useQuery<GetSellerProductDetailResponse, Error, SellerProductDetail>({
+		queryKey: ["sellerProductDetail", Number(productId)],
 		queryFn: () =>
 			getNormal(getApiUrl(API_URL.SELLER_PRODUCT_DETAIL), {
-				productId,
+				productId: Number(productId),
 			}),
-		enabled: !!productId,
+		enabled: !!Number(productId),
 		select: (data) => data.productDetail,
 		refetchOnWindowFocus: false,
 		retry: 1,
@@ -58,6 +62,12 @@ export default function ProductUpdateClient({ productId }: ProductSetClientProps
 		}
 	}, [error, openDialog, router]);
 
+	useEffect(() => {
+		if (isFetching) {
+			console.log("제품 상세정보 조회 중...");
+		}
+	}, [isFetching]);
+
 	if (!productDetail) return null;
-	return <ProductSetForm productId={productId} prevProductSetData={productDetail} />;
+	return <ProductSetForm productId={Number(productId)} prevProductSetData={productDetail} />;
 }
