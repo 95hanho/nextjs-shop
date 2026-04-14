@@ -114,13 +114,19 @@ export type UpdateFile = {
 	productImageId: number;
 	sortKey: number;
 };
+export type addFilesMeta = {
+	clientKey: string;
+	sortKey: number;
+	isThumbnail: boolean;
+	fileName: string;
+};
 export interface SetSellerProductImageRequest {
+	files: File[];
 	productId: number;
-	addFiles: AddFile[];
+	addFiles: addFilesMeta[];
 	updateFiles: UpdateFile[];
 	deleteImageIds: number[];
 }
-
 /* 제품 옵션 추가 */
 export type AddProductOptionBase = {
 	addPrice: number;

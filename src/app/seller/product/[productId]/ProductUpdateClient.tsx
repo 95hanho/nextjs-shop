@@ -2,6 +2,7 @@
 
 import API_URL from "@/api/endpoints";
 import { getNormal } from "@/api/fetchFilter";
+import { LodingWrap } from "@/components/common/LodingWrap";
 import { ProductSetForm } from "@/components/seller/product/ProductSetForm";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { useGlobalDialogStore } from "@/store/globalDialog.store";
@@ -26,6 +27,7 @@ export default function ProductUpdateClient({ productId }: ProductSetClientProps
 	const {
 		data: productDetail,
 		error,
+		isLoading,
 		isFetching,
 	} = useQuery<GetSellerProductDetailResponse, Error, SellerProductDetail>({
 		queryKey: ["sellerProductDetail", Number(productId)],
@@ -69,5 +71,10 @@ export default function ProductUpdateClient({ productId }: ProductSetClientProps
 	}, [isFetching]);
 
 	if (!productDetail) return null;
-	return <ProductSetForm productId={Number(productId)} prevProductSetData={productDetail} />;
+	return (
+		<main className="relative">
+			{(isLoading || isFetching) && <LodingWrap />}
+			<ProductSetForm productId={Number(productId)} prevProductSetData={productDetail} />;
+		</main>
+	);
 }

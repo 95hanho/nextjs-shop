@@ -6,5 +6,9 @@ import { ProductSetForm } from "@/components/seller/product/ProductSetForm";
 // }
 
 export default function ProductAddClient() {
-	return <ProductSetForm />;
+	return (
+		<main className="relative">
+			<ProductSetForm />
+		</main>
+	);
 }

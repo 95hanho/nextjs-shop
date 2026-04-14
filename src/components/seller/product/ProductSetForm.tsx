@@ -19,7 +19,6 @@ import { money } from "@/lib/format";
 import clsx from "clsx";
 import { FaExchangeAlt } from "react-icons/fa";
 import { useSellerProductSubmit } from "@/hooks/query/seller/useSellerProductSubmit";
-import { useGlobalDialogStore } from "@/store/globalDialog.store";
 
 export type ProductSetForm = {
 	name: string;
@@ -91,7 +90,6 @@ interface ProductSetFormProps {
 }
 
 export const ProductSetForm = ({ productId, prevProductSetData }: ProductSetFormProps) => {
-	const { openDialog } = useGlobalDialogStore();
 	// ------------------------------------------------
 	// React Query
 	// ------------------------------------------------
@@ -270,7 +268,7 @@ export const ProductSetForm = ({ productId, prevProductSetData }: ProductSetForm
 
 	if (!menuList) return null;
 	return (
-		<main className={styles.productSetFormWrap}>
+		<div className={styles.productSetFormWrap}>
 			<FormPageShell title={!productId ? "제품 등록" : "제품 수정"} formWidth={1100} wrapMinHeight={100} overflow="visible">
 				<div className={styles.productSetContent}>
 					<div className={styles.productSetForm}>
@@ -637,6 +635,6 @@ export const ProductSetForm = ({ productId, prevProductSetData }: ProductSetForm
 					</button>
 				</div>
 			</FormPageShell>
-		</main>
+		</div>
 	);
 };

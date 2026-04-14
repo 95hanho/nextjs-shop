@@ -30,7 +30,7 @@ export const SmartImage = ({ className = "", src = "", alt, sizes, priority, qua
 	const finalSrc = src || BASIC_NO_IMAGE;
 	const finalAlt = alt || "사진없음";
 
-	// fill: true 케이스
+	// fill: true 케이스finalSrc
 	if ("fill" in rest && rest.fill) {
 		return (
 			<Image

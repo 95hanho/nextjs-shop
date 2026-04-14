@@ -4,9 +4,8 @@ import { getNormal, postUrlFormData, putUrlFormData } from "@/api/fetchFilter";
 import { WRONG_REQUEST_MESSAGE } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { sellerWithAuth } from "@/lib/auth/seller";
-import { BaseResponse, ISODate } from "@/types/common";
+import { BaseResponse } from "@/types/common";
 import { AddSellerProductRequest, GetSellerProductListResponse, UpdateSellerProductRequest } from "@/types/seller";
-import { parseISODate } from "@/utils/date";
 import { NextResponse } from "next/server";
 
 // 제품 조회

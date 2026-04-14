@@ -5,6 +5,7 @@ import React, { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, use
 import clsx from "clsx";
 import { FiMove } from "react-icons/fi";
 import { useGlobalDialogStore } from "@/store/globalDialog.store";
+import { getUploadImageUrl } from "@/lib/image";
 
 type PrevImageItem = ProductImage & {
 	type: "prev";
@@ -202,7 +203,7 @@ export const ProductImageSet = forwardRef<ProductImageSetHandle, ProductImageSet
 	) => {
 		e.stopPropagation();
 
-		const src = item.type === "prev" ? item.filePath : item.previewUrl;
+		const src = item.type === "prev" ? getUploadImageUrl(item.storeName) : item.previewUrl;
 		const itemKey = getItemKey(item);
 
 		setDraggingItemKey(itemKey);
@@ -548,7 +549,14 @@ export const ProductImageSet = forwardRef<ProductImageSetHandle, ProductImageSet
 							{thumbnailList.map((item, index) => {
 								let image;
 								if (item.type === "prev") {
-									image = <SmartImage src={item.filePath} alt={`${item.fileName}-${index}`} fill objectFit="contain" />;
+									image = (
+										<SmartImage
+											src={getUploadImageUrl(item.storeName)}
+											alt={`${item.fileName}-${index}`}
+											fill
+											objectFit="contain"
+										/>
+									);
 								} else {
 									image = <SmartImage src={item.previewUrl} alt={`${item.file.name}-${index}`} fill objectFit="contain" />;
 								}
@@ -600,7 +608,14 @@ export const ProductImageSet = forwardRef<ProductImageSetHandle, ProductImageSet
 							{deletingThumbnailList.map((item, index) => {
 								let image;
 								if (item.type === "prev") {
-									image = <SmartImage src={item.filePath} alt={`${item.fileName}-${index}`} fill objectFit="contain" />;
+									image = (
+										<SmartImage
+											src={getUploadImageUrl(item.storeName)}
+											alt={`${item.fileName}-${index}`}
+											fill
+											objectFit="contain"
+										/>
+									);
 								} else {
 									image = <SmartImage src={item.previewUrl} alt={`${item.file.name}-${index}`} fill objectFit="contain" />;
 								}
@@ -683,7 +698,14 @@ export const ProductImageSet = forwardRef<ProductImageSetHandle, ProductImageSet
 							{detailImageList.map((item, index) => {
 								let image;
 								if (item.type === "prev") {
-									image = <SmartImage src={item.filePath} alt={`${item.fileName}-${index}`} fill objectFit="contain" />;
+									image = (
+										<SmartImage
+											src={getUploadImageUrl(item.storeName)}
+											alt={`${item.fileName}-${index}`}
+											fill
+											objectFit="contain"
+										/>
+									);
 								} else {
 									image = <SmartImage src={item.previewUrl} alt={`${item.file.name}-${index}`} fill objectFit="contain" />;
 								}
@@ -735,7 +757,14 @@ export const ProductImageSet = forwardRef<ProductImageSetHandle, ProductImageSet
 							{deletingDetailList.map((item, index) => {
 								let image;
 								if (item.type === "prev") {
-									image = <SmartImage src={item.filePath} alt={`${item.fileName}-${index}`} fill objectFit="contain" />;
+									image = (
+										<SmartImage
+											src={getUploadImageUrl(item.storeName)}
+											alt={`${item.fileName}-${index}`}
+											fill
+											objectFit="contain"
+										/>
+									);
 								} else {
 									image = <SmartImage src={item.previewUrl} alt={`${item.file.name}-${index}`} fill objectFit="contain" />;
 								}
