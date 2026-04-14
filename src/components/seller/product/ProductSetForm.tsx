@@ -207,7 +207,7 @@ export const ProductSetForm = ({ productId, prevProductSetData }: ProductSetForm
 		if (changeAlarm) {
 		}
 		// 원가 > 판매가
-		else if (Number(productSetForm.originPrice) > Number(productSetForm.finalPrice)) {
+		else if (Number(productSetForm.originPrice) < Number(productSetForm.finalPrice)) {
 			changeAlarm = { name: "finalPrice", message: "판매가는 원가보다 작아야 합니다.", status: "FAIL" };
 		}
 

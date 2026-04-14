@@ -33,7 +33,7 @@ export default function ProductDetailClient({ productDetailResponse }: ProductDe
 				{/* 상품 사진 및 가격배송 정보 */}
 				<ProductVisualInfo {...productVisualInfoProps} />
 				{/* 업체등록 상품 상세 블로그 */}
-				<ProductDescriptionSection />
+				<ProductDescriptionSection productId={productId} />
 				{/* 상품정보 보기, 판매자 정보 */}
 				<ProductInfoSection />
 				{/* 상품 리뷰 */}
