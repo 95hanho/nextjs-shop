@@ -35,7 +35,7 @@ export default function ProductDetailClient({ productDetailResponse }: ProductDe
 				{/* 업체등록 상품 상세 블로그 */}
 				<ProductDescriptionSection productId={productId} />
 				{/* 상품정보 보기, 판매자 정보 */}
-				<ProductInfoSection />
+				<ProductInfoSection productDetail={productDetailResponse.productDetail} />
 				{/* 상품 리뷰 */}
 				<ProductReview productId={productId} />
 				{/* 상품 QnA */}

@@ -9,6 +9,7 @@ type CommonProps = {
 	priority?: boolean;
 	quality?: number;
 	objectFit?: "cover" | "contain";
+	style?: React.CSSProperties;
 };
 
 type FillVariant = CommonProps & {
@@ -26,7 +27,7 @@ type FixedVariant = CommonProps & {
 
 type SmartImageProps = FillVariant | FixedVariant;
 
-export const SmartImage = ({ className = "", src = "", alt, sizes, priority, quality, objectFit = "cover", ...rest }: SmartImageProps) => {
+export const SmartImage = ({ className = "", src = "", alt, sizes, priority, quality, objectFit = "cover", style, ...rest }: SmartImageProps) => {
 	const finalSrc = src || BASIC_NO_IMAGE;
 	const finalAlt = alt || "사진없음";
 
@@ -41,7 +42,7 @@ export const SmartImage = ({ className = "", src = "", alt, sizes, priority, qua
 				sizes={sizes ?? "(max-width: 650px) 100vw, 50vw"}
 				priority={priority}
 				quality={quality}
-				style={{ objectFit }}
+				style={{ ...style, objectFit }}
 			/>
 		);
 	}
@@ -57,6 +58,7 @@ export const SmartImage = ({ className = "", src = "", alt, sizes, priority, qua
 			sizes={sizes ?? "(max-width: 650px) 100vw, 50vw"}
 			priority={priority}
 			quality={quality}
+			style={{ ...style, objectFit }}
 			// style={{ width: "100%", height: "auto", objectFit }}
 		/>
 	);

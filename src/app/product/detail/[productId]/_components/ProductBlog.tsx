@@ -5,7 +5,10 @@ import { getApiUrl } from "@/lib/getBaseUrl";
 import API_URL from "@/api/endpoints";
 import { getNormal } from "@/api/fetchFilter";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { SmartImage } from "@/components/ui/SmartImage";
+import { getUploadImageUrl } from "@/lib/image";
+import clsx from "clsx";
 
 // 등록된 상품정보이미지
 export default function ProductBlog({ productId }: { productId: number }) {
@@ -22,6 +25,12 @@ export default function ProductBlog({ productId }: { productId: number }) {
 			return data.productDetailImageList;
 		},
 	});
+	// =================================================================
+	// React
+	// =================================================================
+
+	// 상품설명 더보기
+	const [openProductBlog, setOpenProductBlog] = useState(false);
 
 	// =================================================================
 	// useEffect, useMemo
@@ -38,20 +47,26 @@ export default function ProductBlog({ productId }: { productId: number }) {
 		<article className={styles.productBlog}>
 			<h2>상품 설명</h2>
 
-			<div className={styles.productBlogWrap}>
-				{[...Array(5)].map((_, i) => (
-					<div key={i} className={styles.productBlogImagesWrap}>
+			<div className={clsx(styles.productBlogWrap, { [styles.open]: openProductBlog })}>
+				{productDetailImageList.map((item, index) => (
+					<div key={`${item.fileId}-${index}`} className={styles.productBlogImagesWrap}>
 						<div className={styles.productBlogImages}>
-							<img src="https://ehfqntuqntu.cdn1.cafe24.com/main/4.jpg" alt="123" />
+							<SmartImage
+								src={getUploadImageUrl(item.storeName)}
+								alt={`${item.fileName}-${index}`}
+								width={800}
+								height={600}
+								style={{ width: "100%", height: "auto" }}
+							/>
 						</div>
 					</div>
 				))}
 			</div>
 
-			<button className={styles.descriptionMoreBtn}>
+			<button className={styles.descriptionMoreBtn} onClick={() => setOpenProductBlog(!openProductBlog)}>
 				<div>
-					<span>상품 설명 {true ? "더보기" : "닫기"}</span>
-					<span className={styles.moreIcon}>{true ? <IoIosArrowDown /> : <IoIosArrowUp />}</span>
+					<span>상품 설명 {openProductBlog ? "닫기" : "더보기"}</span>
+					<span className={styles.moreIcon}>{openProductBlog ? <IoIosArrowUp /> : <IoIosArrowDown />}</span>
 				</div>
 			</button>
 		</article>

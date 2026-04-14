@@ -2,7 +2,7 @@ import { useState } from "react";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import styles from "../ProductDetail.module.scss";
 
-export default function ProductDescription() {
+export default function ProductDescription({ productId }: { productId: number }) {
 	const [openDescription, setOpenDescription] = useState(false);
 
 	return (
@@ -18,7 +18,7 @@ export default function ProductDescription() {
 			{openDescription && (
 				<h3 className={styles.productNumber}>
 					<strong>상품번호 : </strong>
-					<span>3167608</span>
+					<span>{productId}</span>
 				</h3>
 			)}
 		</article>
