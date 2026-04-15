@@ -2,18 +2,24 @@
 
 import { SmartImage } from "@/components/ui/SmartImage";
 import { ImageSlide } from "@/components/product/ImageSlide";
-import { money } from "@/lib/format";
-import { Product } from "@/types/product";
+import { discountPercent, money } from "@/lib/format";
+import { Product, SellerOtherProduct } from "@/types/product";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FiHeart } from "react-icons/fi";
 import { RiArrowLeftSLine, RiArrowRightSLine } from "react-icons/ri";
 import styles from "../ProductDetail.module.scss";
 import { ImageSlideHandle } from "@/components/product/ImageSlide.type";
 
-// interface BrandOtherProductsProps {}
+export default function BrandOtherProducts({ sellerOtherProducts }: { sellerOtherProducts: SellerOtherProduct[] }) {
+	// ------------------------------------------------
+	// React Query
+	// ------------------------------------------------
 
-export default function BrandOtherProducts() {
+	// ------------------------------------------------
+	// React
+	// ------------------------------------------------
+
 	const slideHandleRef = useRef<ImageSlideHandle | null>(null);
 	const [pageInfo, setPageInfo] = useState({ page: 1, totalPages: 2 });
 
@@ -21,7 +27,7 @@ export default function BrandOtherProducts() {
 		{
 			productId: 1,
 			name: "Waist String Wide Pants VW5ML470_3color",
-			colorName: "123",
+			colorName: "BEIGE",
 			originPrice: 135000,
 			finalPrice: 128000,
 			createdAt: new Date().toString(),
@@ -32,7 +38,7 @@ export default function BrandOtherProducts() {
 		{
 			productId: 1,
 			name: "Waist String Wide Pants VW5ML470_3color",
-			colorName: "123",
+			colorName: "BEIGE",
 			originPrice: 135000,
 			finalPrice: 128000,
 			createdAt: new Date().toString(),
@@ -43,7 +49,7 @@ export default function BrandOtherProducts() {
 		{
 			productId: 1,
 			name: "Waist String Wide Pants VW5ML470_3color",
-			colorName: "123",
+			colorName: "BEIGE",
 			originPrice: 135000,
 			finalPrice: 128000,
 			createdAt: new Date().toString(),
@@ -54,7 +60,7 @@ export default function BrandOtherProducts() {
 		{
 			productId: 1,
 			name: "Waist String Wide Pants VW5ML470_3color",
-			colorName: "123",
+			colorName: "BEIGE",
 			originPrice: 135000,
 			finalPrice: 128000,
 			createdAt: new Date().toString(),
@@ -65,7 +71,7 @@ export default function BrandOtherProducts() {
 		{
 			productId: 1,
 			name: "Waist String Wide Pants VW5ML470_3color",
-			colorName: "123",
+			colorName: "BEIGE",
 			originPrice: 135000,
 			finalPrice: 128000,
 			createdAt: new Date().toString(),
@@ -76,7 +82,7 @@ export default function BrandOtherProducts() {
 		{
 			productId: 1,
 			name: "Waist String Wide Pants VW5ML470_3color",
-			colorName: "123",
+			colorName: "BEIGE",
 			originPrice: 135000,
 			finalPrice: 128000,
 			createdAt: new Date().toString(),
@@ -87,7 +93,7 @@ export default function BrandOtherProducts() {
 		{
 			productId: 1,
 			name: "Waist String Wide Pants VW5ML470_3color",
-			colorName: "123",
+			colorName: "BEIGE",
 			originPrice: 135000,
 			finalPrice: 128000,
 			createdAt: new Date().toString(),
@@ -98,7 +104,7 @@ export default function BrandOtherProducts() {
 		{
 			productId: 1,
 			name: "Waist String Wide Pants VW5ML470_3color",
-			colorName: "123",
+			colorName: "BEIGE",
 			originPrice: 135000,
 			finalPrice: 128000,
 			createdAt: new Date().toString(),
@@ -109,7 +115,7 @@ export default function BrandOtherProducts() {
 		{
 			productId: 1,
 			name: "Waist String Wide Pants VW5ML470_3color",
-			colorName: "123",
+			colorName: "BEIGE",
 			originPrice: 135000,
 			finalPrice: 128000,
 			createdAt: new Date().toString(),
@@ -120,7 +126,7 @@ export default function BrandOtherProducts() {
 		{
 			productId: 1,
 			name: "Waist String Wide Pants VW5ML470_3color",
-			colorName: "123",
+			colorName: "BEIGE",
 			originPrice: 130000,
 			finalPrice: 128000,
 			createdAt: new Date().toString(),
@@ -129,6 +135,10 @@ export default function BrandOtherProducts() {
 			wishCount: 123,
 		},
 	];
+
+	useEffect(() => {
+		console.log({ sellerOtherProducts });
+	}, [sellerOtherProducts]);
 
 	return (
 		<div className={styles.brandOtherProducts}>
@@ -141,7 +151,7 @@ export default function BrandOtherProducts() {
 					onPageChange={({ page, totalPages }) => {
 						setPageInfo({ page, totalPages });
 					}}
-					items={purchasedTogetherProducts}
+					items={sellerOtherProducts}
 					renderItem={(item, index) => {
 						/* 슬라이드 요소 */
 						return (
@@ -150,7 +160,7 @@ export default function BrandOtherProducts() {
 								<Link href={`/product/detail/${item.productId}`}></Link>
 								{/* 이미지 */}
 								<div className={styles.imageBox}>
-									<SmartImage fill />
+									<SmartImage fill src={item.filePath} alt={item.fileName} />
 									<button>
 										{/* <FaHeart /> */}
 										<FiHeart />
@@ -162,7 +172,9 @@ export default function BrandOtherProducts() {
 									</p>
 								</div>
 								<h5>
-									<b>10%</b>
+									{discountPercent(item.originPrice, item.finalPrice) > 0 && (
+										<b>{discountPercent(item.originPrice, item.finalPrice)}%</b>
+									)}
 									<span>{money(item.finalPrice)}</span>
 								</h5>
 							</div>

@@ -604,7 +604,8 @@
 
 			.brandThumbnail {
 				position: relative;
-				height: 500px;
+				height: 350px;
+				background-color: #eee;
 
 				img {
 					width: 100%;
@@ -614,9 +615,8 @@
 				.brandLike {
 					position: absolute;
 					left: 50px;
-					bottom: calc(50% - 30px);
-					color: #fff;
-
+					bottom: calc(50% - 88px);
+					color: #4f4f4f;
 					> div {
 						font-size: 30px;
 					}
@@ -629,9 +629,8 @@
 				.brandHomeLink {
 					position: absolute;
 					left: 50px;
-					bottom: calc(50% - 150px);
+					bottom: calc(50% - 141px);
 					border: 1px solid #fff;
-					font-weight: 600;
 					padding: 8px 14px 8px 20px;
 					background-color: #fff;
 					color: #000;

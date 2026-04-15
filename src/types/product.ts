@@ -103,9 +103,19 @@ export type ProductImage = FileInfo & {
 export type ProductDetailResponse = ProductDetail & {
 	productImageList: ProductImage[];
 } & {
+	sellerName: string;
+	sellerNameEn: string; // 영문 이름
+	businessRegistrationNumber: string; // 사업자 등록 번호
+	telecomSalesNumber: string; // 통신판매업 신고 번호
+	representativeName: string; // 대표자 이름
+	businessZipcode: string; // 사업장 우편번호
+	businessAddress: string; // 사업장 주소
+	businessAddressDetail: string; // 사업장 주소 상세
+	sellerLikeCount: number; // 판매자 좋아요 수
 	baseShippingFee: number; // 기본 배송비
 	freeShippingMinAmount: number; // 무료배송 최소 주문금액
 	extraShippingFee: number; // 제주/도서산간 추가 배송비
+	//
 	shippingType: "IMMEDIATE" | "RESERVED"; // 출고 방식('IMMEDIATE','RESERVED')
 	shippingDueDate: string; // 출고 예정일
 	shippingNote: string; // 출고 관련 추가 안내 문구
@@ -132,6 +142,15 @@ export interface GetProductDetailCouponResponse extends BaseResponse {
 export interface GetProductDetailImageResponse extends BaseResponse {
 	productDetailImageList: ProductImage[];
 }
+/* 판매자 좋아요 여부 및 판매자 다른 제품 조회 */
+export type SellerOtherProduct = Product & {
+	sellerName: string;
+} & FileInfo;
+export interface SellerLikeAndOtherProductsResponse extends BaseResponse {
+	isSellerLiked: boolean;
+	sellerOtherProducts: SellerOtherProduct[];
+}
+
 /* 제품 상세보기 리뷰 조회 */
 export interface GetProductDetailReviewResponse extends BaseResponse {
 	productReviewList: (Review & { userName: string })[];

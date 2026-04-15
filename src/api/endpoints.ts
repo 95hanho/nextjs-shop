@@ -98,12 +98,16 @@ const API_URL = {
 	PRODUCT_DETAIL_COUPON: "/product/detail/:productId/coupon",
 	/** 제품 상세보기 상세이미지(상품소개) 조회 */
 	PRODUCT_DETAIL_IMAGE: "/product/detail/:productId/image",
-	/** 쿠폰 다운로드 */
-	PRODUCT_COUPON_DOWNLOAD: "/product/coupon/download",
+	/** 판매자 좋아요 여부 및 판매자 다른 제품 조회 */
+	PRODUCT_SELLER_LIKE_OTHER_PRODUCT: "/product/detail/:productId/seller/like-other-product",
+	/** 판매자 좋아요/취소 */
+	PRODUCT_SELLER_LIKE: "/product/detail/:productId/seller/like",
 	/** 제품 리뷰 조회 */
 	PRODUCT_DETAIL_REVIEW: "/product/detail/:productId/review",
 	/** 제품 상품 Q&A 조회 */
 	PRODUCT_DETAIL_QNA: "/product/detail/:productId/qna",
+	/** 쿠폰 다운로드 */
+	PRODUCT_COUPON_DOWNLOAD: "/product/coupon/download",
 
 	// 판매자 ----------------------------------
 	/** 판매자 정보조회, 로그인 */
