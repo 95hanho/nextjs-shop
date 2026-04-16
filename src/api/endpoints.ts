@@ -106,6 +106,8 @@ const API_URL = {
 	PRODUCT_DETAIL_REVIEW: "/product/detail/:productId/review",
 	/** 제품 상품 Q&A 조회 */
 	PRODUCT_DETAIL_QNA: "/product/detail/:productId/qna",
+	/** 같은 카테고리 BEST 제품 조회 */
+	PRODUCT_CATEGORY_BEST: "/product/detail/:productId/category-best",
 	/** 쿠폰 다운로드 */
 	PRODUCT_COUPON_DOWNLOAD: "/product/coupon/download",
 

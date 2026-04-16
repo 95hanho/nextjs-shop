@@ -143,14 +143,14 @@ export interface GetProductDetailImageResponse extends BaseResponse {
 	productDetailImageList: ProductImage[];
 }
 /* 판매자 좋아요 여부 및 판매자 다른 제품 조회 */
-export type SellerOtherProduct = Product & {
+export type OtherProduct = Product & {
 	sellerName: string;
+	wished: boolean; // 해당 유저 위시 여부
 } & FileInfo;
 export interface SellerLikeAndOtherProductsResponse extends BaseResponse {
 	isSellerLiked: boolean;
-	sellerOtherProducts: SellerOtherProduct[];
+	sellerOtherProducts: OtherProduct[];
 }
-
 /* 제품 상세보기 리뷰 조회 */
 export interface GetProductDetailReviewResponse extends BaseResponse {
 	productReviewList: (Review & { userName: string })[];
@@ -162,4 +162,8 @@ type ProductQnaItem = ProductQna & {
 };
 export interface GetProductDetailQnaResponse extends BaseResponse {
 	ProductQnaList: ProductQnaItem[];
+}
+/* 같은 카테고리 BEST 제품 조회 */
+export interface GetCategoryBestProductsResponse extends BaseResponse {
+	categoryBestProductList: OtherProduct[];
 }

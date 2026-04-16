@@ -8,6 +8,7 @@ import ProductEtcInfoSection from "@/app/product/detail/[productId]/_components/
 import ProductDescriptionSection from "@/app/product/detail/[productId]/_components/ProductDescriptionSection";
 import ProductInfoSection from "@/app/product/detail/[productId]/_components/ProductInfoSection";
 import { GetProductDetailResponse } from "@/types/product";
+import { useParams } from "next/navigation";
 interface ProductDetailClientProps {
 	productDetailResponse: GetProductDetailResponse;
 }
@@ -33,13 +34,13 @@ export default function ProductDetailClient({ productDetailResponse }: ProductDe
 				{/* 상품 사진 및 가격배송 정보 */}
 				<ProductVisualInfo {...productVisualInfoProps} />
 				{/* 업체등록 상품 상세 블로그 */}
-				<ProductDescriptionSection productId={productId} />
+				<ProductDescriptionSection />
 				{/* 상품정보 보기, 판매자 정보 */}
 				<ProductInfoSection productDetail={productDetailResponse.productDetail} />
 				{/* 상품 리뷰 */}
-				<ProductReview productId={productId} />
+				<ProductReview />
 				{/* 상품 QnA */}
-				<QuestionAnswer productId={productId} />
+				<QuestionAnswer />
 				{/* 배송정보, 교환, 환불, A/S안내, 같은 카테고리 추천 */}
 				<ProductEtcInfoSection />
 			</div>

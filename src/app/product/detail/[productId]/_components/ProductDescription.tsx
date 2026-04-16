@@ -1,9 +1,14 @@
 import { useState } from "react";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import styles from "../ProductDetail.module.scss";
+import { useParams } from "next/navigation";
 
-export default function ProductDescription({ productId }: { productId: number }) {
+export default function ProductDescription() {
 	const [openDescription, setOpenDescription] = useState(false);
+	const params = useParams<{
+		productId: string;
+	}>();
+	const productIdNum = Number(params.productId);
 
 	return (
 		<article className={styles.descriptionToggle}>
@@ -18,7 +23,7 @@ export default function ProductDescription({ productId }: { productId: number })
 			{openDescription && (
 				<h3 className={styles.productNumber}>
 					<strong>상품번호 : </strong>
-					<span>{productId}</span>
+					<span>{productIdNum}</span>
 				</h3>
 			)}
 		</article>

@@ -8,14 +8,13 @@ import { getApiUrl } from "@/lib/getBaseUrl";
 import API_URL from "@/api/endpoints";
 import { BaseResponse } from "@/types/common";
 import { calculateDiscount } from "@/lib/price";
-import { FaQuestion } from "react-icons/fa";
 import { TooltipIcon } from "@/components/ui/TooltipIcon";
 import { ProductCouponWithDiscount } from "@/app/product/detail/[productId]/_components/ProductVisualInfo";
+import { useParams } from "next/navigation";
 
 type CommonProps = {
 	originPrice: number;
 	finalPrice: number;
-	productId: number;
 };
 
 type MyPriceCheckboxTooltipProps =
@@ -29,15 +28,19 @@ type MyPriceCheckboxTooltipProps =
 	| (CommonProps & { type: "MILEAGE"; mileage: number; setMileageUse: () => void; couponChecked: boolean; useMileage: number });
 
 export default function MyPriceCheckboxTooltip(props: MyPriceCheckboxTooltipProps) {
-	const { type, originPrice, finalPrice, productId } = props;
+	const { type, originPrice, finalPrice } = props;
 	const queryClient = useQueryClient();
+	const params = useParams<{
+		productId: string;
+	}>();
+	const productIdNum = Number(params.productId);
 
 	// 쿠폰 다운로드
 	const couponDownload = useMutation({
 		mutationFn: (couponId: number) => postJson<BaseResponse & { userCouponId: number }>(getApiUrl(API_URL.PRODUCT_COUPON_DOWNLOAD), { couponId }),
 		onSuccess(data) {
 			console.log("couponDownload data", data);
-			queryClient.invalidateQueries({ queryKey: ["productCouponList", productId] });
+			queryClient.invalidateQueries({ queryKey: ["productCouponList", productIdNum] });
 		},
 		onError(err) {
 			console.log("couponDownload err", err);

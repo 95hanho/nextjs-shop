@@ -6,13 +6,19 @@ import { GetProductDetailReviewResponse } from "@/types/product";
 import { getNormal } from "@/api/fetchFilter";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import API_URL from "@/api/endpoints";
-
-interface ProductReviewProps {
-	productId: number;
-}
+import { useParams } from "next/navigation";
 
 // 상품 리뷰
-export default function ProductReview({ productId }: ProductReviewProps) {
+export default function ProductReview() {
+	const params = useParams<{
+		productId: string;
+	}>();
+	const productIdNum = Number(params.productId);
+
+	// =================================================================
+	// React Query
+	// =================================================================
+
 	// 리뷰 조회
 	const {
 		data: reviewResponse,
@@ -20,9 +26,9 @@ export default function ProductReview({ productId }: ProductReviewProps) {
 		isError,
 		isFetching,
 	} = useQuery<GetProductDetailReviewResponse>({
-		queryKey: ["productReviewList", productId],
-		queryFn: () => getNormal(getApiUrl(API_URL.PRODUCT_DETAIL_REVIEW), { productId }),
-		enabled: !!productId,
+		queryKey: ["productReviewList", productIdNum],
+		queryFn: () => getNormal(getApiUrl(API_URL.PRODUCT_DETAIL_REVIEW), { productId: productIdNum }),
+		enabled: !!productIdNum,
 		refetchOnWindowFocus: false,
 		select(data) {
 			// console.log({ reviewResponse: data });

@@ -5,13 +5,15 @@ import { GetProductDetailQnaResponse } from "@/types/product";
 import { getNormal } from "@/api/fetchFilter";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import API_URL from "@/api/endpoints";
-
-interface QuestionAnswerProps {
-	productId: number;
-}
+import { useParams } from "next/navigation";
 
 // 상품 QnA
-export default function QuestionAnswer({ productId }: QuestionAnswerProps) {
+export default function QuestionAnswer() {
+	const params = useParams<{
+		productId: string;
+	}>();
+	const productIdNum = Number(params.productId);
+
 	// QnA 조회
 	const {
 		data: qnaResponse,
@@ -19,9 +21,9 @@ export default function QuestionAnswer({ productId }: QuestionAnswerProps) {
 		isError,
 		isFetching,
 	} = useQuery<GetProductDetailQnaResponse>({
-		queryKey: ["productQnaList", productId],
-		queryFn: () => getNormal(getApiUrl(API_URL.PRODUCT_DETAIL_QNA), { productId }),
-		enabled: !!productId,
+		queryKey: ["productQnaList", productIdNum],
+		queryFn: () => getNormal(getApiUrl(API_URL.PRODUCT_DETAIL_QNA), { productId: productIdNum }),
+		enabled: !!productIdNum,
 		refetchOnWindowFocus: false,
 		select(data) {
 			// console.log({ qnaResponse: data });

@@ -664,85 +664,6 @@
 				margin-top: 30px;
 				font-size: 18px;
 			}
-
-			.imageSlide {
-				margin-top: 20px;
-
-				.sliderItem {
-					position: relative;
-
-					a {
-						position: absolute;
-						width: 100%;
-						height: 100%;
-					}
-
-					.imageBox {
-						position: relative;
-						width: 100%;
-						aspect-ratio: 1 / 1; // width와 height를 같게 설정
-
-						img {
-							width: 100%;
-							height: 100%;
-							display: block;
-						}
-
-						button {
-							position: absolute;
-							top: 5px;
-							right: 10px;
-							font-size: 20px;
-							color: #fff;
-						}
-					}
-
-					.slideProductName {
-						padding: 5px 5px;
-
-						p {
-							white-space: nowrap;
-							overflow: hidden;
-							text-overflow: ellipsis;
-							font-size: 12px;
-						}
-					}
-
-					h5 {
-						font-size: 14px;
-						padding: 0 5px;
-
-						b {
-							color: #f35b1f;
-							vertical-align: middle;
-						}
-
-						span {
-							margin-left: 5px;
-						}
-					}
-				}
-
-				.sliderPagination {
-					padding: 15px 0;
-					text-align: center;
-					font-size: 30px;
-					font-weight: 100;
-					color: #ccc;
-					font-style: italic;
-
-					button {
-						padding: 0 20px;
-						vertical-align: baseline;
-						font-size: 40px;
-					}
-
-					strong {
-						vertical-align: baseline;
-						color: #555;
-					}
-				}
-			}
 		}
 	}
 
@@ -814,92 +735,97 @@
 					}
 				}
 			}
+		}
+	}
 
-			.imageSlide {
-				margin-top: 20px;
+	/* 다른 제품 추천 */
+	.otherProductImageSlide {
+		margin-top: 20px;
 
-				.sliderItem {
-					position: relative;
+		.sliderItem {
+			position: relative;
 
-					a {
-						position: absolute;
-						width: 100%;
-						height: 100%;
-					}
+			a {
+				position: absolute;
+				width: 100%;
+				height: 100%;
+				cursor: pointer;
+				z-index: 5;
+			}
 
-					.imageBox {
-						position: relative;
-						width: 100%;
-						aspect-ratio: 1 / 1; // width와 height를 같게 설정
+			.imageBox {
+				position: relative;
+				width: 100%;
+				aspect-ratio: 1 / 1; // width와 height를 같게 설정
 
-						img {
-							width: 100%;
-							height: 100%;
-							display: block;
-						}
+				img {
+					width: 100%;
+					height: 100%;
+					display: block;
+				}
+				mark {
+					position: absolute;
+					top: 0;
+					left: 0;
+					background-color: #000;
+					color: #fff;
+					width: 16px;
+					height: 16px;
+					font-size: 11px;
+					display: inline-flex;
+					justify-content: center;
+					align-items: center;
+				}
+				.wishButton {
+					position: absolute;
+					top: 25px;
+					right: 5px;
+				}
+			}
 
-						mark {
-							position: absolute;
-							background-color: #000;
-							color: #fff;
-							padding: 0 6.1px;
-							font-size: 14px;
-						}
+			.slideProductName {
+				padding: 5px 5px;
 
-						button {
-							position: absolute;
-							top: 5px;
-							right: 10px;
-							font-size: 20px;
-							color: #fff;
-						}
-					}
+				p {
+					white-space: nowrap;
+					overflow: hidden;
+					text-overflow: ellipsis;
+					font-size: 12px;
+				}
+			}
 
-					.slideProductName {
-						padding: 5px 5px;
+			h5 {
+				font-size: 14px;
+				padding: 0 5px;
 
-						p {
-							white-space: nowrap;
-							overflow: hidden;
-							text-overflow: ellipsis;
-							font-size: 12px;
-						}
-					}
-
-					h5 {
-						font-size: 14px;
-						padding: 0 5px;
-
-						b {
-							color: #f35b1f;
-							vertical-align: middle;
-						}
-
-						span {
-							margin-left: 5px;
-						}
-					}
+				b {
+					color: #f35b1f;
+					vertical-align: middle;
 				}
 
-				.sliderPagination {
-					padding: 15px 0;
-					text-align: center;
-					font-size: 30px;
-					font-weight: 100;
-					color: #ccc;
-					font-style: italic;
-
-					button {
-						padding: 0 20px;
-						vertical-align: baseline;
-						font-size: 40px;
-					}
-
-					strong {
-						vertical-align: baseline;
-						color: #555;
-					}
+				span {
+					margin-left: 5px;
 				}
+			}
+		}
+
+		.sliderPagination {
+			padding: 15px 0;
+			text-align: center;
+			font-size: 30px;
+			font-weight: 100;
+			color: #ccc;
+			font-style: italic;
+
+			button {
+				padding: 0 20px;
+				vertical-align: baseline;
+				font-size: 40px;
+			}
+
+			strong {
+				vertical-align: baseline;
+				color: #555;
 			}
 		}
 	}

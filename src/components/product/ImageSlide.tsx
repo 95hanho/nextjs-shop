@@ -1,13 +1,14 @@
 import "swiper/css";
+import "swiper/css/pagination";
 import { Swiper, SwiperProps, SwiperSlide } from "swiper/react";
 import type { Swiper as SwiperType } from "swiper";
 import { ReactNode, useEffect, useRef, useState } from "react";
 import { EffectFade, Autoplay, EffectCards, Pagination } from "swiper/modules";
 import { ImageSlideHandle } from "@/components/product/ImageSlide.type";
-import "swiper/css/pagination";
 
 type Mode = "slide" | "fade" | "cards";
 interface ImageSlideProps<T> {
+	className?: string;
 	mode?: Mode;
 	getItemKey?: (item: T, index: number) => string | number;
 	slidesPerView?: number;
@@ -26,6 +27,7 @@ interface ImageSlideProps<T> {
 }
 
 export const ImageSlide = <T,>({
+	className,
 	mode = "slide",
 	slidesPerView = 5,
 	spaceBetween = 20,
@@ -44,13 +46,14 @@ export const ImageSlide = <T,>({
 
 	const swiperRef = useRef<SwiperType | null>(null);
 	// "3 / 4" 같은 페이지 단위는 Swiper의 snapGrid 기준이 가장 안정적
-	const [pageInfo, setPageInfo] = useState({ page: 1, totalPages: 2 });
+	const [, setPageInfo] = useState({ page: 1, totalPages: 2 });
 	const modules: SwiperProps["modules"] = [];
 
 	// 페이지네이션 계산 함수 (Swiper의 snapGrid 기준)
 	const computePageInfo = (swiper: SwiperType) => {
-		const totalPages = Math.max(1, swiper.snapGrid?.length ?? 1);
-		const page = Math.min(totalPages, (swiper.snapIndex ?? 0) + 1);
+		const totalPages = Math.max(1, Math.ceil(items.length / slidesPerView));
+		const page = Math.min(totalPages, Math.floor((swiper.activeIndex ?? 0) / slidesPerView) + 1);
+
 		return { page, totalPages };
 	};
 	// 페이지네이션 동기화 함수 (슬라이드 변경 시)
@@ -69,16 +72,34 @@ export const ImageSlide = <T,>({
 			slideToPage: (page: number) => {
 				const swiper = swiperRef.current;
 				if (!swiper) return;
-				const total = Math.max(1, swiper.snapGrid?.length ?? 1);
-				const clamped = Math.min(total, Math.max(1, page));
-				// snapIndex 기준 page -> index
-				swiper.slideTo(clamped - 1);
+
+				const totalPages = Math.max(1, Math.ceil(items.length / slidesPerView));
+				const clampedPage = Math.min(totalPages, Math.max(1, page));
+				const targetIndex = (clampedPage - 1) * slidesPerView;
+				swiper.slideTo(targetIndex);
+			},
+			slidePrevByGroup: () => {
+				const swiper = swiperRef.current;
+				if (!swiper) return;
+
+				const step = slidesPerView;
+				const nextIndex = Math.max(0, (swiper.activeIndex ?? 0) - step);
+				swiper.slideTo(nextIndex);
+			},
+			slideNextByGroup: () => {
+				const swiper = swiperRef.current;
+				if (!swiper) return;
+
+				const step = slidesPerView;
+				const maxIndex = Math.max(0, items.length - slidesPerView);
+				const nextIndex = Math.min(maxIndex, (swiper.activeIndex ?? 0) + step);
+				swiper.slideTo(nextIndex);
 			},
 			getSwiper: () => swiperRef.current,
 		};
 
 		onReady(handle);
-	}, [onReady]);
+	}, [onReady, items.length, slidesPerView]);
 
 	// =================================================================
 	// UI
@@ -146,7 +167,7 @@ export const ImageSlide = <T,>({
 	};
 
 	return (
-		<Swiper {...swiperProps}>
+		<Swiper {...swiperProps} className={className}>
 			{items.map((item, index) => (
 				<SwiperSlide key={getItemKey ? getItemKey(item, index) : index}>{renderItem(item, index)}</SwiperSlide>
 			))}

@@ -44,7 +44,7 @@ export default function ProductEtcInfoSection() {
 				</div>
 
 				{/* 슬라이드 */}
-				<div className={styles.imageSlide}>
+				<div className={styles.otherProductImageSlide}>
 					{/* 슬라이드 벨트 */}
 					<BestRankProducts />
 				</div>
