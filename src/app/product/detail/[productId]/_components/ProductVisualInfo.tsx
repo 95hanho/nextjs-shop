@@ -67,7 +67,7 @@ export default function ProductVisualInfo({ productDetail, reviewCount, reviewRa
 	// 이용가능쿠폰 조회
 	const { data: availableCouponResponse } = useQuery<GetProductDetailCouponResponse, Error, GetProductDetailCouponWithDiscountData>({
 		queryKey: ["productCouponList", productIdNum],
-		queryFn: () => getNormal(getApiUrl(API_URL.PRODUCT_DETAIL_COUPON), { productIdNum }),
+		queryFn: () => getNormal(getApiUrl(API_URL.PRODUCT_DETAIL_COUPON), { productId: productIdNum }),
 		enabled: loginOn,
 		refetchOnWindowFocus: false,
 		select: (data) => {

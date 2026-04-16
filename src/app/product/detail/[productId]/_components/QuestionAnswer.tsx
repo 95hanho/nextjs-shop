@@ -19,13 +19,11 @@ import clsx from "clsx";
 import moment from "moment";
 import { useGlobalDialogStore } from "@/store/globalDialog.store";
 import { useAuth } from "@/hooks/useAuth";
-import { resolve } from "path";
-import { ConfirmOkResult, DialogResultMap } from "@/store/modal.type";
 
 // 상품 QnA
 export default function QuestionAnswer({ sellerName }: { sellerName: string }) {
 	const { loginOn, user } = useAuth();
-	const { openDialog, dialogResult, clearDialogResult } = useGlobalDialogStore();
+	const { openDialog } = useGlobalDialogStore();
 	const queryClient = useQueryClient();
 	const params = useParams<{
 		productId: string;
@@ -68,6 +66,7 @@ export default function QuestionAnswer({ sellerName }: { sellerName: string }) {
 		mutationFn: (form: AddProductQnaRequest) => postJson(getApiUrl(API_URL.PRODUCT_DETAIL_QNA), { ...form, productId: productIdNum }),
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["productQnaList", productIdNum] });
+			setQnaViewOpen(false);
 		},
 	});
 	// QnA 수정
@@ -76,6 +75,7 @@ export default function QuestionAnswer({ sellerName }: { sellerName: string }) {
 		mutationFn: (form: UpdateProductQnaRequest) => putJson(getApiUrl(API_URL.PRODUCT_DETAIL_QNA), { ...form, productId: productIdNum }),
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["productQnaList", productIdNum] });
+			setQnaViewOpen(false);
 		},
 	});
 
@@ -95,7 +95,9 @@ export default function QuestionAnswer({ sellerName }: { sellerName: string }) {
 	// QnA 작성 뷰
 	const [qnaViewOpen, setQnaViewOpen] = useState(false);
 	// Qna 작성 폼
+	const [qnaFormType, setQnaFormType] = useState<"ADD" | "UPDATE">("ADD");
 	const [qnaForm, setQnaForm] = useState({
+		productQnaId: 0,
 		productQnaTypeId: 1,
 		question: "",
 		secret: false,
@@ -126,7 +128,19 @@ export default function QuestionAnswer({ sellerName }: { sellerName: string }) {
 			openDialog("ALERT", { content: "문의 내용은 줄바꿈을 10회 이하로 입력해주세요." });
 			return;
 		}
-		addProductQna(qnaForm);
+		if (qnaFormType === "ADD" && !qnaForm.productQnaId) {
+			addProductQna({
+				productQnaTypeId: qnaForm.productQnaTypeId,
+				question: qnaForm.question,
+				secret: qnaForm.secret,
+			});
+			return;
+		}
+		if (qnaFormType === "UPDATE" && qnaForm.productQnaId) {
+			updateProductQna({ productQnaId: qnaForm.productQnaId, question: qnaForm.question, secret: qnaForm.secret });
+			return;
+		}
+		openDialog("ALERT", { content: "알 수 없는 오류가 발생했습니다. 다시 시도해주세요." });
 	};
 
 	// =================================================================
@@ -162,16 +176,6 @@ export default function QuestionAnswer({ sellerName }: { sellerName: string }) {
 				.slice(startIdx, endIdx),
 		};
 	}, [productQnaList, qnaFilterCode, qnaPage.page]);
-	// useEffect(() => {
-	// 	if (!dialogResult) return;
-	// 	if (dialogResult.action === "CONFIRM_OK") {
-	// 		const payload = dialogResult.payload as DialogResultMap["CONFIRM_OK"];
-	// 		if (payload?.result === "QNA_DELETE_OK") {
-	// 			deleteProductQna(payload.productQnaId);
-	// 		}
-	// 	}
-	// 	clearDialogResult();
-	// }, [dialogResult, clearDialogResult]);
 
 	return (
 		<>
@@ -189,6 +193,13 @@ export default function QuestionAnswer({ sellerName }: { sellerName: string }) {
 										openDialog("ALERT", { content: "로그인이 필요한 서비스입니다." });
 										return;
 									}
+									setQnaFormType("ADD");
+									setQnaForm({
+										productQnaId: 0,
+										productQnaTypeId: 1,
+										question: "",
+										secret: false,
+									});
 									setQnaViewOpen(true);
 								}}
 							>
@@ -204,20 +215,31 @@ export default function QuestionAnswer({ sellerName }: { sellerName: string }) {
 							<hr />
 							<article className="p-3 bg-gray-100">
 								<header>
-									<h3>Q&A 작성</h3>
+									<h3>Q&A {qnaFormType === "ADD" ? "작성" : "수정"}</h3>
 								</header>
 								<nav className={clsx("flex gap-2.5 mt-3", styles.qnaFilterNav)}>
-									{productQnaTypeList.map((type) => (
-										<button
-											key={`qnaWriting-${type.productQnaTypeId}`}
-											className={clsx("px-3 py-1 text-sm bg-gray-200 border rounded-full cursor-pointer text-slate-900", {
-												[styles.on]: qnaForm.productQnaTypeId === type.productQnaTypeId,
-											})}
-											onClick={() => setQnaForm({ ...qnaForm, productQnaTypeId: type.productQnaTypeId })}
-										>
-											{type.name}
-										</button>
-									))}
+									{qnaFormType === "ADD" ? (
+										<>
+											{productQnaTypeList.map((type) => (
+												<button
+													key={`qnaWriting-${type.productQnaTypeId}`}
+													className={clsx(
+														"px-3 py-1 text-sm bg-gray-200 border rounded-full cursor-pointer text-slate-900",
+														{
+															[styles.on]: qnaForm.productQnaTypeId === type.productQnaTypeId,
+														},
+													)}
+													onClick={() => setQnaForm({ ...qnaForm, productQnaTypeId: type.productQnaTypeId })}
+												>
+													{type.name}
+												</button>
+											))}
+										</>
+									) : (
+										<span className="px-1 font-bold">
+											[{productQnaTypeList.find((type) => type.productQnaTypeId === qnaForm.productQnaTypeId)?.name}]
+										</span>
+									)}
 								</nav>
 								<section className="px-2 mt-3">
 									<div className="flex">
@@ -262,7 +284,7 @@ export default function QuestionAnswer({ sellerName }: { sellerName: string }) {
 											size="sm"
 										/>
 									</div>
-									<p className="mt-2 text-sm text-right">※ 답변 전까지만 수정 및 비밀글로 설정할 수 있습니다.</p>
+									<p className="mt-2 text-sm text-right">※ 판매자 답변 전까지만 수정 및 비밀글 변경을 할 수 있습니다.</p>
 									<div className="mt-1 text-right">
 										<button className="text-base" onClick={handleQnaSubmit}>
 											작성완료
@@ -357,7 +379,21 @@ export default function QuestionAnswer({ sellerName }: { sellerName: string }) {
 													<div className="text-right">
 														{isMyQna && !qna.answer && (
 															<>
-																<button className="text-base">수정</button>
+																<button
+																	className="text-base"
+																	onClick={() => {
+																		setQnaFormType("UPDATE");
+																		setQnaForm({
+																			productQnaId: qna.productQnaId,
+																			productQnaTypeId: qna.productQnaTypeId,
+																			question: qna.question,
+																			secret: qna.secret,
+																		});
+																		setQnaViewOpen(true);
+																	}}
+																>
+																	수정
+																</button>
 																<button
 																	className="ml-2 text-base"
 																	onClick={() => {
@@ -365,7 +401,7 @@ export default function QuestionAnswer({ sellerName }: { sellerName: string }) {
 																			content: "정말 삭제하시겠습니까?",
 																			// okResult: "QNA_DELETE_OK",
 																			handleAfterOk: () => {
-																				console.log(123);
+																				deleteProductQna(qna.productQnaId);
 																			},
 																		});
 																	}}
