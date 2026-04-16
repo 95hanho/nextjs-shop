@@ -35,9 +35,6 @@ type DomainModalCommon = ModalCommon & {
 /** confirm 모달에서 ok 눌렀을 때, “어떤 상황인지”에 대한 결과값 */
 export type ConfirmOkResult =
 	| "NEED_LOGIN" // RootProvider - 로그인 필요
-	| "ADDCART" // 상품상세조회 - 추가로 담으시겠습니까?
-	| "ADDRESS_DEFAULT_CHANGE" // 마이페이지 - 배송주소 기본값 변경
-	| "ADDRESS_DELETE" // 마이페이지 - 배송주소 삭제
 	| "COUPON_STATUS_CHANGE" // 판매자페이지 - 쿠폰 상태 변경
 	| "SELLER_COUPON_DELETE_OK" // 판매자페이지 - 쿠폰 삭제 확인
 	| "SELLER_PRODUCT_OPTION_DELETE_OK" // 판매자페이지 - 제품 옵션 삭제 확인

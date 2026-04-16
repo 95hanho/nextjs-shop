@@ -14,14 +14,12 @@ import Error from "next/error";
 import { useEffect, useRef, useState } from "react";
 import styles from "./MyShippingAddress.module.scss";
 import { ShippingAddressList } from "@/components/address/ShippingAddressList";
-import { DialogResultMap, DomainModalResultMap } from "@/store/modal.type";
-import { useGlobalDialogStore } from "@/store/globalDialog.store";
+import { DomainModalResultMap } from "@/store/modal.type";
 
 export default function MyShippingAddressClient() {
 	const { loginOn } = useAuth();
 	const queryClient = useQueryClient();
 	const { openModal, clearModalResult, modalResult } = useModalStore();
-	const { clearDialogResult, dialogResult } = useGlobalDialogStore();
 
 	// 유저 배송지 조회
 	const { data: userAddressData, isLoading } = useQuery<GetUserAddressListResponse, Error, GetUserAddressListResponse>({
@@ -57,9 +55,9 @@ export default function MyShippingAddressClient() {
 	});
 	// 유저 배송지 삭제
 	const handleAddressDelete = useMutation({
-		mutationFn: () =>
+		mutationFn: (addressId: number) =>
 			deleteNormal<BaseResponse>(getApiUrl(API_URL.MY_ADDRESS_DELETE), {
-				addressId: changingDefaultAddressRef.current?.addressId,
+				addressId,
 			}),
 		onSuccess(data) {
 			console.log(data);
@@ -77,32 +75,6 @@ export default function MyShippingAddressClient() {
 	// 기본배송지 변경
 	const changingDefaultAddressRef = useRef(null as UserAddressListItem | null);
 
-	useEffect(() => {
-		if (!dialogResult) return;
-		if (dialogResult?.action === "CONFIRM_OK") {
-			const payload = dialogResult.payload as DialogResultMap["CONFIRM_OK"];
-			// 기본값 변경
-			if (payload?.result === "ADDRESS_DEFAULT_CHANGE") {
-				const changing = async () => {
-					if (changingDefaultAddressRef.current) {
-						await handleAddressUpdate.mutateAsync(changingDefaultAddressRef.current);
-						queryClient.invalidateQueries({ queryKey: ["userAddressList"] });
-					}
-				};
-				changing();
-			}
-			// 주소 삭제
-			if (payload?.result === "ADDRESS_DELETE") {
-				const deleting = async () => {
-					await handleAddressDelete.mutateAsync();
-					queryClient.invalidateQueries({ queryKey: ["userAddressList"] });
-				};
-				deleting();
-			}
-		}
-
-		clearDialogResult();
-	}, [dialogResult, clearDialogResult, handleAddressUpdate, handleAddressDelete, queryClient]);
 	// 모달에서 확인 누른 후 처리할 작업들 (기본배송지 변경, 배송지 삭제, 배송지 추가/수정)
 	useEffect(() => {
 		if (!modalResult) return;
@@ -135,8 +107,19 @@ export default function MyShippingAddressClient() {
 					<ShippingAddressList
 						page="MYPAGE"
 						userAddressList={userAddressList}
-						changeAddress={(address) => {
-							changingDefaultAddressRef.current = address;
+						openAddressModal={(address) => {
+							openModal("ADDRESS_SET", {
+								prevAddress: address,
+								disableOverlayClose: true,
+							});
+						}}
+						changeDefaultAddress={async (address) => {
+							await handleAddressUpdate.mutateAsync(address);
+							queryClient.invalidateQueries({ queryKey: ["userAddressList"] });
+						}}
+						deleteAddress={async (addressId) => {
+							await handleAddressDelete.mutateAsync(addressId);
+							queryClient.invalidateQueries({ queryKey: ["userAddressList"] });
 						}}
 					/>
 					<div className={styles.addressAdd}>

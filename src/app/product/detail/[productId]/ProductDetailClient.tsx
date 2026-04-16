@@ -8,7 +8,6 @@ import ProductEtcInfoSection from "@/app/product/detail/[productId]/_components/
 import ProductDescriptionSection from "@/app/product/detail/[productId]/_components/ProductDescriptionSection";
 import ProductInfoSection from "@/app/product/detail/[productId]/_components/ProductInfoSection";
 import { GetProductDetailResponse } from "@/types/product";
-import { useParams } from "next/navigation";
 interface ProductDetailClientProps {
 	productDetailResponse: GetProductDetailResponse;
 }

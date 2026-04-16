@@ -1,17 +1,13 @@
 import { useAddCart } from "@/hooks/query/mypage/useAddCart";
 import { useProductCartCheck } from "@/hooks/query/mypage/useProductCartCheck";
 import { useGlobalDialogStore } from "@/store/globalDialog.store";
-import { DialogResultMap } from "@/store/modal.type";
-import { AddCartItem, AddCartRequest } from "@/types/product";
-import { useEffect, useRef } from "react";
+import { AddCartItem } from "@/types/product";
 
 /** 장바구니 담기 */
 export function useProductCartAction() {
 	const { mutateAsync: checkProductCart } = useProductCartCheck();
-	const { openDialog, dialogResult, clearDialogResult } = useGlobalDialogStore();
+	const { openDialog } = useGlobalDialogStore();
 	const addCartMutation = useAddCart();
-
-	const storeAddCartRequest = useRef<AddCartRequest | null>(null);
 
 	// 장바구니 담기 버튼
 	const handleAddCart = async (addCartList: AddCartItem[], productId: number) => {
@@ -22,33 +18,18 @@ export function useProductCartAction() {
 		const checkProductCartData = await checkProductCart({ productId });
 
 		if (checkProductCartData.hasCart) {
-			storeAddCartRequest.current = { addCartList, productId }; // 모달 결과를 기다리기 전에 선택한 옵션 저장
 			openDialog("CONFIRM", {
 				content: "이미 장바구니에 담긴 상품입니다. 추가로 담으시겠습니까?",
 				okText: "추가 담기",
-				okResult: "ADDCART",
 				reverse: true,
+				handleAfterOk: () => {
+					addCartMutation.mutate({ addCartList, productId }); // 모달 결과에 따라 저장된 옵션으로 장바구니 담기
+				},
 			});
 			return;
 		}
 		addCartMutation.mutate({ addCartList, productId });
 	};
-
-	// 장바구니 담기 모달 결과 처리
-	useEffect(() => {
-		if (!dialogResult) return;
-
-		if (dialogResult?.action === "CONFIRM_OK") {
-			const payload = dialogResult.payload as DialogResultMap["CONFIRM_OK"];
-			// 장바구니 담기
-			if (payload?.result === "ADDCART") {
-				addCartMutation.mutate(storeAddCartRequest.current!); // 모달 결과에 따라 저장된 옵션으로 장바구니 담기
-				storeAddCartRequest.current = null; // 담기 후 저장된 옵션 초기화
-			}
-		}
-
-		clearDialogResult();
-	}, [addCartMutation, dialogResult, clearDialogResult]);
 
 	return {
 		handleAddCart,

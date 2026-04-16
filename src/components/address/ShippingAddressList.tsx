@@ -1,4 +1,3 @@
-import { useModalStore } from "@/store/modal.store";
 import styles from "./ShippingAddressList.module.scss";
 import { UserAddressListItem } from "@/types/mypage";
 import clsx from "clsx";
@@ -7,7 +6,9 @@ import { useGlobalDialogStore } from "@/store/globalDialog.store";
 type ShippingAddressListProps = { userAddressList: UserAddressListItem[] | [] } & (
 	| {
 			page: "MYPAGE";
-			changeAddress: (address: UserAddressListItem) => void;
+			openAddressModal: (address: UserAddressListItem) => void;
+			changeDefaultAddress: (address: UserAddressListItem) => void;
+			deleteAddress: (addressId: number) => void;
 	  }
 	| {
 			page: "BUY";
@@ -16,7 +17,6 @@ type ShippingAddressListProps = { userAddressList: UserAddressListItem[] | [] } 
 );
 
 export const ShippingAddressList = (props: ShippingAddressListProps) => {
-	const { openModal } = useModalStore();
 	const { openDialog } = useGlobalDialogStore();
 
 	return (
@@ -87,38 +87,28 @@ export const ShippingAddressList = (props: ShippingAddressListProps) => {
 							{!userAddress.defaultAddress && (
 								<button
 									onClick={() => {
-										props.changeAddress({
-											...userAddress,
-											defaultAddress: true,
-										});
 										openDialog("CONFIRM", {
 											content: "기본배송지를 변경하시겠습니까??",
-											okResult: "ADDRESS_DEFAULT_CHANGE",
+											handleAfterOk: () => {
+												props.changeDefaultAddress({
+													...userAddress,
+													defaultAddress: true,
+												});
+											},
 										});
 									}}
 								>
 									기본배송지로
 								</button>
 							)}
+							<button onClick={() => props.openAddressModal({ ...userAddress })}>수정</button>
 							<button
 								onClick={() => {
-									props.changeAddress({ ...userAddress });
-									openModal("ADDRESS_SET", {
-										prevAddress: userAddress,
-										disableOverlayClose: true,
-									});
-								}}
-							>
-								수정
-							</button>
-							<button
-								onClick={() => {
-									props.changeAddress({
-										...userAddress,
-									});
 									openDialog("CONFIRM", {
 										content: `'${userAddress.addressName}' 배송지를 삭제하시겠습니까?`,
-										okResult: "ADDRESS_DELETE",
+										handleAfterOk: () => {
+											props.deleteAddress(userAddress.addressId!);
+										},
 									});
 								}}
 							>
