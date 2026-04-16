@@ -23,6 +23,7 @@ import { useProductCartAction } from "@/hooks/query/mypage/useProductCartAction"
 import { AddCartPopup } from "@/components/mypage/AddCartPopup";
 import { useProductCheckAndHold } from "@/hooks/query/buy/useProductCheckAndHold";
 import ThumbnailImageSection from "@/app/product/detail/[productId]/_components/ThumbnailImageSection";
+import { useParams } from "next/navigation";
 
 export type ProductCouponWithDiscount = AvailableCouponAtProductDetail & {
 	discountAmount: number;
@@ -32,7 +33,6 @@ export type GetProductDetailCouponWithDiscountData = Omit<GetProductDetailCoupon
 };
 
 interface ProductVisualInfoProps {
-	productId: number;
 	productDetail: ProductDetailResponse;
 	reviewCount: number;
 	reviewRate: number;
@@ -40,11 +40,15 @@ interface ProductVisualInfoProps {
 }
 
 // 상품 사진 및 가격배송 정보
-export default function ProductVisualInfo({ productId, productDetail, reviewCount, reviewRate, initProductOptionList }: ProductVisualInfoProps) {
+export default function ProductVisualInfo({ productDetail, reviewCount, reviewRate, initProductOptionList }: ProductVisualInfoProps) {
 	const { loginOn, user, isAuthLoading } = useAuth();
 	const { handleAddCart, isSuccess: isAddCartSuccess, reset } = useProductCartAction();
 	const { mutate: handleStockHold, error: buyNowError } = useProductCheckAndHold();
 	const queryClient = useQueryClient();
+	const params = useParams<{
+		productId: string;
+	}>();
+	const productIdNum = Number(params.productId);
 
 	// =================================================================
 	// React Query
@@ -52,8 +56,8 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 
 	// 제품 옵션 리스트 (장바구니 담기 후 재고 수량 반영)
 	const { data: productOptionList = initProductOptionList } = useQuery<GetCartOtherOptionListResponse, Error, ProductOption[]>({
-		queryKey: ["productOptions", productId],
-		queryFn: () => getNormal(getApiUrl(API_URL.MY_CART_PRODUCT_OPTION), { productId }),
+		queryKey: ["productOptions", productIdNum],
+		queryFn: () => getNormal(getApiUrl(API_URL.MY_CART_PRODUCT_OPTION), { productId: productIdNum }),
 		initialData: { cartOptionProductOptionList: initProductOptionList, message: "SUCCESS" },
 		staleTime: 30_000,
 		select: (data) => {
@@ -62,8 +66,8 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 	});
 	// 이용가능쿠폰 조회
 	const { data: availableCouponResponse } = useQuery<GetProductDetailCouponResponse, Error, GetProductDetailCouponWithDiscountData>({
-		queryKey: ["productCouponList", productId],
-		queryFn: () => getNormal(getApiUrl(API_URL.PRODUCT_DETAIL_COUPON), { productId }),
+		queryKey: ["productCouponList", productIdNum],
+		queryFn: () => getNormal(getApiUrl(API_URL.PRODUCT_DETAIL_COUPON), { productIdNum }),
 		enabled: loginOn,
 		refetchOnWindowFocus: false,
 		select: (data) => {
@@ -216,10 +220,10 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 		setAddCartPopupKey((prev) => prev + 1);
 		setProductSelectList([]); // 상품 선택 초기화
 		// 제품 옵션 리스트 갱신 (재고 수량 반영)
-		queryClient.invalidateQueries({ queryKey: ["productOptions", productId] });
+		queryClient.invalidateQueries({ queryKey: ["productOptions", productIdNum] });
 
 		reset();
-	}, [isAddCartSuccess, queryClient, productId, reset]);
+	}, [isAddCartSuccess, queryClient, productIdNum, reset]);
 	// 상품 점유 실패 시 처리
 	useEffect(() => {
 		if (!buyNowError) return;
@@ -227,19 +231,15 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 		console.error("상품 점유 실패", buyNowError);
 		if (buyNowError.message === "STOCK_HOLD_FAILED") {
 			setProductSelectList([]);
-			queryClient.invalidateQueries({ queryKey: ["productOptions", productId] });
+			queryClient.invalidateQueries({ queryKey: ["productOptions", productIdNum] });
 		}
-	}, [buyNowError, queryClient, productId]);
+	}, [buyNowError, queryClient, productIdNum]);
 	// 로그인 상태에 가져온 후
 	useEffect(() => {
 		if (!isAuthLoading) {
 			setShowMyPriceDetail(true);
 		}
 	}, [isAuthLoading]);
-
-	useEffect(() => {
-		console.log({ productDetail });
-	}, [productDetail]);
 
 	// =================================================================
 	// UI
@@ -248,7 +248,6 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 	const myPriceCheckboxCommonProps = {
 		originPrice: productDetail.originPrice,
 		finalPrice: productDetail.finalPrice,
-		productId,
 	};
 
 	// =================================================================
@@ -551,7 +550,7 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 											</>
 										)}
 										<div className={styles.actionButtons}>
-											<button className={styles.btnCart} onClick={() => handleAddCart(productSelectList, productId)}>
+											<button className={styles.btnCart} onClick={() => handleAddCart(productSelectList, productIdNum)}>
 												장바구니 담기
 											</button>
 											<button
@@ -563,7 +562,7 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 															count: option.quantity,
 															couponIds: appliedProductCouponIds, // 나의 가격에서 쿠폰 적용은 UI에서만 처리, 실제 구매 시에는 쿠폰 적용 안 함
 														})),
-														returnUrl: `/product/detail/${productId}`,
+														returnUrl: `/product/detail/${productIdNum}`,
 													});
 												}}
 											>
@@ -576,7 +575,7 @@ export default function ProductVisualInfo({ productId, productDetail, reviewCoun
 								)}
 							</>
 						)}
-						<AddCartPopup triggerKey={addCartPopupKey} productId={productId} />
+						<AddCartPopup triggerKey={addCartPopupKey} productId={productIdNum} />
 					</div>
 				)}
 			</div>

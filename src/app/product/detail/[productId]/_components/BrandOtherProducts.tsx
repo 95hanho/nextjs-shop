@@ -3,15 +3,17 @@
 import { SmartImage } from "@/components/ui/SmartImage";
 import { ImageSlide } from "@/components/product/ImageSlide";
 import { discountPercent, money } from "@/lib/format";
-import { Product, SellerOtherProduct } from "@/types/product";
+import { OtherProduct } from "@/types/product";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
-import { FiHeart } from "react-icons/fi";
+import { useRef, useState } from "react";
 import { RiArrowLeftSLine, RiArrowRightSLine } from "react-icons/ri";
 import styles from "../ProductDetail.module.scss";
 import { ImageSlideHandle } from "@/components/product/ImageSlide.type";
+import { useAuth } from "@/hooks/useAuth";
+import { WishButton } from "@/components/product/WishButton";
 
-export default function BrandOtherProducts({ sellerOtherProducts }: { sellerOtherProducts: SellerOtherProduct[] }) {
+export default function BrandOtherProducts({ sellerOtherProducts }: { sellerOtherProducts: OtherProduct[] }) {
+	const { loginOn } = useAuth();
 	// ------------------------------------------------
 	// React Query
 	// ------------------------------------------------
@@ -23,153 +25,41 @@ export default function BrandOtherProducts({ sellerOtherProducts }: { sellerOthe
 	const slideHandleRef = useRef<ImageSlideHandle | null>(null);
 	const [pageInfo, setPageInfo] = useState({ page: 1, totalPages: 2 });
 
-	const purchasedTogetherProducts: Product[] = [
-		{
-			productId: 1,
-			name: "Waist String Wide Pants VW5ML470_3color",
-			colorName: "BEIGE",
-			originPrice: 135000,
-			finalPrice: 128000,
-			createdAt: new Date().toString(),
-			likeCount: 123,
-			viewCount: 123,
-			wishCount: 123,
-		},
-		{
-			productId: 1,
-			name: "Waist String Wide Pants VW5ML470_3color",
-			colorName: "BEIGE",
-			originPrice: 135000,
-			finalPrice: 128000,
-			createdAt: new Date().toString(),
-			likeCount: 123,
-			viewCount: 123,
-			wishCount: 123,
-		},
-		{
-			productId: 1,
-			name: "Waist String Wide Pants VW5ML470_3color",
-			colorName: "BEIGE",
-			originPrice: 135000,
-			finalPrice: 128000,
-			createdAt: new Date().toString(),
-			likeCount: 123,
-			viewCount: 123,
-			wishCount: 123,
-		},
-		{
-			productId: 1,
-			name: "Waist String Wide Pants VW5ML470_3color",
-			colorName: "BEIGE",
-			originPrice: 135000,
-			finalPrice: 128000,
-			createdAt: new Date().toString(),
-			likeCount: 123,
-			viewCount: 123,
-			wishCount: 123,
-		},
-		{
-			productId: 1,
-			name: "Waist String Wide Pants VW5ML470_3color",
-			colorName: "BEIGE",
-			originPrice: 135000,
-			finalPrice: 128000,
-			createdAt: new Date().toString(),
-			likeCount: 123,
-			viewCount: 123,
-			wishCount: 123,
-		},
-		{
-			productId: 1,
-			name: "Waist String Wide Pants VW5ML470_3color",
-			colorName: "BEIGE",
-			originPrice: 135000,
-			finalPrice: 128000,
-			createdAt: new Date().toString(),
-			likeCount: 123,
-			viewCount: 123,
-			wishCount: 123,
-		},
-		{
-			productId: 1,
-			name: "Waist String Wide Pants VW5ML470_3color",
-			colorName: "BEIGE",
-			originPrice: 135000,
-			finalPrice: 128000,
-			createdAt: new Date().toString(),
-			likeCount: 123,
-			viewCount: 123,
-			wishCount: 123,
-		},
-		{
-			productId: 1,
-			name: "Waist String Wide Pants VW5ML470_3color",
-			colorName: "BEIGE",
-			originPrice: 135000,
-			finalPrice: 128000,
-			createdAt: new Date().toString(),
-			likeCount: 123,
-			viewCount: 123,
-			wishCount: 123,
-		},
-		{
-			productId: 1,
-			name: "Waist String Wide Pants VW5ML470_3color",
-			colorName: "BEIGE",
-			originPrice: 135000,
-			finalPrice: 128000,
-			createdAt: new Date().toString(),
-			likeCount: 123,
-			viewCount: 123,
-			wishCount: 123,
-		},
-		{
-			productId: 1,
-			name: "Waist String Wide Pants VW5ML470_3color",
-			colorName: "BEIGE",
-			originPrice: 130000,
-			finalPrice: 128000,
-			createdAt: new Date().toString(),
-			likeCount: 123,
-			viewCount: 123,
-			wishCount: 123,
-		},
-	];
-
-	useEffect(() => {
-		console.log({ sellerOtherProducts });
-	}, [sellerOtherProducts]);
-
 	return (
 		<div className={styles.brandOtherProducts}>
 			<h3>판매자 다른 상품</h3>
-			<div className={styles.imageSlide}>
+			<div className={styles.otherProductImageSlide}>
 				{/* 슬라이드 벨트 */}
 				<ImageSlide
 					mode="slide"
+					slidesPerView={5}
 					getItemKey={(item, index) => `purchasedTogether-${item.productId}-${index}`}
 					onPageChange={({ page, totalPages }) => {
 						setPageInfo({ page, totalPages });
 					}}
 					items={sellerOtherProducts}
-					renderItem={(item, index) => {
+					onReady={(handle) => (slideHandleRef.current = handle)}
+					renderItem={(item) => {
 						/* 슬라이드 요소 */
 						return (
-							<div className={styles.sliderItem}>
+							<div key={`sellerOtherProduct-${item.productId}`} className={styles.sliderItem}>
 								{/* 전체 링크 */}
 								<Link href={`/product/detail/${item.productId}`}></Link>
 								{/* 이미지 */}
 								<div className={styles.imageBox}>
 									<SmartImage fill src={item.filePath} alt={item.fileName} />
-									<button>
-										{/* <FaHeart /> */}
-										<FiHeart />
-									</button>
+									{loginOn && (
+										<div className={styles.wishButton}>
+											<WishButton
+												key={"sellerOtherProductwishButton-" + item.productId}
+												initWishOn={item.wished}
+												productId={item.productId}
+											/>
+										</div>
+									)}
 								</div>
 								<div className={styles.slideProductName}>
-									<p>
-										{index}-{item.name}
-									</p>
+									<p>{item.name}</p>
 								</div>
 								<h5>
 									{discountPercent(item.originPrice, item.finalPrice) > 0 && (
@@ -182,11 +72,11 @@ export default function BrandOtherProducts({ sellerOtherProducts }: { sellerOthe
 					}}
 				/>
 				<div className={styles.sliderPagination}>
-					<button onClick={() => slideHandleRef.current?.slidePrev()}>
+					<button onClick={() => slideHandleRef.current?.slidePrevByGroup()}>
 						<RiArrowLeftSLine />
 					</button>{" "}
 					<strong>{pageInfo.page}</strong> / {pageInfo.totalPages}{" "}
-					<button onClick={() => slideHandleRef.current?.slideNext()}>
+					<button onClick={() => slideHandleRef.current?.slideNextByGroup()}>
 						<RiArrowRightSLine />
 					</button>
 				</div>

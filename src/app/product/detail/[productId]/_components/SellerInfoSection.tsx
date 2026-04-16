@@ -2,18 +2,22 @@ import BrandOtherProducts from "@/app/product/detail/[productId]/_components/Bra
 import { BsChevronRight } from "react-icons/bs";
 import { FiHeart } from "react-icons/fi";
 import styles from "../ProductDetail.module.scss";
-import { ProductDetailResponse, SellerLikeAndOtherProductsResponse, SellerOtherProduct } from "@/types/product";
+import { ProductDetailResponse, SellerLikeAndOtherProductsResponse, OtherProduct } from "@/types/product";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { getNormal, postJson } from "@/api/fetchFilter";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import API_URL from "@/api/endpoints";
 import { FaHeart } from "react-icons/fa";
-import { useEffect } from "react";
+import { useParams } from "next/navigation";
 
 export default function SellerInfoSection({ productDetail }: { productDetail: ProductDetailResponse }) {
 	const { loginOn } = useAuth();
 	const queryClient = useQueryClient();
+	const params = useParams<{
+		productId: string;
+	}>();
+	const productIdNum = Number(params.productId);
 
 	// ------------------------------------------------
 	// React Query
@@ -25,13 +29,13 @@ export default function SellerInfoSection({ productDetail }: { productDetail: Pr
 			isSellerLiked: false,
 			sellerOtherProducts: [],
 		},
-	} = useQuery<SellerLikeAndOtherProductsResponse, Error, { isSellerLiked: boolean; sellerOtherProducts: SellerOtherProduct[] }>({
-		queryKey: ["sellerLikeAndOtherProducts", productDetail.productId],
+	} = useQuery<SellerLikeAndOtherProductsResponse, Error, { isSellerLiked: boolean; sellerOtherProducts: OtherProduct[] }>({
+		queryKey: ["sellerLikeAndOtherProducts", productIdNum],
 		queryFn: async () =>
 			getNormal(getApiUrl(API_URL.PRODUCT_SELLER_LIKE_OTHER_PRODUCT), {
-				productId: productDetail.productId,
+				productId: productIdNum,
 			}),
-		enabled: !!productDetail.productId,
+		enabled: !!productIdNum,
 		select: (data) => ({
 			isSellerLiked: data.isSellerLiked,
 			sellerOtherProducts: data.sellerOtherProducts,
@@ -40,23 +44,17 @@ export default function SellerInfoSection({ productDetail }: { productDetail: Pr
 	// 판매자 좋아요/취소
 	const { mutate: toggleSellerLike } = useMutation({
 		mutationFn: async (liked: boolean) => {
-			console.log("toggleSellerLike", { productId: productDetail.productId, like: !liked });
-			return postJson(getApiUrl(API_URL.PRODUCT_SELLER_LIKE), { productId: productDetail.productId, like: !liked });
+			console.log("toggleSellerLike", { productId: productIdNum, like: !liked });
+			return postJson(getApiUrl(API_URL.PRODUCT_SELLER_LIKE), { productId: productIdNum, like: !liked });
 		},
 		onSuccess() {
-			queryClient.invalidateQueries({ queryKey: ["sellerLikeAndOtherProducts", productDetail.productId] });
+			queryClient.invalidateQueries({ queryKey: ["sellerLikeAndOtherProducts", productIdNum] });
 		},
 	});
 
 	// ------------------------------------------------
 	// React
 	// ------------------------------------------------
-
-	useEffect(() => {
-		if (productDetail) {
-			console.log({ productDetail });
-		}
-	}, [productDetail]);
 
 	return (
 		<article className={styles.sellerInfoSection}>

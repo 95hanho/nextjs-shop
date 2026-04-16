@@ -1,143 +1,57 @@
 "use client";
 
-import { ImageFill, SmartImage } from "@/components/ui/SmartImage";
+import { SmartImage } from "@/components/ui/SmartImage";
 import { ImageSlide } from "@/components/product/ImageSlide";
-import { money } from "@/lib/format";
-import { Product } from "@/types/product";
+import { discountPercent, money } from "@/lib/format";
+import { GetCategoryBestProductsResponse, OtherProduct } from "@/types/product";
 import Link from "next/link";
 import { useRef, useState } from "react";
-import { FaHeart } from "react-icons/fa";
-import { FiHeart } from "react-icons/fi";
 import { RiArrowLeftSLine, RiArrowRightSLine } from "react-icons/ri";
 import styles from "../ProductDetail.module.scss";
 import { ImageSlideHandle } from "@/components/product/ImageSlide.type";
+import { useParams } from "next/navigation";
+import { WishButton } from "@/components/product/WishButton";
+import { useAuth } from "@/hooks/useAuth";
+import { useQuery } from "@tanstack/react-query";
+import { getNormal } from "@/api/fetchFilter";
+import { getApiUrl } from "@/lib/getBaseUrl";
+import API_URL from "@/api/endpoints";
 
 export default function BestRankProducts() {
+	const { loginOn } = useAuth();
 	const slideHandleRef = useRef<ImageSlideHandle | null>(null);
 	const [pageInfo, setPageInfo] = useState({ page: 1, totalPages: 2 });
+	const params = useParams<{
+		productId: string;
+	}>();
+	const productIdNum = Number(params.productId);
 
-	const bestRankProducts: Product[] = [
-		{
-			productId: 1,
-			name: "W CLASSIC LOGO TEE (7color)",
-			colorName: "123",
-			originPrice: 135000,
-			finalPrice: 128000,
-			createdAt: new Date().toString(),
-			likeCount: 123,
-			viewCount: 123,
-			wishCount: 123,
-		},
-		{
-			productId: 1,
-			name: "W CLASSIC LOGO TEE (7color)",
-			colorName: "123",
-			originPrice: 135000,
-			finalPrice: 128000,
-			createdAt: new Date().toString(),
-			likeCount: 123,
-			viewCount: 123,
-			wishCount: 123,
-		},
-		{
-			productId: 1,
-			name: "W CLASSIC LOGO TEE (7color)",
-			colorName: "123",
-			originPrice: 135000,
-			finalPrice: 128000,
-			createdAt: new Date().toString(),
-			likeCount: 123,
-			viewCount: 123,
-			wishCount: 123,
-		},
-		{
-			productId: 1,
-			name: "W CLASSIC LOGO TEE (7color)",
-			colorName: "123",
-			originPrice: 135000,
-			finalPrice: 128000,
-			createdAt: new Date().toString(),
-			likeCount: 123,
-			viewCount: 123,
-			wishCount: 123,
-		},
-		{
-			productId: 1,
-			name: "W CLASSIC LOGO TEE (7color)",
-			colorName: "123",
-			originPrice: 135000,
-			finalPrice: 128000,
-			createdAt: new Date().toString(),
-			likeCount: 123,
-			viewCount: 123,
-			wishCount: 123,
-		},
-		{
-			productId: 1,
-			name: "W CLASSIC LOGO TEE (7color)",
-			colorName: "123",
-			originPrice: 135000,
-			finalPrice: 128000,
-			createdAt: new Date().toString(),
-			likeCount: 123,
-			viewCount: 123,
-			wishCount: 123,
-		},
-		{
-			productId: 1,
-			name: "W CLASSIC LOGO TEE (7color)",
-			colorName: "123",
-			originPrice: 135000,
-			finalPrice: 128000,
-			createdAt: new Date().toString(),
-			likeCount: 123,
-			viewCount: 123,
-			wishCount: 123,
-		},
-		{
-			productId: 1,
-			name: "W CLASSIC LOGO TEE (7color)",
-			colorName: "123",
-			originPrice: 135000,
-			finalPrice: 128000,
-			createdAt: new Date().toString(),
-			likeCount: 123,
-			viewCount: 123,
-			wishCount: 123,
-		},
-		{
-			productId: 1,
-			name: "W CLASSIC LOGO TEE (7color)",
-			colorName: "123",
-			originPrice: 135000,
-			finalPrice: 128000,
-			createdAt: new Date().toString(),
-			likeCount: 123,
-			viewCount: 123,
-			wishCount: 123,
-		},
-		{
-			productId: 1,
-			name: "W CLASSIC LOGO TEE (7color)",
-			colorName: "123",
-			originPrice: 135000,
-			finalPrice: 128000,
-			createdAt: new Date().toString(),
-			likeCount: 123,
-			viewCount: 123,
-			wishCount: 123,
-		},
-	];
+	// =================================================================
+	// React Query
+	// =================================================================
+
+	// 같은 카테고리 BEST 제품 조회
+	const { data: categoryBestProductList = [] } = useQuery<GetCategoryBestProductsResponse, Error, OtherProduct[]>({
+		queryKey: ["categoryBestProducts", productIdNum],
+		queryFn: async () =>
+			getNormal(getApiUrl(API_URL.PRODUCT_CATEGORY_BEST), {
+				productId: productIdNum,
+			}),
+		enabled: !!productIdNum,
+		select: (data) => data.categoryBestProductList,
+	});
 
 	return (
 		<>
 			<ImageSlide
 				mode="slide"
+				slidesPerView={5}
 				getItemKey={(item, index) => `bestRank-${item.productId}-${index}`}
 				onPageChange={({ page, totalPages }) => {
 					setPageInfo({ page, totalPages });
 				}}
-				items={bestRankProducts}
+				items={categoryBestProductList}
+				onReady={(handle) => (slideHandleRef.current = handle)}
 				renderItem={(item, index) => {
 					/* 슬라이드 요소 */
 					return (
@@ -145,21 +59,26 @@ export default function BestRankProducts() {
 							{/* 전체 링크 */}
 							<Link href={`/product/detail/${item.productId}`}></Link>
 							<div className={styles.imageBox}>
-								<SmartImage fill />
+								<SmartImage fill src={item.filePath} alt={item.fileName} />
 								<mark>{index + 1}</mark>
-								<button>
-									{/* <FaHeart /> */}
-									<FaHeart />
-								</button>
+								{loginOn && (
+									<div className={styles.wishButton}>
+										<WishButton
+											key={"sellerOtherProductwishButton-" + item.productId}
+											initWishOn={item.wished}
+											productId={item.productId}
+										/>
+									</div>
+								)}
 							</div>
 							<div className={styles.slideProductName}>
-								<h6>마리떼 프랑소와 저버</h6>
-								<p>
-									{index}-{item.name}
-								</p>
+								<h6>{item.sellerName}</h6>
+								<p>{item.name}</p>
 							</div>
 							<h5>
-								<b>15%</b>
+								{discountPercent(item.originPrice, item.finalPrice) > 0 && (
+									<b>{discountPercent(item.originPrice, item.finalPrice)}%</b>
+								)}
 								<span>{money(item.finalPrice)}</span>
 							</h5>
 						</div>
@@ -167,11 +86,11 @@ export default function BestRankProducts() {
 				}}
 			/>
 			<div className={styles.sliderPagination}>
-				<button onClick={() => slideHandleRef.current?.slidePrev()}>
+				<button onClick={() => slideHandleRef.current?.slidePrevByGroup()}>
 					<RiArrowLeftSLine />
 				</button>{" "}
 				<strong>{pageInfo.page}</strong> / {pageInfo.totalPages}{" "}
-				<button onClick={() => slideHandleRef.current?.slideNext()}>
+				<button onClick={() => slideHandleRef.current?.slideNextByGroup()}>
 					<RiArrowRightSLine />
 				</button>
 			</div>

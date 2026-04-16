@@ -65,8 +65,14 @@ export type ProductQna = {
 	createdAt: string;
 	answer: string;
 	resCreatedAt: string;
-	secret: false;
-	productQnaTypeId: 4;
+	secret: boolean;
+	productQnaTypeId: number;
+};
+export type ProductQnaTypeCode = "PRODUCT" | "RESTOCK" | "SIZE" | "SHIPPING" | "ETC";
+export type ProductQnaType = {
+	productQnaTypeId: number;
+	code: ProductQnaTypeCode;
+	name: string;
 };
 
 /* API ----------------------------------------------------------------- */
@@ -143,23 +149,41 @@ export interface GetProductDetailImageResponse extends BaseResponse {
 	productDetailImageList: ProductImage[];
 }
 /* 판매자 좋아요 여부 및 판매자 다른 제품 조회 */
-export type SellerOtherProduct = Product & {
+export type OtherProduct = Product & {
 	sellerName: string;
+	wished: boolean; // 해당 유저 위시 여부
 } & FileInfo;
 export interface SellerLikeAndOtherProductsResponse extends BaseResponse {
 	isSellerLiked: boolean;
-	sellerOtherProducts: SellerOtherProduct[];
+	sellerOtherProducts: OtherProduct[];
 }
-
 /* 제품 상세보기 리뷰 조회 */
 export interface GetProductDetailReviewResponse extends BaseResponse {
 	productReviewList: (Review & { userName: string })[];
 }
 /* 제품 상세보기 Q&A 조회 */
-type ProductQnaItem = ProductQna & {
-	productQnaTypeName: string;
+export type ProductQnaItem = ProductQna & {
+	qnaTypeCode: ProductQnaTypeCode;
+	qnaTypeName: string;
 	userName: string;
 };
 export interface GetProductDetailQnaResponse extends BaseResponse {
-	ProductQnaList: ProductQnaItem[];
+	productQnaList: ProductQnaItem[];
+	productQnaTypeList: ProductQnaType[];
+}
+/* 제품 상품 Q&A 작성 */
+export interface AddProductQnaRequest {
+	question: string;
+	productQnaTypeId: number;
+	secret: boolean;
+}
+/* 제품 상품 Q&A 수정 */
+export interface UpdateProductQnaRequest {
+	productQnaId: number;
+	question: string;
+	secret: boolean;
+}
+/* 같은 카테고리 BEST 제품 조회 */
+export interface GetCategoryBestProductsResponse extends BaseResponse {
+	categoryBestProductList: OtherProduct[];
 }
