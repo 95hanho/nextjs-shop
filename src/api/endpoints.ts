@@ -104,8 +104,10 @@ const API_URL = {
 	PRODUCT_SELLER_LIKE: "/product/detail/:productId/seller/like",
 	/** 제품 리뷰 조회 */
 	PRODUCT_DETAIL_REVIEW: "/product/detail/:productId/review",
-	/** 제품 상품 Q&A 조회 */
+	/** 제품 상품 Q&A 조회, 등록, 수정 */
 	PRODUCT_DETAIL_QNA: "/product/detail/:productId/qna",
+	/** 제품 상품 Q&A 삭제 */
+	PRODUCT_DETAIL_QNA_DELETE: "/product/detail/:productId/qna/:productQnaId",
 	/** 같은 카테고리 BEST 제품 조회 */
 	PRODUCT_CATEGORY_BEST: "/product/detail/:productId/category-best",
 	/** 쿠폰 다운로드 */

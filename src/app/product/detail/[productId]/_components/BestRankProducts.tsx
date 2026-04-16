@@ -41,8 +41,6 @@ export default function BestRankProducts() {
 		select: (data) => data.categoryBestProductList,
 	});
 
-	console.log({ categoryBestProductList });
-
 	return (
 		<>
 			<ImageSlide

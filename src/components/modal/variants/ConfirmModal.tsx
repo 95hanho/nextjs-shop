@@ -1,22 +1,25 @@
 import { ModalFrame } from "@/components/modal/frame/ModalFrame";
-import { ConfirmCancelResult, ConfirmOkResult, DialogResultMap } from "@/store/modal.type";
+import { DialogPropsMap, DialogResultMap } from "@/store/modal.type";
 import styles from "../Modal.module.scss";
 import { ConfirmButton } from "@/components/modal/frame/ConfirmButton";
 import { useGlobalDialogStore } from "@/store/globalDialog.store";
 
-interface ConfirmModalProps {
+type ConfirmModalProps = DialogPropsMap["CONFIRM"] & {
 	onClose: () => void;
-	title?: string;
-	content: string;
-	cancelText?: string;
-	okText?: string;
-	okResult?: ConfirmOkResult;
-	cancelResult?: ConfirmCancelResult;
-	hideCancel?: boolean;
-	reverse?: boolean;
-}
+};
 
-export const ConfirmModal = ({ onClose, title, content, cancelText, okText, okResult, cancelResult, hideCancel, reverse }: ConfirmModalProps) => {
+export const ConfirmModal = ({
+	onClose,
+	title,
+	content,
+	cancelText,
+	okText,
+	okResult,
+	cancelResult,
+	hideCancel,
+	reverse,
+	handleAfterOk,
+}: ConfirmModalProps) => {
 	const { resolveDialog } = useGlobalDialogStore();
 
 	const confirmModalProps = {
@@ -43,6 +46,7 @@ export const ConfirmModal = ({ onClose, title, content, cancelText, okText, okRe
 				action: "CONFIRM_OK",
 				payload,
 			});
+			if (handleAfterOk) handleAfterOk();
 		},
 		hideCancel,
 		reverse,

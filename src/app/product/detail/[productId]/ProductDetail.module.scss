@@ -673,6 +673,13 @@
 
 	/* 상품 QnA */
 	section.qnaInfoSection {
+		.qnaFilterNav {
+			button.on {
+				font-weight: bold;
+				background-color: #000;
+				color: #fff;
+			}
+		}
 	}
 
 	/* 배송정보, 교환, 환불, A/S안내, 같은 카테고리 추천 */

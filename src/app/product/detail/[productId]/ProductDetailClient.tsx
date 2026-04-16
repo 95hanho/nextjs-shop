@@ -40,7 +40,7 @@ export default function ProductDetailClient({ productDetailResponse }: ProductDe
 				{/* 상품 리뷰 */}
 				<ProductReview />
 				{/* 상품 QnA */}
-				<QuestionAnswer />
+				<QuestionAnswer sellerName={productDetailResponse.productDetail.sellerName} />
 				{/* 배송정보, 교환, 환불, A/S안내, 같은 카테고리 추천 */}
 				<ProductEtcInfoSection />
 			</div>

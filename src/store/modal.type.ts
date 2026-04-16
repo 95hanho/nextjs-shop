@@ -41,7 +41,8 @@ export type ConfirmOkResult =
 	| "COUPON_STATUS_CHANGE" // 판매자페이지 - 쿠폰 상태 변경
 	| "SELLER_COUPON_DELETE_OK" // 판매자페이지 - 쿠폰 삭제 확인
 	| "SELLER_PRODUCT_OPTION_DELETE_OK" // 판매자페이지 - 제품 옵션 삭제 확인
-	| "SALE_STOP_CONFIRM"; // 판매자페이지 - 상품 판매 상태 변경 확인
+	| "SALE_STOP_CONFIRM" // 판매자페이지 - 상품 판매 상태 변경 확인
+	| "QNA_DELETE_OK"; // QnA 삭제 확인
 export type ConfirmCancelResult = string; // 아직 사용하는 대가 없어서 string으로 둠
 
 // -- modal이 열릴 떄 요구되는 옵션
@@ -60,6 +61,7 @@ export type DialogPropsMap = {
 		cancelResult?: ConfirmCancelResult;
 		hideCancel?: boolean;
 		reverse?: boolean;
+		handleAfterOk?: () => void;
 	};
 };
 export type DomainModalPropsMap = {
