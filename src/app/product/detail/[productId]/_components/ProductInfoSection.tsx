@@ -8,7 +8,7 @@ export default function ProductInfoSection({ productDetail }: { productDetail: P
 	return (
 		<section className={styles.productInfoSection}>
 			<ProductSpecTable productDetail={productDetail} />
-			<SellerInfoSection />
+			<SellerInfoSection productDetail={productDetail} />
 		</section>
 	);
 }
