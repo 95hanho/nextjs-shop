@@ -12,11 +12,10 @@ import { money } from "@/lib/format";
 import { getNormal } from "@/api/fetchFilter";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import API_URL from "@/api/endpoints";
-import { useModalStore } from "@/store/modal.store";
 import { DateInput } from "@/components/form/DateInput";
 import DatePicker from "react-datepicker";
 import { useGlobalDialogStore } from "@/store/globalDialog.store";
-import { DialogResultMap, DomainModalPropsMap } from "@/store/modal.type";
+import { DomainModalPropsMap } from "@/store/modal.type";
 
 type CouponFormInputKeys = "description" | "discountValue" | "maxDiscount" | "minimumOrderBeforeAmount" | "amount";
 type CouponFormAlarm = FormInputAlarm<CouponFormInputKeys | "startDate" | "endDate">;
@@ -43,9 +42,14 @@ type SellerCouponModalProps = {
 	onClose: () => void;
 } & DomainModalPropsMap["SELLER_COUPON"];
 //
-export const SellerCouponModal = ({ onClose, prevSellerCoupon }: SellerCouponModalProps) => {
-	const { openDialog, dialogResult, clearDialogResult } = useGlobalDialogStore();
-	const { resolveModal } = useModalStore();
+export const SellerCouponModal = ({
+	onClose,
+	prevSellerCoupon,
+	handleAfterAddCoupon,
+	handleAfterUpdateCoupon,
+	handleAfterDeleteCoupon,
+}: SellerCouponModalProps) => {
+	const { openDialog } = useGlobalDialogStore();
 
 	// ------------------------------------------------
 	// React
@@ -203,10 +207,8 @@ export const SellerCouponModal = ({ onClose, prevSellerCoupon }: SellerCouponMod
 				startDate: couponForm.startDate,
 				endDate: couponForm.endDate,
 			} as AddCouponRequest;
-			resolveModal({
-				action: "SELLER_COUPON_SET",
-				payload: { addCoupon },
-			});
+			handleAfterAddCoupon?.(addCoupon);
+			onClose();
 		} else {
 			const updateCoupon: UpdateCouponRequest = {
 				couponId: couponForm.couponId,
@@ -222,10 +224,8 @@ export const SellerCouponModal = ({ onClose, prevSellerCoupon }: SellerCouponMod
 				startDate: couponForm.startDate,
 				endDate: couponForm.endDate,
 			} as UpdateCouponRequest;
-			resolveModal({
-				action: "SELLER_COUPON_SET",
-				payload: { updateCoupon },
-			});
+			handleAfterUpdateCoupon?.(updateCoupon);
+			onClose();
 		}
 	};
 
@@ -236,26 +236,6 @@ export const SellerCouponModal = ({ onClose, prevSellerCoupon }: SellerCouponMod
 	useEffect(() => {
 		console.log({ prevSellerCoupon });
 	}, [prevSellerCoupon]);
-
-	// 모달 결과 처리
-	useEffect(() => {
-		if (!prevSellerCoupon || !dialogResult) return;
-
-		// 쿠폰 상태 변경 후 처리
-		if (dialogResult.action === "CONFIRM_OK") {
-			const payload = dialogResult.payload as DialogResultMap["CONFIRM_OK"];
-			if (payload?.result === "SELLER_COUPON_DELETE_OK") {
-				resolveModal({
-					action: "SELLER_COUPON_DELETE",
-					payload: {
-						couponId: prevSellerCoupon?.couponId,
-					},
-				});
-			}
-		}
-
-		clearDialogResult();
-	}, [clearDialogResult, dialogResult, prevSellerCoupon, resolveModal]);
 
 	return (
 		<ModalFrame title={!prevSellerCoupon ? "쿠폰 추가" : "쿠폰 수정"} onClose={onClose} contentVariant="coupon">
@@ -465,7 +445,10 @@ export const SellerCouponModal = ({ onClose, prevSellerCoupon }: SellerCouponMod
 								onClick={() => {
 									openDialog("CONFIRM", {
 										content: "쿠폰을 삭제하시겠습니까?",
-										okResult: "SELLER_COUPON_DELETE_OK",
+										handleAfterOk: () => {
+											handleAfterDeleteCoupon?.(prevSellerCoupon.couponId);
+											onClose();
+										},
 									});
 								}}
 							>

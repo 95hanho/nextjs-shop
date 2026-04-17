@@ -6,7 +6,6 @@ import styles from "./SellerMain.module.scss";
 import clsx from "clsx";
 import { AddProductOptionBase, AddSellerProductOptionRequest, SellerProduct, UpdateSellerProductOptionRequest } from "@/types/seller";
 import { useModalStore } from "@/store/modal.store";
-import { DialogResultMap, DomainModalResultMap } from "@/store/modal.type";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteNormal, postJson, putJson } from "@/api/fetchFilter";
 import { getApiUrl } from "@/lib/getBaseUrl";
@@ -40,8 +39,8 @@ export default function ProductList({
 }: ProductListProps) {
 	const router = useRouter();
 	const queryClient = useQueryClient();
-	const { openModal, clearModalResult, modalResult } = useModalStore();
-	const { openDialog, dialogResult, clearDialogResult } = useGlobalDialogStore();
+	const { openModal } = useModalStore();
+	const { openDialog } = useGlobalDialogStore();
 	const couponAllowedMode = allowedSelectedCouponId !== null; // 쿠폰 허용 제품이 하나라도 있으면 true
 
 	// ------------------------------------------------
@@ -52,10 +51,10 @@ export default function ProductList({
 	const { mutate: updateSellerProduct, isSuccess: isUpdateSellerProductSuccess, reset: resetUpdateSellerProduct } = useSellerProductUpdate();
 	// 제품 옵션 추가
 	const { mutate: addProductOption } = useMutation({
-		mutationFn: (optionForm: AddProductOptionBase) =>
+		mutationFn: ({ optionForm, productId }: { optionForm: AddProductOptionBase; productId: number }) =>
 			postJson<BaseResponse, AddSellerProductOptionRequest>(getApiUrl(API_URL.SELLER_PRODUCT_OPTION), {
 				...optionForm,
-				productId: productIdForOptionRef.current!,
+				productId,
 			}),
 		onSuccess() {
 			queryClient.invalidateQueries({ queryKey: ["sellerProductList"] });
@@ -63,7 +62,8 @@ export default function ProductList({
 	});
 	// 제품 옵션 수정
 	const { mutate: updateProductOption } = useMutation({
-		mutationFn: (optionForm: UpdateSellerProductOptionRequest) => putJson(getApiUrl(API_URL.SELLER_PRODUCT_OPTION), { ...optionForm }),
+		mutationFn: ({ optionForm }: { optionForm: UpdateSellerProductOptionRequest }) =>
+			putJson(getApiUrl(API_URL.SELLER_PRODUCT_OPTION), { ...optionForm }),
 		onSuccess() {
 			queryClient.invalidateQueries({ queryKey: ["sellerProductList"] });
 		},
@@ -85,10 +85,6 @@ export default function ProductList({
 
 	const [openProductId, setOpenProductId] = useState<number | null>(null);
 	const theadRef = useRef<HTMLTableSectionElement | null>(null); // 제품 thead th 갯수를 세기 위한 ref
-	// 제품 옵션 추가/수정 시 productId 보관 ref
-	const productIdForOptionRef = useRef<number | null>(null);
-	// 제품 판매중단 상태 변경용 제품 저장
-	const [changingSaleStopProduct, setChangingSaleStopProduct] = useState<SellerProduct | null>(null);
 
 	// ------------------------------------------------
 	// useEffect, useMemo
@@ -110,68 +106,6 @@ export default function ProductList({
 		queryClient.invalidateQueries({ queryKey: ["sellerProductList"] });
 		resetUpdateSellerProduct();
 	}, [isUpdateSellerProductSuccess, queryClient, resetUpdateSellerProduct]);
-
-	// 모달 동작
-	useEffect(() => {
-		if (!dialogResult) return;
-
-		if (dialogResult.action === "CONFIRM_OK") {
-			const payload = dialogResult.payload as DialogResultMap["CONFIRM_OK"];
-			if (payload?.result === "SALE_STOP_CONFIRM" && changingSaleStopProduct) {
-				updateSellerProduct({
-					productId: changingSaleStopProduct.productId,
-					name: changingSaleStopProduct.name,
-					colorName: changingSaleStopProduct.colorName,
-					originPrice: changingSaleStopProduct.originPrice,
-					finalPrice: changingSaleStopProduct.finalPrice,
-					menuSubId: changingSaleStopProduct.menuSubId,
-					materialInfo: changingSaleStopProduct.materialInfo || "",
-					manufacturerName: changingSaleStopProduct.manufacturerName || "",
-					countryOfOrigin: changingSaleStopProduct.countryOfOrigin || "",
-					washCareInfo: changingSaleStopProduct.washCareInfo || "",
-					manufacturedYm: changingSaleStopProduct.manufacturedYm || "",
-					qualityGuaranteeInfo: changingSaleStopProduct.qualityGuaranteeInfo || "",
-					afterServiceContact: changingSaleStopProduct.afterServiceContact || "",
-					afterServiceManager: changingSaleStopProduct.afterServiceManager || "",
-					afterServicePhone: changingSaleStopProduct.afterServicePhone || "",
-					saleStop: !changingSaleStopProduct?.saleStop,
-					imageUpdate: false, // 판매중단 상태 변경은 이미지 변경과 무관하므로 false
-				});
-			}
-		}
-
-		clearDialogResult();
-	}, [changingSaleStopProduct, clearDialogResult, dialogResult, updateSellerProduct]);
-	useEffect(() => {
-		if (!modalResult) return;
-
-		// 제품 옵션 추가/수정 후 처리
-		if (modalResult.action === "SELLER_PRODUCT_OPTION_SET") {
-			const payload = modalResult.payload as DomainModalResultMap["SELLER_PRODUCT_OPTION_SET"];
-			console.log("제품 옵션 추가/수정 결과 처리", { payload });
-			if ("addProductOption" in payload) {
-				addProductOption(payload.addProductOption);
-			} else if ("updateProductOption" in payload) {
-				updateProductOption(payload.updateProductOption);
-			}
-		}
-		// 제품 옵션 삭제 후 처리
-		if (modalResult.action === "SELLER_PRODUCT_OPTION_DELETE") {
-			const { productOptionId } = modalResult.payload as DomainModalResultMap["SELLER_PRODUCT_OPTION_DELETE"];
-			console.log("제품 옵션 삭제 결과 처리", { productOptionId });
-			deleteProductOption(productOptionId);
-		}
-
-		// 모달 닫힐 시 옵션 변경 취소 처리
-		if (modalResult.action === "DOMAIN_CLOSE") {
-			const payload = modalResult.payload as DomainModalResultMap["DOMAIN_CLOSE"];
-			if (payload?.result === "SELLER_PRODUCT_OPTION_SET_CANCEL") {
-				productIdForOptionRef.current = null;
-			}
-		}
-
-		clearModalResult();
-	}, [modalResult, addProductOption, updateProductOption, deleteProductOption, clearModalResult]);
 
 	if (isCouponAllowedProductIdsLoading) return null;
 	return (
@@ -260,12 +194,28 @@ export default function ProductList({
 														className={clsx(styles.saleStopButton, product.saleStop ? styles.on : styles.off)}
 														onClick={(e) => {
 															e.stopPropagation();
-															setChangingSaleStopProduct(product);
 															openDialog("CONFIRM", {
 																content: "상품의 판매 상태를 변경하시겠습니까?",
-																okResult: "SALE_STOP_CONFIRM",
-																handleAfterClose() {
-																	setChangingSaleStopProduct(null);
+																handleAfterOk: () => {
+																	updateSellerProduct({
+																		productId: product.productId,
+																		name: product.name,
+																		colorName: product.colorName,
+																		originPrice: product.originPrice,
+																		finalPrice: product.finalPrice,
+																		menuSubId: product.menuSubId,
+																		materialInfo: product.materialInfo || "",
+																		manufacturerName: product.manufacturerName || "",
+																		countryOfOrigin: product.countryOfOrigin || "",
+																		washCareInfo: product.washCareInfo || "",
+																		manufacturedYm: product.manufacturedYm || "",
+																		qualityGuaranteeInfo: product.qualityGuaranteeInfo || "",
+																		afterServiceContact: product.afterServiceContact || "",
+																		afterServiceManager: product.afterServiceManager || "",
+																		afterServicePhone: product.afterServicePhone || "",
+																		saleStop: !product?.saleStop,
+																		imageUpdate: false, // 판매중단 상태 변경은 이미지 변경과 무관하므로 false
+																	});
 																},
 															});
 														}}
@@ -293,19 +243,27 @@ export default function ProductList({
 														<div className={styles.productOptionContainer}>
 															<h4>
 																<span>옵션 목록</span>
-																<button
-																	className={styles.addButton}
-																	onClick={() => {
-																		productIdForOptionRef.current = product.productId;
-																		openModal("SELLER_PRODUCT_OPTION", {
-																			productOptionSizeDuplicateList: product.optionList.map((opt) => opt.size),
-																			disableOverlayClose: true,
-																			closeResult: "SELLER_PRODUCT_OPTION_SET_CANCEL",
-																		});
-																	}}
-																>
-																	옵션 추가
-																</button>
+																{product.optionList.length < 6 && (
+																	<button
+																		className={styles.addButton}
+																		onClick={() => {
+																			openModal("SELLER_PRODUCT_OPTION", {
+																				productOptionSizeDuplicateList: product.optionList.map(
+																					(opt) => opt.size,
+																				),
+																				disableOverlayClose: true,
+																				handleAfterAddSellerProductOption: (productOption) => {
+																					addProductOption({
+																						optionForm: productOption,
+																						productId: product.productId,
+																					});
+																				},
+																			});
+																		}}
+																	>
+																		옵션 추가
+																	</button>
+																)}
 															</h4>
 															<div className={styles.productOptionTable}>
 																<table className="w-full">
@@ -325,14 +283,18 @@ export default function ProductList({
 																				key={option.productOptionId}
 																				className={styles.productOptionRow}
 																				onClick={() => {
-																					productIdForOptionRef.current = product.productId;
 																					openModal("SELLER_PRODUCT_OPTION", {
 																						prevSellerProductOption: option,
 																						productOptionSizeDuplicateList: product.optionList.map(
 																							(opt) => opt.size,
 																						),
 																						disableOverlayClose: true,
-																						closeResult: "SELLER_PRODUCT_OPTION_SET_CANCEL",
+																						handleAfterUpdateSellerProductOption: (productOption) => {
+																							updateProductOption({ optionForm: productOption });
+																						},
+																						handleAfterDeleteSellerProductOption: (productOptionId) => {
+																							deleteProductOption(productOptionId);
+																						},
 																					});
 																				}}
 																			>
@@ -350,11 +312,13 @@ export default function ProductList({
 																						onClick={(e) => {
 																							e.stopPropagation();
 																							updateProductOption({
-																								productOptionId: option.productOptionId,
-																								addPrice: option.addPrice,
-																								stock: option.stock,
-																								isDisplayed: !option.displayed,
-																								size: option.size,
+																								optionForm: {
+																									productOptionId: option.productOptionId,
+																									addPrice: option.addPrice,
+																									stock: option.stock,
+																									isDisplayed: !option.displayed,
+																									size: option.size,
+																								},
 																							});
 																						}}
 																					>

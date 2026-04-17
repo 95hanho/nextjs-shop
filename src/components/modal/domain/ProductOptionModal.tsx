@@ -5,7 +5,6 @@ import { useQuery } from "@tanstack/react-query";
 import API_URL from "@/api/endpoints";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { getNormal } from "@/api/fetchFilter";
-import { useModalStore } from "@/store/modal.store";
 import { ModalFrame } from "@/components/modal/frame/ModalFrame";
 import styles from "../Modal.module.scss";
 import { ConfirmButton } from "@/components/modal/frame/ConfirmButton";
@@ -16,8 +15,7 @@ type ProductOptionModalProps = {
 	onClose: () => void;
 } & DomainModalPropsMap["PRODUCT_OPTION"];
 
-export const ProductOptionModal = ({ onClose, product }: ProductOptionModalProps) => {
-	const { resolveModal } = useModalStore();
+export const ProductOptionModal = ({ onClose, product, handleAfterCartProductOptionChange }: ProductOptionModalProps) => {
 	// 제품상세옵션 리스트
 	// invalidateQueries(["cartOptionProductOptionList"])
 	const { data: optionResponse, isLoading } = useQuery<GetCartOtherOptionListResponse>({
@@ -121,15 +119,13 @@ export const ProductOptionModal = ({ onClose, product }: ProductOptionModalProps
 						onClose();
 					},
 					onConfirm: () => {
-						resolveModal({
-							action: "PRODUCT_OPTION_CHANGED",
-							payload: {
-								cartId: product.cartId,
-								originProductOptionId: product.productOptionId,
-								productOptionId: pickId,
-								quantity: productCount,
-							},
+						handleAfterCartProductOptionChange({
+							cartId: product.cartId,
+							originProductOptionId: product.productOptionId,
+							productOptionId: pickId,
+							quantity: productCount,
 						});
+						onClose();
 					},
 					confirmDisabled: pickId === product.productOptionId && productCount === product.quantity,
 				}}

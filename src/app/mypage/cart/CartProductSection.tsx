@@ -30,7 +30,6 @@ import CartCouponSelector from "@/app/mypage/cart/CartCouponSelector";
 import { scrollIntoCenter } from "@/utils/ui";
 import { MaxDiscountBanner } from "@/components/buy/MaxDiscountBanner";
 import { useGlobalDialogStore } from "@/store/globalDialog.store";
-import { DialogResultMap, DomainModalResultMap } from "@/store/modal.type";
 
 interface CartProductSectionProps extends CartItemSelectCollection {
 	noResetCouponOn: () => void;
@@ -68,8 +67,8 @@ export default function CartProductSection({
 	changeMaxDiscountApplied,
 }: CartProductSectionProps) {
 	const queryClient = useQueryClient();
-	const { openModal, modalResult, clearModalResult } = useModalStore();
-	const { openDialog, dialogResult, clearDialogResult } = useGlobalDialogStore();
+	const { openModal } = useModalStore();
+	const { openDialog } = useGlobalDialogStore();
 
 	// 최대 할인 적용여부
 	const isMaxDiscountStatus = isMaxDiscountApplied || sumCouponDiscount === maxDiscountPrice;
@@ -132,82 +131,34 @@ export default function CartProductSection({
 	// React
 	// =================================================================
 
-	// 모달 오픈 시 selected 상태 - selected가 안된거를 옵션 변경이나 삭제 시에 쿠폰초기화 안하기
-	const modalOpenSelectedState = useRef<boolean>(false);
 	// 옵션변경 모달 오픈
 	const openOptionChangeModal = (product: CartItem) => {
-		if (!product.selected) modalOpenSelectedState.current = true; // 모달 열 때의 selected 상태 저장
 		openModal("PRODUCT_OPTION", {
 			product,
-			closeResult: "PRODUCT_OPTION_CHANGE_CANCEL",
+			handleAfterCartProductOptionChange: async (cartProductOption) => {
+				await handleChangeQuantity.mutateAsync({
+					cartId: cartProductOption.cartId,
+					productOptionId: cartProductOption.productOptionId,
+					quantity: cartProductOption.quantity,
+				});
+				if (!product.selected) {
+					noResetCouponOn(); // 옵션 변경 시 selected 상태가 안된 경우 쿠폰 초기화 방지
+				}
+				await queryClient.invalidateQueries({ queryKey: ["cartList"] });
+			},
 		});
 	};
 	// 장바구니 제품삭제 모달 오픈
-	const [deletingCartIdList, setDeletingCartIdList] = useState<number[]>([]);
-	const cartDeleteModalOpen = (content: string) => {
+	const cartDeleteModalOpen = (content: string, cartIds: number[], noReset: boolean) => {
 		openDialog("CONFIRM", {
 			content,
-			closeResult: "CART_DELETE_CANCEL",
+			handleAfterOk: async () => {
+				await handleCartProductDelete.mutateAsync({ cartIdList: cartIds });
+				if (noReset) noResetCouponOn(); // 삭제 시 selected 상태가 안된 경우 쿠폰 초기화 방지
+				queryClient.invalidateQueries({ queryKey: ["cartList"] });
+			},
 		});
 	};
-	// 공통모달 닫힌 후 처리
-	useEffect(() => {
-		if (!dialogResult) return;
-
-		// 장바구니 제품삭제
-		if (dialogResult.action === "CONFIRM_OK") {
-			const deleteCart = async () => {
-				await handleCartProductDelete.mutateAsync({ cartIdList: deletingCartIdList });
-				if (modalOpenSelectedState.current) {
-					noResetCouponOn(); // 삭제 시 selected 상태가 안된 경우 쿠폰 초기화 방지
-				}
-				queryClient.invalidateQueries({ queryKey: ["cartList"] });
-			};
-			deleteCart();
-		}
-		if (dialogResult?.action === "DIALOG_CLOSE") {
-			const payload = dialogResult.payload as DialogResultMap["DIALOG_CLOSE"];
-			if (payload?.result === "CART_DELETE_CANCEL") {
-				// 옵션 변경 모달이 닫혔을 때
-				modalOpenSelectedState.current = false;
-			}
-		}
-
-		// ✅ 한 번 처리했으면 비워주기 (중복 처리 방지)
-		clearDialogResult();
-	}, [clearDialogResult, dialogResult, deletingCartIdList, handleCartProductDelete, queryClient, noResetCouponOn]);
-	// 도메인 모달 닫힌 후 처리
-	useEffect(() => {
-		if (!modalResult) return;
-
-		// 장바구니 제품 옵션변경
-		if (modalResult.action === "PRODUCT_OPTION_CHANGED") {
-			const p = modalResult.payload as DomainModalResultMap["PRODUCT_OPTION_CHANGED"];
-
-			// ✅ 여기서 장바구니 상태 갱신 / react-query invalidate / toast 등 처리
-			// await mutateOptionChange(p.nextProductOptionId) ...
-			// queryClient.invalidateQueries({ queryKey: ["cartList"] });
-
-			const changeCartOption = async () => {
-				await handleChangeQuantity.mutateAsync({ cartId: p.cartId, productOptionId: p.productOptionId, quantity: p.quantity });
-				if (modalOpenSelectedState.current) {
-					noResetCouponOn(); // 옵션 변경 시 selected 상태가 안된 경우 쿠폰 초기화 방지
-				}
-				queryClient.invalidateQueries({ queryKey: ["cartList"] });
-			};
-			changeCartOption();
-		}
-		if (modalResult?.action === "DOMAIN_CLOSE") {
-			const payload = modalResult.payload as DomainModalResultMap["DOMAIN_CLOSE"];
-			if (payload?.result === "PRODUCT_OPTION_CHANGE_CANCEL") {
-				// 옵션 변경 모달이 닫혔을 때
-				modalOpenSelectedState.current = false;
-			}
-		}
-
-		// ✅ 한 번 처리했으면 비워주기 (중복 처리 방지)
-		clearModalResult();
-	}, [modalResult, clearModalResult, handleChangeQuantity, queryClient, noResetCouponOn]);
 
 	// 쿠폰변경 UI 열기(판매자이름)
 	const [couponAppliedSelectorOpenSeller, setCouponAppliedSelectorOpenSeller] = useState<string>("");
@@ -252,8 +203,7 @@ export default function CartProductSection({
 						data-action="removeSelected"
 						disabled={!anySelected}
 						onClick={() => {
-							setDeletingCartIdList([...selectedCartIdList]);
-							cartDeleteModalOpen(`선택된 ${selectedCount}개 제품을 장바구니에서 삭제하시겠습니까?`);
+							cartDeleteModalOpen(`선택된 ${selectedCount}개 제품을 장바구니에서 삭제하시겠습니까?`, [...selectedCartIdList], false);
 						}}
 					>
 						선택 삭제
@@ -574,9 +524,7 @@ export default function CartProductSection({
 												<div className={styles.productItemDelete}>
 													<button
 														onClick={() => {
-															setDeletingCartIdList([product.cartId]);
-															if (!product.selected) modalOpenSelectedState.current = true;
-															cartDeleteModalOpen("해당 제품을 장바구니에서 삭제하시겠습니까?");
+															cartDeleteModalOpen("해당 제품을 장바구니에서 삭제하시겠습니까?", [product.cartId], true);
 														}}
 													>
 														<IoIosClose />

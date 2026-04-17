@@ -2,7 +2,7 @@ import { AddCouponRequest, SellerCoupon, UpdateCouponRequest } from "@/types/sel
 import styles from "./SellerMain.module.scss";
 import moment from "moment";
 import { IoMdSettings } from "react-icons/io";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import clsx from "clsx";
 import { FaExchangeAlt } from "react-icons/fa";
 import { useModalStore } from "@/store/modal.store";
@@ -11,7 +11,6 @@ import { getApiUrl } from "@/lib/getBaseUrl";
 import API_URL from "@/api/endpoints";
 import { deleteNormal, postJson, putJson } from "@/api/fetchFilter";
 import { useGlobalDialogStore } from "@/store/globalDialog.store";
-import { DialogResultMap, DomainModalResultMap } from "@/store/modal.type";
 
 interface CouponListProps {
 	sellerCouponList: SellerCoupon[];
@@ -34,8 +33,8 @@ export default function CouponList({
 }: CouponListProps) {
 	const queryClient = useQueryClient();
 	const couponAllowedMode = allowedSelectedCouponId !== null; // 쿠폰 허용 제품이 하나라도 있으면 true
-	const { openModal, clearModalResult, modalResult } = useModalStore();
-	const { openDialog, clearDialogResult, dialogResult } = useGlobalDialogStore();
+	const { openModal } = useModalStore();
+	const { openDialog } = useGlobalDialogStore();
 
 	// ------------------------------------------------
 	// React Query
@@ -67,55 +66,9 @@ export default function CouponList({
 	// React
 	// ------------------------------------------------
 
-	// 상태 변경중 쿠폰
-	const [changingCoupon, setChangingCoupon] = useState<SellerCoupon | null>(null);
-
 	// ------------------------------------------------
 	// useEffect, useMemo
 	// ------------------------------------------------
-
-	// 공통 모달 결과 처리
-	useEffect(() => {
-		if (!dialogResult) return;
-
-		// 쿠폰 상태 변경 후 처리
-		if (dialogResult.action === "CONFIRM_OK") {
-			const payload = dialogResult.payload as DialogResultMap["CONFIRM_OK"];
-			if (payload?.result === "COUPON_STATUS_CHANGE") {
-				if (changingCoupon) {
-					updateCouponStatus({
-						activeCouponIds: changingCoupon.status === "ACTIVE" ? [changingCoupon.couponId] : [],
-						suspendedCouponIds: changingCoupon.status === "SUSPENDED" ? [changingCoupon.couponId] : [],
-					});
-				}
-			}
-		}
-
-		clearDialogResult();
-	}, [clearDialogResult, dialogResult, updateCouponStatus, changingCoupon]);
-	// 도메인 모달 결과 처리
-	useEffect(() => {
-		if (!modalResult) return;
-
-		// 쿠폰 등록/수정 후 처리
-		if (modalResult.action === "SELLER_COUPON_SET") {
-			const payload = modalResult.payload as DomainModalResultMap["SELLER_COUPON_SET"];
-			console.log("쿠폰 등록/수정 결과 처리", { payload });
-			if ("addCoupon" in payload) {
-				registerCoupon(payload.addCoupon);
-			} else if ("updateCoupon" in payload) {
-				updateCoupon(payload.updateCoupon);
-			}
-		}
-		// 쿠폰 삭제 후 처리
-		if (modalResult.action === "SELLER_COUPON_DELETE") {
-			const { couponId } = modalResult.payload as DomainModalResultMap["SELLER_COUPON_DELETE"];
-			console.log("쿠폰 삭제 결과 처리", { couponId });
-			deleteCoupon(couponId);
-		}
-
-		clearModalResult();
-	}, [clearModalResult, modalResult, registerCoupon, updateCoupon, deleteCoupon]);
 
 	return (
 		<div id="sellerCouponList" className={styles.sellerCouponList}>
@@ -131,6 +84,9 @@ export default function CouponList({
 						onClick={() => {
 							openModal("SELLER_COUPON", {
 								disableOverlayClose: true,
+								handleAfterAddCoupon: (coupon) => {
+									registerCoupon(coupon);
+								},
 							});
 						}}
 					>
@@ -189,6 +145,12 @@ export default function CouponList({
 													openModal("SELLER_COUPON", {
 														prevSellerCoupon: coupon,
 														disableOverlayClose: true,
+														handleAfterUpdateCoupon: (coupon) => {
+															updateCoupon(coupon);
+														},
+														handleAfterDeleteCoupon: (couponId) => {
+															deleteCoupon(couponId);
+														},
 													});
 												}
 											}}
@@ -218,12 +180,14 @@ export default function CouponList({
 													)}
 													onClick={(e) => {
 														e.stopPropagation();
-														setChangingCoupon(coupon);
 														openDialog("CONFIRM", {
 															content: "쿠폰 상태를 변경하시겠습니까?",
-															okResult: "COUPON_STATUS_CHANGE",
-															handleAfterClose: () => {
-																setChangingCoupon(null);
+															handleAfterClose: () => {},
+															handleAfterOk: () => {
+																updateCouponStatus({
+																	activeCouponIds: coupon.status === "ACTIVE" ? [coupon.couponId] : [],
+																	suspendedCouponIds: coupon.status === "SUSPENDED" ? [coupon.couponId] : [],
+																});
 															},
 														});
 													}}

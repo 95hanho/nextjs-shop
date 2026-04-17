@@ -9,9 +9,10 @@ import styles from "../Modal.module.scss";
 import clsx from "clsx";
 import { FaExchangeAlt } from "react-icons/fa";
 import { money } from "@/lib/format";
-import { useModalStore } from "@/store/modal.store";
 import { useGlobalDialogStore } from "@/store/globalDialog.store";
-import { DialogResultMap, DomainModalPropsMap } from "@/store/modal.type";
+import { DomainModalPropsMap } from "@/store/modal.type";
+import { OptionSelector } from "@/components/ui/OptionSelector";
+import { ProductSize } from "@/types/product";
 
 type SellerProductOptionModalProps = {
 	onClose: () => void;
@@ -21,24 +22,35 @@ type OptionFormInputKeys = "addPrice" | "stock" | "size" /* | "displayed" */;
 type OptionFormAlarm = FormInputAlarm<OptionFormInputKeys>;
 type OptionFormInputRefs = FormInputRefs<OptionFormInputKeys>;
 
-const initOptionForm: Partial<SellerProductOption> = {
+type ProducSizeInput = ProductSize | "";
+const productSizeList: ProductSize[] = ["XS", "S", "M", "L", "XL", "XXL"];
+const initOptionForm: Omit<Partial<SellerProductOption>, "size"> & { size: ProducSizeInput } = {
 	size: "",
 	addPrice: 0,
 	stock: 0,
 };
 
-export const SellerProductOptionModal = ({ onClose, prevSellerProductOption, productOptionSizeDuplicateList }: SellerProductOptionModalProps) => {
-	const { openDialog, dialogResult, clearDialogResult } = useGlobalDialogStore();
-	const { resolveModal } = useModalStore();
+export const SellerProductOptionModal = ({
+	onClose,
+	prevSellerProductOption,
+	productOptionSizeDuplicateList,
+	handleAfterAddSellerProductOption,
+	handleAfterUpdateSellerProductOption,
+	handleAfterDeleteSellerProductOption,
+}: SellerProductOptionModalProps) => {
+	const { openDialog } = useGlobalDialogStore();
 
 	// ------------------------------------------------
 	// React
 	// ------------------------------------------------
 
 	// 옵션 입력값
-	const [optionForm, setOptionForm] = useState<Partial<SellerProductOption>>(prevSellerProductOption || initOptionForm);
+	const [optionForm, setOptionForm] = useState<Omit<Partial<SellerProductOption>, "size"> & { size: ProducSizeInput }>(
+		prevSellerProductOption || initOptionForm,
+	);
 	const [optionFormAlarm, setOptionFormAlarm] = useState<OptionFormAlarm | null>(null);
 	const optionFormInputRefs = useRef<Partial<OptionFormInputRefs>>({});
+	const addPossibleProductSize = productSizeList.filter((size) => !productOptionSizeDuplicateList?.includes(size));
 
 	// optionForm 변경
 	const changeOptionForm = (e: ChangeEvent) => {
@@ -65,17 +77,8 @@ export const SellerProductOptionModal = ({ onClose, prevSellerProductOption, pro
 			value: string;
 		};
 		let changeVal = value.trim();
-		let changeAlarm: OptionFormAlarm | null = null;
+		// let changeAlarm: OptionFormAlarm | null = null;
 
-		// 사이즈 이름 중복 확인
-		if (name === "size" && changeVal) {
-			if (optionFormAlarm?.message !== "이미 존재하는 사이즈 이름입니다.") {
-				if (productOptionSizeDuplicateList?.includes(changeVal)) {
-					changeAlarm = { name: "size", message: "이미 존재하는 사이즈 이름입니다.", status: "FAIL" };
-					optionFormInputRefs.current.size?.focus();
-				}
-			}
-		}
 		// 숫자만 허용해야하는 input은 숫자만 입력받도록
 		if (["addPrice", "stock"].includes(name)) {
 			changeVal = changeVal.replace(/[^0-9]/g, "");
@@ -85,7 +88,7 @@ export const SellerProductOptionModal = ({ onClose, prevSellerProductOption, pro
 		}
 
 		if (!changeVal) return;
-		setOptionFormAlarm(changeAlarm);
+		// setOptionFormAlarm(changeAlarm);
 		setOptionForm((prev) => ({
 			...prev,
 			[name]: changeVal,
@@ -129,10 +132,8 @@ export const SellerProductOptionModal = ({ onClose, prevSellerProductOption, pro
 				stock: optionForm.stock,
 				size: optionForm.size,
 			} as AddProductOptionBase;
-			resolveModal({
-				action: "SELLER_PRODUCT_OPTION_SET",
-				payload: { addProductOption },
-			});
+			handleAfterAddSellerProductOption?.(addProductOption);
+			onClose();
 		} else {
 			const updateProductOption: UpdateSellerProductOptionRequest = {
 				productOptionId: optionForm.productOptionId,
@@ -140,10 +141,8 @@ export const SellerProductOptionModal = ({ onClose, prevSellerProductOption, pro
 				stock: optionForm.stock,
 				isDisplayed: optionForm.displayed || false,
 			} as UpdateSellerProductOptionRequest;
-			resolveModal({
-				action: "SELLER_PRODUCT_OPTION_SET",
-				payload: { updateProductOption },
-			});
+			handleAfterUpdateSellerProductOption?.(updateProductOption);
+			onClose();
 		}
 	};
 
@@ -155,41 +154,38 @@ export const SellerProductOptionModal = ({ onClose, prevSellerProductOption, pro
 		console.log({ prevSellerProductOption });
 	}, [prevSellerProductOption]);
 
-	// 모달 결과 처리
-	useEffect(() => {
-		if (!prevSellerProductOption || !dialogResult) return;
-
-		// 옵션 상태 변경 후 처리
-		if (dialogResult.action === "CONFIRM_OK") {
-			const payload = dialogResult.payload as DialogResultMap["CONFIRM_OK"];
-			if (payload?.result === "SELLER_PRODUCT_OPTION_DELETE_OK") {
-				resolveModal({
-					action: "SELLER_PRODUCT_OPTION_DELETE",
-					payload: {
-						productOptionId: prevSellerProductOption?.productOptionId,
-					},
-				});
-			}
-		}
-
-		clearDialogResult();
-	}, [clearDialogResult, dialogResult, prevSellerProductOption, resolveModal]);
-
 	return (
 		<ModalFrame title={!prevSellerProductOption ? "옵션 추가" : "옵션 수정"} onClose={onClose}>
 			<form onSubmit={optionSetSubmit} className={clsx(styles.settingForm, styles.optionForm)}>
 				{!prevSellerProductOption ? (
-					<FormInput
-						label="사이즈"
-						name="size"
-						value={optionForm.size || ""}
-						placeholder="옵션 설명을 입력해주세요."
-						alarm={optionFormAlarm}
-						onChange={changeOptionForm}
-						onBlur={validateOptionForm}
-						ref={(el) => {
-							optionFormInputRefs.current.size = el;
-						}}
+					<InfoMark
+						title="사이즈"
+						noMargin
+						infoVal={
+							<span className={styles.optionSizeSelector}>
+								<OptionSelector
+									pickIdx={optionForm.size ? addPossibleProductSize.findIndex((v) => v === optionForm.size) + 1 : 0}
+									initData={{ id: 0, val: "사이즈를 입력해주세요." }}
+									optionSelectorName="sellerProductOptionSize"
+									optionList={[
+										{ id: 0, val: "사이즈를 입력해주세요." },
+										...addPossibleProductSize.map((v, i) => ({ id: i + 1, val: v })),
+									]}
+									changeOption={(_, id) => {
+										setOptionForm((prev) => ({
+											...prev,
+											size: addPossibleProductSize[id - 1],
+										}));
+									}}
+									ref={(el) => {
+										optionFormInputRefs.current.size = el;
+									}}
+								/>
+								{optionFormAlarm?.status === "FAIL" && optionFormAlarm.name === "size" && (
+									<p className="text-red-500">* {optionFormAlarm.message}</p>
+								)}
+							</span>
+						}
 					/>
 				) : (
 					<InfoMark title="사이즈" infoVal={<span>{optionForm.size}</span>} />
@@ -251,7 +247,10 @@ export const SellerProductOptionModal = ({ onClose, prevSellerProductOption, pro
 									onClick={() => {
 										openDialog("CONFIRM", {
 											content: "옵션을 삭제하시겠습니까?",
-											okResult: "SELLER_PRODUCT_OPTION_DELETE_OK",
+											handleAfterOk: () => {
+												handleAfterDeleteSellerProductOption?.(prevSellerProductOption?.productOptionId);
+												onClose();
+											},
 										});
 									}}
 								>

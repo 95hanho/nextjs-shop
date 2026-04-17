@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useModalStore } from "@/store/modal.store";
 import { ModalFrame } from "@/components/modal/frame/ModalFrame";
 import styles from "../Modal.module.scss";
 import { ChangeEvent, FormEvent } from "@/types/event";
@@ -44,9 +43,7 @@ type ShippingAddressEditorModalProps = {
 	onClose: () => void;
 } & DomainModalPropsMap["ADDRESS_SET"];
 
-export const ShippingAddressEditorModal = ({ onClose, prevAddress }: ShippingAddressEditorModalProps) => {
-	const { resolveModal } = useModalStore();
-
+export const ShippingAddressEditorModal = ({ onClose, prevAddress, handleAfterSetAddress }: ShippingAddressEditorModalProps) => {
 	const [addressForm, setAddressForm] = useState<AddressForm>(initAddressForm);
 	const [addressFormAlarm, setAddressFormAlarm] = useState<AddressFormAlarm | null>(null);
 	const addressFormInputRefs = useRef<Partial<AddressFormFormInputRefs>>({});
@@ -123,10 +120,10 @@ export const ShippingAddressEditorModal = ({ onClose, prevAddress }: ShippingAdd
 			setAddressFormAlarm(changeAlarm);
 			return;
 		}
-		resolveModal({
-			action: "ADDRESS_SET",
-			payload: addressForm,
-		});
+		if (handleAfterSetAddress) {
+			handleAfterSetAddress(addressForm);
+			onClose(); // 모달 닫기
+		}
 	};
 	/* -------------------- */
 	// 처음 들어올 때

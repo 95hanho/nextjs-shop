@@ -9,8 +9,6 @@ import { OnOffButton } from "@/components/ui/OnOffButton";
 import { FormInput } from "@/components/form/FormInput";
 import { AddressSection } from "@/components/auth/AddressSection";
 
-// interface ShippingAddressFormProps {}
-
 export default function ShippingAddressForm() {
 	const { openModal } = useModalStore();
 	const {
@@ -26,6 +24,7 @@ export default function ShippingAddressForm() {
 		validateNewAddress,
 		addressAlarm,
 		addressFormInputRefs,
+		buyAddressChange,
 	} = useBuy();
 
 	const isModeExisting = shippingAddressMode === "existing";
@@ -93,7 +92,11 @@ export default function ShippingAddressForm() {
 							<button
 								className={styles.addresslistBtn}
 								onClick={() => {
-									openModal("BUY_ADDRESSLIST", {});
+									openModal("BUY_ADDRESSLIST", {
+										handleAfterChangeBuyAddress: (address) => {
+											buyAddressChange(address);
+										},
+									});
 								}}
 							>
 								이전 배송지 목록

@@ -5,7 +5,6 @@ import { ChangeEvent } from "@/types/event";
 import { UserAddress, UserAddressListItem } from "@/types/mypage";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { buyContext } from "@/context/buyContext";
-import { useModalStore } from "@/store/modal.store";
 import { DefaultAddress, payRequest } from "@/types/buy";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import API_URL from "@/api/endpoints";
@@ -28,7 +27,6 @@ interface BuyProviderProps {
 }
 
 export const BuyProvider = ({ children, initialDefaultAddress = null, holdIds }: BuyProviderProps) => {
-	const { modalResult, clearModalResult } = useModalStore();
 	const { openDialog } = useGlobalDialogStore();
 	const queryClient = useQueryClient();
 	const router = useRouter();
@@ -140,6 +138,13 @@ export const BuyProvider = ({ children, initialDefaultAddress = null, holdIds }:
 		const value = Math.min(Number(numericValue), availableMileage);
 		setUsedMileage(value);
 	}, []);
+	// 구매 배송지 변경
+	const buyAddressChange = useCallback((address: UserAddressListItem) => {
+		setShippingAddress(address);
+		setShippingMemo(address?.memo || "문 앞에 놓아주세요");
+		setCurrentDefaultStatus(address?.defaultAddress || false);
+		setSetAsDefault(false);
+	}, []);
 
 	// 결제하기
 	const handleBuy = useCallback(() => {
@@ -226,21 +231,6 @@ export const BuyProvider = ({ children, initialDefaultAddress = null, holdIds }:
 		setShippingMemo(initialDefaultAddress?.memo || "문 앞에 놓아주세요");
 	}, [initialDefaultAddress]);
 
-	// 모달 결과
-	useEffect(() => {
-		if (!modalResult) return;
-
-		// 구매 배송지 변경
-		if (modalResult?.action === "BUY_ADDRESS_CHANGE") {
-			const address = modalResult.payload as UserAddressListItem;
-			setShippingAddress(address);
-			setShippingMemo(address?.memo || "문 앞에 놓아주세요");
-			setCurrentDefaultStatus(address?.defaultAddress || false);
-			setSetAsDefault(false);
-		}
-		clearModalResult();
-	}, [clearModalResult, modalResult]);
-
 	const value = useMemo(
 		() => ({
 			shippingAddress,
@@ -262,6 +252,7 @@ export const BuyProvider = ({ children, initialDefaultAddress = null, holdIds }:
 			changeNewAddress,
 			validateNewAddress,
 			changeUsedMileage,
+			buyAddressChange,
 			handleBuy,
 		}),
 		[
@@ -278,6 +269,7 @@ export const BuyProvider = ({ children, initialDefaultAddress = null, holdIds }:
 			changeNewAddress,
 			validateNewAddress,
 			changeUsedMileage,
+			buyAddressChange,
 			handleBuy,
 		],
 	);
