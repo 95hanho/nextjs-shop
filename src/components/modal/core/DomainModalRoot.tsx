@@ -69,33 +69,19 @@ export const DomainModalRoot = () => {
 
 	switch (modalType) {
 		case "PRODUCT_OPTION":
-			const { product } = modalProps as DomainModalPropsMap["PRODUCT_OPTION"];
-
-			childrenModal = <ProductOptionModal onClose={handleClose} product={product} />;
+			childrenModal = <ProductOptionModal onClose={handleClose} {...(modalProps as DomainModalPropsMap["PRODUCT_OPTION"])} />;
 			break;
 		case "ADDRESS_SET":
-			const { prevAddress } = modalProps as DomainModalPropsMap["ADDRESS_SET"];
-
-			childrenModal = <ShippingAddressEditorModal onClose={handleClose} prevAddress={prevAddress} />;
+			childrenModal = <ShippingAddressEditorModal onClose={handleClose} {...(modalProps as DomainModalPropsMap["ADDRESS_SET"])} />;
 			break;
 		case "BUY_ADDRESSLIST":
-			childrenModal = <BuyShippingAddressListModal onClose={handleClose} />;
+			childrenModal = <BuyShippingAddressListModal onClose={handleClose} {...(modalProps as DomainModalPropsMap["BUY_ADDRESSLIST"])} />;
 			break;
 		case "SELLER_COUPON":
-			const { prevSellerCoupon } = modalProps as DomainModalPropsMap["SELLER_COUPON"];
-
-			childrenModal = <SellerCouponModal onClose={handleClose} prevSellerCoupon={prevSellerCoupon} />;
+			childrenModal = <SellerCouponModal onClose={handleClose} {...(modalProps as DomainModalPropsMap["SELLER_COUPON"])} />;
 			break;
 		case "SELLER_PRODUCT_OPTION":
-			const { prevSellerProductOption, productOptionSizeDuplicateList } = modalProps as DomainModalPropsMap["SELLER_PRODUCT_OPTION"];
-
-			childrenModal = (
-				<SellerProductOptionModal
-					onClose={handleClose}
-					prevSellerProductOption={prevSellerProductOption}
-					productOptionSizeDuplicateList={productOptionSizeDuplicateList}
-				/>
-			);
+			childrenModal = <SellerProductOptionModal onClose={handleClose} {...(modalProps as DomainModalPropsMap["SELLER_PRODUCT_OPTION"])} />;
 			break;
 		default:
 			return null;

@@ -14,12 +14,15 @@ import Error from "next/error";
 import { useEffect, useRef, useState } from "react";
 import styles from "./MyShippingAddress.module.scss";
 import { ShippingAddressList } from "@/components/address/ShippingAddressList";
-import { DomainModalResultMap } from "@/store/modal.type";
 
 export default function MyShippingAddressClient() {
 	const { loginOn } = useAuth();
 	const queryClient = useQueryClient();
-	const { openModal, clearModalResult, modalResult } = useModalStore();
+	const { openModal } = useModalStore();
+
+	// ----------------------------------------------------------------------
+	// React Query
+	// ----------------------------------------------------------------------
 
 	// 유저 배송지 조회
 	const { data: userAddressData, isLoading } = useQuery<GetUserAddressListResponse, Error, GetUserAddressListResponse>({
@@ -66,34 +69,24 @@ export default function MyShippingAddressClient() {
 			console.log(err);
 		},
 	});
+
+	// ----------------------------------------------------------------------
+	// React
+	// ----------------------------------------------------------------------
+
 	const [userAddressList, setUserAddressList] = useState<UserAddressListItem[] | []>([]);
+	// 배송지 리스트 ref (추후에 주소 추가/수정 후 해당 주소로 스크롤 이동할 때 사용)
+	const addressListRef = useRef<HTMLUListElement | null>(null);
+
+	// ----------------------------------------------------------------------
+	// useEffect
+	// ----------------------------------------------------------------------
+
 	useEffect(() => {
 		if (!isLoading && userAddressData) {
 			setUserAddressList([...userAddressData.userAddressList]);
 		}
 	}, [isLoading, userAddressData]);
-	// 기본배송지 변경
-	const changingDefaultAddressRef = useRef(null as UserAddressListItem | null);
-
-	// 모달에서 확인 누른 후 처리할 작업들 (기본배송지 변경, 배송지 삭제, 배송지 추가/수정)
-	useEffect(() => {
-		if (!modalResult) return;
-
-		// 주소 추가
-		if (modalResult?.action === "ADDRESS_SET") {
-			const payload = modalResult.payload as DomainModalResultMap["ADDRESS_SET"];
-			const addressUpdating = async () => {
-				const nextAddress = { ...changingDefaultAddressRef.current, ...payload };
-				if (nextAddress) {
-					if (!nextAddress?.addressId) await handleAddressAdd.mutateAsync(nextAddress);
-					else await handleAddressUpdate.mutateAsync(nextAddress);
-					queryClient.invalidateQueries({ queryKey: ["userAddressList"] });
-				}
-			};
-			addressUpdating();
-		}
-		clearModalResult();
-	}, [modalResult, clearModalResult, handleAddressAdd, handleAddressUpdate, queryClient]);
 
 	// if (isLoading && !userAddressList.length) return null;
 	return (
@@ -111,24 +104,35 @@ export default function MyShippingAddressClient() {
 							openModal("ADDRESS_SET", {
 								prevAddress: address,
 								disableOverlayClose: true,
+								handleAfterSetAddress: async (nextAddress) => {
+									await handleAddressUpdate.mutateAsync({ ...address, ...nextAddress });
+									await queryClient.invalidateQueries({ queryKey: ["userAddressList"] });
+								},
 							});
 						}}
 						changeDefaultAddress={async (address) => {
 							await handleAddressUpdate.mutateAsync(address);
-							queryClient.invalidateQueries({ queryKey: ["userAddressList"] });
+							await queryClient.invalidateQueries({ queryKey: ["userAddressList"] });
 						}}
 						deleteAddress={async (addressId) => {
 							await handleAddressDelete.mutateAsync(addressId);
-							queryClient.invalidateQueries({ queryKey: ["userAddressList"] });
+							await queryClient.invalidateQueries({ queryKey: ["userAddressList"] });
+						}}
+						ref={(el) => {
+							addressListRef.current = el;
 						}}
 					/>
 					<div className={styles.addressAdd}>
 						<button
 							onClick={() => {
-								changingDefaultAddressRef.current = null;
 								openModal("ADDRESS_SET", {
 									prevAddress: undefined,
 									disableOverlayClose: true,
+									handleAfterSetAddress: async (nextAddress) => {
+										await handleAddressAdd.mutateAsync(nextAddress);
+										await queryClient.invalidateQueries({ queryKey: ["userAddressList"] });
+										addressListRef.current?.scrollTo({ top: 0, behavior: "instant" });
+									},
 								});
 							}}
 						>

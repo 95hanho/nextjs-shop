@@ -2,6 +2,7 @@ import styles from "./ShippingAddressList.module.scss";
 import { UserAddressListItem } from "@/types/mypage";
 import clsx from "clsx";
 import { useGlobalDialogStore } from "@/store/globalDialog.store";
+import { forwardRef } from "react";
 
 type ShippingAddressListProps = { userAddressList: UserAddressListItem[] | [] } & (
 	| {
@@ -16,11 +17,11 @@ type ShippingAddressListProps = { userAddressList: UserAddressListItem[] | [] } 
 	  }
 );
 
-export const ShippingAddressList = (props: ShippingAddressListProps) => {
+export const ShippingAddressList = forwardRef((props: ShippingAddressListProps, ref: React.ForwardedRef<HTMLUListElement>) => {
 	const { openDialog } = useGlobalDialogStore();
 
 	return (
-		<ul className={styles.addressList}>
+		<ul className={styles.addressList} ref={ref}>
 			{props.userAddressList.map((userAddress) => (
 				<li
 					key={"userAddress" + userAddress.addressId}
@@ -120,4 +121,5 @@ export const ShippingAddressList = (props: ShippingAddressListProps) => {
 			))}
 		</ul>
 	);
-};
+});
+ShippingAddressList.displayName = "ShippingAddressList";

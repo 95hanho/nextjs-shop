@@ -1,6 +1,6 @@
 import { ChangeEvent } from "@/types/event";
 import { FormInputAlarm, FormInputRefs } from "@/types/form";
-import { UserAddress } from "@/types/mypage";
+import { UserAddress, UserAddressListItem } from "@/types/mypage";
 import { createContext } from "react";
 
 export type ShippingAddressMode = "existing" | "new";
@@ -28,6 +28,7 @@ interface BuyContextValue {
 	changeNewAddress: (e?: ChangeEvent, changeMap?: Partial<UserAddress>) => void;
 	validateNewAddress: (e: ChangeEvent) => void;
 	changeUsedMileage: (e: ChangeEvent, availableMileage: number) => void;
+	buyAddressChange: (address: UserAddressListItem) => void;
 	handleBuy: () => void;
 }
 

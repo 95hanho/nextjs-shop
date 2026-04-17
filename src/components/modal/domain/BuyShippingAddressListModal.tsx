@@ -7,15 +7,14 @@ import { getApiUrl } from "@/lib/getBaseUrl";
 import { GetUserAddressListResponse, UserAddressListItem } from "@/types/mypage";
 import { useQuery } from "@tanstack/react-query";
 import styles from "./BuyShippingAddressListModal.module.scss";
-import { useModalStore } from "@/store/modal.store";
+import { DomainModalPropsMap } from "@/store/modal.type";
 
-interface ShippingAddressListProps {
+type ShippingAddressListProps = {
 	onClose: () => void;
-}
+} & DomainModalPropsMap["BUY_ADDRESSLIST"];
 
-export const BuyShippingAddressListModal = ({ onClose }: ShippingAddressListProps) => {
+export const BuyShippingAddressListModal = ({ onClose, handleAfterChangeBuyAddress }: ShippingAddressListProps) => {
 	const { loginOn } = useAuth();
-	const { resolveModal } = useModalStore();
 
 	// 유저 배송지 조회
 	const { data: userAddressData } = useQuery<GetUserAddressListResponse, Error, UserAddressListItem[]>({
@@ -33,10 +32,8 @@ export const BuyShippingAddressListModal = ({ onClose }: ShippingAddressListProp
 					page="BUY"
 					userAddressList={userAddressData}
 					changeBuyAddress={(address) => {
-						resolveModal({
-							action: "BUY_ADDRESS_CHANGE",
-							payload: address,
-						});
+						handleAfterChangeBuyAddress(address);
+						onClose();
 					}}
 				/>
 			</div>

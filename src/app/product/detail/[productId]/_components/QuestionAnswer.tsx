@@ -399,7 +399,6 @@ export default function QuestionAnswer({ sellerName }: { sellerName: string }) {
 																	onClick={() => {
 																		openDialog("CONFIRM", {
 																			content: "정말 삭제하시겠습니까?",
-																			// okResult: "QNA_DELETE_OK",
 																			handleAfterOk: () => {
 																				deleteProductQna(qna.productQnaId);
 																			},

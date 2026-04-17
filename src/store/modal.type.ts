@@ -10,20 +10,20 @@ import {
 } from "@/types/seller";
 
 // -- modal타입
-// dialog.type.ts
+// dialog modal 타입 종류 - 모달 오픈 시 종류
 export type DialogType = "ALERT" | "CONFIRM" | null;
-// modal.type.ts
+// domain modal 타입 종류 - 모달 오픈 시 종류
 export type DomainModalType = "PRODUCT_OPTION" | "ADDRESS_SET" | "BUY_ADDRESSLIST" | "SELLER_COUPON" | "SELLER_PRODUCT_OPTION" | null;
 
 // -- modal이 닫힐 때 동작 구분
-export type DialogCloseResult = "NEED_LOGIN_CANCEL" | "SELLER_LOGOUT" | "CART_DELETE_CANCEL";
-export type DomainModalCloseResult = "PRODUCT_OPTION_CHANGE_CANCEL" | "SELLER_PRODUCT_OPTION_SET_CANCEL";
+export type DialogCloseResult = "NEED_LOGIN_CANCEL" | "SELLER_LOGOUT";
+export type DomainModalCloseResult = "";
 
 // 모달 오픈 시 공통 옵션
 type ModalCommon = {
 	disableOverlayClose?: boolean;
 	disableEscClose?: boolean;
-	handleAfterClose?: () => void;
+	handleAfterClose?: () => void | Promise<void>;
 };
 type DialogCommon = ModalCommon & {
 	closeResult?: DialogCloseResult;
@@ -33,13 +33,7 @@ type DomainModalCommon = ModalCommon & {
 };
 
 /** confirm 모달에서 ok 눌렀을 때, “어떤 상황인지”에 대한 결과값 */
-export type ConfirmOkResult =
-	| "NEED_LOGIN" // RootProvider - 로그인 필요
-	| "COUPON_STATUS_CHANGE" // 판매자페이지 - 쿠폰 상태 변경
-	| "SELLER_COUPON_DELETE_OK" // 판매자페이지 - 쿠폰 삭제 확인
-	| "SELLER_PRODUCT_OPTION_DELETE_OK" // 판매자페이지 - 제품 옵션 삭제 확인
-	| "SALE_STOP_CONFIRM" // 판매자페이지 - 상품 판매 상태 변경 확인
-	| "QNA_DELETE_OK"; // QnA 삭제 확인
+export type ConfirmOkResult = "NEED_LOGIN"; // RootProvider - 로그인 필요
 export type ConfirmCancelResult = string; // 아직 사용하는 대가 없어서 string으로 둠
 
 // -- modal이 열릴 떄 요구되는 옵션
@@ -58,23 +52,38 @@ export type DialogPropsMap = {
 		cancelResult?: ConfirmCancelResult;
 		hideCancel?: boolean;
 		reverse?: boolean;
-		handleAfterOk?: () => void;
+		handleAfterOk?: () => void | Promise<void>;
 	};
 };
 export type DomainModalPropsMap = {
 	PRODUCT_OPTION: DomainModalCommon & {
 		product: CartItem;
+		handleAfterCartProductOptionChange: (cartProductOption: {
+			cartId: number;
+			originProductOptionId: number;
+			productOptionId: number;
+			quantity: number;
+		}) => void | Promise<void>;
 	};
 	ADDRESS_SET: DomainModalCommon & {
 		prevAddress?: UserAddressListItem;
+		handleAfterSetAddress: (nextAddress: AddressForm) => void | Promise<void>;
 	};
-	BUY_ADDRESSLIST: DomainModalCommon & {};
+	BUY_ADDRESSLIST: DomainModalCommon & {
+		handleAfterChangeBuyAddress: (address: UserAddressListItem) => void | Promise<void>;
+	};
 	SELLER_COUPON: DomainModalCommon & {
 		prevSellerCoupon?: SellerCoupon;
+		handleAfterAddCoupon?: (coupon: AddCouponRequest) => void | Promise<void>;
+		handleAfterUpdateCoupon?: (coupon: UpdateCouponRequest) => void | Promise<void>;
+		handleAfterDeleteCoupon?: (couponId: number) => void | Promise<void>;
 	};
 	SELLER_PRODUCT_OPTION: DomainModalCommon & {
 		prevSellerProductOption?: SellerProductOption;
 		productOptionSizeDuplicateList?: string[]; // 판매자 제품 옵션 사이즈 중복 확인 리스트
+		handleAfterAddSellerProductOption?: (option: AddProductOptionBase) => void | Promise<void>;
+		handleAfterUpdateSellerProductOption?: (option: UpdateSellerProductOptionRequest) => void | Promise<void>;
+		handleAfterDeleteSellerProductOption?: (productOptionId: number) => void | Promise<void>;
 	};
 };
 // -- modal이 열릴 때 요구되는 옵션
@@ -108,41 +117,6 @@ export type DialogResultMap = {
 		  };
 };
 export type DomainModalResultMap = {
-	// 상품 옵션 변경
-	PRODUCT_OPTION_CHANGED: {
-		cartId: number;
-		originProductOptionId: number;
-		productOptionId: number;
-		quantity: number;
-	};
-	// 마이주소 변경
-	ADDRESS_SET: AddressForm;
-	// 구매)배송지 변경
-	BUY_ADDRESS_CHANGE: UserAddressListItem;
-	// 판매자 쿠폰 등록/수정
-	SELLER_COUPON_SET:
-		| {
-				addCoupon: AddCouponRequest;
-		  }
-		| {
-				updateCoupon: UpdateCouponRequest;
-		  };
-	// 판매자 쿠폰 삭제
-	SELLER_COUPON_DELETE: {
-		couponId: number;
-	};
-	// 판매자 제품 옵션 추가/수정
-	SELLER_PRODUCT_OPTION_SET:
-		| {
-				addProductOption: AddProductOptionBase;
-		  }
-		| {
-				updateProductOption: UpdateSellerProductOptionRequest;
-		  };
-	// 판매자 제품 옵션 삭제
-	SELLER_PRODUCT_OPTION_DELETE: {
-		productOptionId: number;
-	};
 	// 공통) 닫기
 	DOMAIN_CLOSE:
 		| undefined
