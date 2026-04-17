@@ -21,6 +21,7 @@ import styles from "./SellerMain.module.scss";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { postJson } from "@/api/fetchFilter";
 import { BaseResponse } from "@/types/common";
+import QuestionAnswerList from "@/app/seller/QuestionAnswerList";
 
 export default function SellerMainClient() {
 	const { loginOn } = useSellerAuth();
@@ -191,9 +192,16 @@ export default function SellerMainClient() {
 			<div className="text-sm text-right">
 				<p>* 더블클릭 시 상세보기/수정</p>
 			</div>
-			<CouponList {...couponListProps} />
-			<ProductList {...productListProps} />
-			{/* <QuestionAnswer  /> */}
+			<div className="flex">
+				<div className="w-1/2 px-2">
+					<CouponList {...couponListProps} />
+					<ProductList {...productListProps} />
+				</div>
+				<div className="w-1/2 px-2 border-0 border-l-2 border-black border-solid">
+					<QuestionAnswerList />
+				</div>
+			</div>
+
 			{/* <ReviewList  /> */}
 			{/* <CouponUsedList  /> */}
 			{/* <SalesList  /> */}
