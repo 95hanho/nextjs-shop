@@ -1,7 +1,7 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { getNormal } from "@/api/fetchFilter";
-import { userWithAuth } from "@/lib/auth/user/auth";
+import { userWithAuth } from "@/lib/auth/user";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { GetProductDetailResponse } from "@/types/product";
 import { NextResponse } from "next/server";
@@ -19,7 +19,6 @@ export const GET = userWithAuth<{ productId: string }>(async ({ accessToken, par
 				Authorization: `Bearer ${accessToken}`,
 			},
 		);
-		console.log("data", data);
 
 		return NextResponse.json({ ...data }, { status: 200 });
 	} catch (err: unknown) {
