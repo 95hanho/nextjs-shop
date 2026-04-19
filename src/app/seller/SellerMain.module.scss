@@ -184,3 +184,14 @@
 		}
 	}
 }
+
+// QnA 목록
+.questionAnswerList {
+	.qnaFilterNav {
+		button.on {
+			font-weight: bold;
+			background-color: #000;
+			color: #fff;
+		}
+	}
+}

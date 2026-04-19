@@ -95,7 +95,7 @@ export default function ProductList({
 			// console.log("쿠폰 허용 제품 ID 리스트:", couponAllowedProductIds);
 		}
 		if (sellerProductList.length > 0) {
-			console.log("판매자 제품 목록:", sellerProductList);
+			// console.log("판매자 제품 목록:", sellerProductList);
 		}
 	}, [couponAllowedProductIds, sellerProductList]);
 

@@ -19,6 +19,7 @@ import clsx from "clsx";
 import moment from "moment";
 import { useGlobalDialogStore } from "@/store/globalDialog.store";
 import { useAuth } from "@/hooks/useAuth";
+import { TurnToPagination } from "@/components/ui/TurnToPagination";
 
 // 상품 QnA
 export default function QuestionAnswer({ sellerName }: { sellerName: string }) {
@@ -419,7 +420,7 @@ export default function QuestionAnswer({ sellerName }: { sellerName: string }) {
 															<div>
 																<h4 className="text-xs">답변</h4>
 																<p className="py-1.5 text-sm">{qna.answer}</p>
-																<h5 className="text-sm font-normal">{sellerName}</h5>
+																<h5 className="text-xs font-normal text-gray-500">-- {sellerName}</h5>
 															</div>
 														</div>
 													</>
@@ -428,31 +429,13 @@ export default function QuestionAnswer({ sellerName }: { sellerName: string }) {
 										);
 									})}
 								<div>
-									{qnaPage.totalPage > 1 && (
-										<nav className="flex justify-center gap-2 mt-4">
-											<button
-												className={clsx("px-3 py-1 text-sm bg-gray-200 border rounded-full cursor-pointer text-slate-900", {
-													"cursor-not-allowed opacity-50": qnaPage.page === 1,
-												})}
-												onClick={() => setQnaPage((prev) => ({ ...prev, page: prev.page - 1 }))}
-												disabled={qnaPage.page === 1}
-											>
-												이전
-											</button>
-											<span>
-												{qnaPage.page} / {qnaPage.totalPage}
-											</span>
-											<button
-												className={clsx("px-3 py-1 text-sm bg-gray-200 border rounded-full cursor-pointer text-slate-900", {
-													"cursor-not-allowed opacity-50": qnaPage.page === qnaPage.totalPage,
-												})}
-												onClick={() => setQnaPage((prev) => ({ ...prev, page: prev.page + 1 }))}
-												disabled={qnaPage.page === qnaPage.totalPage}
-											>
-												다음
-											</button>
-										</nav>
-									)}
+									<TurnToPagination
+										curPage={qnaPage.page}
+										totalPage={qnaPage.totalPage}
+										turnPage={(page) => {
+											setQnaPage((prev) => ({ ...prev, page }));
+										}}
+									/>
 								</div>
 							</section>
 						</article>

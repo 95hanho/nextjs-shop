@@ -148,8 +148,10 @@ const API_URL = {
 	SELLER_COUPON_STATUS: "/seller/coupon/status",
 	/** 쿠폰 허용제품 조회, 쿠폰 허용제품 변경 */
 	SELLER_COUPON_ALLOWED: "/seller/coupon/allowed",
-	/** 해당 쿠폰을 유저에게 발행하기 */
+	/** 해당 쿠폰을 유저에게 발행하기, 유저쿠폰사용내역 조회 */
 	SELLER_COUPON_USER_COUPON: "/seller/coupon/user-coupon",
+	/** 판매자 QnA 조회, 판매자 QnA 답변 등록/수정 */
+	SELLER_QNA: "/seller/qna",
 	/** 판매자와 관련된 회원 조회 */
 	SELLER_INTERESTING_USER: "/seller/user/interesting",
 };

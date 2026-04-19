@@ -1,7 +1,7 @@
 import { FileInfo } from "@/types/file";
 import { BaseResponse } from "./common";
 import { AdminCoupon, Coupon } from "./mypage";
-import { ProductColorName, ProductDetail, ProductOption, ProductSize } from "./product";
+import { ProductColorName, ProductDetail, ProductOption, ProductQnaType, ProductQnaTypeCode, ProductSize } from "./product";
 
 /* -- MODEL ----------------------------------------------------------------- */
 
@@ -182,6 +182,11 @@ export interface UpdateCouponRequest {
 	startDate: string;
 	endDate: string;
 }
+/* 쿠폰 상태 변경 */
+export interface UpdateCouponStatusRequest {
+	activeCouponIds?: number[];
+	suspendedCouponIds?: number[];
+}
 /* 쿠폰 허용제품 조회 */
 export interface GetSellerCouponAllowResponse extends BaseResponse {
 	couponAllowedProductIds: number[];
@@ -192,10 +197,29 @@ export interface SetSellerCouponAllowRequest {
 	addProductIds: number[];
 	removeProductIds: number[];
 }
-/* 쿠폰 상태 변경 */
-export interface UpdateCouponStatusRequest {
-	activeCouponIds?: number[];
-	suspendedCouponIds?: number[];
+/* 판매자 QnA 조회 */
+export type SellerQna = {
+	productQnaId: number;
+	question: string;
+	createdAt: string;
+	answer: string;
+	secret: boolean;
+	answerRead: boolean; // 답변 읽음 여부
+	productQnaTypeId: number;
+	productQnaTypeCode: ProductQnaTypeCode;
+	productQnaTypeName: string;
+	productId: number;
+	productName: string;
+	userName: string;
+};
+export interface GetSellerQnaResponse extends BaseResponse {
+	sellerQnaList: SellerQna[];
+	qnaTypeList: ProductQnaType[];
+}
+/*  */
+export interface UpdateQnaAnswerRequest {
+	productQnaId: number;
+	answer: string;
 }
 /*  */
 export interface IssueCouponsToUsersRequest {
