@@ -1,0 +1,13 @@
+.reviewStar {
+	position: relative;
+	&::before {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		content: "";
+		top: 0;
+		left: 0;
+		background-color: rgb(167 167 167 / 8%);
+		border-radius: 10px;
+	}
+}

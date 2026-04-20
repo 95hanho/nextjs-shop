@@ -1,0 +1,139 @@
+.imageDragInputArea {
+	.productImageArea {
+		position: relative;
+		width: 100%;
+		border: 1px solid #ccc;
+		cursor: pointer;
+		&.fileEmpty {
+			background: url(https://ehfqntuqntu.cdn1.cafe24.com/ui/image-empty.png) no-repeat 100% 50% / 100% 290px;
+		}
+		.productImageScroll {
+			min-height: 350px;
+			max-height: 500px;
+			overflow: auto;
+
+			.productImageGrid {
+				display: grid;
+				grid-template-columns: repeat(4, 1fr);
+				gap: 10px;
+				padding: 5px 10px;
+				align-content: start;
+				.imageItem {
+					border-radius: 3px;
+					position: relative;
+					width: 100%;
+					aspect-ratio: 1 / 1;
+					// overflow: hidden;
+					background-color: #fdfdfd;
+					border: 1px solid #e7e7e7;
+					.insertLine {
+						position: absolute;
+						left: -8px;
+						width: 4px;
+						height: 100%;
+						background: #727272;
+						z-index: 50;
+						pointer-events: none;
+					}
+
+					.insertLineLast {
+						position: absolute;
+						right: -8px;
+						width: 4px;
+						height: 100%;
+						background: #727272;
+						z-index: 50;
+						pointer-events: none;
+					}
+					.imageIndex {
+						position: absolute;
+						top: 0;
+						left: 0;
+						background-color: #000;
+						color: #fff;
+						padding: 0px 7px;
+						font-size: 16px;
+						border-radius: 0 0 3px 0;
+					}
+					.imageDelete {
+						position: absolute;
+						top: 0;
+						right: 0;
+						background-color: #f00;
+						color: #fff;
+						padding: 0px 7px;
+						font-size: 16px;
+						border-radius: 0 0 3px 0;
+					}
+					.imageDeleting {
+						position: absolute;
+						inset: 0;
+						background: rgba(253, 253, 254, 0.75);
+						font-size: 80px;
+						align-content: center;
+						color: rgb(175 175 175 / 50%);
+					}
+					.imageRestore {
+						position: absolute;
+						top: 0;
+						right: 0;
+						background-color: #00f;
+						color: #fff;
+						padding: 0px 4px;
+						font-size: 16px;
+						border-radius: 0 0 3px 0;
+						z-index: 10;
+					}
+					.imageMove {
+						position: absolute;
+						inset: 0;
+						background: rgba(253, 253, 254, 0.95);
+						font-size: 40px;
+						align-content: center;
+						color: rgb(175 175 175 / 50%);
+					}
+				}
+			}
+		}
+		.dragPreview {
+			position: fixed;
+			width: 120px;
+			aspect-ratio: 1 / 1;
+			pointer-events: none;
+			z-index: 9999;
+			border-radius: 6px;
+			overflow: hidden;
+			background-color: #fff;
+			border: 1px solid #ddd;
+			box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+		}
+		.draggingImage {
+			position: absolute;
+			inset: 0;
+			background: url(https://ehfqntuqntu.cdn1.cafe24.com/ui/image-put.png) no-repeat 100% 50% / 100% 290px;
+			background-color: rgba(253, 253, 254, 0.95);
+			pointer-events: none;
+			z-index: 20;
+		}
+	}
+	.fileButtonWrap {
+		margin-top: 5px;
+		text-align: right;
+		padding: 0 5px;
+		button {
+			background-color: #1267c9;
+			color: #fff;
+			border: none;
+			padding: 5px 10px;
+			cursor: pointer;
+			font-size: 15px;
+			border-radius: 5px;
+		}
+	}
+}
+// 리뷰 작성 페이지에서 사용되는 스타일
+.reviewTitle {
+	text-align: left;
+	font-weight: 400;
+	margin-bottom: 10px;
+}

@@ -68,8 +68,10 @@ const API_URL = {
 	MY_ORDER: "/mypage/my-order",
 	/** 주문배송정보 상세조회 */
 	MY_ORDER_DETAIL: "/mypage/my-order/:orderId",
-	/** 리뷰 작성 */
+	/** 리뷰 주문정보 조회, 리뷰 작성, 리뷰 수정 */
 	MY_REVIEW: "/mypage/review",
+	/** 리뷰 이미지 설정 */
+	MY_REVIEW_IMAGE: "/mypage/review/image",
 	/** 장바구니 조회, 장바구니 제품 수량 변경, 장바구니 선택여부 변경, 장바구니 제품 삭제 */
 	MY_CART: "/mypage/cart",
 	/** 장바구니 제품 다른 option조회 */

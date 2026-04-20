@@ -84,7 +84,6 @@ export function useSellerProductSubmit() {
 			});
 		}
 		function productImageSubmit(type: "ADD" | "UPDATE", productId: number) {
-			console.log({ type, productId });
 			const addFilesMeta = addFiles.map((item, index) => {
 				const clientKey = `new-file-${index}-${item.sortKey}`;
 

@@ -22,7 +22,6 @@ export const GET = sellerWithAuth<{ productId: string }>(async ({ params, seller
 				Authorization: `Bearer ${sellerToken}`,
 			},
 		);
-		console.log("data", data.productDetail.productImages);
 
 		return NextResponse.json({ ...data }, { status: 200 });
 	} catch (err: unknown) {
