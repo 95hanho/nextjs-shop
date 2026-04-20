@@ -4,9 +4,11 @@ import { getApiUrl } from "@/lib/getBaseUrl";
 import { useGlobalDialogStore } from "@/store/globalDialog.store";
 import { BuyHoldRequest, BuyHoldResponse } from "@/types/buy";
 import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 
 // 상품 확인 및 점유(바로 구매하기)
 export function useProductCheckAndHold() {
+	const router = useRouter();
 	const { openDialog } = useGlobalDialogStore();
 
 	return useMutation({
@@ -18,6 +20,7 @@ export function useProductCheckAndHold() {
 			}),
 		onSuccess: (data) => {
 			console.log("상품 점유 성공", data);
+			router.push("/buy");
 		},
 		onError: (err) => {
 			console.error("상품 점유 실패", err);

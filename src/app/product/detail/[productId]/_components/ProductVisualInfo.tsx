@@ -24,6 +24,7 @@ import { AddCartPopup } from "@/components/mypage/AddCartPopup";
 import { useProductCheckAndHold } from "@/hooks/query/buy/useProductCheckAndHold";
 import ThumbnailImageSection from "@/app/product/detail/[productId]/_components/ThumbnailImageSection";
 import { useParams } from "next/navigation";
+import { useGlobalDialogStore } from "@/store/globalDialog.store";
 
 export type ProductCouponWithDiscount = AvailableCouponAtProductDetail & {
 	discountAmount: number;
@@ -41,6 +42,7 @@ interface ProductVisualInfoProps {
 
 // 상품 사진 및 가격배송 정보
 export default function ProductVisualInfo({ productDetail, reviewCount, reviewRate, initProductOptionList }: ProductVisualInfoProps) {
+	const { openDialog } = useGlobalDialogStore();
 	const { loginOn, user, isAuthLoading } = useAuth();
 	const { handleAddCart, isSuccess: isAddCartSuccess, reset } = useProductCartAction();
 	const { mutate: handleStockHold, error: buyNowError } = useProductCheckAndHold();
@@ -556,6 +558,13 @@ export default function ProductVisualInfo({ productDetail, reviewCount, reviewRa
 											<button
 												className={styles.btnBuy}
 												onClick={() => {
+													if (productSelectList.length === 0) {
+														openDialog("ALERT", {
+															content: "구매할 옵션을 선택해주세요.",
+														});
+														return;
+													}
+
 													handleStockHold({
 														buyList: productSelectList.map((option) => ({
 															productOptionId: option.productOptionId,

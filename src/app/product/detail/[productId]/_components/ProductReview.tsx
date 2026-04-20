@@ -2,14 +2,23 @@ import { ReviewStar } from "@/components/product/ReviewStar";
 import { money } from "@/lib/format";
 import styles from "../ProductDetail.module.scss";
 import { useQuery } from "@tanstack/react-query";
-import { GetProductDetailReviewResponse } from "@/types/product";
+import { GetProductDetailReviewResponse, ProductReviewItem } from "@/types/product";
 import { getNormal } from "@/api/fetchFilter";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import API_URL from "@/api/endpoints";
 import { useParams } from "next/navigation";
+import { useEffect, useMemo } from "react";
+import { SmartImage } from "@/components/ui/SmartImage";
+import { getUploadImageUrl } from "@/lib/image";
+import ProductReviewList from "@/app/product/detail/[productId]/_components/ProductReviewList";
+
+interface ProductReviewProps {
+	reviewCount: number;
+	reviewRate: number;
+}
 
 // 상품 리뷰
-export default function ProductReview() {
+export default function ProductReview({ reviewCount, reviewRate }: ProductReviewProps) {
 	const params = useParams<{
 		productId: string;
 	}>();
@@ -21,20 +30,35 @@ export default function ProductReview() {
 
 	// 리뷰 조회
 	const {
-		data: reviewResponse,
+		data: productReviewList = [],
 		isSuccess,
 		isError,
 		isFetching,
-	} = useQuery<GetProductDetailReviewResponse>({
+	} = useQuery<GetProductDetailReviewResponse, Error, ProductReviewItem[]>({
 		queryKey: ["productReviewList", productIdNum],
 		queryFn: () => getNormal(getApiUrl(API_URL.PRODUCT_DETAIL_REVIEW), { productId: productIdNum }),
 		enabled: !!productIdNum,
 		refetchOnWindowFocus: false,
 		select(data) {
-			// console.log({ reviewResponse: data });
-			return data;
+			return data.productReviewList;
 		},
 	});
+
+	// =================================================================
+	// useEffect
+	// =================================================================
+
+	useEffect(() => {
+		if (productReviewList?.length > 0) {
+			console.log({ productReviewList });
+		}
+	}, [productReviewList]);
+	const { allReviewImages } = useMemo(() => {
+		return {
+			allReviewImages: productReviewList.flatMap((review) => review.reviewImages.map((image) => ({ ...image, reviewId: review.reviewId }))),
+		};
+	}, [productReviewList]);
+	console.log({ allReviewImages });
 
 	return (
 		<>
@@ -42,33 +66,21 @@ export default function ProductReview() {
 			{isError && <div>리뷰를 불러오지 못했어요.</div>}
 			{isSuccess && (
 				<section className={styles.reviewInfoSection}>
-					<h2>
-						<span>리뷰({money(13250)}개)</span>
-						<span>
-							<ReviewStar rate={3.5} />
+					<h2 className="flex">
+						<span>리뷰({money(reviewCount)}개)</span>
+						<span className="ml-2">
+							<ReviewStar rate={reviewRate} />
 						</span>
 					</h2>
 					{/* 사진 모음 */}
-					<div className="">
-						<div>
-							<img src="" alt="" />
-						</div>
-						<div>
-							<img src="" alt="" />
-						</div>
-						<div>
-							<img src="" alt="" />
-						</div>
-						<div>
-							<img src="" alt="" />
-						</div>
+					<div className={styles.reviewImages}>
+						{allReviewImages.map((image) => (
+							<div key={`allReviewImage-${image.fileId}`}>
+								<SmartImage src={getUploadImageUrl(image.storeName)} alt={image.fileName} width={120} height={120} />
+							</div>
+						))}
 					</div>
-					{/* 리뷰리스트 : 사진, 별점, 아이디(필터링), 내용, 작성날짜 */}
-					<div className=""></div>
-					{/* 리뷰 페이지네이션 */}
-					<div className="review-pagination">
-						<button></button>
-					</div>
+					<ProductReviewList productReviewList={productReviewList} />
 				</section>
 			)}
 		</>

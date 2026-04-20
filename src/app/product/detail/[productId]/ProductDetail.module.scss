@@ -669,10 +669,19 @@
 
 	/* 상품리뷰 뷰 */
 	section.reviewInfoSection {
+		h2 {
+		}
+		.reviewImages {
+			margin-top: 15px;
+			padding: 0 10px;
+			div {
+			}
+		}
 	}
 
 	/* 상품 QnA */
 	section.qnaInfoSection {
+		margin-top: 20px;
 		.qnaFilterNav {
 			button.on {
 				font-weight: bold;
