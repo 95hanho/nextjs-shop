@@ -1,4 +1,4 @@
-import { Coupon, Review } from "@/types/mypage";
+import { Coupon, Review, ReviewImage } from "@/types/mypage";
 import { FileInfo } from "./file";
 import { BaseResponse } from "@/types/common";
 
@@ -158,8 +158,13 @@ export interface SellerLikeAndOtherProductsResponse extends BaseResponse {
 	sellerOtherProducts: OtherProduct[];
 }
 /* 제품 상세보기 리뷰 조회 */
+export type ProductReviewItem = Review & {
+	orderItemId: number;
+	userName: string;
+	reviewImages: ReviewImage[];
+};
 export interface GetProductDetailReviewResponse extends BaseResponse {
-	productReviewList: (Review & { userName: string })[];
+	productReviewList: ProductReviewItem[];
 }
 /* 제품 상세보기 Q&A 조회 */
 export type ProductQnaItem = ProductQna & {

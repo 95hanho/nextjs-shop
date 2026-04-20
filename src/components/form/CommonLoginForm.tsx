@@ -48,9 +48,11 @@ export const CommonLoginForm = ({ apiUrl, redirectTo, invalidateKeys, loginIdFie
 		},
 		onError(err) {
 			console.log(err);
-			if (err.message === "USER_NOT_FOUND") {
+			if (err.message === "USER_NOT_FOUND" || err.message === "LOGIN_FAILED") {
 				console.error(err.message);
-				setAlarmMessage("아이디 또는 비밀번호가 일치하지 않습니다.");
+				openDialog("ALERT", {
+					content: "아이디 또는 비밀번호가 일치하지 않습니다.",
+				});
 			}
 		},
 		onSettled(data, err, params, context) {

@@ -162,16 +162,18 @@ export default function OrderHistoryClient() {
 
 														{/* 상품 정보 */}
 														<div className={styles.orderHistoryProduct}>
-															<div className={styles.orderHistoryThumb}>
+															<Link href={`/product/detail/${item.productId}`} className={styles.orderHistoryThumb}>
 																<SmartImage fill src={item.filePath} alt={item.productName + " 이미지"} />
-															</div>
+															</Link>
 
 															<div className={styles.orderHistoryInfo}>
 																<h4 className={styles.orderHistoryBrand}>
 																	{highlightText(item.sellerName, searchText)}
 																</h4>
 																<p className={styles.orderHistoryName}>
-																	{highlightText(item.productName, searchText)}
+																	<Link href={`/product/detail/${item.productId}`}>
+																		{highlightText(item.productName, searchText)}
+																	</Link>
 																</p>
 																<h5 className={styles.orderHistoryOption}>
 																	{item.size}
