@@ -36,6 +36,7 @@ export type OrderGroup = {
 	paymentMethod: "CARD" | "CASH";
 	paymentCode: string | null;
 };
+export type OrderItemStatus = "ORDERED" | "CANCELLED" | "SHIPPED" | "DELIVERED" | "PREPARING";
 // 상품별 주문배송정보
 export type OrderItem = {
 	orderItemId: number;
@@ -49,7 +50,7 @@ export type OrderItem = {
 	addPrice: number;
 	couponDiscountedPrice: number;
 	totalPrice: number;
-	status: "ORDERED" | "CANCELLED" | "SHIPPED" | "DELIVERED" | "PREPARING";
+	status: OrderItemStatus;
 	shippingDate: string | null;
 	deliveredDate: string | null;
 	returnDate: string | null;
@@ -99,13 +100,14 @@ export type MyOrderItem = {
 	orderItemId: number;
 	orderId: number;
 	holdId: number;
+	productId: number;
 	productName: string;
 	count: number;
 	size: ProductSize;
 	originPrice: number;
 	finalPrice: number;
 	addPrice: number;
-	status: "ORDERED" | "CANCELLED" | "SHIPPED" | "DELIVERED" | "PREPARING";
+	status: OrderItemStatus;
 	//
 	reviewId: number | null;
 	//
@@ -148,7 +150,7 @@ export type MyOrderDetailItem = OrderItem & {
 			sellerNo: number | null;
 		}[];
 	};
-// 주문배송정보 상세
+/* 주문배송정보 상세 */
 export type MyOrderDetail = OrderGroup &
 	Omit<UserAddress, "addressId"> & {
 		addressId: number;
@@ -157,11 +159,71 @@ export interface MyOrderDetailResponse extends BaseResponse {
 	myOrderDetail: MyOrderDetail;
 	myOrderDetailItems: MyOrderDetailItem[];
 }
+/* 리뷰 주문정보 조회 */
+export type ReviewOrderItem = {
+	orderItemId: number;
+	orderId: number;
+	productName: string;
+	count: number;
+	size: ProductSize;
+	originPrice: number;
+	finalPrice: number;
+	addPrice: number;
+	couponDiscountedPrice: number;
+	totalPrice: number;
+	status: OrderItemStatus;
+	//
+	holdId: number;
+	productOptionId: number;
+	productId: number;
+	sellerNo: number;
+	sellerName: string;
+	sellerNameEn: string | null;
+	productImageId: number;
+} & FileInfo;
+export type ReviewImage = {
+	reviewImageId: number;
+	reviewId: number;
+	sortKey: number;
+} & FileInfo;
+export type ReviewInfo = {
+	reviewId: number;
+	content: string;
+	rating: number;
+	reviewImages: ReviewImage[];
+};
+export interface ReviewOrderInfoResponse extends BaseResponse {
+	reviewOrderItem: ReviewOrderItem;
+	review: ReviewInfo | null;
+}
 /* 리뷰 작성 */
-export interface writeReviewRequest {
+export interface WriteReviewRequest {
 	content: string;
 	rating: number;
 	orderItemId: number;
+}
+/* 리뷰 수정 */
+export interface UpdateReviewRequest {
+	reviewId: number;
+	content: string;
+	rating: number;
+}
+/* 리뷰 이미지 설정 */
+export type UpdateFile = {
+	reviewImageId: number;
+	sortKey: number;
+};
+export type AddFilesMeta = {
+	clientKey: string;
+	sortKey: number;
+	fileName: string;
+};
+export interface SetReviewImageRequest {
+	reviewId: number;
+	files: File[];
+	addFiles: AddFilesMeta[];
+	updateFiles: UpdateFile[];
+	deleteImageIds: number[];
 }
 /* 장바구니 조회 */
 export type CartItem = Cart & {

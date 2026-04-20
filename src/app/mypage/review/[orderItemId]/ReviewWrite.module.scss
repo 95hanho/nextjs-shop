@@ -1,0 +1,58 @@
+.reviewWrite {
+	.orderHistoryItem {
+		padding: 15px 0;
+
+		&:nth-child(n + 2) {
+			border-top: 1px solid #aaa;
+		}
+
+		.orderHistoryStatus {
+			padding: 5px 0;
+			color: #717171;
+			font-size: 16px;
+			letter-spacing: 2px;
+			text-align: left;
+		}
+
+		.orderHistoryProduct {
+			display: flex;
+			border: 1px solid #d7d7d7;
+			border-right: none;
+			border-left: none;
+
+			.orderHistoryThumb {
+				position: relative;
+				width: 140px;
+				overflow: hidden;
+				aspect-ratio: 1/1;
+				border: 1px solid #d7d7d7;
+				border-top: none;
+				border-bottom: none;
+			}
+
+			.orderHistoryInfo {
+				margin-left: 12px;
+				padding: 3px 0px;
+
+				.orderHistoryBrand {
+					letter-spacing: 1.8px;
+				}
+
+				.orderHistoryName {
+					padding-top: 3px;
+					font-size: 13px;
+				}
+
+				.orderHistoryOption {
+					color: #939393;
+					padding-top: 4px;
+				}
+
+				.orderHistoryPrice {
+					font-size: 15px;
+					letter-spacing: 0.9px;
+				}
+			}
+		}
+	}
+}

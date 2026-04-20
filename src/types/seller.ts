@@ -86,7 +86,7 @@ export interface UpdateSellerProductRequest extends AddSellerProductRequest {
 // "thumbnail": true
 
 /* 제품 상세보기 조회 */
-export type ProductImage = FileInfo & {
+export type ProductImageItem = FileInfo & {
 	productImageId: number;
 	productId: number;
 	sortKey: number;
@@ -99,7 +99,7 @@ export type SellerProductDetail = ProductDetail & {
 	subMenuName: string;
 	topMenuName: string;
 	saleStop: boolean;
-	productImages: ProductImage[];
+	productImages: ProductImageItem[];
 };
 export interface GetSellerProductDetailResponse extends BaseResponse {
 	productDetail: SellerProductDetail;
@@ -114,7 +114,7 @@ export type UpdateFile = {
 	productImageId: number;
 	sortKey: number;
 };
-export type addFilesMeta = {
+export type AddFilesMeta = {
 	clientKey: string;
 	sortKey: number;
 	isThumbnail: boolean;
@@ -123,7 +123,7 @@ export type addFilesMeta = {
 export interface SetSellerProductImageRequest {
 	files: File[];
 	productId: number;
-	addFiles: addFilesMeta[];
+	addFiles: AddFilesMeta[];
 	updateFiles: UpdateFile[];
 	deleteImageIds: number[];
 }

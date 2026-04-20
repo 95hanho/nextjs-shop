@@ -16,9 +16,11 @@ import { getOrderStatusLabel } from "@/lib/order";
 import { money } from "@/lib/format";
 import { SmartImage } from "@/components/ui/SmartImage";
 import Link from "next/link";
+import { useGlobalDialogStore } from "@/store/globalDialog.store";
 
 export default function OrderHistoryClient() {
 	const { loginOn } = useAuth();
+	const { openDialog } = useGlobalDialogStore();
 
 	// =================================================================
 	// React Query
@@ -181,10 +183,26 @@ export default function OrderHistoryClient() {
 
 														{/* 버튼 */}
 														<div className={styles.orderHistoryButtons}>
-															<button className={styles.orderHistoryBtn}>배송 조회</button>
-															<button className={`${styles.orderHistoryBtn} ${styles.orderHistoryBtnGray}`}>
-																{item.reviewId ? "작성 리뷰 보기" : "리뷰 작성"}
+															<button
+																className={styles.orderHistoryBtn}
+																onClick={() => {
+																	openDialog("ALERT", {
+																		content: "배송 조회는 아직 구현되지 않았습니다.",
+																	});
+																}}
+															>
+																배송 조회
 															</button>
+															<Link
+																href={
+																	item.reviewId
+																		? `/product/detail/${item.productId}?reviewId=${item.reviewId}`
+																		: `/mypage/review/${item.orderItemId}`
+																}
+																className={`${styles.orderHistoryBtn} ${styles.orderHistoryBtnGray}`}
+															>
+																{item.reviewId ? "작성 리뷰 보기" : "리뷰 작성"}
+															</Link>
 														</div>
 													</li>
 												);
