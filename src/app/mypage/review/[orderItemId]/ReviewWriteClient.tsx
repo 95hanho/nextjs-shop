@@ -196,7 +196,7 @@ export default function ReviewWriteClient() {
 				openDialog("ALERT", {
 					content: prevReview ? "리뷰가 수정되었습니다." : "리뷰가 작성되었습니다.",
 					handleAfterClose: () => {
-						// router.push(`/product/detail/${reviewOrderItem?.productId}`);
+						router.push(`/product/detail/${reviewOrderItem?.productId}?tab=review`);
 					},
 				});
 			});
@@ -260,15 +260,15 @@ export default function ReviewWriteClient() {
 									</span>
 								}
 							/>
-							<div className="mt-4">
+							<div className="mt-5">
 								<InfoMark
 									title="리뷰 내용"
 									infoVal={
-										<span>
+										<span className={styles.reviewContent}>
 											<textarea
 												className="resize-none"
-												cols={40}
-												rows={3}
+												cols={45}
+												rows={5}
 												value={reviewForm.content}
 												onChange={(e) => setReviewForm({ ...reviewForm, content: e.target.value })}
 											/>

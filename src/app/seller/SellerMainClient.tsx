@@ -1,7 +1,5 @@
 "use client";
 
-import CouponList from "@/app/seller/CouponList";
-import ProductList from "@/app/seller/ProductList";
 import API_URL from "@/api/endpoints";
 import { getNormal } from "@/api/fetchFilter";
 import { getApiUrl } from "@/lib/getBaseUrl";
@@ -21,7 +19,10 @@ import styles from "./SellerMain.module.scss";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { postJson } from "@/api/fetchFilter";
 import { BaseResponse } from "@/types/common";
-import QuestionAnswerList from "@/app/seller/QuestionAnswerList";
+import SellerReviewList from "@/app/seller/SellerReviewList";
+import SellerQuestionAnswerList from "@/app/seller/SellerQuestionAnswerList";
+import SellerProductList from "@/app/seller/SellerProductList";
+import SellerCouponList from "@/app/seller/SellerCouponList";
 
 export default function SellerMainClient() {
 	const { loginOn } = useSellerAuth();
@@ -31,6 +32,19 @@ export default function SellerMainClient() {
 	// React Query
 	// ------------------------------------------------
 
+	// 판매자 쿠폰 리스트 조회
+	const {
+		data: sellerCouponList = [],
+		// isFetching,
+	} = useQuery<GetSellerCouponListResponse, Error, SellerCoupon[]>({
+		queryKey: ["sellerCouponList"],
+		queryFn: () => getNormal(getApiUrl(API_URL.SELLER_COUPON)),
+		select: (data) => {
+			return data.couponList;
+		},
+		enabled: loginOn,
+		refetchOnWindowFocus: false,
+	});
 	// 판매자 제품 리스트 조회
 	const {
 		data: sellerProductList = [],
@@ -45,19 +59,7 @@ export default function SellerMainClient() {
 		enabled: loginOn,
 		refetchOnWindowFocus: false,
 	});
-	// 판매자 쿠폰 리스트 조회
-	const {
-		data: sellerCouponList = [],
-		// isFetching,
-	} = useQuery<GetSellerCouponListResponse, Error, SellerCoupon[]>({
-		queryKey: ["sellerCouponList"],
-		queryFn: () => getNormal(getApiUrl(API_URL.SELLER_COUPON)),
-		select: (data) => {
-			return data.couponList;
-		},
-		enabled: loginOn,
-		refetchOnWindowFocus: false,
-	});
+
 	// 쿠폰 허용제품 조회용 쿠폰id
 	const [allowedSelectedCouponId, setAllowedSelectedCouponId] = useState<number | null>(null);
 	// 판매자 쿠폰 허용 제품 조회(allowedSelectedCouponId가 null이 아닐 때만 활성화)
@@ -189,20 +191,20 @@ export default function SellerMainClient() {
 	return (
 		<div className={styles.sellerMainContainer}>
 			<h1>Seller Page - {allowedSelectedCouponId ? "쿠폰상품제한모드" : "일반모드"}</h1>
-			<div className="text-sm text-right">
-				<p>* 더블클릭 시 상세보기/수정</p>
-			</div>
-			<div className="flex">
+			<div className="flex pb-10">
 				<div className="w-1/2 px-2">
-					<CouponList {...couponListProps} />
-					<ProductList {...productListProps} />
+					<p className="text-sm text-right">* 더블클릭 시 상세보기/수정</p>
+					<div className="mt-2">
+						<SellerCouponList {...couponListProps} />
+						<SellerProductList {...productListProps} />
+					</div>
 				</div>
 				<div className="w-1/2 px-2 border-0 border-l-2 border-black border-solid">
-					<QuestionAnswerList />
+					<SellerReviewList />
+					<SellerQuestionAnswerList />
 				</div>
 			</div>
 
-			{/* <ReviewList  /> */}
 			{/* <CouponUsedList  /> */}
 			{/* <SalesList  /> */}
 		</div>

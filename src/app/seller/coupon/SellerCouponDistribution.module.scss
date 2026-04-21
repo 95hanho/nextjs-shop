@@ -1,0 +1,64 @@
+.sellerCouponDistribution {
+	width: 1000px;
+	margin: 0 auto;
+}
+.couponDistribution {
+	.couponDistributionInfo {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 5px;
+		div {
+			width: calc(50% - 2.5px);
+			button {
+				background-color: #eee782;
+				width: 100%;
+				font-size: 18px;
+				margin-top: 10px;
+				padding: 10px;
+				font-weight: bold;
+				letter-spacing: 1px;
+				border-radius: 5px;
+				box-shadow: 1px 1px 1px #717171;
+			}
+		}
+		&.disabled div button {
+			background-color: #e7e7e7;
+			cursor: not-allowed;
+			box-shadow: none;
+		}
+	}
+}
+.sellerCouponSelect {
+	margin-top: 15px;
+	h2 {
+	}
+	table,
+	th,
+	td {
+		border: 1px solid rgb(170, 170, 170);
+		border-collapse: collapse;
+		text-align: center;
+	}
+	.couponTableWrapper {
+		display: flex;
+		justify-content: center;
+		.couponTable {
+			thead {
+			}
+			tbody {
+				tr {
+					&.selectedCouponRow {
+						background-color: #eee782;
+					}
+				}
+			}
+		}
+	}
+	.statusButton {
+		text-decoration: underline;
+		color: rgb(247, 159, 29);
+		&.suspended {
+			color: rgb(133, 135, 163);
+		}
+	}
+}

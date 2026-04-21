@@ -27,7 +27,7 @@ interface ProductListProps {
 	changeAllSelectedProductIds: (isChecked: boolean) => void; // 모든 제품 선택/해제 함수
 }
 
-export default function ProductList({
+export default function SellerProductList({
 	sellerProductList,
 	allowedSelectedCouponId,
 	couponAllowedProductIds,
@@ -147,6 +147,8 @@ export default function ProductList({
 							<th>wish</th>
 							<th>구분{/* 남-아우터-재킷 */}</th>
 							<th>판매중단</th>
+							<th>리뷰별점</th>
+							<th>리뷰갯수</th>
 							{!couponAllowedMode && <th>옵션</th>}
 						</tr>
 					</thead>
@@ -224,6 +226,8 @@ export default function ProductList({
 														<FaExchangeAlt />
 													</button>
 												</td>
+												<td>{product.reviewCount > 0 && product.avgRating}</td>
+												<td>{product.reviewCount > 0 && product.reviewCount}</td>
 												{!couponAllowedMode && (
 													<td>
 														<button

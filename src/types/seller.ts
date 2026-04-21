@@ -51,6 +51,8 @@ export type SellerProduct = ProductDetail & {
 	updatedAt: string;
 	subMenuName: string;
 	topMenuName: string;
+	avgRating: number; // 평균별점
+	reviewCount: number; // 리뷰갯수
 	optionList: SellerProductOption[];
 	saleStop: boolean;
 };
@@ -197,6 +199,27 @@ export interface SetSellerCouponAllowRequest {
 	addProductIds: number[];
 	removeProductIds: number[];
 }
+/* 쿠폰을 유저에게 발행하기  */
+export type IssueCouponType = "VIEW" | "WISH" | "BOOKMARK" | "CART" | "ORDER";
+export interface IssueCouponToUsersRequest {
+	couponId: number;
+	type: IssueCouponType;
+}
+/* 판매자 리뷰 조회 */
+export type SellerReview = {
+	reviewId: number;
+	content: string;
+	rating: number;
+	createdAt: string;
+	userName: string;
+	productId: number;
+	productName: string;
+	/*  */
+	reviewImageId: number;
+} & FileInfo;
+export interface GetSellerReviewResponse extends BaseResponse {
+	sellerReviewList: SellerReview[];
+}
 /* 판매자 QnA 조회 */
 export type SellerQna = {
 	productQnaId: number;
@@ -221,42 +244,13 @@ export interface UpdateQnaAnswerRequest {
 	productQnaId: number;
 	answer: string;
 }
-/*  */
-export interface IssueCouponsToUsersRequest {
-	couponId: number;
-	userIds: string[];
-}
-/*  */
-export type ProductWishCount = {
-	latestDate: string;
-	userId: string;
-	userName: string;
-	productNames: string;
-};
-export type BrandBookmark = {
-	createdAt: string;
-	userId: string;
-	userName: string;
-};
-export type ProductViewCount = {
-	userId: string;
-	userName: string;
-	productId: number;
-	productName: string;
-	likeCount: number;
-	viewCount: number;
-	latestDate: string;
-};
-export type UserInCartCount = {
-	latestDate: string;
-	inCartCount: number;
-	userId: string;
-	userName: string;
-	productNames: string;
-};
+/* 판매자와 관련된 회원 조회 */
 export interface GetSellerInterestingUserResponse extends BaseResponse {
-	productWishCountList: ProductWishCount[];
-	brandBookmarkList: BrandBookmark[];
-	productViewCountList: ProductViewCount[];
-	userInCartCountList: UserInCartCount[];
+	summary: {
+		viewedUserCount: number; // 내 상품 본 회원 수
+		wishedUserCount: number; // 위시한 회원 수
+		bookmarkedUserCount: number; // 브랜드 즐겨찾기한 회원 수
+		cartUserCount: number; // 장바구니 담은 회원 수
+		orderedUserCount: number; // 구매한 회원 수 (나중용)
+	};
 }

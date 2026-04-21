@@ -7,7 +7,7 @@ export default function BuyLayout({
 }>) {
 	return (
 		<>
-			<Script src="//t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js" strategy="beforeInteractive" />
+			<Script src="//t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js" strategy="afterInteractive" />
 			{children}
 		</>
 	);

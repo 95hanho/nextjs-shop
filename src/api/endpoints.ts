@@ -106,10 +106,14 @@ const API_URL = {
 	PRODUCT_SELLER_LIKE: "/product/detail/:productId/seller/like",
 	/** 제품 리뷰 조회 */
 	PRODUCT_DETAIL_REVIEW: "/product/detail/:productId/review",
+	/** 제품 리뷰 삭제 */
+	PRODUCT_DETAIL_REVIEW_DELETE: "/product/detail/:productId/review/:reviewId",
 	/** 제품 상품 Q&A 조회, 등록, 수정 */
 	PRODUCT_DETAIL_QNA: "/product/detail/:productId/qna",
 	/** 제품 상품 Q&A 삭제 */
 	PRODUCT_DETAIL_QNA_DELETE: "/product/detail/:productId/qna/:productQnaId",
+	/** 제품 상품 Q&A 답변 읽음 처리 */
+	PRODUCT_DETAIL_QNA_READ: "/product/detail/:productId/qna/read",
 	/** 같은 카테고리 BEST 제품 조회 */
 	PRODUCT_CATEGORY_BEST: "/product/detail/:productId/category-best",
 	/** 쿠폰 다운로드 */
@@ -152,6 +156,8 @@ const API_URL = {
 	SELLER_COUPON_ALLOWED: "/seller/coupon/allowed",
 	/** 해당 쿠폰을 유저에게 발행하기, 유저쿠폰사용내역 조회 */
 	SELLER_COUPON_USER_COUPON: "/seller/coupon/user-coupon",
+	/** 판매자 리뷰 조회 */
+	SELLER_REVIEW: "/seller/review",
 	/** 판매자 QnA 조회, 판매자 QnA 답변 등록/수정 */
 	SELLER_QNA: "/seller/qna",
 	/** 판매자와 관련된 회원 조회 */
