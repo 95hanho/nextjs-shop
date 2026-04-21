@@ -22,7 +22,7 @@ interface CouponListProps {
 	updateCouponStatus: (params: { activeCouponIds?: number[]; suspendedCouponIds?: number[] }) => void;
 }
 
-export default function CouponList({
+export default function SellerCouponList({
 	sellerCouponList,
 	changeAllowedSelectedCouponId,
 	allowedSelectedCouponId,
@@ -219,8 +219,8 @@ export default function CouponList({
 											<td>{coupon.amount}</td>
 											<td>{coupon.usedCount}</td>
 											<td>
-												{moment(coupon.startDate).format("YYYY-MM-DD HH:mm")} ~{" "}
-												{moment(coupon.endDate).format("YYYY-MM-DD HH:mm")}
+												<span className="inline-block">{moment(coupon.startDate).format("YYYY-MM-DD HH:mm")}</span>
+												<span className="inline-block ml-1">~ {moment(coupon.endDate).format("YYYY-MM-DD HH:mm")}</span>
 											</td>
 										</tr>
 									);

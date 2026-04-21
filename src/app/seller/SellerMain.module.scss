@@ -64,6 +64,25 @@
 	}
 }
 
+// 네비게이션
+.sellerNav {
+	padding: 0 25px;
+	background-color: #ededed;
+	ul {
+		li {
+			a {
+				&.active {
+					font-weight: bold;
+					font-size: 1.2em;
+				}
+				&:hover {
+					text-decoration: underline;
+				}
+			}
+		}
+	}
+}
+
 // 쿠폰 목록
 .sellerCouponList {
 	h2 {
@@ -181,6 +200,26 @@
 					}
 				}
 			}
+		}
+	}
+}
+
+// 리뷰 목록
+.reviewList {
+	.productReviewList {
+		.reviewItem {
+			border-bottom: 1px solid #e4e4e4;
+		}
+		.reviewContent {
+			width: calc(100% - 50px);
+		}
+		.reviewImages {
+			position: relative;
+			width: 50px;
+			height: 50px;
+			border: 1px solid #efefef;
+			border-radius: 3px;
+			background-color: #fefefe;
 		}
 	}
 }

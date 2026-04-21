@@ -156,6 +156,8 @@ const API_URL = {
 	SELLER_COUPON_ALLOWED: "/seller/coupon/allowed",
 	/** 해당 쿠폰을 유저에게 발행하기, 유저쿠폰사용내역 조회 */
 	SELLER_COUPON_USER_COUPON: "/seller/coupon/user-coupon",
+	/** 판매자 리뷰 조회 */
+	SELLER_REVIEW: "/seller/review",
 	/** 판매자 QnA 조회, 판매자 QnA 답변 등록/수정 */
 	SELLER_QNA: "/seller/qna",
 	/** 판매자와 관련된 회원 조회 */

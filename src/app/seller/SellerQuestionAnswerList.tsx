@@ -4,7 +4,7 @@ import { useSellerAuth } from "@/hooks/useSellerAuth";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { GetSellerQnaResponse, SellerQna, UpdateQnaAnswerRequest } from "@/types/seller";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import styles from "./SellerMain.module.scss";
 import { TurnToPagination } from "@/components/ui/TurnToPagination";
 import clsx from "clsx";
@@ -12,7 +12,7 @@ import { ProductQnaType, ProductQnaTypeCode } from "@/types/product";
 import { useGlobalDialogStore } from "@/store/globalDialog.store";
 import moment from "moment";
 
-export default function QuestionAnswerList() {
+export default function SellerQuestionAnswerList() {
 	const { loginOn } = useSellerAuth();
 	const { openDialog } = useGlobalDialogStore();
 	const queryClient = useQueryClient();
@@ -136,10 +136,16 @@ export default function QuestionAnswerList() {
 
 	return (
 		<div id="questionAnswerList" className={styles.questionAnswerList}>
-			<h2>QnA</h2>
+			<h2>
+				<span>QnA</span>
+				<span className="inline-flex items-end text-base font-normal">
+					(작성해야하는 답변 수 : {sellerQnaList.filter((qna) => !qna.answer).length})
+				</span>
+			</h2>
 			<article className="px-4 py-3 bg-gray-100">
 				<nav className={clsx("flex gap-2.5 mt-2", styles.qnaFilterNav)}>
 					<button
+						key={`qnaView-all`}
 						className={clsx("px-3 py-1 text-sm bg-gray-200 border rounded-full cursor-pointer text-slate-900", {
 							[styles.on]: qnaFilterCode === "ALL",
 						})}
@@ -148,15 +154,19 @@ export default function QuestionAnswerList() {
 						전체({sellerQnaList.length})
 					</button>
 					{productQnaTypeWithCountList.map((type) => (
-						<button
-							key={`qnaView-${type.productQnaTypeId}`}
-							className={clsx("px-3 py-1 text-sm bg-gray-200 border rounded-full cursor-pointer text-slate-900", {
-								[styles.on]: qnaFilterCode === type.code,
-							})}
-							onClick={() => setQnaFilterCode(type.code)}
-						>
-							{type.name}({type.count})
-						</button>
+						<React.Fragment key={`qnaView-${type.productQnaTypeId}`}>
+							{type.count > 0 && (
+								<button
+									title={type.productQnaTypeId.toString()}
+									className={clsx("px-3 py-1 text-sm bg-gray-200 border rounded-full cursor-pointer text-slate-900", {
+										[styles.on]: qnaFilterCode === type.code,
+									})}
+									onClick={() => setQnaFilterCode(type.code)}
+								>
+									{type.name}({type.count})
+								</button>
+							)}
+						</React.Fragment>
 					))}
 				</nav>
 				<section className="mt-3">
@@ -176,7 +186,8 @@ export default function QuestionAnswerList() {
 									>
 										<h4 className="flex justify-between text-xs">
 											<span className="inline-flex items-center">
-												{qna.userName}
+												<span className="text-sm">{qna.productName + " / "}</span>
+												<span className="ml-1">{qna.userName}</span>
 												{qna.secret && (
 													<span className="px-1 py-0.5 text-xs text-orange-500 border rounded-sm border-spacing-3 bg-orange-200 ml-1">
 														비밀글

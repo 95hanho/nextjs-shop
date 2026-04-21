@@ -1,4 +1,5 @@
 import SellerHeader from "@/app/seller/SellerHeader";
+import SellerNav from "@/app/seller/SellerNav";
 import SellerRootProvider from "@/app/seller/SellerRootProvider";
 import { Metadata } from "next";
 import "react-datepicker/dist/react-datepicker.css";
@@ -17,6 +18,7 @@ export default function SellerRootLayout({
 		<div className="seller-wrap">
 			<SellerRootProvider>
 				<SellerHeader />
+				<SellerNav />
 				{children}
 			</SellerRootProvider>
 		</div>

@@ -51,6 +51,8 @@ export type SellerProduct = ProductDetail & {
 	updatedAt: string;
 	subMenuName: string;
 	topMenuName: string;
+	avgRating: number; // 평균별점
+	reviewCount: number; // 리뷰갯수
 	optionList: SellerProductOption[];
 	saleStop: boolean;
 };
@@ -196,6 +198,21 @@ export interface SetSellerCouponAllowRequest {
 	couponId: number;
 	addProductIds: number[];
 	removeProductIds: number[];
+}
+/* 판매자 리뷰 조회 */
+export type SellerReview = {
+	reviewId: number;
+	content: string;
+	rating: number;
+	createdAt: string;
+	userName: string;
+	productId: number;
+	productName: string;
+	/*  */
+	reviewImageId: number;
+} & FileInfo;
+export interface GetSellerReviewResponse extends BaseResponse {
+	sellerReviewList: SellerReview[];
 }
 /* 판매자 QnA 조회 */
 export type SellerQna = {
