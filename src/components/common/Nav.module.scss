@@ -43,6 +43,13 @@
 	&:first-child {
 		font-size: 20px;
 	}
+	.subMenuList {
+		.subMenuLink {
+		}
+		span.off {
+			color: #eee;
+		}
+	}
 }
 .menuListLi {
 	min-width: 100px;

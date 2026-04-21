@@ -35,7 +35,6 @@ export default async function RootLayout({
 }>) {
 	// 공통 메뉴 가져오기(SSR에서 가져올 떄는 직접 spring에서 가져오기)
 	const menusData = await getNormal<MenuResponse>(getBackendUrl(API_URL.MAIN_MENU));
-	console.log("menusData", menusData?.message);
 	const menuList = [...menusData.menuList].sort((a, b) => a.menuTopId - b.menuTopId);
 
 	return (
