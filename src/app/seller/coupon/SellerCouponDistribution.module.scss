@@ -4,7 +4,11 @@
 }
 .couponDistribution {
 	.couponDistributionInfo {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 5px;
 		div {
+			width: calc(50% - 2.5px);
 			button {
 				background-color: #eee782;
 				width: 100%;
