@@ -7,6 +7,7 @@ import { BaseResponse } from "./common";
 export type SubMenu = {
 	menuSubId: number;
 	menuName: string;
+	productCount: number;
 };
 // 상단메뉴
 export type Menu = {

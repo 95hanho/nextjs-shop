@@ -1,10 +1,11 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
-import { getNormal } from "@/api/fetchFilter";
+import { getNormal, RequestHeaders } from "@/api/fetchFilter";
 import ProductDetailClient from "@/app/product/detail/[productId]/ProductDetailClient";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { GetProductDetailResponse } from "@/types/product";
 import { notFound } from "next/navigation";
+import { cookies, headers } from "next/headers";
 
 export default async function ProductDetail({
 	params: { productId },
@@ -14,9 +15,18 @@ export default async function ProductDetail({
 	};
 }) {
 	try {
-		const productDetailResponse = await getNormal<GetProductDetailResponse>(getBackendUrl(API_URL.PRODUCT_DETAIL), {
-			productId: Number(productId),
-		});
+		const accessToken = cookies().get("accessToken")?.value || headers().get("accessToken") || undefined;
+
+		const headerParams: RequestHeaders = {};
+		if (accessToken) headerParams.Authorization = `Bearer ${accessToken}`;
+
+		const productDetailResponse = await getNormal<GetProductDetailResponse>(
+			getBackendUrl(API_URL.PRODUCT_DETAIL),
+			{
+				productId: Number(productId),
+			},
+			headerParams,
+		);
 
 		return <ProductDetailClient productDetailResponse={productDetailResponse} />;
 	} catch (err: unknown) {

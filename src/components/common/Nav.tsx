@@ -58,14 +58,18 @@ export const Nav = ({ menuList }: { menuList: Menu[] }) => {
 											</Link>
 										</div>
 										{menu.menuSubList.map((subMenu) => (
-											<div key={"subMenu" + subMenu.menuSubId}>
-												<Link
-													className="text-lg hover:underline"
-													href={`/product/category/${menu.menuTopId}/${subMenu.menuSubId}`}
-													onClick={clickMenuLink}
-												>
-													{subMenu.menuName}
-												</Link>
+											<div key={"subMenu" + subMenu.menuSubId} className={styles.subMenuList}>
+												{subMenu.productCount === 0 ? (
+													<span className={styles.off}>{subMenu.menuName}</span>
+												) : (
+													<Link
+														className={clsx("text-lg hover:underline", styles.subMenuLink)}
+														href={`/product/category/${menu.menuTopId}/${subMenu.menuSubId}`}
+														onClick={clickMenuLink}
+													>
+														{subMenu.menuName}
+													</Link>
+												)}
 											</div>
 										))}
 									</li>
