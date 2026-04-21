@@ -10,7 +10,7 @@ import DynamicHeader from "@/app/DynamicHeader";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { DialogRoot } from "@/components/modal/core/DialogRoot";
 // import { redirect } from "next/navigation";
-// import { cookies } from "next/headers";
+// import { cookies, headers } from "next/headers";
 // import { ModalTest } from "@/components/modal/ModalTest";
 
 const inter = Inter({
