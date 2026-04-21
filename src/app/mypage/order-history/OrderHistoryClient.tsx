@@ -198,7 +198,7 @@ export default function OrderHistoryClient() {
 															<Link
 																href={
 																	item.reviewId
-																		? `/product/detail/${item.productId}?reviewId=${item.reviewId}`
+																		? `/product/detail/${item.productId}?tab=review`
 																		: `/mypage/review/${item.orderItemId}`
 																}
 																className={`${styles.orderHistoryBtn} ${styles.orderHistoryBtnGray}`}

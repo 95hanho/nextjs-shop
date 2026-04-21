@@ -79,11 +79,22 @@ export default function QuestionAnswer({ sellerName }: { sellerName: string }) {
 			setQnaViewOpen(false);
 		},
 	});
-
 	// QnA 삭제
 	const { mutate: deleteProductQna } = useMutation({
 		mutationKey: ["deleteProductQna", productIdNum],
 		mutationFn: (productQnaId: number) => deleteNormal(getApiUrl(API_URL.PRODUCT_DETAIL_QNA_DELETE), { productQnaId, productId: productIdNum }),
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ["productQnaList", productIdNum] });
+		},
+	});
+	// Qna 답변 읽음 처리
+	const { mutate: markQnaAsRead } = useMutation({
+		mutationKey: ["markQnaAsRead", productIdNum],
+		mutationFn: (productQnaId: number) =>
+			putJson(getApiUrl(API_URL.PRODUCT_DETAIL_QNA_READ), {
+				productId: productIdNum,
+				productQnaId,
+			}),
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["productQnaList", productIdNum] });
 		},
@@ -337,13 +348,12 @@ export default function QuestionAnswer({ sellerName }: { sellerName: string }) {
 												)}
 											>
 												<div
-													className={clsx(
-														"px-2 py-3",
-														qna.answer &&
-															(isMyQna ? "cursor-pointer hover:bg-gray-200" : "cursor-pointer hover:bg-orange-200"),
-													)}
+													className={clsx("px-2 py-3", qna.answer && "cursor-pointer")}
 													onClick={() => {
 														if (!qna.answer) return; // 답변이 없는 경우 클릭 이벤트 없음
+														if (!qna.answerRead && isMyQna && qna.productQnaId !== answerOpenQnaId) {
+															markQnaAsRead(qna.productQnaId);
+														}
 														setAnswerOpenQnaId((prev) => (prev === qna.productQnaId ? null : qna.productQnaId));
 													}}
 												>

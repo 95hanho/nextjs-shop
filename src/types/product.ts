@@ -65,6 +65,7 @@ export type ProductQna = {
 	createdAt: string;
 	answer: string;
 	resCreatedAt: string;
+	answerRead: boolean;
 	secret: boolean;
 	productQnaTypeId: number;
 };
