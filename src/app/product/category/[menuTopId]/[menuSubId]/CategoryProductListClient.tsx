@@ -6,13 +6,16 @@ import CategoryProductListHeader from "@/app/product/category/[menuTopId]/[menuS
 import CategoryProductListSection from "@/app/product/category/[menuTopId]/[menuSubId]/CategoryProductListSection";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import {
+	GetProductListRequest,
 	GetProductListResponse,
+	ProductListCursor,
 	type ProductItem as ProductItemType,
 	type ProductPopularPeriodOption,
 	type ProductSortOption,
 } from "@/types/product";
-import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { InfiniteData, useInfiniteQuery } from "@tanstack/react-query";
+import { useParams } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 
 type OptionType = {
 	id: number;
@@ -42,6 +45,10 @@ interface CategoryProductListClientProps {
 }
 
 export default function CategoryProductListClient({ initialProductListData, topMenuName, subMenuName }: CategoryProductListClientProps) {
+	// 1) [store / custom hooks] -------------------------------------------
+	const params = useParams();
+	const menuSubId = Number(params.menuSubId);
+
 	// 2) [useState / useRef] ----------------------------------------------
 	// 정렬 코드
 	const [sortCode, setSortCode] = useState<ProductSortOption>(sortOptionList[0].code);
@@ -51,16 +58,39 @@ export default function CategoryProductListClient({ initialProductListData, topM
 	// 3) [useQuery / useMutation] -----------------------------------------
 
 	// 제품리스트 조회 -
-	const { data: productListData = initialProductListData } = useQuery<GetProductListResponse, Error>({
-		queryKey: ["productList", sortCode, popularPeriodCode],
-		queryFn: () => getNormal(getApiUrl(API_URL.PRODUCT), { sort: sortCode, popular: popularPeriodCode, menuSubId: 0 }), // TODO: menuSubId
-		enabled: false, // 초기에는 비활성화 (SSR에서 이미 데이터 받아왔으므로)
-		refetchOnWindowFocus: false,
-		initialData: initialProductListData, // SSR에서 받아온 제품 리스트 초기값으로 설정
+	const { data /* fetchNextPage, hasNextPage, isFetchingNextPage, isFetching */ } = useInfiniteQuery<
+		GetProductListResponse,
+		Error,
+		InfiniteData<GetProductListResponse>,
+		(string | number)[],
+		ProductListCursor | null
+	>({
+		queryKey: ["productList", menuSubId, sortCode, popularPeriodCode],
+		initialPageParam: null,
+		queryFn: ({ pageParam }) => {
+			const payload: GetProductListRequest = {
+				menuSubId,
+				sort: sortCode,
+				popularPeriod: sortCode === "POPULAR" ? popularPeriodCode : undefined,
+				...(pageParam ?? {}),
+			};
+
+			return getNormal<GetProductListResponse>(getApiUrl(API_URL.PRODUCT), { ...payload });
+		},
+		getNextPageParam: (lastPage) => {
+			if (!lastPage.hasNext || !lastPage.nextCursor) return undefined;
+			return lastPage.nextCursor;
+		},
+		initialData: {
+			pages: [initialProductListData],
+			pageParams: [null],
+		},
 	});
 
 	// 4) [derived values / useMemo] ---------------------------------------
-	const productList: ProductItemType[] = productListData.productList;
+	const productList: ProductItemType[] = useMemo(() => {
+		return data?.pages.flatMap((page) => page.productList) ?? [];
+	}, [data]);
 
 	// 6) [useEffect] ------------------------------------------------------
 	// 정렬 코드 바뀔 때 인기 기간 초기화

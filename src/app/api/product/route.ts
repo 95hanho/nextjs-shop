@@ -12,19 +12,29 @@ import { NextResponse } from "next/server";
 export const GET = userWithOptionalAuth(async ({ nextRequest }) => {
 	console.log("[API] 제품리스트 조회");
 	try {
-		const menuSubId = nextRequest.nextUrl.searchParams.get("menuSubId");
-		const sort: ProductSortOption = (nextRequest.nextUrl.searchParams.get("sort") as ProductSortOption) || "POPULAR";
-		const popularPeriod: ProductPopularPeriodOption =
-			(nextRequest.nextUrl.searchParams.get("popularPeriod") as ProductPopularPeriodOption) || "DAYS_7";
+		const searchParams = nextRequest.nextUrl.searchParams;
 
-		if (!menuSubId || !sortOptionCodes.includes(sort) || !popularPeriodOptionCodes.includes(popularPeriod)) {
+		const menuSubIdRaw = searchParams.get("menuSubId");
+		const sort = (searchParams.get("sort") as ProductSortOption) || "POPULAR";
+		const popularPeriod = (searchParams.get("popularPeriod") as ProductPopularPeriodOption) || "DAYS_7";
+
+		const lastProductIdRaw = searchParams.get("lastProductId");
+		const lastCreatedAt = searchParams.get("lastCreatedAt") || undefined;
+		const lastPopularityRaw = searchParams.get("lastPopularity");
+		const lastPriceRaw = searchParams.get("lastPrice");
+
+		if (!menuSubIdRaw || !sortOptionCodes.includes(sort) || !popularPeriodOptionCodes.includes(popularPeriod)) {
 			return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
 		}
 
 		const payload: GetProductListRequest = {
-			menuSubId: Number(menuSubId),
+			menuSubId: Number(menuSubIdRaw),
 			sort,
-			popularPeriod,
+			popularPeriod: sort === "POPULAR" ? popularPeriod : undefined,
+			lastProductId: lastProductIdRaw ? Number(lastProductIdRaw) : undefined,
+			lastCreatedAt,
+			lastPopularity: lastPopularityRaw ? Number(lastPopularityRaw) : undefined,
+			lastPrice: lastPriceRaw ? Number(lastPriceRaw) : undefined,
 		};
 		const data = await getNormal<GetProductListResponse>(getBackendUrl(API_URL.PRODUCT), { ...payload });
 
