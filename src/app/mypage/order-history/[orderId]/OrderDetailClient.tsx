@@ -18,6 +18,7 @@ import moment from "moment";
 import "moment/locale/ko"; // 한국어 로케일 추가
 import { AddCartPopup } from "@/components/mypage/AddCartPopup";
 import { useProductCartAction } from "@/hooks/query/mypage/useProductCartAction";
+import { getUploadImageUrl } from "@/lib/image";
 
 type ItemSellerMap = {
 	[sellerName: string]: MyOrderDetailItem[];
@@ -140,7 +141,7 @@ export default function OrderDetailClient({ orderId }: { orderId: string }) {
 														</div>
 														<div className={styles.orderItemContent}>
 															<div className={styles.productImage}>
-																<SmartImage fill src={item.filePath} />
+																<SmartImage fill src={getUploadImageUrl(item.filePath)} />
 															</div>
 															<div className={styles.productInfo}>
 																<h4>{item.productName}</h4>

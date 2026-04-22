@@ -165,7 +165,7 @@ export const ImageDragInputArea = <T,>({
 	const handleImageDragStart = (e: React.DragEvent<HTMLDivElement>, item: PrevImageItem<T> | ImageItem, index: number) => {
 		e.stopPropagation();
 
-		const src = item.type === "prev" ? getUploadImageUrl(item.storeName) : item.previewUrl;
+		const src = item.type === "prev" ? getUploadImageUrl(item.filePath) : item.previewUrl;
 		const itemKey = getItemKey(item);
 
 		setDraggingItemKey(itemKey);
@@ -319,7 +319,7 @@ export const ImageDragInputArea = <T,>({
 
 	useEffect(() => {
 		if (!initImageList || initImageList.length === 0) return;
-		console.log(`초기 ${title} 세팅`);
+		console.log(`초기 ${title} 세팅`, { initImageList });
 
 		// 초기 데이터 세팅 및 초기화
 		dragCountRef.current = 0;
@@ -362,7 +362,7 @@ export const ImageDragInputArea = <T,>({
 							let image;
 							if (item.type === "prev") {
 								image = (
-									<SmartImage src={getUploadImageUrl(item.storeName)} alt={`${item.fileName}-${index}`} fill objectFit="contain" />
+									<SmartImage src={getUploadImageUrl(item.filePath)} alt={`${item.fileName}-${index}`} fill objectFit="contain" />
 								);
 							} else {
 								image = <SmartImage src={item.previewUrl} alt={`${item.file.name}-${index}`} fill objectFit="contain" />;
@@ -414,7 +414,7 @@ export const ImageDragInputArea = <T,>({
 							let image;
 							if (item.type === "prev") {
 								image = (
-									<SmartImage src={getUploadImageUrl(item.storeName)} alt={`${item.fileName}-${index}`} fill objectFit="contain" />
+									<SmartImage src={getUploadImageUrl(item.filePath)} alt={`${item.fileName}-${index}`} fill objectFit="contain" />
 								);
 							} else {
 								image = <SmartImage src={item.previewUrl} alt={`${item.file.name}-${index}`} fill objectFit="contain" />;

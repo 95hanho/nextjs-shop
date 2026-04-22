@@ -30,6 +30,7 @@ import CartCouponSelector from "@/app/mypage/cart/CartCouponSelector";
 import { scrollIntoCenter } from "@/utils/ui";
 import { MaxDiscountBanner } from "@/components/buy/MaxDiscountBanner";
 import { useGlobalDialogStore } from "@/store/globalDialog.store";
+import { getUploadImageUrl } from "@/lib/image";
 
 interface CartProductSectionProps extends CartItemSelectCollection {
 	noResetCouponOn: () => void;
@@ -318,7 +319,7 @@ export default function CartProductSection({
 													<div className={styles.productItemOverview}>
 														<div className={styles.productItemMedia}>
 															<Link href={`/product/detail/${product.productId}`} className={styles.productItemThumb}>
-																<SmartImage src={product.filePath} alt={product.fileName} fill />
+																<SmartImage src={getUploadImageUrl(product.filePath)} alt={product.fileName} fill />
 
 																{selectDisabled && (
 																	<div className={styles.productOutOfStockCover}>

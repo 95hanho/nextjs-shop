@@ -6,6 +6,7 @@ import { discountPercent, money } from "@/lib/format";
 import Link from "next/link";
 import { ImageSlide } from "@/components/product/ImageSlide";
 import { FileInfo } from "@/types/file";
+import { getUploadImageUrl } from "@/lib/image";
 
 interface ProductItemProps {
 	product: {
@@ -32,7 +33,7 @@ export const ProductItem = ({ product, wishProductIds }: ProductItemProps) => {
 					items={product.productImageList}
 					renderItem={(item) => (
 						<div className={styles.imageBox}>
-							<SmartImage src={item.filePath} fill objectFit={"cover"} className={styles.productImg} />
+							<SmartImage src={getUploadImageUrl(item.filePath)} fill objectFit={"cover"} className={styles.productImg} />
 						</div>
 					)}
 					pagination

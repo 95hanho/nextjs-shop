@@ -26,6 +26,7 @@ import { ImageDragInputArea } from "@/components/form/ImageDragInputArea";
 import { FormActionButton } from "@/components/form/FormActionButton";
 import { useGlobalDialogStore } from "@/store/globalDialog.store";
 import { BaseResponse } from "@/types/common";
+import { getUploadImageUrl } from "@/lib/image";
 
 type PrevImageItem = ReviewImage & {
 	type: "prev";
@@ -232,7 +233,7 @@ export default function ReviewWriteClient() {
 						{/* 상품 정보 */}
 						<div className={styles.orderHistoryProduct}>
 							<div className={styles.orderHistoryThumb}>
-								<SmartImage fill src={reviewOrderItem.filePath} alt={reviewOrderItem.productName + " 이미지"} />
+								<SmartImage fill src={getUploadImageUrl(reviewOrderItem.filePath)} alt={reviewOrderItem.productName + " 이미지"} />
 							</div>
 
 							<div className={styles.orderHistoryInfo}>

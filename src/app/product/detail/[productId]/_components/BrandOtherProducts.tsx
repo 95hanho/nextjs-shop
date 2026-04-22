@@ -11,6 +11,7 @@ import styles from "../ProductDetail.module.scss";
 import { ImageSlideHandle } from "@/components/product/ImageSlide.type";
 import { useAuth } from "@/hooks/useAuth";
 import { WishButton } from "@/components/product/WishButton";
+import { getUploadImageUrl } from "@/lib/image";
 
 export default function BrandOtherProducts({ sellerOtherProducts }: { sellerOtherProducts: OtherProduct[] }) {
 	const { loginOn } = useAuth();
@@ -47,7 +48,7 @@ export default function BrandOtherProducts({ sellerOtherProducts }: { sellerOthe
 								<Link href={`/product/detail/${item.productId}`}></Link>
 								{/* 이미지 */}
 								<div className={styles.imageBox}>
-									<SmartImage fill src={item.filePath} alt={item.fileName} />
+									<SmartImage fill src={getUploadImageUrl(item.filePath)} alt={item.fileName} />
 									{loginOn && (
 										<div className={styles.wishButton}>
 											<WishButton

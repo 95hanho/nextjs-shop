@@ -3,6 +3,7 @@ import styles from "../ProductDetail.module.scss";
 import { useState, type MouseEvent } from "react";
 import { FileInfo } from "@/types/file";
 import clsx from "clsx";
+import { getUploadImageUrl } from "@/lib/image";
 
 interface ThumbnailImageSectionProps {
 	productImageList: (FileInfo & { productId: number })[];
@@ -47,7 +48,7 @@ export default function ThumbnailImageSection({ productImageList }: ThumbnailIma
 	return (
 		<div className={styles.productImageSection}>
 			<div className={styles.productImageArea} onMouseEnter={handleMouseEnter} onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave}>
-				<SmartImage src={currentImage.filePath} width={900} height={900} objectFit="contain" />
+				<SmartImage src={getUploadImageUrl(currentImage.filePath)} width={900} height={900} objectFit="contain" />
 				{/* 마우스 오버 시 확대할 곳 마우스 따라다니는 영역 */}
 				<div
 					className={styles.productImageEnlargeMouse}
@@ -69,7 +70,7 @@ export default function ThumbnailImageSection({ productImageList }: ThumbnailIma
 							setLensPosition({ x: 0, y: 0 });
 						}}
 					>
-						<SmartImage src={image.filePath} width={40} height={40} alt={image.fileName} />
+						<SmartImage src={getUploadImageUrl(image.filePath)} width={40} height={40} alt={image.fileName} />
 					</div>
 				))}
 			</div>

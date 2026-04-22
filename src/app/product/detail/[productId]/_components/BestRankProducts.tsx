@@ -16,6 +16,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getNormal } from "@/api/fetchFilter";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import API_URL from "@/api/endpoints";
+import { getUploadImageUrl } from "@/lib/image";
 
 export default function BestRankProducts() {
 	const { loginOn } = useAuth();
@@ -59,7 +60,7 @@ export default function BestRankProducts() {
 							{/* 전체 링크 */}
 							<Link href={`/product/detail/${item.productId}`}></Link>
 							<div className={styles.imageBox}>
-								<SmartImage fill src={item.filePath} alt={item.fileName} />
+								<SmartImage fill src={getUploadImageUrl(item.filePath)} alt={item.fileName} />
 								<mark>{index + 1}</mark>
 								{loginOn && (
 									<div className={styles.wishButton}>

@@ -67,7 +67,7 @@ export const Nav = ({ menuList }: { menuList: Menu[] }) => {
 														href={`/product/category/${menu.menuTopId}/${subMenu.menuSubId}`}
 														onClick={clickMenuLink}
 													>
-														{subMenu.menuName}
+														{subMenu.menuName}({subMenu.productCount})
 													</Link>
 												)}
 											</div>
