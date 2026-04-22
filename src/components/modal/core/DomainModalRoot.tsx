@@ -68,10 +68,10 @@ export const DomainModalRoot = () => {
 		return () => window.removeEventListener("keydown", handleKey);
 	}, [closeModal, escCloseAllowed, handleClose]);
 
-	// 7) UI helper values -------------------------------------------------
+	// 7) [UI helper values] -------------------------------------------------
 	let childrenModal: React.ReactNode = null;
 
-	// 8) return -----------------------------------------------------------
+	// 8) [return] ---------------------------------------------------------
 	if (!mounted || !modalType) return null;
 	switch (modalType) {
 		case "PRODUCT_OPTION":

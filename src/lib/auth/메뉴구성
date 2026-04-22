@@ -7,7 +7,7 @@ src/
       │  ├─ token.ts           # generate/verify 래퍼, 공통 로직
       │  └─ lock.ts            # TokenRefreshLock
       ├─ user/
-      │  ├─ auth.ts            # withAuth, withOptionalAuth
+      │  ├─ auth.ts            # withAuth, userWithOptionalAuth
       │  └─ refresh.ts         # authFromTokens
       ├─ admin/
       │  ├─ auth.ts            # adminWithAuth

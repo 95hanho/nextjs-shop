@@ -1,7 +1,7 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { postUrlFormData, RequestHeaders } from "@/api/fetchFilter";
-import { withOptionalAuth } from "@/lib/auth/user";
+import { userWithOptionalAuth } from "@/lib/auth/user";
 import { WRONG_REQUEST_MESSAGE } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { generatePhoneAuthToken } from "@/lib/auth/utils/token";
@@ -10,7 +10,7 @@ import { BaseResponse } from "@/types/common";
 import { NextResponse } from "next/server";
 
 // 휴대폰 인증
-export const POST = withOptionalAuth(async ({ nextRequest, accessToken }) => {
+export const POST = userWithOptionalAuth(async ({ nextRequest, accessToken }) => {
 	console.log("[API] 휴대폰 인증");
 	try {
 		const { phone, mode }: PhoneAuthRequest = await nextRequest.json();

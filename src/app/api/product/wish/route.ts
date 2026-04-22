@@ -9,11 +9,12 @@ import { NextResponse } from "next/server";
 
 // 현재 회원 위시 productId 목록 조회
 export const GET = userWithAuth(async ({ accessToken }) => {
+	console.log("[API] 현재 회원 위시 productId 목록 조회");
 	try {
 		const data = await getNormal<BaseResponse & { wishProductIds: number[] }>(getBackendUrl(API_URL.PRODUCT_WISH), undefined, {
 			Authorization: `Bearer ${accessToken}`,
 		});
-		console.log("data", data);
+		// console.log("data", data);
 
 		return NextResponse.json({ ...data }, { status: 200 });
 	} catch (err: unknown) {

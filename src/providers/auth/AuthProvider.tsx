@@ -46,7 +46,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 		await postJson(getApiUrl(API_URL.AUTH_LOGOUT));
 	}, [queryClient]);
 
-	// 7) UI helper values -------------------------------------------------
+	// 7) [UI helper values] -------------------------------------------------
 	// Provider value
 	const value = useMemo(
 		() => ({ loginOn, logout, user, setUser, isAuthLoading, setIsAuthLoading, cartCount, setCartCount, orderCount, setOrderCount }),

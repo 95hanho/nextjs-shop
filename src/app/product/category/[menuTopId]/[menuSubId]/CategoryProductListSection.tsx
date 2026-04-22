@@ -29,12 +29,14 @@ export default function CategoryProductListSection({ productList }: CategoryProd
 
 	// 6) [useEffect] ------------------------------------------------------
 	useEffect(() => {
-		if (wishProductIds) {
+		if (wishProductIds.length > 0) {
 			console.log("wishProductIds", wishProductIds);
 		}
 	}, [wishProductIds]);
 	useEffect(() => {
-		console.log({ productList });
+		if (productList.length > 0) {
+			console.log({ productList });
+		}
 	}, [productList]);
 
 	return (

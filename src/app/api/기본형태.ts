@@ -33,6 +33,27 @@ export const GET = userWithAuth(async ({ nextRequest, userNo, params, accessToke
 		return NextResponse.json(payload, { status });
 	}
 });
+
+// 장바구니 제품 다른 option조회
+export const GET2 = userWithOptionalAuth(async ({ nextRequest, accessToken }) => {
+	console.log("[API] 장바구니 제품 다른 option조회");
+	try {
+		const productId = nextRequest.nextUrl.searchParams.get("productId");
+		if (!productId) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
+
+		const headers: RequestHeaders = {};
+		if (accessToken) headers.Authorization = `Bearer ${accessToken}`;
+
+		const data = await getNormal<GetCartOtherOptionListResponse>(getBackendUrl(API_URL.MY_CART_PRODUCT_OPTION), { productId }, headers);
+		// console.log("cartOptionProductOptionList", data);
+
+		return NextResponse.json({ ...data }, { status: 200 });
+	} catch (err: unknown) {
+		const { status, payload } = toErrorResponse(err);
+		return NextResponse.json(payload, { status });
+	}
+});
+
 //
 export const POST = userWithAuth(async ({ nextRequest, userNo, params, accessToken }) => {
 	try {

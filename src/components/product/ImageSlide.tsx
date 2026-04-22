@@ -99,7 +99,7 @@ export const ImageSlide = <T,>({
 		onReady(handle);
 	}, [onReady, items.length, slidesPerView]);
 
-	// 7) UI helper values -------------------------------------------------
+	// 7) [UI helper values] -------------------------------------------------
 	const modules: SwiperProps["modules"] = [];
 	let plusSwiperProps: Partial<SwiperProps> = {};
 

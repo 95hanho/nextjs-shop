@@ -245,7 +245,7 @@ export default function ProductVisualInfo({ productDetail, reviewCount, reviewRa
 		console.log({ productSelectList });
 	}, [productSelectList]);
 
-	// 7) UI helper values -------------------------------------------------
+	// 7) [UI helper values] -------------------------------------------------
 	const myPriceCheckboxCommonProps = {
 		originPrice: productDetail.originPrice,
 		finalPrice: productDetail.finalPrice,

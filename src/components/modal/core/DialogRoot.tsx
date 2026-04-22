@@ -65,11 +65,11 @@ export const DialogRoot = () => {
 		return () => window.removeEventListener("keydown", handleKey);
 	}, [closeDialog, escCloseAllowed, handleClose]);
 
-	// 7) UI helper values -------------------------------------------------
+	// 7) [UI helper values] -------------------------------------------------
 	// 모달 몸통
 	let childrenModal: React.ReactNode = null;
 
-	// 8) return -----------------------------------------------------------
+	// 8) [return] ---------------------------------------------------------
 	if (!mounted || !modalType) return null;
 	switch (modalType) {
 		case "ALERT": {

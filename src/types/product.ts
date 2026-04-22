@@ -84,7 +84,8 @@ export type ProductQnaType = {
 /* API ----------------------------------------------------------------- */
 /* 제품 리스트 조회 */
 export interface GetProductListRequest {
-	sort: string;
+	sort: ProductSortOption;
+	popularPeriod: ProductPopularPeriodOption;
 	menuSubId: number;
 	lastCreatedAt?: string;
 	lastProductId?: number;

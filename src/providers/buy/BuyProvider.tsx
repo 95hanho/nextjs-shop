@@ -227,7 +227,7 @@ export const BuyProvider = ({ children, initialDefaultAddress = null, holdIds }:
 		// if (shippingAddress) console.log({ shippingAddress });
 	}, [shippingAddress, shippingAddressMode, newAddress, usedMileage]);
 
-	// 7) UI helper values -------------------------------------------------
+	// 7) [UI helper values] -------------------------------------------------
 	const value = useMemo(
 		() => ({
 			shippingAddress,

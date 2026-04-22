@@ -27,7 +27,7 @@ export default function ProductDetailClient({ productDetailResponse }: ProductDe
 		};
 	}, [productDetailResponse.productDetail, productReviewSummary.reviewCount, productReviewSummary.avgRating, productOptionList]);
 
-	// 7) UI helper values -------------------------------------------------
+	// 7) [UI helper values] -------------------------------------------------
 	const productVisualInfoProps = {
 		productDetail,
 		reviewCount,

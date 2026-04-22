@@ -130,7 +130,7 @@ export default function SellerMainClient() {
 		},
 	});
 
-	// 7) UI helper values -------------------------------------------------
+	// 7) [UI helper values] -------------------------------------------------
 	const couponListProps = {
 		sellerCouponList,
 		allowedSelectedCouponId,

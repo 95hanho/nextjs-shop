@@ -40,7 +40,7 @@ export const ProductOptionModal = ({ onClose, product, handleAfterCartProductOpt
 		if (!exists) setPickId(product.productOptionId);
 	}, [optionResponse, product.productOptionId, pickId]);
 
-	// 7) UI helper values -------------------------------------------------
+	// 7) [UI helper values] -------------------------------------------------
 	const optionSelectorEle = () => {
 		// 1) 로딩 중(최초)
 		const addPriceMark = product.addPrice > 0 ? ` (+${product.addPrice})` : "";

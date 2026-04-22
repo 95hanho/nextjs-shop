@@ -1,13 +1,13 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { getNormal, RequestHeaders } from "@/api/fetchFilter";
-import { withOptionalAuth } from "@/lib/auth/user";
+import { userWithOptionalAuth } from "@/lib/auth/user";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { SellerLikeAndOtherProductsResponse } from "@/types/product";
 import { NextResponse } from "next/server";
 
 // 판매자 좋아요 여부 및 판매자 다른 제품 조회
-export const GET = withOptionalAuth<{ productId: string }>(async ({ accessToken, params }) => {
+export const GET = userWithOptionalAuth<{ productId: string }>(async ({ accessToken, params }) => {
 	console.log("[API] 판매자 좋아요 여부 및 판매자 다른 제품 조회");
 	try {
 		const productId = Number(params.productId);

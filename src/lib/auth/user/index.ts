@@ -31,18 +31,18 @@ type OptionalAuthHandler<TParams extends Record<string, string> = Record<string,
 type AuthMode = "optional" | "required";
 const getAuthMode = (nextRequest: NextRequest): AuthMode => {
 	// api요청시 header에 "x-auth-mode": "required", // or "optional" 이렇게 FE에서 던지면됨.
-	// console.log('[API withOptionalAuth:USER] 마지막 토큰확인 nextRequest.headers.get("x-auth-mode")', nextRequest.headers.get("x-auth-mode"));
+	// console.log('[API userWithOptionalAuth:USER] 마지막 토큰확인 nextRequest.headers.get("x-auth-mode")', nextRequest.headers.get("x-auth-mode"));
 	const v = (nextRequest.headers.get("x-auth-mode") || "").toLowerCase();
 	return v === "required" ? "required" : "optional";
 };
 //
-export const withOptionalAuth =
+export const userWithOptionalAuth =
 	<TParams extends Record<string, string> = Record<string, never>>(handler: OptionalAuthHandler<TParams>) =>
 	async (nextRequest: NextRequest, context: { params: TParams }): Promise<NextResponse> => {
 		const authMode = getAuthMode(nextRequest);
 		const auth = await refreshAuthFromTokens(nextRequest, userRefreshAuthFromTokensPreset);
 
-		// console.log("[API withOptionalAuth:USER] auth", auth);
+		// console.log("[API userWithOptionalAuth:USER] auth", auth);
 		if (authMode === "required" && auth.ok && !auth.userNo) {
 			// 이건 테스트 해봐야곘는데~~
 			const response = NextResponse.json({ message: "SESSION_EXPIRED" }, { status: 401 });
@@ -76,7 +76,7 @@ export const withOptionalAuth =
 					path: "/",
 					maxAge: 0,
 				});
-				console.warn("[API withOptionalAuth:USER] 토큰지워!!!!");
+				console.warn("[API userWithOptionalAuth:USER] 토큰지워!!!!");
 			}
 
 			return response;
@@ -117,9 +117,9 @@ export const withOptionalAuth =
 				path: "/",
 				maxAge: REFRESH_TOKEN_COOKIE_AGE,
 			});
-			console.log("[API withOptionalAuth:USER] 토큰 다시 세팅 !!!! ---------------------", nextRequest.url);
+			console.log("[API userWithOptionalAuth:USER] 토큰 다시 세팅 !!!! ---------------------", nextRequest.url);
 		}
-		console.log(`[API withOptionalAuth:USER] 마지막 토큰확인`, {
+		console.log(`[API userWithOptionalAuth:USER] 마지막 토큰확인`, {
 			accessToken: "..." + nextRequest.cookies.get("accessToken")?.value?.slice(-10),
 			refreshToken: "..." + nextRequest.cookies.get("refreshToken")?.value?.slice(-10),
 		});

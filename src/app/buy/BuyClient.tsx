@@ -576,7 +576,7 @@ export default function BuyClient() {
 		return () => {};
 	}, []);
 
-	// 7) UI helper values -----------------------------------------
+	// 7) [UI helper values] -----------------------------------------
 
 	const OrderFormSectionProps = {
 		buyItemList,

@@ -104,7 +104,7 @@ export const WishButton = ({ initWishOn, productId, bottom = 1, right = 1, size 
 		setWishOn(initWishOn);
 	}, [initWishOn]);
 
-	// 7) UI helper values -------------------------------------------------
+	// 7) [UI helper values] -------------------------------------------------
 	const wishALinkProps = {
 		bottom,
 		right,

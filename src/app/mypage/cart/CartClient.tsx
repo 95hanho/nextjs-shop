@@ -476,7 +476,7 @@ export default function CartClient() {
 		deliveryFee,
 	]);
 
-	// 7) UI helper values -----------------------------------------
+	// 7) [UI helper values] -----------------------------------------
 	const CartProductSectionProps = {
 		noResetCouponOn,
 		//
