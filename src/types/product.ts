@@ -30,6 +30,12 @@ export type ProductColorName =
 //
 export type ProductSortOption = "POPULAR" | "LATEST" | "PRICE_LOW" | "PRICE_HIGH";
 export type ProductPopularPeriodOption = "DAYS_7" | "DAYS_30" | "YEAR_1" | "ALL";
+export type ProductListCursor = {
+	lastProductId: number;
+	lastCreatedAt?: string;
+	lastPopularity?: number;
+	lastPrice?: number;
+};
 
 export type Product = {
 	productId: number;
@@ -83,22 +89,24 @@ export type ProductQnaType = {
 
 /* API ----------------------------------------------------------------- */
 /* 제품 리스트 조회 */
-export interface GetProductListRequest {
+export type GetProductListRequest = {
 	sort: ProductSortOption;
-	popularPeriod: ProductPopularPeriodOption;
+	popularPeriod?: ProductPopularPeriodOption;
 	menuSubId: number;
-	lastCreatedAt?: string;
 	lastProductId?: number;
+	lastCreatedAt?: string;
 	lastPopularity?: number;
-}
+	lastPrice?: number;
+};
 export type ProductItem = Product & {
 	sellerId: "seller07";
 	sellerName: "Casual Mood";
 	productImageList: FileInfo[];
 };
-
-export interface GetProductListResponse extends BaseResponse {
+export interface GetProductListResponse {
 	productList: ProductItem[];
+	hasNext: boolean;
+	nextCursor: ProductListCursor | null;
 }
 /* 장바구니 넣기 */
 export type AddCartItem = {
