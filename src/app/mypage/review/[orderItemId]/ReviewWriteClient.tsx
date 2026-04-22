@@ -26,6 +26,7 @@ import { ImageDragInputArea } from "@/components/form/ImageDragInputArea";
 import { FormActionButton } from "@/components/form/FormActionButton";
 import { useGlobalDialogStore } from "@/store/globalDialog.store";
 import { BaseResponse } from "@/types/common";
+import { getUploadImageUrl } from "@/lib/image";
 
 type PrevImageItem = ReviewImage & {
 	type: "prev";
@@ -41,15 +42,22 @@ type ImageItem = {
 };
 
 export default function ReviewWriteClient() {
+	// 1) [store / custom hooks] -------------------------------------------
 	const params = useParams();
 	const orderItemId = Number(params.orderItemId);
 	const { openDialog } = useGlobalDialogStore();
 	const router = useRouter();
 
-	// ----------------------------------------------------------------
-	// React Query
-	// ----------------------------------------------------------------
+	// 2) [useState / useRef] ----------------------------------------------
+	const [reviewForm, setReviewForm] = useState({
+		rating: 0,
+		content: "",
+	});
+	const [prevReviewList, setPrevReviewList] = useState<PrevImageItem[]>([]);
+	const [newReviewFiles, setNewReviewFiles] = useState<ImageItem[]>([]);
+	const [deleteImageIds, setDeleteImageIds] = useState<number[]>([]);
 
+	// 3) [useQuery / useMutation] -----------------------------------------
 	// 리뷰 주문정보 조회
 	const {
 		data: { reviewOrderItem, prevReview } = {
@@ -107,18 +115,7 @@ export default function ReviewWriteClient() {
 		},
 	});
 
-	// ----------------------------------------------------------------
-	// React
-	// ----------------------------------------------------------------
-
-	const [reviewForm, setReviewForm] = useState({
-		rating: 0,
-		content: "",
-	});
-	const [prevReviewList, setPrevReviewList] = useState<PrevImageItem[]>([]);
-	const [newReviewFiles, setNewReviewFiles] = useState<ImageItem[]>([]);
-	const [deleteImageIds, setDeleteImageIds] = useState<number[]>([]);
-
+	// 5) [handlers / useCallback] -----------------------------------------
 	// 리뷰 작성/수정 제출
 	const handleReviewSubmit = () => {
 		if (!reviewForm.rating) {
@@ -203,10 +200,7 @@ export default function ReviewWriteClient() {
 		}
 	};
 
-	// ----------------------------------------------------------------
-	// useEffect
-	// ----------------------------------------------------------------
-
+	// 6) [useEffect] ------------------------------------------------------
 	useEffect(() => {
 		if (reviewOrderItem) {
 			console.log("reviewOrderItem", reviewOrderItem);
@@ -232,7 +226,7 @@ export default function ReviewWriteClient() {
 						{/* 상품 정보 */}
 						<div className={styles.orderHistoryProduct}>
 							<div className={styles.orderHistoryThumb}>
-								<SmartImage fill src={reviewOrderItem.filePath} alt={reviewOrderItem.productName + " 이미지"} />
+								<SmartImage fill src={getUploadImageUrl(reviewOrderItem.filePath)} alt={reviewOrderItem.productName + " 이미지"} />
 							</div>
 
 							<div className={styles.orderHistoryInfo}>

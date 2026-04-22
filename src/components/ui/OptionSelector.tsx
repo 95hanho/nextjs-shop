@@ -17,9 +17,11 @@ interface OptionSelectorProps {
 export const OptionSelector = forwardRef((props: OptionSelectorProps, ref: React.ForwardedRef<HTMLInputElement>) => {
 	const { optionSelectorName, initData, pickIdx = 0, optionList, changeOption, variant = "default", inputColor } = props;
 
+	// 2) [useState / useRef] ----------------------------------------------
 	const optionSelectorRef = useRef<HTMLDivElement>(null);
 	const [openOptionList, setOpenOptionList] = useState<boolean>(false);
 
+	// 6) [useEffect] ------------------------------------------------------
 	useEffect(() => {
 		if (openOptionList) {
 			const handleClick = (e: MouseEvent) => {

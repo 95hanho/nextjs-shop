@@ -14,14 +14,10 @@ interface ProductDetailClientProps {
 }
 
 export default function ProductDetailClient({ productDetailResponse }: ProductDetailClientProps) {
+	// 4) [derived values / useMemo] ---------------------------------------
 	// SSR 데이터 정리
 	const productReviewSummary = productDetailResponse.productReviewSummary;
 	const productOptionList = productDetailResponse.productOptionList;
-
-	// ----------------------------------------------------------------
-	// useEffect, useMemo
-	// ----------------------------------------------------------------
-
 	const { productDetail, reviewCount, reviewRate, initProductOptionList } = useMemo(() => {
 		return {
 			productDetail: productDetailResponse.productDetail,
@@ -31,10 +27,7 @@ export default function ProductDetailClient({ productDetailResponse }: ProductDe
 		};
 	}, [productDetailResponse.productDetail, productReviewSummary.reviewCount, productReviewSummary.avgRating, productOptionList]);
 
-	// ----------------------------------------------------------------
-	// UI
-	// ----------------------------------------------------------------
-
+	// 7) [UI helper values] -------------------------------------------------
 	const productVisualInfoProps = {
 		productDetail,
 		reviewCount,

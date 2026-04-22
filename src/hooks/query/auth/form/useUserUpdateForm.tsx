@@ -44,24 +44,26 @@ const userUpdateFormRegexFailMent: { [key: string]: string } = {
 };
 
 export function useUserUpdateForm() {
+	// 1) [store / custom hooks] -------------------------------------------
 	const { replace } = useRouter();
 	const { openDialog } = useGlobalDialogStore();
 	const { user, setUser, loginOn } = useAuth();
-	useEffect(() => {
-		if (user.name) {
-			setUserUpdateForm((prev) => ({
-				...prev,
-				zonecode: user.zonecode,
-				address: user.address,
-				addressDetail: user.addressDetail,
-				phone: user.phone,
-				email: user.email,
-			}));
-		}
-	}, [user]);
-	// ------------------------------------------------
-	// React Query
-	// ------------------------------------------------
+
+	// 2) [useState / useRef] ----------------------------------------------
+	// 유저업데이트 폼
+	const [userUpdateForm, setUserUpdateForm] = useState<UserUpdateForm>(initUpdateForm);
+	// 유저업데이트 알람
+	const [userUpdateAlarm, setUserUpdateAlarm] = useState<UserUpdateAlarm | null>(null);
+	// 유저업데이트 input들 HTMLInputElement
+	const userUpdateFormInputRefs = useRef<Partial<UserUpdateFormInputRefs>>({});
+	// 인증번호 화면 띄울지
+	const [phoneAuthView, setPhoneAuthView] = useState<boolean>(false);
+	// 인증번호 토큰
+	const [phoneAuthToken, setPhoneAuthToken] = useState<string | null>(null);
+	// 휴대폰인증완료여부
+	const [phoneAuthComplete, setPhoneAuthComplete] = useState<boolean>(true);
+
+	// 3) [useQuery / useMutation] -----------------------------------------
 	// 회원아이디 조회
 	const { data: userIdData } = useQuery<BaseResponse & { userId: string }>({
 		queryKey: ["wishList"],
@@ -157,22 +159,8 @@ export function useUserUpdateForm() {
 			replace("/mypage/info");
 		},
 	});
-	// ------------------------------------------------
-	// React
-	// ------------------------------------------------
-	// 유저업데이트 폼
-	const [userUpdateForm, setUserUpdateForm] = useState<UserUpdateForm>(initUpdateForm);
-	// 유저업데이트 알람
-	const [userUpdateAlarm, setUserUpdateAlarm] = useState<UserUpdateAlarm | null>(null);
-	// 유저업데이트 input들 HTMLInputElement
-	const userUpdateFormInputRefs = useRef<Partial<UserUpdateFormInputRefs>>({});
-	// 인증번호 화면 띄울지
-	const [phoneAuthView, setPhoneAuthView] = useState<boolean>(false);
-	// 인증번호 토큰
-	const [phoneAuthToken, setPhoneAuthToken] = useState<string | null>(null);
-	// 휴대폰인증완료여부
-	const [phoneAuthComplete, setPhoneAuthComplete] = useState<boolean>(true);
-	//
+
+	// 5) [handlers / useCallback] -----------------------------------------
 	// joinForm set
 	const changeUserUpdateForm = (e: ChangeEvent) => {
 		const { name, value } = e.target as {
@@ -266,7 +254,6 @@ export function useUserUpdateForm() {
 		}
 		handleUserUpdate.mutate();
 	};
-	/* ------------------------------------ */
 	// 휴대폰 인증 보내기 버튼
 	const clickPhoneAuth = () => {
 		if (!userUpdateForm.phone) {
@@ -304,6 +291,20 @@ export function useUserUpdateForm() {
 		}
 		handlePhoneAuthComplete.mutate();
 	};
+
+	// 6) [useEffect] ------------------------------------------------------
+	useEffect(() => {
+		if (user.name) {
+			setUserUpdateForm((prev) => ({
+				...prev,
+				zonecode: user.zonecode,
+				address: user.address,
+				addressDetail: user.addressDetail,
+				phone: user.phone,
+				email: user.email,
+			}));
+		}
+	}, [user]);
 
 	return {
 		userUpdateSubmit,

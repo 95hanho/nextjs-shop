@@ -4,14 +4,6 @@ import styles from "../ProductDetail.module.scss";
 
 // 업체등록 상품 상세 블로그
 export default function ProductDescriptionSection() {
-	// =================================================================
-	// React Query
-	// =================================================================
-
-	// =================================================================
-	// useEffect, useMemo
-	// =================================================================
-
 	return (
 		<section className={styles.productDescription}>
 			<ProductDescription />

@@ -1,6 +1,6 @@
 import API_URL from "@/api/endpoints";
 import { postJson } from "@/api/fetchFilter";
-import { sellerAuthContext } from "@/context/authContext";
+import { sellerAuthContext } from "@/components/ui/context/authContext";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { useGlobalDialogStore } from "@/store/globalDialog.store";
 import { SellerInfo } from "@/types/seller";
@@ -27,24 +27,29 @@ const initSeller = {
 };
 
 export const SellerProvider = ({ children }: SellerProviderProps) => {
+	// 1) [store / custom hooks] -------------------------------------------
 	const queryClient = useQueryClient();
-	const [seller, setSeller] = useState<SellerInfo>(initSeller);
-	const { replace, refresh } = useRouter();
+	const router = useRouter();
 	const { openDialog } = useGlobalDialogStore();
 
-	const loginOn = !!seller;
+	// 2) [useState / useRef] ----------------------------------------------
+	const [seller, setSeller] = useState<SellerInfo>(initSeller);
 
+	// 4) [derived values / useMemo] ---------------------------------------
+	const loginOn = !!seller.sellerName;
+
+	// 5) [handlers / useCallback] -----------------------------------------
 	const logout = async () => {
 		console.log("로그아웃");
 		setSeller(initSeller);
 		queryClient.setQueryData(["sellerInfo"], initSeller); // 직접 캐시 업데이트
 		await postJson(getApiUrl(API_URL.SELLER_LOGOUT));
-		replace("/seller/login"); // 로그아웃 후 로그인 페이지로 이동
+		router.replace("/seller/login"); // 로그아웃 후 로그인 페이지로 이동
 		openDialog("ALERT", { content: "로그아웃 되었습니다." });
 
 		// replace가 완료되기 전에 refresh가 섞이는 걸 피함
 		setTimeout(
-			() => refresh(), // ✅ RSC 캐시 갱신 (로그인 페이지에서 최신 로그인 상태 반영 위해)
+			() => router.refresh(), // ✅ RSC 캐시 갱신 (로그인 페이지에서 최신 로그인 상태 반영 위해)
 			0,
 		);
 	};

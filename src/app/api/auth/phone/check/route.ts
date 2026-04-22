@@ -1,7 +1,7 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { postUrlFormData } from "@/api/fetchFilter";
-import { withOptionalAuth } from "@/lib/auth/user";
+import { userWithOptionalAuth } from "@/lib/auth/user";
 import { isProd, WRONG_REQUEST_MESSAGE } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { generatePhoneAuthCompleteToken, generatePwdResetToken, verifyPhoneAuthToken } from "@/lib/auth/utils/token";
@@ -10,7 +10,7 @@ import { PhoneAuthCheckRequest, PhoneAuthCheckResponse } from "@/types/auth";
 import { NextResponse } from "next/server";
 
 // 휴대폰 인증 확인
-export const POST = withOptionalAuth(async ({ nextRequest }) => {
+export const POST = userWithOptionalAuth(async ({ nextRequest }) => {
 	console.log("[API] 휴대폰 인증 확인");
 	try {
 		const { phoneAuthToken, authNumber }: PhoneAuthCheckRequest = await nextRequest.json();

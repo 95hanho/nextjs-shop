@@ -11,6 +11,20 @@ import { LoginFormData } from "@/types/auth";
 import { postJson } from "@/api/fetchFilter";
 import { useGlobalDialogStore } from "@/store/globalDialog.store";
 
+const testUser = {
+	id: "hoseongs",
+	password: "aaaaaa1!",
+};
+const testSeller = {
+	id: "seller01",
+	password: "a123456!!",
+};
+const testAdmin = {
+	id: "admin",
+	password: "a123456!!",
+};
+const loginData = { ...testUser }; // 기본은 일반 사용자 로그인 데이터로 설정
+
 interface CommonLoginFormProps {
 	apiUrl: string;
 	redirectTo: string;
@@ -19,14 +33,29 @@ interface CommonLoginFormProps {
 }
 
 export const CommonLoginForm = ({ apiUrl, redirectTo, invalidateKeys, loginIdField = "userId" }: CommonLoginFormProps) => {
+	// 1) [store / custom hooks] -------------------------------------------
 	const router = useRouter();
 	const queryClient = useQueryClient();
 	const searchParams = useSearchParams();
 	const { openDialog } = useGlobalDialogStore();
 	const pathname = usePathname();
-
 	const message = searchParams.get("message");
 
+	// 2) [useState / useRef] ----------------------------------------------
+	const userIdRef = useRef<HTMLInputElement>(null);
+	const pwdRef = useRef<HTMLInputElement>(null);
+	const [loginForm, setLoginForm] = useState<LoginFormData<typeof loginIdField>>({
+		[loginIdField]: loginData.id,
+		password: loginData.password,
+	} as LoginFormData);
+	const [userIdFocus, setUserIdFocus] = useState<boolean>(false);
+	const [pwdFocus, setPwdFocus] = useState<boolean>(false);
+	const [showPassword, setShowPassword] = useState<boolean>(false);
+	const [alarmMessage, setAlarmMessage] = useState("");
+	const [returnUrl, setReturnUrl] = useState<string | null>(null); // ✅ returnUrl 저장
+
+	// 3) [useQuery / useMutation] -----------------------------------------
+	// 로그인 API
 	const handleLogin = useMutation({
 		mutationFn: (obj: LoginFormData<typeof loginIdField>) => postJson<BaseResponse>(apiUrl, obj),
 		onMutate(a) {
@@ -60,40 +89,7 @@ export const CommonLoginForm = ({ apiUrl, redirectTo, invalidateKeys, loginIdFie
 		},
 	});
 
-	const userIdRef = useRef<HTMLInputElement>(null);
-	const pwdRef = useRef<HTMLInputElement>(null);
-	const testUser = {
-		id: "hoseongs",
-		password: "aaaaaa1!",
-	};
-	const testSeller = {
-		id: "seller01",
-		password: "a123456!!",
-	};
-	const testAdmin = {
-		id: "admin",
-		password: "a123456!!",
-	};
-	const loginData = { ...testUser }; // 기본은 일반 사용자 로그인 데이터로 설정
-	if (pathname.startsWith("/seller")) {
-		loginData.id = testSeller.id;
-		loginData.password = testSeller.password;
-	}
-	if (pathname.startsWith("/admin")) {
-		loginData.id = testAdmin.id;
-		loginData.password = testAdmin.password;
-	}
-	const [loginForm, setLoginForm] = useState<LoginFormData<typeof loginIdField>>({
-		[loginIdField]: loginData.id,
-		password: loginData.password,
-	} as LoginFormData);
-
-	const [userIdFocus, setUserIdFocus] = useState<boolean>(false);
-	const [pwdFocus, setPwdFocus] = useState<boolean>(false);
-	const [showPassword, setShowPassword] = useState<boolean>(false);
-	const [alarmMessage, setAlarmMessage] = useState("");
-	const [returnUrl, setReturnUrl] = useState<string | null>(null); // ✅ returnUrl 저장
-
+	// 5) [handlers / useCallback] -----------------------------------------
 	const loginSubmit = (e: FormEvent) => {
 		e.preventDefault();
 		if (!loginForm[loginIdField]) {
@@ -109,6 +105,18 @@ export const CommonLoginForm = ({ apiUrl, redirectTo, invalidateKeys, loginIdFie
 		handleLogin.mutate(loginForm);
 	};
 
+	// 6) [useEffect] ------------------------------------------------------
+	// pathname에 따라 로그인 폼에 미리 데이터 채워넣기 (개발 편의용)
+	useEffect(() => {
+		if (pathname.startsWith("/seller")) {
+			loginData.id = testSeller.id;
+			loginData.password = testSeller.password;
+		}
+		if (pathname.startsWith("/admin")) {
+			loginData.id = testAdmin.id;
+			loginData.password = testAdmin.password;
+		}
+	}, [pathname]);
 	useEffect(() => {
 		const url = searchParams.get("returnUrl");
 		const params = new URLSearchParams(searchParams);

@@ -8,7 +8,7 @@ import { PWD_CHANGE_COOKIE_AGE } from "@/lib/auth/utils/tokenTime";
 import { PasswordChangeRequest } from "@/types/auth";
 import { BaseResponse } from "@/types/common";
 import { NextResponse } from "next/server";
-import { withOptionalAuth, userWithAuth } from "@/lib/auth/user";
+import { userWithOptionalAuth, userWithAuth } from "@/lib/auth/user";
 
 // 비밀번호 변경 토큰 생성
 export const POST = userWithAuth(async ({ userNo }) => {
@@ -40,7 +40,7 @@ export const POST = userWithAuth(async ({ userNo }) => {
 });
 
 // 비밀번호 변경
-export const PUT = withOptionalAuth(async ({ nextRequest }) => {
+export const PUT = userWithOptionalAuth(async ({ nextRequest }) => {
 	console.log("[API] 비밀번호 변경");
 	try {
 		let pwdResetToken;

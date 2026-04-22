@@ -10,7 +10,6 @@ import { scrollIntoCenter } from "@/utils/ui";
 import BuyCouponSelector from "@/app/buy/BuyCouponSelector";
 import clsx from "clsx";
 import { useBuy } from "@/hooks/buy/useBuy";
-import { OnOffButton } from "@/components/ui/OnOffButton";
 import { MaxDiscountBanner } from "@/components/buy/MaxDiscountBanner";
 
 interface OrderFormSectionProps {
@@ -39,18 +38,23 @@ export default function OrderFormSection({
 	sumCouponDiscount,
 	buyTotalFinalPrice,
 }: OrderFormSectionProps) {
+	// 1) [store / custom hooks] -----------------------------------
 	const { user } = useAuth();
 	const { usedMileage, setUsedMileage, changeUsedMileage, paymentMethod, setPaymentMethod } = useBuy();
 
+	// 2) [useState / useRef] --------------------------------------
 	// 쿠폰변경 UI 열기(판매자이름)
 	const [couponAppliedSelectorOpenSeller, setCouponAppliedSelectorOpenSeller] = useState<string>("");
 	// 열리는 버튼 요소에 ref를 저장
 	const panelRef = useRef<HTMLElement | null>(null);
 	// 열릴 때 닫힌 스크롤위치 저장
 	const scrollYRef = useRef<number | null>(null);
+
+	// 4) [derived values / useMemo] -------------------------------
 	// 최대 할인 적용여부
 	const isMaxDiscountStatus = isMaxDiscountApplied || sumCouponDiscount === maxDiscountPrice;
 
+	// 6) [useEffect] ----------------------------------------------
 	// 열림 상태가 바뀌면 다음 프레임에서 스크롤
 	useEffect(() => {
 		requestAnimationFrame(() => {

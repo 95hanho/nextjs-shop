@@ -37,16 +37,17 @@ export default function SellerProductList({
 	changeSelectedProductIds,
 	changeAllSelectedProductIds,
 }: ProductListProps) {
+	// 1) [store / custom hooks] -------------------------------------------
 	const router = useRouter();
 	const queryClient = useQueryClient();
 	const { openModal } = useModalStore();
 	const { openDialog } = useGlobalDialogStore();
-	const couponAllowedMode = allowedSelectedCouponId !== null; // 쿠폰 허용 제품이 하나라도 있으면 true
 
-	// ------------------------------------------------
-	// React Query
-	// ------------------------------------------------
+	// 2) [useState / useRef] ----------------------------------------------
+	const [openProductId, setOpenProductId] = useState<number | null>(null);
+	const theadRef = useRef<HTMLTableSectionElement | null>(null); // 제품 thead th 갯수를 세기 위한 ref
 
+	// 3) [useQuery / useMutation] -----------------------------------------
 	// 제품 수정
 	const { mutate: updateSellerProduct, isSuccess: isUpdateSellerProductSuccess, reset: resetUpdateSellerProduct } = useSellerProductUpdate();
 	// 제품 옵션 추가
@@ -79,17 +80,11 @@ export default function SellerProductList({
 		},
 	});
 
-	// ------------------------------------------------
-	// React
-	// ------------------------------------------------
+	// 4) [derived values / useMemo] ---------------------------------------
+	// 쿠폰 허용 제품이 하나라도 있으면 true
+	const couponAllowedMode = allowedSelectedCouponId !== null;
 
-	const [openProductId, setOpenProductId] = useState<number | null>(null);
-	const theadRef = useRef<HTMLTableSectionElement | null>(null); // 제품 thead th 갯수를 세기 위한 ref
-
-	// ------------------------------------------------
-	// useEffect, useMemo
-	// ------------------------------------------------
-
+	// 6) [useEffect] ------------------------------------------------------
 	useEffect(() => {
 		if (couponAllowedProductIds.length > 0) {
 			// console.log("쿠폰 허용 제품 ID 리스트:", couponAllowedProductIds);
@@ -98,7 +93,6 @@ export default function SellerProductList({
 			// console.log("판매자 제품 목록:", sellerProductList);
 		}
 	}, [couponAllowedProductIds, sellerProductList]);
-
 	// 제품 수정 성공 시 제품 목록 리패치
 	useEffect(() => {
 		if (!isUpdateSellerProductSuccess) return;

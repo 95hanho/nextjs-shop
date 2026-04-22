@@ -40,15 +40,12 @@ export const ImageSlide = <T,>({
 	loop = false,
 	pagination = false,
 }: ImageSlideProps<T>) => {
-	// =================================================================
-	// React
-	// =================================================================
-
+	// 2) [useState / useRef] ----------------------------------------------
 	const swiperRef = useRef<SwiperType | null>(null);
 	// "3 / 4" 같은 페이지 단위는 Swiper의 snapGrid 기준이 가장 안정적
 	const [, setPageInfo] = useState({ page: 1, totalPages: 2 });
-	const modules: SwiperProps["modules"] = [];
 
+	// 5) [handlers / useCallback] -----------------------------------------
 	// 페이지네이션 계산 함수 (Swiper의 snapGrid 기준)
 	const computePageInfo = (swiper: SwiperType) => {
 		const totalPages = Math.max(1, Math.ceil(items.length / slidesPerView));
@@ -63,6 +60,7 @@ export const ImageSlide = <T,>({
 		onPageChange?.({ ...next, swiper });
 	};
 
+	// 6) [useEffect] ------------------------------------------------------
 	useEffect(() => {
 		if (!onReady) return;
 
@@ -101,9 +99,9 @@ export const ImageSlide = <T,>({
 		onReady(handle);
 	}, [onReady, items.length, slidesPerView]);
 
-	// =================================================================
-	// UI
-	// =================================================================
+	// 7) [UI helper values] -------------------------------------------------
+	const modules: SwiperProps["modules"] = [];
+	let plusSwiperProps: Partial<SwiperProps> = {};
 
 	// 슬라이드 모드별 기본 설정
 	const commonSwiperProps: Partial<SwiperProps> = {
@@ -119,7 +117,6 @@ export const ImageSlide = <T,>({
 			syncPageInfo(swiper);
 		},
 	};
-	let plusSwiperProps: Partial<SwiperProps> = {};
 
 	if (loop) {
 		commonSwiperProps.loop = true;

@@ -30,6 +30,7 @@ import CartCouponSelector from "@/app/mypage/cart/CartCouponSelector";
 import { scrollIntoCenter } from "@/utils/ui";
 import { MaxDiscountBanner } from "@/components/buy/MaxDiscountBanner";
 import { useGlobalDialogStore } from "@/store/globalDialog.store";
+import { getUploadImageUrl } from "@/lib/image";
 
 interface CartProductSectionProps extends CartItemSelectCollection {
 	noResetCouponOn: () => void;
@@ -66,6 +67,7 @@ export default function CartProductSection({
 	sumCouponDiscount,
 	changeMaxDiscountApplied,
 }: CartProductSectionProps) {
+	// 1) [store / custom hooks] -----------------------------------
 	const queryClient = useQueryClient();
 	const { openModal } = useModalStore();
 	const { openDialog } = useGlobalDialogStore();
@@ -73,10 +75,15 @@ export default function CartProductSection({
 	// 최대 할인 적용여부
 	const isMaxDiscountStatus = isMaxDiscountApplied || sumCouponDiscount === maxDiscountPrice;
 
-	// =================================================================
-	// React Query
-	// =================================================================
+	// 2) [useState / useRef] --------------------------------------
+	// 열리는 버튼 요소에 ref를 저장
+	const panelRef = useRef<HTMLElement | null>(null);
+	// 열릴 때 닫힌 스크롤위치 저장
+	const scrollYRef = useRef<number | null>(null);
+	// 쿠폰변경 UI 열기(판매자이름)
+	const [couponAppliedSelectorOpenSeller, setCouponAppliedSelectorOpenSeller] = useState<string>("");
 
+	// 3) [useQuery / useMutation] ---------------------------------
 	// 장바구니 제품 옵션/수량 변경
 	const handleChangeQuantity = useMutation<BaseResponse, Error, UpdateCartRequest>({
 		mutationFn: ({ cartId, productOptionId, quantity }) =>
@@ -127,10 +134,7 @@ export default function CartProductSection({
 		// onSettled(a, b) {},
 	});
 
-	// =================================================================
-	// React
-	// =================================================================
-
+	// 5) [handlers / useCallback] ---------------------------------
 	// 옵션변경 모달 오픈
 	const openOptionChangeModal = (product: CartItem) => {
 		openModal("PRODUCT_OPTION", {
@@ -160,13 +164,7 @@ export default function CartProductSection({
 		});
 	};
 
-	// 쿠폰변경 UI 열기(판매자이름)
-	const [couponAppliedSelectorOpenSeller, setCouponAppliedSelectorOpenSeller] = useState<string>("");
-	// 열리는 버튼 요소에 ref를 저장
-	const panelRef = useRef<HTMLElement | null>(null);
-	// 열릴 때 닫힌 스크롤위치 저장
-	const scrollYRef = useRef<number | null>(null);
-
+	// 6) [useEffect] ----------------------------------------------
 	// 열림 상태가 바뀌면 다음 프레임에서 스크롤
 	useEffect(() => {
 		requestAnimationFrame(() => {
@@ -318,7 +316,7 @@ export default function CartProductSection({
 													<div className={styles.productItemOverview}>
 														<div className={styles.productItemMedia}>
 															<Link href={`/product/detail/${product.productId}`} className={styles.productItemThumb}>
-																<SmartImage src={product.filePath} alt={product.fileName} fill />
+																<SmartImage src={getUploadImageUrl(product.filePath)} alt={product.fileName} fill />
 
 																{selectDisabled && (
 																	<div className={styles.productOutOfStockCover}>

@@ -14,8 +14,10 @@ type ShippingAddressListProps = {
 } & DomainModalPropsMap["BUY_ADDRESSLIST"];
 
 export const BuyShippingAddressListModal = ({ onClose, handleAfterChangeBuyAddress }: ShippingAddressListProps) => {
+	// 1) [store / custom hooks] -------------------------------------------
 	const { loginOn } = useAuth();
 
+	// 3) [useQuery / useMutation] -----------------------------------------
 	// 유저 배송지 조회
 	const { data: userAddressData } = useQuery<GetUserAddressListResponse, Error, UserAddressListItem[]>({
 		queryKey: ["userAddressList"],

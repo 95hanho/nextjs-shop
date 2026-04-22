@@ -10,9 +10,11 @@ interface HeaderMenuProps {
 }
 
 export const HeaderMenu = ({ isOpen, nodes }: HeaderMenuProps) => {
+	// 2) [useState / useRef] ----------------------------------------------
 	const menuRef = useRef<HTMLDivElement | null>(null);
 	const [menuStyle, setMenuStyle] = useState<React.CSSProperties>({});
 
+	// 6) [useEffect] ------------------------------------------------------
 	useLayoutEffect(() => {
 		if (!isOpen || !menuRef.current) {
 			setMenuStyle({});

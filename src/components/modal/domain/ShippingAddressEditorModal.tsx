@@ -44,11 +44,14 @@ type ShippingAddressEditorModalProps = {
 } & DomainModalPropsMap["ADDRESS_SET"];
 
 export const ShippingAddressEditorModal = ({ onClose, prevAddress, handleAfterSetAddress }: ShippingAddressEditorModalProps) => {
+	// 2) [useState / useRef] ----------------------------------------------
 	const [addressForm, setAddressForm] = useState<AddressForm>(initAddressForm);
 	const [addressFormAlarm, setAddressFormAlarm] = useState<AddressFormAlarm | null>(null);
 	const addressFormInputRefs = useRef<Partial<AddressFormFormInputRefs>>({});
 	const [initMemo, setInitMemo] = useState("문 앞에 놓아주세요");
 	const [memoDirectInput, setMemoDirectInput] = useState(false); // 직접입력 show
+
+	// 5) [handlers / useCallback] -----------------------------------------
 	const handleChangeMemo = useCallback((memo: string, directInput: boolean) => {
 		setAddressForm((prev) => ({
 			...prev,
@@ -57,7 +60,6 @@ export const ShippingAddressEditorModal = ({ onClose, prevAddress, handleAfterSe
 		setMemoDirectInput(directInput);
 		setAddressFormAlarm(null);
 	}, []);
-
 	const changeAddressForm = (e: ChangeEvent) => {
 		const { name, value } = e.target as {
 			name: AddressFormInputKeys;
@@ -125,7 +127,8 @@ export const ShippingAddressEditorModal = ({ onClose, prevAddress, handleAfterSe
 			onClose(); // 모달 닫기
 		}
 	};
-	/* -------------------- */
+
+	// 6) [useEffect] ------------------------------------------------------
 	// 처음 들어올 때
 	useEffect(() => {
 		if (prevAddress) {

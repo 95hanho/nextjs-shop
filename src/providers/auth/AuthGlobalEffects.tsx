@@ -6,11 +6,13 @@ import { DialogResultMap } from "@/store/modal.type";
 
 // 공통 인증 관련 전역 효과 처리 (로그아웃 모달 닫힌 후, 인증 오류 등)
 export function AuthGlobalEffects() {
+	// 1) [store / custom hooks] -------------------------------------------
 	const { logout } = useAuth();
 	const { dialogResult, clearDialogResult } = useGlobalDialogStore();
 	const router = useRouter();
 	const pathname = usePathname();
 
+	// 6) [useEffect] ------------------------------------------------------
 	// 로그아웃 모달 닫힌 후 처리
 	useEffect(() => {
 		if (!dialogResult) return;

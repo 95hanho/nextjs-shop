@@ -10,10 +10,12 @@ interface AddCartPopupProps {
 
 // 장바구니 담기 완료 팝업
 export const AddCartPopup = ({ triggerKey, productId, curProductId }: AddCartPopupProps) => {
+	// 2) [useState / useRef] ----------------------------------------------
 	// 장바구니 담기 팝업
 	const [cartPopupOpen, setCartPopupOpen] = useState(false);
 	const [cartPopupClose, setCartPopupClose] = useState(false);
 
+	// 6) [useEffect] ------------------------------------------------------
 	// triggerKey가 바뀔 때마다 팝업 열기
 	useEffect(() => {
 		if (triggerKey === 0) return;
@@ -23,7 +25,6 @@ export const AddCartPopup = ({ triggerKey, productId, curProductId }: AddCartPop
 		setCartPopupOpen(true);
 		setCartPopupClose(false);
 	}, [triggerKey, productId, curProductId]);
-
 	// 장바구니 담기 팝업 애니메이션 및 자동 닫힘
 	useEffect(() => {
 		if (!cartPopupOpen) return;

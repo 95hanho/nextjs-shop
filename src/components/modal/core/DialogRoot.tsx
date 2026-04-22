@@ -17,17 +17,27 @@ type ModalCommon = {
 };
 
 export const DialogRoot = () => {
+	// 1) [store / custom hooks] -------------------------------------------
 	const { modalType, modalProps, closeDialog } = useGlobalDialogStore();
+
+	// 2) [useState / useRef] ----------------------------------------------
 	const [mounted, setMounted] = useState(false);
 	const [isClosing, setIsClosing] = useState(false);
 	const [isOpen, setIsOpen] = useState(true);
 
+	// 4) [derived values / useMemo] ---------------------------------------
 	const common = (modalProps ?? {}) as ModalCommon;
 	const overlayCloseAllowed = !common.disableOverlayClose;
 	const escCloseAllowed = !common.disableEscClose;
 	const closeResult = common.closeResult;
 	const handleAfterClose = common.handleAfterClose;
 
+	// 5) [handlers / useCallback] -----------------------------------------
+	const handleClose = useCallback(() => {
+		setIsClosing(true);
+	}, []);
+
+	// 6) [useEffect] ------------------------------------------------------
 	// Next SSR 때문에 portal은 클라이언트에서만
 	useEffect(() => {
 		setMounted(true);
@@ -43,11 +53,6 @@ export const DialogRoot = () => {
 			document.body.style.overflow = "";
 		}
 	}, [modalType]);
-
-	const handleClose = useCallback(() => {
-		setIsClosing(true);
-	}, []);
-
 	// ESC 눌러서 닫기
 	useEffect(() => {
 		const handleKey = (e: KeyboardEvent) => {
@@ -60,10 +65,12 @@ export const DialogRoot = () => {
 		return () => window.removeEventListener("keydown", handleKey);
 	}, [closeDialog, escCloseAllowed, handleClose]);
 
-	if (!mounted || !modalType) return null;
-
+	// 7) [UI helper values] -------------------------------------------------
+	// 모달 몸통
 	let childrenModal: React.ReactNode = null;
 
+	// 8) [return] ---------------------------------------------------------
+	if (!mounted || !modalType) return null;
 	switch (modalType) {
 		case "ALERT": {
 			const props = modalProps as DialogPropsMap["ALERT"]; // 여기서 타입 보장
@@ -78,9 +85,7 @@ export const DialogRoot = () => {
 		default:
 			return null;
 	}
-
 	if (!isOpen) return null;
-
 	// createPortal(요소, document.body) : DOM 구조는 여기지만, 실제 출력은 body 바로 아래에 그려라
 	return createPortal(
 		<div

@@ -3,26 +3,29 @@ import styles from "../ProductDetail.module.scss";
 import { useState, type MouseEvent } from "react";
 import { FileInfo } from "@/types/file";
 import clsx from "clsx";
+import { getUploadImageUrl } from "@/lib/image";
 
 interface ThumbnailImageSectionProps {
 	productImageList: (FileInfo & { productId: number })[];
 }
-
 export default function ThumbnailImageSection({ productImageList }: ThumbnailImageSectionProps) {
+	// 2) [useState / useRef] ----------------------------------------------
 	// 현재 보여주는 사진
 	const [currentImage, setCurrentImage] = useState(productImageList[0] ?? null);
 	const [isHovering, setIsHovering] = useState(false); // 마우스 들어왔는지
 	const [lensPosition, setLensPosition] = useState({ x: 0, y: 0 }); // 렌즈의 left/top 위치
+	const [areaRect, setAreaRect] = useState({ width: 1, height: 1 });
 
-	const lensSize = 100;
+	// 4) [derived values / useMemo] ---------------------------------------
+	const lensSize = 100; // 확대 렌즈 크기
 	const zoomScale = 4.9; // 확대 배율
 	const lensCenterX = lensPosition.x + lensSize / 2;
 	const lensCenterY = lensPosition.y + lensSize / 2;
-	const [areaRect, setAreaRect] = useState({ width: 1, height: 1 });
 	const bgPosX = (lensCenterX / areaRect.width) * 100;
 	const bgPosY = (lensCenterY / areaRect.height) * 100;
 
-	/* ----- productImageArea 마우스 이벤트 핸들러 ----- */
+	// 5) [handlers / useCallback] -----------------------------------------
+	// productImageArea 마우스 이벤트 핸들러
 	const handleMouseEnter = () => {
 		setIsHovering(true);
 	};
@@ -47,7 +50,7 @@ export default function ThumbnailImageSection({ productImageList }: ThumbnailIma
 	return (
 		<div className={styles.productImageSection}>
 			<div className={styles.productImageArea} onMouseEnter={handleMouseEnter} onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave}>
-				<SmartImage src={currentImage.filePath} width={900} height={900} objectFit="contain" />
+				<SmartImage src={getUploadImageUrl(currentImage.filePath)} width={900} height={900} objectFit="contain" />
 				{/* 마우스 오버 시 확대할 곳 마우스 따라다니는 영역 */}
 				<div
 					className={styles.productImageEnlargeMouse}
@@ -69,7 +72,7 @@ export default function ThumbnailImageSection({ productImageList }: ThumbnailIma
 							setLensPosition({ x: 0, y: 0 });
 						}}
 					>
-						<SmartImage src={image.filePath} width={40} height={40} alt={image.fileName} />
+						<SmartImage src={getUploadImageUrl(image.filePath)} width={40} height={40} alt={image.fileName} />
 					</div>
 				))}
 			</div>

@@ -20,6 +20,7 @@ interface ProductReviewProps {
 
 // 상품 리뷰
 export default function ProductReview({ reviewCount, reviewRate }: ProductReviewProps) {
+	// 1) [store / custom hooks] -------------------------------------------
 	const params = useParams<{
 		productId: string;
 	}>();
@@ -29,10 +30,11 @@ export default function ProductReview({ reviewCount, reviewRate }: ProductReview
 	const router = useRouter();
 	const pathname = usePathname();
 
-	// =================================================================
-	// React Query
-	// =================================================================
+	// 2) [useState / useRef] ----------------------------------------------
+	// 리뷰섹션 요소
+	const reviewInfoSectionRef = useRef<HTMLElement | null>(null);
 
+	// 3) [useQuery / useMutation] -----------------------------------------
 	// 리뷰 조회
 	const {
 		data: productReviewList = [],
@@ -49,17 +51,14 @@ export default function ProductReview({ reviewCount, reviewRate }: ProductReview
 		},
 	});
 
-	// =================================================================
-	// React
-	// =================================================================
+	// 4) [derived values / useMemo] ---------------------------------------
+	const { allReviewImages } = useMemo(() => {
+		return {
+			allReviewImages: productReviewList.flatMap((review) => review.reviewImages.map((image) => ({ ...image, reviewId: review.reviewId }))),
+		};
+	}, [productReviewList]);
 
-	// 리뷰섹션 요소
-	const reviewInfoSectionRef = useRef<HTMLElement | null>(null);
-
-	// =================================================================
-	// useEffect
-	// =================================================================
-
+	// 6) [useEffect] ------------------------------------------------------
 	useEffect(() => {
 		if (productReviewList?.length > 0) {
 			if (tab === "review") {
@@ -68,11 +67,6 @@ export default function ProductReview({ reviewCount, reviewRate }: ProductReview
 			}
 		}
 	}, [productReviewList, tab, searchParams, router, pathname]);
-	const { allReviewImages } = useMemo(() => {
-		return {
-			allReviewImages: productReviewList.flatMap((review) => review.reviewImages.map((image) => ({ ...image, reviewId: review.reviewId }))),
-		};
-	}, [productReviewList]);
 
 	return (
 		<>
@@ -91,7 +85,7 @@ export default function ProductReview({ reviewCount, reviewRate }: ProductReview
 						<div className={styles.allReviewImages}>
 							{allReviewImages.map((image) => (
 								<button key={`allReviewImage-${image.fileId}`}>
-									<SmartImage src={getUploadImageUrl(image.storeName)} alt={image.fileName} width={120} height={120} />
+									<SmartImage src={getUploadImageUrl(image.filePath)} alt={image.fileName} width={120} height={120} />
 								</button>
 							))}
 						</div>

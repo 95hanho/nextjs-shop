@@ -1,6 +1,6 @@
 import API_URL from "@/api/endpoints";
 import { postJson } from "@/api/fetchFilter";
-import { authContext } from "@/context/authContext";
+import { authContext } from "@/components/ui/context/authContext";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { UserInfo } from "@/types/auth";
 import { useQueryClient } from "@tanstack/react-query";
@@ -25,14 +25,19 @@ const initUser = {
 };
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
+	// 1) [store / custom hooks] -------------------------------------------
 	const queryClient = useQueryClient();
+
+	// 2) [useState / useRef] ----------------------------------------------
 	const [user, setUser] = useState<UserInfo>(initUser);
 	const [isAuthLoading, setIsAuthLoading] = useState(true);
 	const [cartCount, setCartCount] = useState(0);
 	const [orderCount, setOrderCount] = useState(0);
 
+	// 4) [derived values / useMemo] ---------------------------------------
 	const loginOn = !!user?.name;
 
+	// 5) [handlers / useCallback] -----------------------------------------
 	const logout = useCallback(async () => {
 		console.log("로그아웃");
 		setUser(initUser);
@@ -41,7 +46,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 		await postJson(getApiUrl(API_URL.AUTH_LOGOUT));
 	}, [queryClient]);
 
-	// value ---------------------------------------
+	// 7) [UI helper values] -------------------------------------------------
+	// Provider value
 	const value = useMemo(
 		() => ({ loginOn, logout, user, setUser, isAuthLoading, setIsAuthLoading, cartCount, setCartCount, orderCount, setOrderCount }),
 		[loginOn, logout, user, isAuthLoading, cartCount, orderCount],

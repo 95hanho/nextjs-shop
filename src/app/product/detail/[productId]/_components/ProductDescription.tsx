@@ -4,11 +4,14 @@ import styles from "../ProductDetail.module.scss";
 import { useParams } from "next/navigation";
 
 export default function ProductDescription() {
-	const [openDescription, setOpenDescription] = useState(false);
+	// 1) [store / custom hooks] -------------------------------------------
 	const params = useParams<{
 		productId: string;
 	}>();
 	const productIdNum = Number(params.productId);
+
+	// 2) [useState / useRef] ----------------------------------------------
+	const [openDescription, setOpenDescription] = useState(false);
 
 	return (
 		<article className={styles.descriptionToggle}>

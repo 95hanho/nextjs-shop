@@ -9,6 +9,7 @@ import { useUserJoinForm } from "@/hooks/query/auth/form/useUserJoinForm";
 import Link from "next/link";
 
 export default function SellerJoinClient() {
+	// 1) [store / custom hooks] -------------------------------------------
 	const {
 		joinSubmit,
 		joinForm,

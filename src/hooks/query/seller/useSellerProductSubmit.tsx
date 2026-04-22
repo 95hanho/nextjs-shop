@@ -9,12 +9,11 @@ import { useRouter } from "next/navigation";
 
 // 판매자제품 추가/수정
 export function useSellerProductSubmit() {
+	// 1) [store / custom hooks] -------------------------------------------
 	const router = useRouter();
 	const queryClient = useQueryClient();
 
-	// ------------------------------------------------
-	// React Query
-	// ------------------------------------------------
+	// 3) [useQuery / useMutation] -----------------------------------------
 	// 제품 추가
 	const { mutateAsync: addSellerProduct } = useMutation<BaseResponse & { productId: number }, Error, AddSellerProductRequest>({
 		mutationFn: (productForm: AddSellerProductRequest) =>
@@ -50,10 +49,7 @@ export function useSellerProductSubmit() {
 		},
 	});
 
-	// ------------------------------------------------
-	// React
-	// ------------------------------------------------
-
+	// 5) [handlers / useCallback] -----------------------------------------
 	type SellerProductSubmitParams = {
 		productId?: number;
 		productSetForm: ProductSetForm;

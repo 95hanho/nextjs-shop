@@ -20,17 +20,27 @@ type ModalCommon = {
 };
 
 export const DomainModalRoot = () => {
+	// 1) [store / custom hooks] -------------------------------------------
 	const { modalType, modalProps, closeModal } = useModalStore();
+
+	// 2) [useState / useRef] ----------------------------------------------
 	const [mounted, setMounted] = useState(false);
 	const [isClosing, setIsClosing] = useState(false);
 	const [isOpen, setIsOpen] = useState(true);
 
+	// 4) [derived values / useMemo] ---------------------------------------
 	const common = (modalProps ?? {}) as ModalCommon;
 	const overlayCloseAllowed = !common.disableOverlayClose;
 	const escCloseAllowed = !common.disableEscClose;
 	const closeResult = common.closeResult;
 	const handleAfterClose = common.handleAfterClose;
 
+	// 5) [handlers / useCallback] -----------------------------------------
+	const handleClose = useCallback(() => {
+		setIsClosing(true);
+	}, []);
+
+	// 6) [useEffect] ------------------------------------------------------
 	// Next SSR 때문에 portal은 클라이언트에서만
 	useEffect(() => {
 		setMounted(true);
@@ -46,11 +56,6 @@ export const DomainModalRoot = () => {
 			document.body.style.overflow = "";
 		}
 	}, [modalType]);
-
-	const handleClose = useCallback(() => {
-		setIsClosing(true);
-	}, []);
-
 	// ESC 눌러서 닫기
 	useEffect(() => {
 		const handleKey = (e: KeyboardEvent) => {
@@ -63,10 +68,11 @@ export const DomainModalRoot = () => {
 		return () => window.removeEventListener("keydown", handleKey);
 	}, [closeModal, escCloseAllowed, handleClose]);
 
-	if (!mounted || !modalType) return null;
-
+	// 7) [UI helper values] -------------------------------------------------
 	let childrenModal: React.ReactNode = null;
 
+	// 8) [return] ---------------------------------------------------------
+	if (!mounted || !modalType) return null;
 	switch (modalType) {
 		case "PRODUCT_OPTION":
 			childrenModal = <ProductOptionModal onClose={handleClose} {...(modalProps as DomainModalPropsMap["PRODUCT_OPTION"])} />;
@@ -86,9 +92,7 @@ export const DomainModalRoot = () => {
 		default:
 			return null;
 	}
-
 	if (!isOpen) return null;
-
 	// createPortal(요소, document.body) : DOM 구조는 여기지만, 실제 출력은 body 바로 아래에 그려라
 	return createPortal(
 		<div

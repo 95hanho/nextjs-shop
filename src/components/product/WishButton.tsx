@@ -66,11 +66,10 @@ interface WishButtonProps {
 }
 
 export const WishButton = ({ initWishOn, productId, bottom = 1, right = 1, size = 16, zIndex = 10, clickHandler }: WishButtonProps) => {
+	// 2) [useState / useRef] ----------------------------------------------
 	const [wishOn, setWishOn] = useState(initWishOn);
-	useEffect(() => {
-		setWishOn(initWishOn);
-	}, [initWishOn]);
 
+	// 3) [useQuery / useMutation] -----------------------------------------
 	// 위시 여부 변경
 	const handleProductWish = useMutation({
 		mutationFn: () => postJson<BaseResponse>(getApiUrl(API_URL.PRODUCT_WISH), { productId }),
@@ -88,6 +87,7 @@ export const WishButton = ({ initWishOn, productId, bottom = 1, right = 1, size 
 		// onSettled(a, b) {},
 	});
 
+	// 5) [handlers / useCallback] -----------------------------------------
 	// 위시 선택변경
 	const changeWish = async (e: MouseEvent) => {
 		e.stopPropagation(); // 클릭 이벤트가 부모 요소로 전파되는 것을 방지
@@ -99,6 +99,12 @@ export const WishButton = ({ initWishOn, productId, bottom = 1, right = 1, size 
 		}
 	};
 
+	// 6) [useEffect] ------------------------------------------------------
+	useEffect(() => {
+		setWishOn(initWishOn);
+	}, [initWishOn]);
+
+	// 7) [UI helper values] -------------------------------------------------
 	const wishALinkProps = {
 		bottom,
 		right,

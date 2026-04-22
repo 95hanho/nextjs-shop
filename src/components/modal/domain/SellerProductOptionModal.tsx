@@ -38,20 +38,21 @@ export const SellerProductOptionModal = ({
 	handleAfterUpdateSellerProductOption,
 	handleAfterDeleteSellerProductOption,
 }: SellerProductOptionModalProps) => {
+	// 1) [store / custom hooks] -------------------------------------------
 	const { openDialog } = useGlobalDialogStore();
 
-	// ------------------------------------------------
-	// React
-	// ------------------------------------------------
-
+	// 2) [useState / useRef] ----------------------------------------------
 	// 옵션 입력값
 	const [optionForm, setOptionForm] = useState<Omit<Partial<SellerProductOption>, "size"> & { size: ProducSizeInput }>(
 		prevSellerProductOption || initOptionForm,
 	);
 	const [optionFormAlarm, setOptionFormAlarm] = useState<OptionFormAlarm | null>(null);
 	const optionFormInputRefs = useRef<Partial<OptionFormInputRefs>>({});
+
+	// 4) [derived values / useMemo] ---------------------------------------
 	const addPossibleProductSize = productSizeList.filter((size) => !productOptionSizeDuplicateList?.includes(size));
 
+	// 5) [handlers / useCallback] -----------------------------------------
 	// optionForm 변경
 	const changeOptionForm = (e: ChangeEvent) => {
 		const { name, value } = e.target as {
@@ -146,10 +147,7 @@ export const SellerProductOptionModal = ({
 		}
 	};
 
-	// ------------------------------------------------
-	// useEffect, useMemo
-	// ------------------------------------------------
-
+	// 6) [useEffect] ------------------------------------------------------
 	useEffect(() => {
 		console.log({ prevSellerProductOption });
 	}, [prevSellerProductOption]);

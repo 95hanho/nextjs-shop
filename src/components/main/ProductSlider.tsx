@@ -4,35 +4,32 @@ import styles from "./ProductSlider.module.scss";
 import clsx from "clsx";
 
 export const ProductSlider = ({ productList, right }: { productList: MainProduct[]; right?: boolean }) => {
+	// 2) [useState / useRef] ----------------------------------------------
 	const [isPaused, setIsPaused] = useState(false);
 	const marqueeRef = useRef<HTMLDivElement>(null);
-
 	// 드래그 관련 상태
 	const isDragging = useRef(false);
 	const startX = useRef(0);
 	const scrollLeft = useRef(0);
 
+	// 5) [handlers / useCallback] -----------------------------------------
 	const handleMouseDown = (e: React.MouseEvent) => {
 		isDragging.current = true;
 		startX.current = e.pageX - (marqueeRef.current?.offsetLeft ?? 0);
 		scrollLeft.current = marqueeRef.current?.scrollLeft ?? 0;
 	};
-
 	const handleMouseMove = (e: React.MouseEvent) => {
 		if (!isDragging.current || !marqueeRef.current) return;
 		const x = e.pageX - marqueeRef.current.offsetLeft;
 		const walk = (x - startX.current) * 1; // 스크롤 민감도
 		marqueeRef.current.scrollLeft = scrollLeft.current - walk;
 	};
-
 	const handleMouseUp = () => {
 		isDragging.current = false;
 	};
-
 	const handleMouseLeave = () => {
 		isDragging.current = false;
 	};
-
 	const togglePlay = () => {
 		setIsPaused((prev) => !prev);
 	};

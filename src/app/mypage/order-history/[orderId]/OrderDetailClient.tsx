@@ -18,19 +18,23 @@ import moment from "moment";
 import "moment/locale/ko"; // 한국어 로케일 추가
 import { AddCartPopup } from "@/components/mypage/AddCartPopup";
 import { useProductCartAction } from "@/hooks/query/mypage/useProductCartAction";
+import { getUploadImageUrl } from "@/lib/image";
 
 type ItemSellerMap = {
 	[sellerName: string]: MyOrderDetailItem[];
 };
 
 export default function OrderDetailClient({ orderId }: { orderId: string }) {
+	// 1) [store / custom hooks] -------------------------------------------
 	const { loginOn } = useAuth();
 	const { handleAddCart, isSuccess: isAddCartSuccess, reset } = useProductCartAction();
 
-	// =================================================================
-	// React Query
-	// =================================================================
+	// 2) [useState / useRef] ----------------------------------------------
+	const [openCouponInfo, setOpenCouponInfo] = useState<number | null>(null); // 열린 쿠폰 정보의 orderItemId
+	const [addCartCurProductId, setAddCartCurProductId] = useState<number>(0); // 장바구니 담기 트리거 상품 ID
+	const [addCartTriggerKey, setAddCartTriggerKey] = useState<number>(0); // 장바구니 담기 트리거 키
 
+	// 3) [useQuery / useMutation] -----------------------------------------
 	const { data: orderDetailData } = useQuery<MyOrderDetailResponse>({
 		queryKey: ["orderDetail", Number(orderId)],
 		queryFn: async () => getNormal(getApiUrl(API_URL.MY_ORDER_DETAIL), { orderId: Number(orderId) }),
@@ -39,18 +43,7 @@ export default function OrderDetailClient({ orderId }: { orderId: string }) {
 		// retry: false,
 	});
 
-	// =================================================================
-	// React
-	// =================================================================
-
-	const [openCouponInfo, setOpenCouponInfo] = useState<number | null>(null); // 열린 쿠폰 정보의 orderItemId
-	const [addCartCurProductId, setAddCartCurProductId] = useState<number>(0); // 장바구니 담기 트리거 상품 ID
-	const [addCartTriggerKey, setAddCartTriggerKey] = useState<number>(0); // 장바구니 담기 트리거 키
-
-	// =================================================================
-	// useEffect, useMemo
-	// =================================================================
-
+	// 4) [derived values / useMemo] ---------------------------------------
 	const { myOrderDetail, originTotalPrice, selfDiscountTotal, couponDiscountTotal, itemSellerMap } = useMemo(() => {
 		if (!orderDetailData)
 			return {
@@ -88,6 +81,8 @@ export default function OrderDetailClient({ orderId }: { orderId: string }) {
 		console.log("result", result);
 		return result;
 	}, [orderDetailData]);
+
+	// 6) [useEffect] ------------------------------------------------------
 	// 장바구니 담기 성공 시 트리거 키 업데이트
 	useEffect(() => {
 		if (!isAddCartSuccess) return;
@@ -140,7 +135,7 @@ export default function OrderDetailClient({ orderId }: { orderId: string }) {
 														</div>
 														<div className={styles.orderItemContent}>
 															<div className={styles.productImage}>
-																<SmartImage fill src={item.filePath} />
+																<SmartImage fill src={getUploadImageUrl(item.filePath)} />
 															</div>
 															<div className={styles.productInfo}>
 																<h4>{item.productName}</h4>

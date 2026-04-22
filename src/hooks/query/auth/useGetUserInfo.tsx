@@ -7,6 +7,7 @@ import { GetUserResponse } from "@/types/auth";
 import { useQuery } from "@tanstack/react-query";
 
 export function useGetUserInfo() {
+	// 1) [store / custom hooks] -------------------------------------------
 	const { user: initialUser, setUser, setIsAuthLoading, setCartCount, setOrderCount } = useAuth();
 
 	return useQuery({

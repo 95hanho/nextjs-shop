@@ -29,6 +29,7 @@ interface DateInputProps<T extends string, K extends string = T> {
 export const DateInput = forwardRef(<T extends string>(props: DateInputProps<T>, ref: React.ForwardedRef<DatePicker>) => {
 	const { name, label, alarm, labelWidthPercent, inputWidthPercent, requiredMark = false, selectedDate, changeDate } = props;
 
+	// 4) [derived values / useMemo] ---------------------------------------
 	let alarmStatus,
 		alarmMessage = null;
 	if (alarm && name === alarm.name) {

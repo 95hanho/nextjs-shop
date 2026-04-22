@@ -9,15 +9,20 @@ import { useGetSellerInfo } from "@/hooks/query/seller/useGetSellerInfo";
 import { useSellerAuth } from "@/hooks/useSellerAuth";
 
 export default function SellerHeader() {
-	const { data: seller } = useGetSellerInfo();
-	const headerRef = useRef<HTMLInputElement | null>(null);
-	const [isOpen, set_isOpen] = useState<boolean>(false);
+	// 1) [store / custom hooks] -------------------------------------------
 	const { logout } = useSellerAuth();
+	const { data: seller } = useGetSellerInfo();
 
+	// 2) [useState / useRef] ----------------------------------------------
+	const headerRef = useRef<HTMLElement | null>(null);
+	const [isOpen, set_isOpen] = useState<boolean>(false);
+
+	// 5) [handlers / useCallback] -----------------------------------------
 	const menuMouseleave = () => {
 		set_isOpen(false);
 	};
 
+	// 6) [useEffect] ------------------------------------------------------
 	useEffect(() => {
 		if (isOpen) {
 			setTimeout(() => {

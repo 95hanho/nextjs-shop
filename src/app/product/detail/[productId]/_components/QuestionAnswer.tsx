@@ -23,6 +23,7 @@ import { TurnToPagination } from "@/components/ui/TurnToPagination";
 
 // 상품 QnA
 export default function QuestionAnswer({ sellerName }: { sellerName: string }) {
+	// 1) [store / custom hooks] -------------------------------------------
 	const { loginOn, user } = useAuth();
 	const { openDialog } = useGlobalDialogStore();
 	const queryClient = useQueryClient();
@@ -31,10 +32,28 @@ export default function QuestionAnswer({ sellerName }: { sellerName: string }) {
 	}>();
 	const productIdNum = Number(params.productId);
 
-	// =================================================================
-	// React Query
-	// =================================================================
+	// 2) [useState / useRef] ----------------------------------------------
+	// QnA 작성 뷰
+	const [qnaViewOpen, setQnaViewOpen] = useState(false);
+	// Qna 작성 폼
+	const [qnaFormType, setQnaFormType] = useState<"ADD" | "UPDATE">("ADD");
+	const [qnaForm, setQnaForm] = useState({
+		productQnaId: 0,
+		productQnaTypeId: 1,
+		question: "",
+		secret: false,
+	});
+	// Qna 필터링 코드
+	const [qnaFilterCode, setQnaFilterCode] = useState<"ALL" | ProductQnaTypeCode>("ALL");
+	// qna 페이징 객체
+	const [qnaPage, setQnaPage] = useState({
+		page: 1,
+		totalPage: 1,
+	});
+	// 답변오픈 할 QnA 아이디
+	const [answerOpenQnaId, setAnswerOpenQnaId] = useState<number | null>(null);
 
+	// 3) [useQuery / useMutation] -----------------------------------------
 	// QnA 조회
 	const {
 		data: { productQnaList, productQnaTypeList } = {
@@ -100,30 +119,29 @@ export default function QuestionAnswer({ sellerName }: { sellerName: string }) {
 		},
 	});
 
-	// =================================================================
-	// React
-	// =================================================================
+	// 4) [derived values / useMemo] ---------------------------------------
+	type ProductQnaTypeWithCountList = ProductQnaType & {
+		count: number;
+	};
+	const productQnaTypeWithCountList: ProductQnaTypeWithCountList[] = useMemo(() => {
+		return productQnaTypeList.map((type) => {
+			return {
+				...type,
+				count: productQnaList.filter((qna) => qna.productQnaTypeId === type.productQnaTypeId).length,
+			};
+		});
+	}, [productQnaTypeList, productQnaList]);
+	const { productQnaCurPageList } = useMemo(() => {
+		const startIdx = (qnaPage.page - 1) * 5;
+		const endIdx = startIdx + 5;
+		return {
+			productQnaCurPageList: productQnaList
+				.filter((qna) => qnaFilterCode === "ALL" || qna.qnaTypeCode === qnaFilterCode)
+				.slice(startIdx, endIdx),
+		};
+	}, [productQnaList, qnaFilterCode, qnaPage.page]);
 
-	// QnA 작성 뷰
-	const [qnaViewOpen, setQnaViewOpen] = useState(false);
-	// Qna 작성 폼
-	const [qnaFormType, setQnaFormType] = useState<"ADD" | "UPDATE">("ADD");
-	const [qnaForm, setQnaForm] = useState({
-		productQnaId: 0,
-		productQnaTypeId: 1,
-		question: "",
-		secret: false,
-	});
-	// Qna 필터링 코드
-	const [qnaFilterCode, setQnaFilterCode] = useState<"ALL" | ProductQnaTypeCode>("ALL");
-	// qna 페이징 객체
-	const [qnaPage, setQnaPage] = useState({
-		page: 1,
-		totalPage: 1,
-	});
-	// 답변오픈 할 QnA 아이디
-	const [answerOpenQnaId, setAnswerOpenQnaId] = useState<number | null>(null);
-
+	// 5) [handlers / useCallback] -----------------------------------------
 	// QnA 작성 제출
 	const handleQnaSubmit = () => {
 		if (!qnaForm.question.trim()) {
@@ -155,21 +173,7 @@ export default function QuestionAnswer({ sellerName }: { sellerName: string }) {
 		openDialog("ALERT", { content: "알 수 없는 오류가 발생했습니다. 다시 시도해주세요." });
 	};
 
-	// =================================================================
-	// useEffect, useMemo
-	// =================================================================
-
-	type ProductQnaTypeWithCountList = ProductQnaType & {
-		count: number;
-	};
-	const productQnaTypeWithCountList: ProductQnaTypeWithCountList[] = useMemo(() => {
-		return productQnaTypeList.map((type) => {
-			return {
-				...type,
-				count: productQnaList.filter((qna) => qna.productQnaTypeId === type.productQnaTypeId).length,
-			};
-		});
-	}, [productQnaTypeList, productQnaList]);
+	// 6) [useEffect] ------------------------------------------------------
 	useEffect(() => {
 		if (productQnaList.length > 0) {
 			const totalPage = Math.ceil(productQnaList.filter((qna) => qnaFilterCode === "ALL" || qna.qnaTypeCode === qnaFilterCode).length / 5);
@@ -179,15 +183,6 @@ export default function QuestionAnswer({ sellerName }: { sellerName: string }) {
 			});
 		}
 	}, [productQnaList, qnaFilterCode]);
-	const { productQnaCurPageList } = useMemo(() => {
-		const startIdx = (qnaPage.page - 1) * 5;
-		const endIdx = startIdx + 5;
-		return {
-			productQnaCurPageList: productQnaList
-				.filter((qna) => qnaFilterCode === "ALL" || qna.qnaTypeCode === qnaFilterCode)
-				.slice(startIdx, endIdx),
-		};
-	}, [productQnaList, qnaFilterCode, qnaPage.page]);
 
 	return (
 		<>

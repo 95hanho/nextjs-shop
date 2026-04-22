@@ -36,21 +36,16 @@ export default function CartSummaryAside({
 	//
 	buyList,
 }: CartSummaryAsideProps) {
+	// 1) [store / custom hooks] -------------------------------------------
 	const { openDialog } = useGlobalDialogStore();
 	const { push } = useRouter();
 	const { mutate: handleStockHold, isSuccess } = useProductCheckAndHold();
 
-	// =================================================================
-	// React Query
-	// =================================================================
-
-	// =================================================================
-	// React
-	// =================================================================
-
+	// 2) [useState / useRef] ----------------------------------------------
 	// 유의사항 on/off
 	const [noticeOpen, setNoticeOpen] = useState(false);
 
+	// 5) [handlers / useCallback] -----------------------------------------
 	// 상품 구매하기 버튼 - 상품 확인 및 점유 -> 성공 시 결제 페이지로 이동, 실패 시 에러 메시지 노출
 	const handlePurchaseClick = () => {
 		if (buyList.length === 0) {
@@ -63,10 +58,7 @@ export default function CartSummaryAside({
 		handleStockHold({ buyList, returnUrl: "/mypage/cart" });
 	};
 
-	// =================================================================
-	// useEffect, useMemo
-	// =================================================================
-
+	// 6) [useEffect] ------------------------------------------------------
 	// 상품 점유 성공 시 결제 페이지로 이동
 	useEffect(() => {
 		if (!isSuccess) return;
@@ -157,27 +149,27 @@ export default function CartSummaryAside({
 
 						<div className={`${styles.benefitItem} ${styles.kakaopay}`}>
 							<i className={styles.benefitIcon}>
-								<SmartImage src="/images/kakaopay-seeklogo.png" alt="카카오페이이미지" width={30} height={30} />
+								<SmartImage src="/images/kakaopay-seeklogo.png" alt="카카오페이이미지" fill objectFit="contain" />
 							</i>
-							<span className={styles.benefitText}>
+							<span className={styles.benefitText} title="카카오페이 × 페이머니 8만원 이상 결제 시 4천원 즉시 할인">
 								카카오페이 × 페이머니 <span>8만원 이상 결제 시 4천원 즉시 할인</span>
 							</span>
 						</div>
 
 						<div className={`${styles.benefitItem} ${styles.samsungpay}`}>
 							<i className={styles.benefitIcon}>
-								<img src="/images/Samsung Pay_2025_hor_rev_RGB.png" alt="삼성페이이미지" />
+								<SmartImage src="/images/Samsung Pay_2025_hor_rev_RGB.png" alt="삼성페이이미지" fill objectFit="contain" />
 							</i>
-							<span className={styles.benefitText}>
+							<span className={styles.benefitText} title="삼성페이 x 삼성카드 3만원 이상 결제시 3천원 즉시 할인">
 								삼성페이 x 삼성카드 <span>3만원 이상 결제시 3천원 즉시 할인</span>
 							</span>
 						</div>
 
 						<div className={styles.benefitItem}>
 							<i className={styles.benefitIcon}>
-								<img src="/images/btn_Vertical-cr_napygr.svg" alt="네이버페이이미지" />
+								<SmartImage src="/images/btn_Vertical-cr_napygr.svg" alt="네이버페이이미지" fill objectFit="contain" />
 							</i>
-							<span className={styles.benefitText}>
+							<span className={styles.benefitText} title="네이버페이 x 신한카드 2만원 이상 결제시 2천원 즉시 할인">
 								네이버페이 x 신한카드 <span>2만원 이상 결제시 2천원 즉시 할인</span>
 							</span>
 						</div>

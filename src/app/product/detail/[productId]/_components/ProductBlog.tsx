@@ -13,15 +13,17 @@ import { useParams } from "next/navigation";
 
 // 등록된 상품정보이미지
 export default function ProductBlog() {
+	// 1) [store / custom hooks] -------------------------------------------
 	const params = useParams<{
 		productId: string;
 	}>();
 	const productIdNum = Number(params.productId);
 
-	// =================================================================
-	// React Query
-	// =================================================================
+	// 2) [useState / useRef] ----------------------------------------------
+	// 상품설명 더보기
+	const [openProductBlog, setOpenProductBlog] = useState(false);
 
+	// 3) [useQuery / useMutation] -----------------------------------------
 	// 제품 상세보기 상세이미지(상품소개) 조회
 	const { data: productDetailImageList = [] } = useQuery<GetProductDetailImageResponse, Error, ProductImage[]>({
 		queryKey: ["productDetailImageList", productIdNum],
@@ -31,16 +33,6 @@ export default function ProductBlog() {
 			return data.productDetailImageList;
 		},
 	});
-	// =================================================================
-	// React
-	// =================================================================
-
-	// 상품설명 더보기
-	const [openProductBlog, setOpenProductBlog] = useState(false);
-
-	// =================================================================
-	// useEffect, useMemo
-	// =================================================================
 
 	return (
 		<article className={styles.productBlog}>
@@ -51,7 +43,7 @@ export default function ProductBlog() {
 					<div key={`${item.fileId}-${index}`} className={styles.productBlogImagesWrap}>
 						<div className={styles.productBlogImages}>
 							<SmartImage
-								src={getUploadImageUrl(item.storeName)}
+								src={getUploadImageUrl(item.filePath)}
 								alt={`${item.fileName}-${index}`}
 								width={800}
 								height={600}

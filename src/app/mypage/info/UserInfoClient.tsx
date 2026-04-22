@@ -14,15 +14,17 @@ import { FormPageShell } from "@/components/form/FormPageShell";
 import { FormActionButton } from "@/components/form/FormActionButton";
 
 export default function UserInfoClient() {
+	// 1) [store / custom hooks] -------------------------------------------
 	const { user, loginOn } = useAuth();
 	const { push } = useRouter();
 
+	// 3) [useQuery / useMutation] -----------------------------------------
+	//
 	const { data: userIdResponse } = useQuery<BaseResponse & { userId: string }>({
 		queryKey: ["userInfoUserId"],
 		queryFn: () => getNormal(getApiUrl(API_URL.AUTH_ID)),
 		enabled: loginOn,
 	});
-
 	// 비밀변경 토큰 생성 후 비밀변경 페이지로
 	const handlePhoneAuth = useMutation({
 		mutationFn: () => postJson<BaseResponse>(getApiUrl(API_URL.AUTH_PASSWORD), {}),

@@ -55,12 +55,16 @@ function handleGlobalError(error: unknown, errorHandlers: { openDialog: OpenDial
 }
 
 export default function RootProviders({ children }: RootProvidersProps) {
+	// 1) [store / custom hooks] -------------------------------------------
 	const pathname = usePathname();
 	// const { logout } = useAuth();
 	const { openDialog } = useGlobalDialogStore();
 
+	// 2) [useState / useRef] ----------------------------------------------
 	// ✅ QueryClient 내부 onError에서 stale closure 방지
 	const handlersRef = useRef<{ openDialog: OpenDialog }>({ openDialog });
+
+	// 6) [useEffect] ------------------------------------------------------
 	useEffect(() => {
 		handlersRef.current = { openDialog };
 	}, [openDialog]);

@@ -1,4 +1,4 @@
-import { sellerAuthContext } from "@/context/authContext";
+import { sellerAuthContext } from "@/components/ui/context/authContext";
 import { useContext } from "react";
 
 export function useSellerAuth() {

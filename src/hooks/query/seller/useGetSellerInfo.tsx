@@ -7,6 +7,7 @@ import { GetSellerInfoResponse } from "@/types/seller";
 import { useQuery } from "@tanstack/react-query";
 
 export function useGetSellerInfo() {
+	// 1) [store / custom hooks] -------------------------------------------
 	const { seller: initialSeller, setSeller } = useSellerAuth();
 
 	return useQuery({

@@ -16,19 +16,21 @@ type ProductOptionModalProps = {
 } & DomainModalPropsMap["PRODUCT_OPTION"];
 
 export const ProductOptionModal = ({ onClose, product, handleAfterCartProductOptionChange }: ProductOptionModalProps) => {
+	// 2) [useState / useRef] ----------------------------------------------
+	// ✅ 선택된 옵션(productOptionId) 관리
+	const [pickId, setPickId] = useState<number>(product.productOptionId);
+	//
+	const [productCount, setProductCount] = useState<number>(product.quantity);
+
+	// 3) [useQuery / useMutation] -----------------------------------------
 	// 제품상세옵션 리스트
-	// invalidateQueries(["cartOptionProductOptionList"])
 	const { data: optionResponse, isLoading } = useQuery<GetCartOtherOptionListResponse>({
 		queryKey: ["cartOptionProductOptionList", product.productId],
 		queryFn: () => getNormal(getApiUrl(API_URL.MY_CART_PRODUCT_OPTION), { productId: product.productId }),
 		enabled: !!product?.productId,
 	});
 
-	// ✅ 선택된 옵션(productOptionId) 관리
-	const [pickId, setPickId] = useState<number>(product.productOptionId);
-	//
-	const [productCount, setProductCount] = useState<number>(product.quantity);
-
+	// 6) [useEffect] ------------------------------------------------------
 	// ✅ optionResponse 들어오면, pickId가 없거나 유효하지 않을 때 기본값 보정
 	useEffect(() => {
 		const list = optionResponse?.cartOptionProductOptionList;
@@ -38,6 +40,7 @@ export const ProductOptionModal = ({ onClose, product, handleAfterCartProductOpt
 		if (!exists) setPickId(product.productOptionId);
 	}, [optionResponse, product.productOptionId, pickId]);
 
+	// 7) [UI helper values] -------------------------------------------------
 	const optionSelectorEle = () => {
 		// 1) 로딩 중(최초)
 		const addPriceMark = product.addPrice > 0 ? ` (+${product.addPrice})` : "";

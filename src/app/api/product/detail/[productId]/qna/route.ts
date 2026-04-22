@@ -1,7 +1,7 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { getNormal, postUrlFormData, putUrlFormData, RequestHeaders } from "@/api/fetchFilter";
-import { userWithAuth, withOptionalAuth } from "@/lib/auth/user";
+import { userWithAuth, userWithOptionalAuth } from "@/lib/auth/user";
 import { WRONG_REQUEST_MESSAGE } from "@/lib/env";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { BaseResponse } from "@/types/common";
@@ -9,7 +9,7 @@ import { AddProductQnaRequest, GetProductDetailQnaResponse, UpdateProductQnaRequ
 import { NextResponse } from "next/server";
 
 // 제품 상세조회 Q&A 조회
-export const GET = withOptionalAuth<{ productId: string }>(async ({ accessToken, params }) => {
+export const GET = userWithOptionalAuth<{ productId: string }>(async ({ accessToken, params }) => {
 	console.log("[API] 제품 상세조회 Q&A 조회");
 	try {
 		const productId = Number(params.productId);

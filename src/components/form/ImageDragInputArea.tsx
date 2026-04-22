@@ -45,30 +45,26 @@ export const ImageDragInputArea = <T,>({
 	newFileList,
 	changeNewFileList,
 }: ImageDragInputAreaProps<T>) => {
+	// 1) [store / custom hooks] -------------------------------------------
 	const { openDialog } = useGlobalDialogStore();
 
-	// ------------------------------------------------
-	// React
-	// ------------------------------------------------
-
+	// 2) [useState / useRef] ----------------------------------------------
 	const fileInputRef = useRef<HTMLInputElement | null>(null);
 	const dragCountRef = useRef(0);
 
-	// ------------------------------------------------
 	const [draggingItemKey, setDraggingItemKey] = useState<string | null>(null);
 	const [dragPreview, setDragPreview] = useState<{
 		src: string;
 		x: number;
 		y: number;
 	} | null>(null);
-
 	//
 	const [insertIndex, setInsertIndex] = useState<number | null>(null);
 	const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
-
 	// 드래그 앤 드롭 상태
 	const [isDragging, setIsDragging] = useState(false);
 
+	// 5) [handlers / useCallback] -----------------------------------------
 	/** 파일 타입 체크 */
 	const validateImageFiles = (files: File[]) => {
 		return files.filter((file) => {
@@ -165,7 +161,7 @@ export const ImageDragInputArea = <T,>({
 	const handleImageDragStart = (e: React.DragEvent<HTMLDivElement>, item: PrevImageItem<T> | ImageItem, index: number) => {
 		e.stopPropagation();
 
-		const src = item.type === "prev" ? getUploadImageUrl(item.storeName) : item.previewUrl;
+		const src = item.type === "prev" ? getUploadImageUrl(item.filePath) : item.previewUrl;
 		const itemKey = getItemKey(item);
 
 		setDraggingItemKey(itemKey);
@@ -313,13 +309,10 @@ export const ImageDragInputArea = <T,>({
 		if (fileId) setDeleteImageIds?.((prev) => prev.filter((id) => id !== fileId));
 	};
 
-	// ------------------------------------------------
-	// useEffect, useMemo
-	// ------------------------------------------------
-
+	// 6) [useEffect] ------------------------------------------------------
 	useEffect(() => {
 		if (!initImageList || initImageList.length === 0) return;
-		console.log(`초기 ${title} 세팅`);
+		console.log(`초기 ${title} 세팅`, { initImageList });
 
 		// 초기 데이터 세팅 및 초기화
 		dragCountRef.current = 0;
@@ -362,7 +355,7 @@ export const ImageDragInputArea = <T,>({
 							let image;
 							if (item.type === "prev") {
 								image = (
-									<SmartImage src={getUploadImageUrl(item.storeName)} alt={`${item.fileName}-${index}`} fill objectFit="contain" />
+									<SmartImage src={getUploadImageUrl(item.filePath)} alt={`${item.fileName}-${index}`} fill objectFit="contain" />
 								);
 							} else {
 								image = <SmartImage src={item.previewUrl} alt={`${item.file.name}-${index}`} fill objectFit="contain" />;
@@ -414,7 +407,7 @@ export const ImageDragInputArea = <T,>({
 							let image;
 							if (item.type === "prev") {
 								image = (
-									<SmartImage src={getUploadImageUrl(item.storeName)} alt={`${item.fileName}-${index}`} fill objectFit="contain" />
+									<SmartImage src={getUploadImageUrl(item.filePath)} alt={`${item.fileName}-${index}`} fill objectFit="contain" />
 								);
 							} else {
 								image = <SmartImage src={item.previewUrl} alt={`${item.file.name}-${index}`} fill objectFit="contain" />;

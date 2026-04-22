@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import { useSellerAuth } from "@/hooks/useSellerAuth";
 
 export default function SellerNav() {
+	// 1) [store / custom hooks] -------------------------------------------
 	const pathname = usePathname();
 	const { seller } = useSellerAuth();
 

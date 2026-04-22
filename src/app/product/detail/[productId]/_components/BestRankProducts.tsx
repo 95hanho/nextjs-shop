@@ -16,20 +16,21 @@ import { useQuery } from "@tanstack/react-query";
 import { getNormal } from "@/api/fetchFilter";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import API_URL from "@/api/endpoints";
+import { getUploadImageUrl } from "@/lib/image";
 
 export default function BestRankProducts() {
+	// 1) [store / custom hooks] -------------------------------------------
 	const { loginOn } = useAuth();
-	const slideHandleRef = useRef<ImageSlideHandle | null>(null);
-	const [pageInfo, setPageInfo] = useState({ page: 1, totalPages: 2 });
 	const params = useParams<{
 		productId: string;
 	}>();
 	const productIdNum = Number(params.productId);
 
-	// =================================================================
-	// React Query
-	// =================================================================
+	// 2) [useState / useRef] ----------------------------------------------
+	const slideHandleRef = useRef<ImageSlideHandle | null>(null);
+	const [pageInfo, setPageInfo] = useState({ page: 1, totalPages: 2 });
 
+	// 3) [useQuery / useMutation] -----------------------------------------
 	// 같은 카테고리 BEST 제품 조회
 	const { data: categoryBestProductList = [] } = useQuery<GetCategoryBestProductsResponse, Error, OtherProduct[]>({
 		queryKey: ["categoryBestProducts", productIdNum],
@@ -59,7 +60,7 @@ export default function BestRankProducts() {
 							{/* 전체 링크 */}
 							<Link href={`/product/detail/${item.productId}`}></Link>
 							<div className={styles.imageBox}>
-								<SmartImage fill src={item.filePath} alt={item.fileName} />
+								<SmartImage fill src={getUploadImageUrl(item.filePath)} alt={item.fileName} />
 								<mark>{index + 1}</mark>
 								{loginOn && (
 									<div className={styles.wishButton}>

@@ -11,6 +11,7 @@ interface PasswordChangeClientProps {
 }
 //
 export default function PasswordChangeClient({ mode }: PasswordChangeClientProps) {
+	// 1) [store / custom hooks] -------------------------------------------
 	const { pwdChangeSubmit, pwdChangeForm, pwdChangeAlarm, changePwdChangeForm, validatePwdChangeForm, pwdChangeFormInputRefs } =
 		usePasswordChangeForm({
 			mode,
