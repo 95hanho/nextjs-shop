@@ -17,6 +17,7 @@ import { money } from "@/lib/format";
 import { SmartImage } from "@/components/ui/SmartImage";
 import Link from "next/link";
 import { useGlobalDialogStore } from "@/store/globalDialog.store";
+import { getUploadImageUrl } from "@/lib/image";
 
 export default function OrderHistoryClient() {
 	const { loginOn } = useAuth();
@@ -163,7 +164,11 @@ export default function OrderHistoryClient() {
 														{/* 상품 정보 */}
 														<div className={styles.orderHistoryProduct}>
 															<Link href={`/product/detail/${item.productId}`} className={styles.orderHistoryThumb}>
-																<SmartImage fill src={item.filePath} alt={item.productName + " 이미지"} />
+																<SmartImage
+																	fill
+																	src={getUploadImageUrl(item.filePath)}
+																	alt={item.productName + " 이미지"}
+																/>
 															</Link>
 
 															<div className={styles.orderHistoryInfo}>
