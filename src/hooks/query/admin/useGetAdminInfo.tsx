@@ -6,6 +6,7 @@ import { GetAdminInfoResponse } from "@/types/admin";
 import { useQuery } from "@tanstack/react-query";
 
 export function useGetAdminInfo() {
+	// 1) [store / custom hooks] -------------------------------------------
 	const { admin: initialAdmin, setAdmin } = useAdminAuth();
 
 	return useQuery({

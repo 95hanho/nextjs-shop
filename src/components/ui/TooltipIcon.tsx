@@ -19,9 +19,11 @@ interface TooltipIconProps {
 }
 
 export const TooltipIcon = ({ className, tooltipText, size, marginLeft }: TooltipIconProps) => {
+	// 2) [useState / useRef] ----------------------------------------------
 	const [showTooltip, setShowTooltip] = useState(false);
 	const tooltipRef = useRef<HTMLParagraphElement | null>(null);
 
+	// 6) [useEffect] ------------------------------------------------------
 	useEffect(() => {
 		if (!showTooltip || !tooltipRef.current) return;
 

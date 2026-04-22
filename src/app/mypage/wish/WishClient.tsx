@@ -14,12 +14,10 @@ import styles from "./Wish.module.scss";
 import clsx from "clsx";
 
 export default function WishClient() {
+	// 1) [store / custom hooks] -------------------------------------------
 	const { loginOn } = useAuth();
 
-	// =================================================================
-	// React Query
-	// =================================================================
-
+	// 3) [useQuery / useMutation] -----------------------------------------
 	// React Query 쓰면 위시리스트 수정(추가/삭제) 후 invalidateQueries(["wishlist"])로 새로고침 처리 가능.
 	// 위시리스트 조회
 	const { data: wishListData, isLoading } = useQuery<GetWishListResponse>({
@@ -33,7 +31,6 @@ export default function WishClient() {
 	});
 
 	if (isLoading) return <h1>로딩중....</h1>;
-
 	return (
 		<>
 			{/* 상단 선택메뉴 */}

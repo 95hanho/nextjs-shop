@@ -4,7 +4,9 @@ import { BaseResponse } from "@/types/common";
 
 /* MODEL ----------------------------------------------------------------- */
 
+// 제품 사이즈
 export type ProductSize = "XS" | "S" | "M" | "L" | "XL" | "XXL";
+// 제품 색상 이름(카멜케이스)
 export type ProductColorName =
 	| "BLACK"
 	| "WHITE"
@@ -25,6 +27,9 @@ export type ProductColorName =
 	| "IVORY"
 	| "CHARCOAL"
 	| "DENIM";
+//
+export type ProductSortOption = "POPULAR" | "LATEST" | "PRICE_LOW" | "PRICE_HIGH";
+export type ProductPopularPeriodOption = "DAYS_7" | "DAYS_30" | "YEAR_1" | "ALL";
 
 export type Product = {
 	productId: number;

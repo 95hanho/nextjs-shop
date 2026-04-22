@@ -5,9 +5,11 @@ import { useEffect } from "react";
 
 // 판매자 인증 관련 전역 효과 처리 (로그아웃 처리)
 export function SellerGlobalEffects() {
+	// 1) [store / custom hooks] -------------------------------------------
 	const { logout } = useSellerAuth();
 	const { dialogResult, clearDialogResult } = useGlobalDialogStore();
 
+	// 6) [useEffect] ------------------------------------------------------
 	// 로그아웃 모달 닫힌 후 처리
 	useEffect(() => {
 		if (!dialogResult) return;

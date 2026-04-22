@@ -36,21 +36,16 @@ export default function CartSummaryAside({
 	//
 	buyList,
 }: CartSummaryAsideProps) {
+	// 1) [store / custom hooks] -------------------------------------------
 	const { openDialog } = useGlobalDialogStore();
 	const { push } = useRouter();
 	const { mutate: handleStockHold, isSuccess } = useProductCheckAndHold();
 
-	// =================================================================
-	// React Query
-	// =================================================================
-
-	// =================================================================
-	// React
-	// =================================================================
-
+	// 2) [useState / useRef] ----------------------------------------------
 	// 유의사항 on/off
 	const [noticeOpen, setNoticeOpen] = useState(false);
 
+	// 5) [handlers / useCallback] -----------------------------------------
 	// 상품 구매하기 버튼 - 상품 확인 및 점유 -> 성공 시 결제 페이지로 이동, 실패 시 에러 메시지 노출
 	const handlePurchaseClick = () => {
 		if (buyList.length === 0) {
@@ -63,10 +58,7 @@ export default function CartSummaryAside({
 		handleStockHold({ buyList, returnUrl: "/mypage/cart" });
 	};
 
-	// =================================================================
-	// useEffect, useMemo
-	// =================================================================
-
+	// 6) [useEffect] ------------------------------------------------------
 	// 상품 점유 성공 시 결제 페이지로 이동
 	useEffect(() => {
 		if (!isSuccess) return;

@@ -1,25 +1,23 @@
 import { Menu } from "@/types/main";
 import Link from "next/link";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import styles from "./Nav.module.scss";
 import clsx from "clsx";
 
 export const Nav = ({ menuList }: { menuList: Menu[] }) => {
+	// 2) [useState / useRef] ----------------------------------------------
+	const [activeGender, setActiveGender] = useState<string>("M");
+	const [showMenu, setShowMenu] = useState<boolean>(false);
+
+	// 4) [derived values / useMemo] ---------------------------------------
 	const maleMenuList = menuList.filter((menu) => menu.gender === "M");
 	const femaleMenuList = menuList.filter((menu) => menu.gender === "F");
-
-	const [activeGender, setActiveGender] = useState<string>("F");
 	const showMenuList = useMemo(() => (activeGender === "M" ? maleMenuList : femaleMenuList), [activeGender, maleMenuList, femaleMenuList]);
 
-	// menu-wrap
-	const [showMenu, setShowMenu] = useState<boolean>(false);
+	// 5) [handlers / useCallback] -----------------------------------------
 	const clickMenuLink = () => {
 		setShowMenu(false);
 	};
-
-	useEffect(() => {
-		// 클라이언트에서만 실행되는 코드
-	}, []);
 
 	return (
 		<nav id="nav" className="relative" onMouseLeave={() => setShowMenu(false)}>

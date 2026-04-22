@@ -62,6 +62,7 @@ export const FormInput = forwardRef(<T extends string>(props: FormInputProps<T>,
 		unit,
 	} = props;
 
+	// 4) [derived values / useMemo] ---------------------------------------
 	let alarmStatus,
 		alarmMessage = null;
 	if (alarm && name === alarm.name) {

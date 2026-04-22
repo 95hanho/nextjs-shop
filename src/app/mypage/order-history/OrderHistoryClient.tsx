@@ -19,15 +19,30 @@ import Link from "next/link";
 import { useGlobalDialogStore } from "@/store/globalDialog.store";
 import { getUploadImageUrl } from "@/lib/image";
 
+// 검색어 하이라이트 함수
+const escapeRegExp = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+/** 텍스트에서 키워드를 하이라이트하는 함수 */
+const highlightText = (text: string, keyword: string) => {
+	if (!keyword) return text;
+
+	const escaped = escapeRegExp(keyword);
+	const parts = text.split(new RegExp(`(${escaped})`, "gi"));
+
+	return parts.map((part, index) => (part.toLowerCase() === keyword.toLowerCase() ? <mark key={index}>{part}</mark> : part));
+};
+
 export default function OrderHistoryClient() {
+	// 1) [store / custom hooks] -------------------------------------------
 	const { loginOn } = useAuth();
 	const { openDialog } = useGlobalDialogStore();
 
-	// =================================================================
-	// React Query
-	// =================================================================
+	// 2) [useState / useRef] ----------------------------------------------
+	// 검색 텍스트
+	const [searchText, setSearchText] = useState("");
+	// 검색 입력값
+	const [inputValue, setInputValue] = useState("");
 
-	const [searchText, setSearchText] = useState(""); // 검색 텍스트
+	// 3) [useQuery / useMutation] -----------------------------------------
 	// React Query 쓰면 주문내역 수정(추가/삭제) 후 invalidateQueries(["orderHistory"])로 새로고침 처리 가능.
 	// 주문내역 조회
 	const {
@@ -47,29 +62,7 @@ export default function OrderHistoryClient() {
 		refetchOnWindowFocus: false,
 	});
 
-	// =================================================================
-	// React
-	// =================================================================
-
-	// 검색 입력값
-	const [inputValue, setInputValue] = useState("");
-
-	// 검색어 하이라이트 함수
-	const escapeRegExp = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-	/** 텍스트에서 키워드를 하이라이트하는 함수 */
-	const highlightText = (text: string, keyword: string) => {
-		if (!keyword) return text;
-
-		const escaped = escapeRegExp(keyword);
-		const parts = text.split(new RegExp(`(${escaped})`, "gi"));
-
-		return parts.map((part, index) => (part.toLowerCase() === keyword.toLowerCase() ? <mark key={index}>{part}</mark> : part));
-	};
-
-	// =================================================================
-	// useEffect, useMemo
-	// =================================================================
-
+	// 4) [derived values / useMemo] ---------------------------------------
 	const { myOrderList } = useMemo(() => {
 		if (!orderHistoryData)
 			return {

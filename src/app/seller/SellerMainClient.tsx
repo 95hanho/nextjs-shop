@@ -25,13 +25,17 @@ import SellerProductList from "@/app/seller/SellerProductList";
 import SellerCouponList from "@/app/seller/SellerCouponList";
 
 export default function SellerMainClient() {
+	// 1) [store / custom hooks] -------------------------------------------
 	const { loginOn } = useSellerAuth();
 	const queryClient = useQueryClient();
 
-	// ------------------------------------------------
-	// React Query
-	// ------------------------------------------------
+	// 2) [useState / useRef] ----------------------------------------------
+	// 선택된 쿠폰 목록
+	const [selectedCouponIds, setSelectedCouponIds] = useState<number[]>([]);
+	// 선택된 상품 목록
+	const [selectedProductIds, setSelectedProductIds] = useState<number[]>([]);
 
+	// 3) [useQuery / useMutation] -----------------------------------------
 	// 판매자 쿠폰 리스트 조회
 	const {
 		data: sellerCouponList = [],
@@ -126,18 +130,7 @@ export default function SellerMainClient() {
 		},
 	});
 
-	// ------------------------------------------------
-	// React
-	// ------------------------------------------------
-
-	// 선택된 쿠폰 목록
-	const [selectedCouponIds, setSelectedCouponIds] = useState<number[]>([]);
-	// 선택된 상품 목록
-	const [selectedProductIds, setSelectedProductIds] = useState<number[]>([]);
-
-	// ------------------------------------------------
-	// UI
-	// ------------------------------------------------
+	// 7) UI helper values -------------------------------------------------
 	const couponListProps = {
 		sellerCouponList,
 		allowedSelectedCouponId,

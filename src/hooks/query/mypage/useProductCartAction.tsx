@@ -5,10 +5,12 @@ import { AddCartItem } from "@/types/product";
 
 /** 장바구니 담기 */
 export function useProductCartAction() {
+	// 1) [store / custom hooks] -------------------------------------------
 	const { mutateAsync: checkProductCart } = useProductCartCheck();
 	const { openDialog } = useGlobalDialogStore();
 	const addCartMutation = useAddCart();
 
+	// 5) [handlers / useCallback] -----------------------------------------
 	// 장바구니 담기 버튼
 	const handleAddCart = async (addCartList: AddCartItem[], productId: number) => {
 		if (addCartList.length === 0) {

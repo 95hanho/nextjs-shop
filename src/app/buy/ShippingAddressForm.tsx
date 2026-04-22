@@ -10,6 +10,7 @@ import { FormInput } from "@/components/form/FormInput";
 import { AddressSection } from "@/components/auth/AddressSection";
 
 export default function ShippingAddressForm() {
+	// 1) [store / custom hooks] -----------------------------------
 	const { openModal } = useModalStore();
 	const {
 		shippingMemo,
@@ -27,14 +28,14 @@ export default function ShippingAddressForm() {
 		buyAddressChange,
 	} = useBuy();
 
+	// 2) [useState / useRef] --------------------------------------
+	const [memoDirectInput, setMemoDirectInput] = useState(false); // 직접입력 show
+
+	// 4) [derived values / useMemo] -------------------------------
 	const isModeExisting = shippingAddressMode === "existing";
 	const inputAddress = isModeExisting ? shippingAddress : newAddress;
 
-	// ----------------------------------------------------------------
-	// React
-	// ----------------------------------------------------------------
-
-	const [memoDirectInput, setMemoDirectInput] = useState(false); // 직접입력 show
+	// 5) [handlers / useCallback] ---------------------------------
 	const handleChangeMemo = useCallback(
 		(memo: string, directInput: boolean) => {
 			changeNewAddress(undefined, { memo });
@@ -43,10 +44,7 @@ export default function ShippingAddressForm() {
 		[changeNewAddress],
 	);
 
-	// ----------------------------------------------------------------
-	// useEffect & useMemo
-	// ----------------------------------------------------------------
-
+	// 6) [useEffect] ----------------------------------------------
 	useEffect(() => {
 		setSetAsDefault(false);
 	}, [shippingAddressMode, setSetAsDefault]);

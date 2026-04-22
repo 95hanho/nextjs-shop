@@ -26,6 +26,7 @@ interface NormalButtonProps {
 }
 
 export const NormalButton = ({ title, onClick, bgColor, borderColor, bgHoverColor, bgActiveColor }: NormalButtonProps) => {
+	// 7) UI helper values -------------------------------------------------
 	const btnStyleProps = {
 		bgColor,
 		borderColor,

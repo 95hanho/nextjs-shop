@@ -10,6 +10,7 @@ import Link from "next/link";
 
 /* 회원가입 */
 export default function UserJoinClient() {
+	// 1) [store / custom hooks] -------------------------------------------
 	const {
 		joinSubmit,
 		joinForm,

@@ -17,31 +17,28 @@ interface HeaderProps {
 }
 
 export default function Header({ menuList }: HeaderProps) {
+	// 1) [store / custom hooks] -------------------------------------------
 	const pathname = usePathname();
 	const searchParams = useSearchParams();
 	const { data: user } = useGetUserInfo();
 	const { logout, cartCount, orderCount } = useAuth();
 	const { refresh } = useRouter();
 
+	// 2) [useState / useRef] ----------------------------------------------
 	const headerRef = useRef<HTMLInputElement | null>(null);
 	const [isOpen, set_isOpen] = useState<boolean>(false);
 
-	const menuMouseleave = () => {
-		set_isOpen(false);
-	};
-	useEffect(() => {
-		if (isOpen) {
-			setTimeout(() => {
-				headerRef.current?.addEventListener("mouseleave", menuMouseleave);
-			}, 300);
-		} else headerRef.current?.removeEventListener("mouseleave", menuMouseleave);
-	}, [isOpen]);
+	// 4) [derived values / useMemo] ---------------------------------------
 	// 로그인 href
 	const loginHref =
 		pathname.startsWith("/user") || pathname === "/"
 			? "/user"
 			: `/user?returnUrl=${encodeURIComponent(pathname + `?${searchParams.toString()}`)}`;
 
+	// 5) [handlers / useCallback] -----------------------------------------
+	const menuMouseleave = () => {
+		set_isOpen(false);
+	};
 	// 로그아웃 버튼 클릭
 	const logoutButton = async () => {
 		const needsAuth = isAuthRequiredPath(pathname);
@@ -59,6 +56,14 @@ export default function Header({ menuList }: HeaderProps) {
 		refresh();
 	};
 
+	// 6) [useEffect] ------------------------------------------------------
+	useEffect(() => {
+		if (isOpen) {
+			setTimeout(() => {
+				headerRef.current?.addEventListener("mouseleave", menuMouseleave);
+			}, 300);
+		} else headerRef.current?.removeEventListener("mouseleave", menuMouseleave);
+	}, [isOpen]);
 	useEffect(() => {
 		// console.log("페이지 바껴서 토큰체크 실행됨");
 		// console.log("경로체크", pathname, searchParams.toString());

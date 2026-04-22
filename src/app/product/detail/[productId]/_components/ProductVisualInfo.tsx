@@ -42,6 +42,7 @@ interface ProductVisualInfoProps {
 
 // 상품 사진 및 가격배송 정보
 export default function ProductVisualInfo({ productDetail, reviewCount, reviewRate, initProductOptionList }: ProductVisualInfoProps) {
+	// 1) [store / custom hooks] -------------------------------------------
 	const { openDialog } = useGlobalDialogStore();
 	const { loginOn, user, isAuthLoading } = useAuth();
 	const { handleAddCart, isSuccess: isAddCartSuccess, reset } = useProductCartAction();
@@ -52,10 +53,27 @@ export default function ProductVisualInfo({ productDetail, reviewCount, reviewRa
 	}>();
 	const productIdNum = Number(params.productId);
 
-	// =================================================================
-	// React Query
-	// =================================================================
+	// 2) [useState / useRef] ----------------------------------------------
+	// 나의 가격 상세 보기 토글
+	const [showMyPriceDetail, setShowMyPriceDetail] = useState(false);
+	// 적용된 쿠폰
+	const [appliedProductCoupon, setAppliedProductCoupon] = useState<{
+		unStackable: ProductCouponWithDiscount | null;
+		stackable: ProductCouponWithDiscount[];
+	}>({
+		unStackable: null,
+		stackable: [],
+	});
+	// 쿠폰 자동 적용 완료 여부
+	const [isInitialCouponApplied, setIsInitialCouponApplied] = useState(false);
+	// 적립금 사용 여부
+	const [mileageUsed, setMileageUsed] = useState(true);
+	// 상품 선택리스트
+	const [productSelectList, setProductSelectList] = useState<(ProductOption & { quantity: number })[]>([]);
+	// 장바구니 담기 팝업 오픈 키
+	const [addCartPopupKey, setAddCartPopupKey] = useState(0);
 
+	// 3) [useQuery / useMutation] -----------------------------------------
 	// 제품 옵션 리스트 (장바구니 담기 후 재고 수량 반영)
 	const { data: productOptionList = initProductOptionList } = useQuery<GetCartOtherOptionListResponse, Error, ProductOption[]>({
 		queryKey: ["productOptions", productIdNum],
@@ -83,50 +101,7 @@ export default function ProductVisualInfo({ productDetail, reviewCount, reviewRa
 		},
 	});
 
-	// =================================================================
-	// React
-	// =================================================================
-
-	// 나의 가격 상세 보기 토글
-	const [showMyPriceDetail, setShowMyPriceDetail] = useState(false);
-	// 적용된 쿠폰
-	const [appliedProductCoupon, setAppliedProductCoupon] = useState<{
-		unStackable: ProductCouponWithDiscount | null;
-		stackable: ProductCouponWithDiscount[];
-	}>({
-		unStackable: null,
-		stackable: [],
-	});
-	// 쿠폰 자동 적용 완료 여부
-	const [isInitialCouponApplied, setIsInitialCouponApplied] = useState(false);
-	// 적립금 사용 여부
-	const [mileageUsed, setMileageUsed] = useState(true);
-	// 제품 옵션 선택
-	const optionSelectHandler = (optionIdx: number) => {
-		// console.log("선택된 옵션 id index", optionIdx, productOptionList[optionIdx - 1]);
-		const productOption = productOptionList[optionIdx - 1];
-		if (productOption) {
-			setProductSelectList((prev) => {
-				const newList = [...prev];
-				const existingIdx = newList.findIndex((option) => option.productOptionId === productOption.productOptionId);
-				if (existingIdx === -1 && productOption.stock > 0) {
-					newList.push({ ...productOption, quantity: 1 });
-				} else if (existingIdx !== -1 && newList[existingIdx].quantity < productOption.stock) {
-					newList[existingIdx] = { ...newList[existingIdx], quantity: newList[existingIdx].quantity + 1 };
-				}
-				return newList;
-			});
-		}
-	};
-	// 상품 선택리스트
-	const [productSelectList, setProductSelectList] = useState<(ProductOption & { quantity: number })[]>([]);
-	// 장바구니 담기 팝업 오픈 키
-	const [addCartPopupKey, setAddCartPopupKey] = useState(0);
-
-	// =================================================================
-	// useEffect, useMemo
-	// =================================================================
-
+	// 4) [derived values / useMemo] ---------------------------------------
 	// 나의 가격 상세 정보 계산
 	const { totalPrice, useMileage, appliedProductCouponIds } = useMemo(() => {
 		let totalPrice = productDetail.finalPrice;
@@ -188,6 +163,27 @@ export default function ProductVisualInfo({ productDetail, reviewCount, reviewRa
 		}
 		return { productCoupon, cartCoupon };
 	}, [availableCouponResponse]);
+
+	// 5) [handlers / useCallback] -----------------------------------------
+	// 제품 옵션 선택
+	const optionSelectHandler = (optionIdx: number) => {
+		// console.log("선택된 옵션 id index", optionIdx, productOptionList[optionIdx - 1]);
+		const productOption = productOptionList[optionIdx - 1];
+		if (productOption) {
+			setProductSelectList((prev) => {
+				const newList = [...prev];
+				const existingIdx = newList.findIndex((option) => option.productOptionId === productOption.productOptionId);
+				if (existingIdx === -1 && productOption.stock > 0) {
+					newList.push({ ...productOption, quantity: 1 });
+				} else if (existingIdx !== -1 && newList[existingIdx].quantity < productOption.stock) {
+					newList[existingIdx] = { ...newList[existingIdx], quantity: newList[existingIdx].quantity + 1 };
+				}
+				return newList;
+			});
+		}
+	};
+
+	// 6) [useEffect] ------------------------------------------------------
 	// 쿠폰 데이터 로드 시 최대 할인 쿠폰 자동 적용
 	useEffect(() => {
 		if (!availableCouponResponse || isInitialCouponApplied) {
@@ -242,25 +238,18 @@ export default function ProductVisualInfo({ productDetail, reviewCount, reviewRa
 			setShowMyPriceDetail(true);
 		}
 	}, [isAuthLoading]);
-
-	// =================================================================
-	// UI
-	// =================================================================
-
-	const myPriceCheckboxCommonProps = {
-		originPrice: productDetail.originPrice,
-		finalPrice: productDetail.finalPrice,
-	};
-
-	// =================================================================
 	// TEST
-	// =================================================================
-
 	// 제품 옵션 선택 시 수량 초기화
 	useEffect(() => {
 		if (productSelectList.length === 0) return;
 		console.log({ productSelectList });
 	}, [productSelectList]);
+
+	// 7) UI helper values -------------------------------------------------
+	const myPriceCheckboxCommonProps = {
+		originPrice: productDetail.originPrice,
+		finalPrice: productDetail.finalPrice,
+	};
 
 	return (
 		<section className={styles.productVisualInfo}>

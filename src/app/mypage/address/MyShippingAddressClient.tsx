@@ -16,14 +16,17 @@ import styles from "./MyShippingAddress.module.scss";
 import { ShippingAddressList } from "@/components/address/ShippingAddressList";
 
 export default function MyShippingAddressClient() {
+	// 1) [store / custom hooks] -----------------------------------
 	const { loginOn } = useAuth();
 	const queryClient = useQueryClient();
 	const { openModal } = useModalStore();
 
-	// ----------------------------------------------------------------------
-	// React Query
-	// ----------------------------------------------------------------------
+	// 2) [useState / useRef] --------------------------------------
+	const [userAddressList, setUserAddressList] = useState<UserAddressListItem[] | []>([]);
+	// 배송지 리스트 ref (추후에 주소 추가/수정 후 해당 주소로 스크롤 이동할 때 사용)
+	const addressListRef = useRef<HTMLUListElement | null>(null);
 
+	// 3) [useQuery / useMutation] ---------------------------------
 	// 유저 배송지 조회
 	const { data: userAddressData, isLoading } = useQuery<GetUserAddressListResponse, Error, GetUserAddressListResponse>({
 		queryKey: ["userAddressList"],
@@ -70,18 +73,7 @@ export default function MyShippingAddressClient() {
 		},
 	});
 
-	// ----------------------------------------------------------------------
-	// React
-	// ----------------------------------------------------------------------
-
-	const [userAddressList, setUserAddressList] = useState<UserAddressListItem[] | []>([]);
-	// 배송지 리스트 ref (추후에 주소 추가/수정 후 해당 주소로 스크롤 이동할 때 사용)
-	const addressListRef = useRef<HTMLUListElement | null>(null);
-
-	// ----------------------------------------------------------------------
-	// useEffect
-	// ----------------------------------------------------------------------
-
+	// 6) [useEffect] ----------------------------------------------
 	useEffect(() => {
 		if (!isLoading && userAddressData) {
 			setUserAddressList([...userAddressData.userAddressList]);

@@ -25,13 +25,16 @@ type ItemSellerMap = {
 };
 
 export default function OrderDetailClient({ orderId }: { orderId: string }) {
+	// 1) [store / custom hooks] -------------------------------------------
 	const { loginOn } = useAuth();
 	const { handleAddCart, isSuccess: isAddCartSuccess, reset } = useProductCartAction();
 
-	// =================================================================
-	// React Query
-	// =================================================================
+	// 2) [useState / useRef] ----------------------------------------------
+	const [openCouponInfo, setOpenCouponInfo] = useState<number | null>(null); // 열린 쿠폰 정보의 orderItemId
+	const [addCartCurProductId, setAddCartCurProductId] = useState<number>(0); // 장바구니 담기 트리거 상품 ID
+	const [addCartTriggerKey, setAddCartTriggerKey] = useState<number>(0); // 장바구니 담기 트리거 키
 
+	// 3) [useQuery / useMutation] -----------------------------------------
 	const { data: orderDetailData } = useQuery<MyOrderDetailResponse>({
 		queryKey: ["orderDetail", Number(orderId)],
 		queryFn: async () => getNormal(getApiUrl(API_URL.MY_ORDER_DETAIL), { orderId: Number(orderId) }),
@@ -40,18 +43,7 @@ export default function OrderDetailClient({ orderId }: { orderId: string }) {
 		// retry: false,
 	});
 
-	// =================================================================
-	// React
-	// =================================================================
-
-	const [openCouponInfo, setOpenCouponInfo] = useState<number | null>(null); // 열린 쿠폰 정보의 orderItemId
-	const [addCartCurProductId, setAddCartCurProductId] = useState<number>(0); // 장바구니 담기 트리거 상품 ID
-	const [addCartTriggerKey, setAddCartTriggerKey] = useState<number>(0); // 장바구니 담기 트리거 키
-
-	// =================================================================
-	// useEffect, useMemo
-	// =================================================================
-
+	// 4) [derived values / useMemo] ---------------------------------------
 	const { myOrderDetail, originTotalPrice, selfDiscountTotal, couponDiscountTotal, itemSellerMap } = useMemo(() => {
 		if (!orderDetailData)
 			return {
@@ -89,6 +81,8 @@ export default function OrderDetailClient({ orderId }: { orderId: string }) {
 		console.log("result", result);
 		return result;
 	}, [orderDetailData]);
+
+	// 6) [useEffect] ------------------------------------------------------
 	// 장바구니 담기 성공 시 트리거 키 업데이트
 	useEffect(() => {
 		if (!isAddCartSuccess) return;

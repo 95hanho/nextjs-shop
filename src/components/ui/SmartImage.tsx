@@ -28,6 +28,7 @@ type FixedVariant = CommonProps & {
 type SmartImageProps = FillVariant | FixedVariant;
 
 export const SmartImage = ({ className = "", src = "", alt, sizes, priority, quality, objectFit = "cover", style, ...rest }: SmartImageProps) => {
+	// 4) [derived values / useMemo] ---------------------------------------
 	const finalSrc = src || BASIC_NO_IMAGE;
 	const finalAlt = alt || "사진없음";
 

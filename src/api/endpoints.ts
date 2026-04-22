@@ -3,6 +3,8 @@ const API_URL = {
 	// 관리자 ----------------------------------
 	/** 관리자 정보가져오기, 로그인 */
 	ADMIN: "/admin",
+	/** 관리자 로그아웃 */
+	ADMIN_LOGOUT: "/admin/logout",
 	/** spring:로그인 토큰 저장 */
 	ADMIN_TOKEN: "/admin/token",
 	/** 로그인 토큰 수정(재저장) */

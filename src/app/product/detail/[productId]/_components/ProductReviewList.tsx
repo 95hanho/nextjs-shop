@@ -20,6 +20,7 @@ interface ProductReviewListProps {
 }
 
 export default function ProductReviewList({ productReviewList = [] }: ProductReviewListProps) {
+	// 1) [store / custom hooks] -------------------------------------------
 	const { user } = useAuth();
 	const params = useParams<{
 		productId: string;
@@ -28,10 +29,14 @@ export default function ProductReviewList({ productReviewList = [] }: ProductRev
 	const { openDialog } = useGlobalDialogStore();
 	const queryClient = useQueryClient();
 
-	// ----------------------------------------------------------------
-	// React Query
-	// ----------------------------------------------------------------
+	// 2) [useState / useRef] ----------------------------------------------
+	// review 페이징 객체
+	const [reviewPage, setReviewPage] = useState({
+		page: 1,
+		totalPage: 1,
+	});
 
+	// 3) [useQuery / useMutation] -----------------------------------------
 	const { mutateAsync: deleteReview } = useMutation({
 		mutationFn: async (reviewId: number) =>
 			deleteNormal(getApiUrl(API_URL.PRODUCT_DETAIL_REVIEW_DELETE), {
@@ -43,16 +48,7 @@ export default function ProductReviewList({ productReviewList = [] }: ProductRev
 		},
 	});
 
-	// ----------------------------------------------------------------
-	// React
-	// ----------------------------------------------------------------
-
-	// review 페이징 객체
-	const [reviewPage, setReviewPage] = useState({
-		page: 1,
-		totalPage: 1,
-	});
-
+	// 6) [useEffect] ------------------------------------------------------
 	useEffect(() => {
 		if (productReviewList.length > 0) {
 			const totalPage = Math.ceil(productReviewList.length / 10);
@@ -85,7 +81,7 @@ export default function ProductReviewList({ productReviewList = [] }: ProductRev
 									{review.reviewImages.length > 0 && (
 										<button className={styles.reviewImages}>
 											<SmartImage
-												src={getUploadImageUrl(review.reviewImages[0].storeName)}
+												src={getUploadImageUrl(review.reviewImages[0].filePath)}
 												alt={review.reviewImages[0].fileName}
 												width={50}
 												height={50}

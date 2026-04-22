@@ -1,4 +1,4 @@
-import { adminAuthContext } from "@/context/authContext";
+import { adminAuthContext } from "@/components/ui/context/authContext";
 import { useContext } from "react";
 
 export function useAdminAuth() {

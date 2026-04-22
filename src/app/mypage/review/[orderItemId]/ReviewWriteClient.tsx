@@ -42,15 +42,22 @@ type ImageItem = {
 };
 
 export default function ReviewWriteClient() {
+	// 1) [store / custom hooks] -------------------------------------------
 	const params = useParams();
 	const orderItemId = Number(params.orderItemId);
 	const { openDialog } = useGlobalDialogStore();
 	const router = useRouter();
 
-	// ----------------------------------------------------------------
-	// React Query
-	// ----------------------------------------------------------------
+	// 2) [useState / useRef] ----------------------------------------------
+	const [reviewForm, setReviewForm] = useState({
+		rating: 0,
+		content: "",
+	});
+	const [prevReviewList, setPrevReviewList] = useState<PrevImageItem[]>([]);
+	const [newReviewFiles, setNewReviewFiles] = useState<ImageItem[]>([]);
+	const [deleteImageIds, setDeleteImageIds] = useState<number[]>([]);
 
+	// 3) [useQuery / useMutation] -----------------------------------------
 	// 리뷰 주문정보 조회
 	const {
 		data: { reviewOrderItem, prevReview } = {
@@ -108,18 +115,7 @@ export default function ReviewWriteClient() {
 		},
 	});
 
-	// ----------------------------------------------------------------
-	// React
-	// ----------------------------------------------------------------
-
-	const [reviewForm, setReviewForm] = useState({
-		rating: 0,
-		content: "",
-	});
-	const [prevReviewList, setPrevReviewList] = useState<PrevImageItem[]>([]);
-	const [newReviewFiles, setNewReviewFiles] = useState<ImageItem[]>([]);
-	const [deleteImageIds, setDeleteImageIds] = useState<number[]>([]);
-
+	// 5) [handlers / useCallback] -----------------------------------------
 	// 리뷰 작성/수정 제출
 	const handleReviewSubmit = () => {
 		if (!reviewForm.rating) {
@@ -204,10 +200,7 @@ export default function ReviewWriteClient() {
 		}
 	};
 
-	// ----------------------------------------------------------------
-	// useEffect
-	// ----------------------------------------------------------------
-
+	// 6) [useEffect] ------------------------------------------------------
 	useEffect(() => {
 		if (reviewOrderItem) {
 			console.log("reviewOrderItem", reviewOrderItem);

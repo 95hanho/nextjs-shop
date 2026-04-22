@@ -20,8 +20,10 @@ export const ConfirmModal = ({
 	reverse,
 	handleAfterOk,
 }: ConfirmModalProps) => {
+	// 1) [store / custom hooks] -------------------------------------------
 	const { resolveDialog } = useGlobalDialogStore();
 
+	// 7) UI helper values -------------------------------------------------
 	const confirmModalProps = {
 		cancelText,
 		okText,

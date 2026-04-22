@@ -30,6 +30,8 @@ type CartCouponSelectorProps =
 export default function CartCouponSelector(props: CartCouponSelectorProps) {
 	const { finalXQuantity, type } = props;
 
+	// 2) [useState / useRef] --------------------------------------
+	// 3) [useQuery / useMutation] ---------------------------------
 	// 쿠폰 다운로드
 	const couponDownload = useMutation({
 		mutationFn: (couponId: number) => postJson<BaseResponse & { userCouponId: number }>(getApiUrl(API_URL.PRODUCT_COUPON_DOWNLOAD), { couponId }),
@@ -63,6 +65,7 @@ export default function CartCouponSelector(props: CartCouponSelectorProps) {
 	if (type === "COUPON") {
 		const { coupon, handleCheckAppliedProductCoupon, couponChecked, otherUsed, productOptionId } = props;
 
+		// 4) [derived values / useMemo] -------------------------------
 		const isDiscountApplied = calculateDiscount(finalXQuantity, coupon);
 		const disabled = !isDiscountApplied || otherUsed; // 할인 적용 불가 or 다른 쿠폰 사용중인 경우
 

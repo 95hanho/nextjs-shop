@@ -16,13 +16,11 @@ interface ProductSetClientProps {
 }
 
 export default function ProductUpdateClient({ productId }: ProductSetClientProps) {
+	// 1) [store / custom hooks] -------------------------------------------
 	const router = useRouter();
 	const { openDialog } = useGlobalDialogStore();
 
-	// ------------------------------------------------
-	// React Query
-	// ------------------------------------------------
-
+	// 3) [useQuery / useMutation] -----------------------------------------
 	// 판매자 제품 상세보기 조회
 	const {
 		data: productDetail,
@@ -41,14 +39,7 @@ export default function ProductUpdateClient({ productId }: ProductSetClientProps
 		retry: 1,
 	});
 
-	// ------------------------------------------------
-	// React
-	// ------------------------------------------------
-
-	// ------------------------------------------------
-	// useEffect
-	// ------------------------------------------------
-
+	// 6) [useEffect] ------------------------------------------------------
 	// 제품수정 폼 초기화
 	useEffect(() => {
 		if (error) {
@@ -63,7 +54,7 @@ export default function ProductUpdateClient({ productId }: ProductSetClientProps
 			// NO_PERMISSION_OR_PRODUCT_NOT_FOUND
 		}
 	}, [error, openDialog, router]);
-
+	//
 	useEffect(() => {
 		if (isFetching) {
 			console.log("제품 상세정보 조회 중...");

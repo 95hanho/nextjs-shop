@@ -45,30 +45,26 @@ export const ImageDragInputArea = <T,>({
 	newFileList,
 	changeNewFileList,
 }: ImageDragInputAreaProps<T>) => {
+	// 1) [store / custom hooks] -------------------------------------------
 	const { openDialog } = useGlobalDialogStore();
 
-	// ------------------------------------------------
-	// React
-	// ------------------------------------------------
-
+	// 2) [useState / useRef] ----------------------------------------------
 	const fileInputRef = useRef<HTMLInputElement | null>(null);
 	const dragCountRef = useRef(0);
 
-	// ------------------------------------------------
 	const [draggingItemKey, setDraggingItemKey] = useState<string | null>(null);
 	const [dragPreview, setDragPreview] = useState<{
 		src: string;
 		x: number;
 		y: number;
 	} | null>(null);
-
 	//
 	const [insertIndex, setInsertIndex] = useState<number | null>(null);
 	const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
-
 	// 드래그 앤 드롭 상태
 	const [isDragging, setIsDragging] = useState(false);
 
+	// 5) [handlers / useCallback] -----------------------------------------
 	/** 파일 타입 체크 */
 	const validateImageFiles = (files: File[]) => {
 		return files.filter((file) => {
@@ -313,10 +309,7 @@ export const ImageDragInputArea = <T,>({
 		if (fileId) setDeleteImageIds?.((prev) => prev.filter((id) => id !== fileId));
 	};
 
-	// ------------------------------------------------
-	// useEffect, useMemo
-	// ------------------------------------------------
-
+	// 6) [useEffect] ------------------------------------------------------
 	useEffect(() => {
 		if (!initImageList || initImageList.length === 0) return;
 		console.log(`초기 ${title} 세팅`, { initImageList });

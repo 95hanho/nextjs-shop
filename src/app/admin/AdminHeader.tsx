@@ -9,21 +9,26 @@ import { useGetAdminInfo } from "@/hooks/query/admin/useGetAdminInfo";
 import { useAdminAuth } from "@/hooks/useAdminAuth";
 
 export default function AdminHeader() {
+	// 1) [store / custom hooks] -----------------------------------
 	const { data: admin } = useGetAdminInfo();
-	const headerRef = useRef<HTMLInputElement | null>(null);
-	const [isOpen, set_isOpen] = useState<boolean>(false);
 	const { logout } = useAdminAuth();
 
-	const menuMouseleave = () => {
+	// 2) [useState / useRef] --------------------------------------
+	const headerRef = useRef<HTMLElement | null>(null);
+	const [isOpen, set_isOpen] = useState<boolean>(false);
+
+	// 5) [handlers / useCallback] ---------------------------------
+	const handleMenuMouseleave = () => {
 		set_isOpen(false);
 	};
 
+	// 6) [useEffect] ----------------------------------------------
 	useEffect(() => {
 		if (isOpen) {
 			setTimeout(() => {
-				headerRef.current?.addEventListener("mouseleave", menuMouseleave);
+				headerRef.current?.addEventListener("mouseleave", handleMenuMouseleave);
 			}, 300);
-		} else headerRef.current?.removeEventListener("mouseleave", menuMouseleave);
+		} else headerRef.current?.removeEventListener("mouseleave", handleMenuMouseleave);
 	}, [isOpen]);
 
 	return (

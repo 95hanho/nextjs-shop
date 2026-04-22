@@ -33,12 +33,10 @@ export type ProductImageSetHandle = {
 };
 
 export const ProductImageSet = forwardRef<ProductImageSetHandle, ProductImageSetProps>(({ prevImageList, imageUpdatedAt }, ref) => {
+	// 1) [store / custom hooks] -------------------------------------------
 	const { openDialog } = useGlobalDialogStore();
 
-	// ------------------------------------------------
-	// React
-	// ------------------------------------------------
-
+	// 2) [useState / useRef] ----------------------------------------------
 	const [prevThumbnailList, setPrevThumbnailList] = useState<PrevImageItem[]>([]);
 	const [prevDetailList, setPrevDetailList] = useState<PrevImageItem[]>([]);
 
@@ -47,6 +45,7 @@ export const ProductImageSet = forwardRef<ProductImageSetHandle, ProductImageSet
 
 	const [deleteImageIds, setDeleteImageIds] = useState<number[]>([]);
 
+	// 5) [handlers / useCallback] -----------------------------------------
 	// 저장하기
 	useImperativeHandle(ref, () => ({
 		getSubmitData() {
@@ -99,15 +98,11 @@ export const ProductImageSet = forwardRef<ProductImageSetHandle, ProductImageSet
 		},
 	}));
 
-	// ------------------------------------------------
-	// useEffect, useMemo
-	// ------------------------------------------------
-
+	// 6) [useEffect] ------------------------------------------------------
 	useEffect(() => {
 		if (!prevImageList) return;
 		// console.log({ prevImageList });
 	}, [prevImageList]);
-
 	useEffect(() => {
 		if (!prevImageList) return;
 		console.log("초기 이미지 리스트 세팅", { prevImageList: [...prevImageList] });

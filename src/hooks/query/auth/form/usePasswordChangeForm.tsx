@@ -33,11 +33,19 @@ interface usePasswordChangeFormProps {
 }
 
 export function usePasswordChangeForm({ mode }: usePasswordChangeFormProps) {
+	// 1) [store / custom hooks] -------------------------------------------
 	const router = useRouter();
 	const { openDialog } = useGlobalDialogStore();
 
-	/* --------- */
+	// 2) [useState / useRef] ----------------------------------------------
+	// 비번변경 폼 데이터
+	const [pwdChangeForm, setPwdChangeForm] = useState<PasswordChangeForm>(initPasswordChangeForm);
+	// 비번변경 알람
+	const [pwdChangeAlarm, setPwdChangeAlarm] = useState<PasswordChangeAlarm | null>(null);
+	// 비번변경 input들 HTMLInputElement
+	const pwdChangeFormInputRefs = useRef<Partial<PasswordChangeFormInputRefs>>({});
 
+	// 3) [useQuery / useMutation] -----------------------------------------
 	// 비밀번호 변경
 	const handlePasswordChange = useMutation({
 		mutationFn: () =>
@@ -79,40 +87,7 @@ export function usePasswordChangeForm({ mode }: usePasswordChangeFormProps) {
 		},
 	});
 
-	/* --------- */
-	// 페이지 오픈 시 토큰 확인
-	useEffect(() => {
-		if (!mode || !router) return;
-		getNormal(getApiUrl(mode === "LOGGED_IN" ? API_URL.AUTH_TOKEN_CHECK : API_URL.AUTH_TOKEN_CHECK_PASSWORD))
-			.then((res) => {
-				console.log(res);
-			})
-			.catch((err) => {
-				console.log(err);
-				if (err.message === "REFRESH_UNAUTHORIZED") {
-					openDialog("ALERT", {
-						content: "로그인이 만료되었습니다. 다시 로그인 해주세요.",
-					});
-					router.replace("/user?next=/mypage/info");
-				}
-				if (err.message === "PWDRESET_UNAUTHORIZED") {
-					openDialog("ALERT", {
-						content: `인증이 만료되었습니다.${mode === "RESET" ? "다시 비밀번호 찾기 인증을 진행해주세요." : ""}`,
-					});
-					if (mode === "LOGGED_IN") router.replace("/mypage/info");
-					if (mode === "RESET") router.replace("/user/find/password");
-				}
-			});
-	}, [mode, router, openDialog]);
-
-	/* --------- */
-
-	// 비번변경 폼 데이터
-	const [pwdChangeForm, setPwdChangeForm] = useState<PasswordChangeForm>(initPasswordChangeForm);
-	// 비번변경 알람
-	const [pwdChangeAlarm, setPwdChangeAlarm] = useState<PasswordChangeAlarm | null>(null);
-	// 비번변경 input들 HTMLInputElement
-	const pwdChangeFormInputRefs = useRef<Partial<PasswordChangeFormInputRefs>>({});
+	// 5) [handlers / useCallback] -----------------------------------------
 	// 비번변경 폼 변경
 	const changePwdChangeForm = (e: ChangeEvent) => {
 		const { name, value } = e.target as {
@@ -200,6 +175,32 @@ export function usePasswordChangeForm({ mode }: usePasswordChangeFormProps) {
 		console.log("비밀번호변경 완료");
 		handlePasswordChange.mutate();
 	};
+
+	// 6) [useEffect] ------------------------------------------------------
+	// 페이지 오픈 시 토큰 확인
+	useEffect(() => {
+		if (!mode || !router) return;
+		getNormal(getApiUrl(mode === "LOGGED_IN" ? API_URL.AUTH_TOKEN_CHECK : API_URL.AUTH_TOKEN_CHECK_PASSWORD))
+			.then((res) => {
+				console.log(res);
+			})
+			.catch((err) => {
+				console.log(err);
+				if (err.message === "REFRESH_UNAUTHORIZED") {
+					openDialog("ALERT", {
+						content: "로그인이 만료되었습니다. 다시 로그인 해주세요.",
+					});
+					router.replace("/user?next=/mypage/info");
+				}
+				if (err.message === "PWDRESET_UNAUTHORIZED") {
+					openDialog("ALERT", {
+						content: `인증이 만료되었습니다.${mode === "RESET" ? "다시 비밀번호 찾기 인증을 진행해주세요." : ""}`,
+					});
+					if (mode === "LOGGED_IN") router.replace("/mypage/info");
+					if (mode === "RESET") router.replace("/user/find/password");
+				}
+			});
+	}, [mode, router, openDialog]);
 
 	return {
 		pwdChangeSubmit,

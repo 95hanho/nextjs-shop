@@ -14,12 +14,17 @@ import moment from "moment";
 import { getUploadImageUrl } from "@/lib/image";
 
 export default function SellerReviewList() {
+	// 1) [store / custom hooks] -------------------------------------------
 	const { loginOn } = useSellerAuth();
 
-	// ------------------------------------------------
-	// React Query
-	// ------------------------------------------------
+	// 2) [useState / useRef] ----------------------------------------------
+	// review 페이징 객체
+	const [reviewPage, setReviewPage] = useState({
+		page: 1,
+		totalPage: 1,
+	});
 
+	// 3) [useQuery / useMutation] -----------------------------------------
 	// 판매자 리뷰 조회
 	const {
 		data: { sellerReviewList } = { sellerReviewList: [] },
@@ -36,20 +41,7 @@ export default function SellerReviewList() {
 		refetchOnWindowFocus: false,
 	});
 
-	// ----------------------------------------------------------------
-	// React
-	// ----------------------------------------------------------------
-
-	// review 페이징 객체
-	const [reviewPage, setReviewPage] = useState({
-		page: 1,
-		totalPage: 1,
-	});
-
-	// ----------------------------------------------------------------
-	// useEffect
-	// ----------------------------------------------------------------
-
+	// 6) [useEffect] ------------------------------------------------------
 	useEffect(() => {
 		if (sellerReviewList.length > 0) {
 			const totalPage = Math.ceil(sellerReviewList.length / 10);
@@ -85,7 +77,7 @@ export default function SellerReviewList() {
 											{!!review.reviewImageId && (
 												<button className={styles.reviewImages}>
 													<SmartImage
-														src={getUploadImageUrl(review.storeName)}
+														src={getUploadImageUrl(review.filePath)}
 														alt={review.fileName}
 														width={50}
 														height={50}

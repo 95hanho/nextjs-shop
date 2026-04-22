@@ -90,11 +90,18 @@ interface ProductSetFormProps {
 }
 
 export const ProductSetForm = ({ productId, prevProductSetData }: ProductSetFormProps) => {
-	// ------------------------------------------------
-	// React Query
-	// ------------------------------------------------
+	// 1) [store / custom hooks] -------------------------------------------
 	const { sellerProductSubmit } = useSellerProductSubmit();
 
+	// 2) [useState / useRef] ----------------------------------------------
+	// 제품수정 폼
+	const [productSetForm, setProductSetForm] = useState<ProductSetForm>(initProductSetForm);
+	const [productSetAlarm, setProductSetAlarm] = useState<ProductSetAlarm | null>(null);
+	const productSetInputRefs = useRef<Partial<ProductSetInputRefs>>({});
+	//
+	const productImageSetRef = useRef<ProductImageSetHandle | null>(null);
+
+	// 3) [useQuery / useMutation] -----------------------------------------
 	// 메뉴 카테고리 조회 getNormal<MenuResponse>(getBackendUrl(API_URL.MAIN_MENU));
 	const { data: menuList } = useQuery<MenuResponse, Error, Menu[]>({
 		queryKey: ["mainMenu"],
@@ -110,17 +117,14 @@ export const ProductSetForm = ({ productId, prevProductSetData }: ProductSetForm
 			}),
 	});
 
-	// ------------------------------------------------
-	// React
-	// ------------------------------------------------
+	// 4) [derived values / useMemo] ---------------------------------------
+	const { subMenuList } = useMemo(() => {
+		return {
+			subMenuList: menuList?.find((v) => v.menuTopId === productSetForm.menuTopId)?.menuSubList || [],
+		};
+	}, [menuList, productSetForm.menuTopId]);
 
-	// 제품수정 폼
-	const [productSetForm, setProductSetForm] = useState<ProductSetForm>(initProductSetForm);
-	const [productSetAlarm, setProductSetAlarm] = useState<ProductSetAlarm | null>(null);
-	const productSetInputRefs = useRef<Partial<ProductSetInputRefs>>({});
-	//
-	const productImageSetRef = useRef<ProductImageSetHandle | null>(null);
-
+	// 5) [handlers / useCallback] -----------------------------------------
 	// changeForm
 	const changeProductSetForm = (e: ChangeEvent) => {
 		const { name, value } = e.target;
@@ -229,16 +233,7 @@ export const ProductSetForm = ({ productId, prevProductSetData }: ProductSetForm
 		}
 	};
 
-	// ------------------------------------------------
-	// useEffect, useMemo
-	// ------------------------------------------------
-
-	const { subMenuList } = useMemo(() => {
-		return {
-			subMenuList: menuList?.find((v) => v.menuTopId === productSetForm.menuTopId)?.menuSubList || [],
-		};
-	}, [menuList, productSetForm.menuTopId]);
-
+	// 6) [useEffect] ------------------------------------------------------
 	useEffect(() => {
 		if (prevProductSetData) {
 			console.log("제품 상세정보로 폼 초기화");

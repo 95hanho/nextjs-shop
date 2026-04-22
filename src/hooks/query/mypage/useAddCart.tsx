@@ -7,6 +7,7 @@ import { AddCartRequest } from "@/types/product";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export function useAddCart() {
+	// 1) [store / custom hooks] -------------------------------------------
 	const queryClient = useQueryClient();
 	const { openDialog } = useGlobalDialogStore();
 

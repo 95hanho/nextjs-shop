@@ -61,15 +61,14 @@ const joinFormRegexFailMent: { [key: string]: string } = {
 };
 
 export function useSellerJoinForm() {
+	// 1) [store / custom hooks] -------------------------------------------
 	const router = useRouter();
 
+	// 2) [useState / useRef] ----------------------------------------------
 	// 회원가입 폼 데이터
 	const [joinForm, setJoinForm] = useState<JoinForm>(initJoinForm);
 	// 회원가입 알람.
 	const [joinAlarm, setJoinAlarm] = useState<JoinFormAlarm | null>(null);
-	const changeJoinAlarm = (name: JoinFormInputKeys, message: string, status: "SUCCESS" | "FAIL" = "SUCCESS") => {
-		setJoinAlarm({ name, message, status });
-	};
 	// 회원가입 input들 HTMLInputElement
 	const joinFormInputRefs = useRef<Partial<JoinFormInputRefs>>({});
 	// 아이디중복여부
@@ -81,6 +80,7 @@ export function useSellerJoinForm() {
 	// 휴대폰인증완료여부
 	const [phoneAuthComplete, setPhoneAuthComplete] = useState<boolean>(false);
 
+	// 3) [useQuery / useMutation] -----------------------------------------
 	// 아이디중복확인 mutate
 	const handleIdDuplcheck = useMutation({
 		mutationFn: (userId: string) => postJson<BaseResponse>(getApiUrl(API_URL.AUTH_ID), { userId }),
@@ -174,6 +174,11 @@ export function useSellerJoinForm() {
 		},
 	});
 
+	// 5) [handlers / useCallback] -----------------------------------------
+	// 회원가입 input onChange
+	const changeJoinAlarm = (name: JoinFormInputKeys, message: string, status: "SUCCESS" | "FAIL" = "SUCCESS") => {
+		setJoinAlarm({ name, message, status });
+	};
 	// joinForm set
 	const changeJoinForm = (e: ChangeEvent) => {
 		const { name, value } = e.target as {
@@ -303,7 +308,6 @@ export function useSellerJoinForm() {
 		console.log("회원가입 완료");
 		handleRegister.mutate();
 	};
-
 	// 휴대폰 인증 보내기 버튼
 	const clickPhoneAuth = () => {
 		if (!joinForm.phone) {

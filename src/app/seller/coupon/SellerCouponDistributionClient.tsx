@@ -21,32 +21,16 @@ import { money } from "@/lib/format";
 import { useGlobalDialogStore } from "@/store/globalDialog.store";
 
 export default function SellerCouponDistributionClient() {
+	// 1) [store / custom hooks] -------------------------------------------
 	const { loginOn } = useSellerAuth();
 	const { openDialog } = useGlobalDialogStore();
 	const queryClient = useQueryClient();
 
-	// ------------------------------------------------
-	// React
-	// ------------------------------------------------
-
 	// 선택된 쿠폰
+	// 2) [useState / useRef] ----------------------------------------------
 	const [selectedCouponId, setSelectedCouponId] = useState<number | null>(null);
-	// 쿠폰 발행 하기
-	const hadleIssueCoupon = (type: IssueCouponType) => {
-		if (!selectedCouponId) return;
 
-		openDialog("CONFIRM", {
-			content: "선택한 쿠폰을 회원들에게 발행하시겠습니까?",
-			handleAfterOk: async () => {
-				await issueCouponToUsers({ couponId: selectedCouponId, type });
-			},
-		});
-	};
-
-	// ------------------------------------------------
-	// React Query
-	// ------------------------------------------------
-
+	// 3) [useQuery / useMutation] -----------------------------------------
 	// 판매자와 관련된 회원 조회
 	const {
 		data: summary = null,
@@ -99,15 +83,25 @@ export default function SellerCouponDistributionClient() {
 		},
 	});
 
-	// ------------------------------------------------
-	// useMemo
-	// ------------------------------------------------
-
+	// 4) [derived values / useMemo] ---------------------------------------
 	const { allZero } = useMemo(() => {
 		return {
 			allZero: Object.values(summary || {}).every((count) => count === 0),
 		};
 	}, [summary]);
+
+	// 5) [handlers / useCallback] -----------------------------------------
+	// 쿠폰 발행 하기
+	const hadleIssueCoupon = (type: IssueCouponType) => {
+		if (!selectedCouponId) return;
+
+		openDialog("CONFIRM", {
+			content: "선택한 쿠폰을 회원들에게 발행하시겠습니까?",
+			handleAfterOk: async () => {
+				await issueCouponToUsers({ couponId: selectedCouponId, type });
+			},
+		});
+	};
 
 	return (
 		<div className={styles.sellerCouponDistribution}>

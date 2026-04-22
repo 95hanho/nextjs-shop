@@ -12,6 +12,7 @@ import { FaHeart } from "react-icons/fa";
 import { useParams } from "next/navigation";
 
 export default function SellerInfoSection({ productDetail }: { productDetail: ProductDetailResponse }) {
+	// 1) [store / custom hooks] -------------------------------------------
 	const { loginOn } = useAuth();
 	const queryClient = useQueryClient();
 	const params = useParams<{
@@ -19,10 +20,7 @@ export default function SellerInfoSection({ productDetail }: { productDetail: Pr
 	}>();
 	const productIdNum = Number(params.productId);
 
-	// ------------------------------------------------
-	// React Query
-	// ------------------------------------------------
-
+	// 3) [useQuery / useMutation] -----------------------------------------
 	// 판매자 좋아요 여부 및 판매자 다른 제품 조회
 	const {
 		data: { isSellerLiked, sellerOtherProducts } = {
@@ -51,10 +49,6 @@ export default function SellerInfoSection({ productDetail }: { productDetail: Pr
 			queryClient.invalidateQueries({ queryKey: ["sellerLikeAndOtherProducts", productIdNum] });
 		},
 	});
-
-	// ------------------------------------------------
-	// React
-	// ------------------------------------------------
 
 	return (
 		<article className={styles.sellerInfoSection}>

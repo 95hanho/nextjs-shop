@@ -29,18 +29,27 @@ const phoneRegex: RegExp = /^(010|011|016|017|018|019)\d{3,4}\d{4}$/;
 const phoneRegexFailMent: string = "휴대폰 번호 형식에 일치하지 않습니다.";
 
 export function useFindUserForm() {
+	// 1) [store / custom hooks] -------------------------------------------
 	const { push } = useRouter();
 	const params = useParams<{ type?: FindType }>(); // `type`이 있을 수도 있고 없을 수도 있음
 	const findType = params.type;
 
-	/*  */
+	// 2) [useState / useRef] ----------------------------------------------
+	// 비번변경 폼 데이터
+	const [findUserForm, setFindUserForm] = useState<FindUserForm>(initFindUserForm);
+	const [findUserFormAlarm, setFindUserFormAlarm] = useState<FindUserFormAlarm | null>(null);
+	// 비번변경 input들 HTMLInputElement
+	const findUserFormInputRefs = useRef<Partial<FindUserFormInputRefs>>({});
+	// 인증번호 화면 띄울지
+	const [phoneAuthView, setPhoneAuthView] = useState<boolean>(false);
+	// 인증번호 토큰
+	const [phoneAuthToken, setPhoneAuthToken] = useState<string | null>(null);
+	// 인증번호 인증완료
+	const [phoneAuthComplete, setPhoneAuthComplete] = useState<boolean>(false);
+	// 찾은 아이디
+	const [findId, setFindId] = useState<string>("userId");
 
-	useEffect(() => {
-		if (!findType || !["id", "password"].includes(findType)) {
-			push("/user");
-		}
-	}, []);
-
+	// 3) [useQuery / useMutation] -----------------------------------------
 	// 휴대폰 인증
 	const handlePhoneAuth = useMutation({
 		mutationFn: () =>
@@ -102,21 +111,7 @@ export function useFindUserForm() {
 		},
 	});
 
-	/*  */
-	// 비번변경 폼 데이터
-	const [findUserForm, setFindUserForm] = useState<FindUserForm>(initFindUserForm);
-	const [findUserFormAlarm, setFindUserFormAlarm] = useState<FindUserFormAlarm | null>(null);
-	// 비번변경 input들 HTMLInputElement
-	const findUserFormInputRefs = useRef<Partial<FindUserFormInputRefs>>({});
-	// 인증번호 화면 띄울지
-	const [phoneAuthView, setPhoneAuthView] = useState<boolean>(false);
-	// 인증번호 토큰
-	const [phoneAuthToken, setPhoneAuthToken] = useState<string | null>(null);
-	// 인증번호 인증완료
-	const [phoneAuthComplete, setPhoneAuthComplete] = useState<boolean>(false);
-	// 찾은 아이디
-	const [findId, setFindId] = useState<string>("userId");
-
+	// 5) [handlers / useCallback] -----------------------------------------
 	// 비번변경 폼 변경
 	const changeFindUserForm = (e: ChangeEvent) => {
 		const { name, value } = e.target as {
@@ -194,9 +189,6 @@ export function useFindUserForm() {
 		//
 		console.log("비밀번호변경 제출");
 	};
-
-	// ---------------------
-
 	// 휴대폰 인증 보내기 버튼
 	const clickPhoneAuth = () => {
 		if (!findUserForm.phone) {
@@ -227,6 +219,13 @@ export function useFindUserForm() {
 		}
 		handlePhoneAuthComplete.mutate();
 	};
+
+	// 6) [useEffect] ------------------------------------------------------
+	useEffect(() => {
+		if (!findType || !["id", "password"].includes(findType)) {
+			push("/user");
+		}
+	}, [findType, push]);
 
 	return {
 		findType,

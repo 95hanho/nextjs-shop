@@ -8,22 +8,24 @@ import { getUploadImageUrl } from "@/lib/image";
 interface ThumbnailImageSectionProps {
 	productImageList: (FileInfo & { productId: number })[];
 }
-
 export default function ThumbnailImageSection({ productImageList }: ThumbnailImageSectionProps) {
+	// 2) [useState / useRef] ----------------------------------------------
 	// 현재 보여주는 사진
 	const [currentImage, setCurrentImage] = useState(productImageList[0] ?? null);
 	const [isHovering, setIsHovering] = useState(false); // 마우스 들어왔는지
 	const [lensPosition, setLensPosition] = useState({ x: 0, y: 0 }); // 렌즈의 left/top 위치
+	const [areaRect, setAreaRect] = useState({ width: 1, height: 1 });
 
-	const lensSize = 100;
+	// 4) [derived values / useMemo] ---------------------------------------
+	const lensSize = 100; // 확대 렌즈 크기
 	const zoomScale = 4.9; // 확대 배율
 	const lensCenterX = lensPosition.x + lensSize / 2;
 	const lensCenterY = lensPosition.y + lensSize / 2;
-	const [areaRect, setAreaRect] = useState({ width: 1, height: 1 });
 	const bgPosX = (lensCenterX / areaRect.width) * 100;
 	const bgPosY = (lensCenterY / areaRect.height) * 100;
 
-	/* ----- productImageArea 마우스 이벤트 핸들러 ----- */
+	// 5) [handlers / useCallback] -----------------------------------------
+	// productImageArea 마우스 이벤트 핸들러
 	const handleMouseEnter = () => {
 		setIsHovering(true);
 	};

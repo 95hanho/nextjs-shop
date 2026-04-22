@@ -16,9 +16,9 @@ type BuyCouponSelectorProps = {
 
 export default function BuyCouponSelector(props: BuyCouponSelectorProps) {
 	const { finalXCount } = props;
-
 	const { coupon, handleCheckAppliedProductCoupon, couponChecked, otherUsed, productOptionId } = props;
 
+	// 4) [derived values / useMemo] -------------------------------
 	const isDiscountApplied = calculateDiscount(finalXCount, coupon);
 	const disabled = !isDiscountApplied || otherUsed; // 할인 적용 불가 or 다른 쿠폰 사용중인 경우
 

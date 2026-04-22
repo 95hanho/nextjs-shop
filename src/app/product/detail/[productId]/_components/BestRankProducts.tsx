@@ -19,18 +19,18 @@ import API_URL from "@/api/endpoints";
 import { getUploadImageUrl } from "@/lib/image";
 
 export default function BestRankProducts() {
+	// 1) [store / custom hooks] -------------------------------------------
 	const { loginOn } = useAuth();
-	const slideHandleRef = useRef<ImageSlideHandle | null>(null);
-	const [pageInfo, setPageInfo] = useState({ page: 1, totalPages: 2 });
 	const params = useParams<{
 		productId: string;
 	}>();
 	const productIdNum = Number(params.productId);
 
-	// =================================================================
-	// React Query
-	// =================================================================
+	// 2) [useState / useRef] ----------------------------------------------
+	const slideHandleRef = useRef<ImageSlideHandle | null>(null);
+	const [pageInfo, setPageInfo] = useState({ page: 1, totalPages: 2 });
 
+	// 3) [useQuery / useMutation] -----------------------------------------
 	// 같은 카테고리 BEST 제품 조회
 	const { data: categoryBestProductList = [] } = useQuery<GetCategoryBestProductsResponse, Error, OtherProduct[]>({
 		queryKey: ["categoryBestProducts", productIdNum],

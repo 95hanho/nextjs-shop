@@ -49,17 +49,16 @@ export const SellerCouponModal = ({
 	handleAfterUpdateCoupon,
 	handleAfterDeleteCoupon,
 }: SellerCouponModalProps) => {
+	// 1) [store / custom hooks] -------------------------------------------
 	const { openDialog } = useGlobalDialogStore();
 
-	// ------------------------------------------------
-	// React
-	// ------------------------------------------------
-
+	// 2) [useState / useRef] ----------------------------------------------
 	// 쿠폰 입력값
 	const [couponForm, setCouponForm] = useState<Partial<SellerCoupon>>(prevSellerCoupon || initCouponForm);
 	const [couponFormAlarm, setCouponFormAlarm] = useState<CouponFormAlarm | null>(null);
 	const couponFormInputRefs = useRef<Partial<CouponFormInputRefs>>({});
 
+	// 5) [handlers / useCallback] -----------------------------------------
 	// 알람이 있을 때 해당 input으로 focus | 날짜는 datepicker 열기
 	const focusCouponField = (name: CouponFormInputKeys | "startDate" | "endDate", refs: React.MutableRefObject<Partial<CouponFormInputRefs>>) => {
 		const target = refs.current[name];
@@ -74,7 +73,6 @@ export const SellerCouponModal = ({
 
 		target.focus();
 	};
-
 	// couponForm 변경
 	const changeCouponForm = (e: ChangeEvent) => {
 		const { name, value } = e.target as {
@@ -229,10 +227,7 @@ export const SellerCouponModal = ({
 		}
 	};
 
-	// ------------------------------------------------
-	// useEffect, useMemo
-	// ------------------------------------------------
-
+	// 6) [useEffect] ------------------------------------------------------
 	useEffect(() => {
 		console.log({ prevSellerCoupon });
 	}, [prevSellerCoupon]);

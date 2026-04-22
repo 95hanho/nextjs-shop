@@ -169,9 +169,11 @@ export const OnOffButton = ({
 	onChange,
 	cursor = true,
 }: OnOffButtonProps) => {
+	// 1) [store / custom hooks] -------------------------------------------
 	const generatedId = useId();
-	const id = checkId || generatedId;
 
+	// 4) [derived values / useMemo] ---------------------------------------
+	const id = checkId || generatedId;
 	const [onColor, offColor] = onOffColor;
 
 	return (

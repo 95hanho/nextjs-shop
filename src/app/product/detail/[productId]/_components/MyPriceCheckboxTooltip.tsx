@@ -29,12 +29,14 @@ type MyPriceCheckboxTooltipProps =
 
 export default function MyPriceCheckboxTooltip(props: MyPriceCheckboxTooltipProps) {
 	const { type, originPrice, finalPrice } = props;
+	// 1) [store / custom hooks] -------------------------------------------
 	const queryClient = useQueryClient();
 	const params = useParams<{
 		productId: string;
 	}>();
 	const productIdNum = Number(params.productId);
 
+	// 3) [useQuery / useMutation] -----------------------------------------
 	// 쿠폰 다운로드
 	const couponDownload = useMutation({
 		mutationFn: (couponId: number) => postJson<BaseResponse & { userCouponId: number }>(getApiUrl(API_URL.PRODUCT_COUPON_DOWNLOAD), { couponId }),
@@ -63,6 +65,7 @@ export default function MyPriceCheckboxTooltip(props: MyPriceCheckboxTooltipProp
 	if (type === "COUPON") {
 		const { coupon, handleCheckAppliedProductCoupon, couponChecked } = props;
 
+		// 4) [derived values / useMemo] ---------------------------------------
 		const isDiscountApplied = calculateDiscount(finalPrice, coupon);
 
 		return (

@@ -27,17 +27,23 @@ export const ProductItem = ({ product, wishProductIds }: ProductItemProps) => {
 	return (
 		<div className={styles.productItem}>
 			<Link href={`/product/detail/${product.productId}`} className={styles.productThumb}>
-				<ImageSlide
-					mode="fade"
-					getItemKey={(item, index) => `product-${product.productId}-image-${index}`}
-					items={product.productImageList}
-					renderItem={(item) => (
-						<div className={styles.imageBox}>
-							<SmartImage src={getUploadImageUrl(item.filePath)} fill objectFit={"cover"} className={styles.productImg} />
-						</div>
-					)}
-					pagination
-				/>
+				{product.productImageList.length > 0 ? (
+					<ImageSlide
+						mode="fade"
+						getItemKey={(item, index) => `product-${product.productId}-image-${index}`}
+						items={product.productImageList}
+						renderItem={(item) => (
+							<div className={styles.imageBox}>
+								<SmartImage src={getUploadImageUrl(item.filePath)} fill objectFit={"cover"} className={styles.productImg} />
+							</div>
+						)}
+						pagination
+					/>
+				) : (
+					<div className={styles.imageBox}>
+						<SmartImage fill />
+					</div>
+				)}
 				{wishProductIds.length > 0 && (
 					<WishButton
 						productId={product.productId}

@@ -13,14 +13,26 @@ import { useGlobalDialogStore } from "@/store/globalDialog.store";
 import moment from "moment";
 
 export default function SellerQuestionAnswerList() {
+	// 1) [store / custom hooks] -------------------------------------------
 	const { loginOn } = useSellerAuth();
 	const { openDialog } = useGlobalDialogStore();
 	const queryClient = useQueryClient();
 
-	// ------------------------------------------------
-	// React Query
-	// ------------------------------------------------
+	// 2) [useState / useRef] ----------------------------------------------
+	// Qna 필터링 코드
+	const [qnaFilterCode, setQnaFilterCode] = useState<"ALL" | ProductQnaTypeCode>("ALL");
+	// qna 페이징 객체
+	const [qnaPage, setQnaPage] = useState({
+		page: 1,
+		totalPage: 1,
+	});
+	// 답변오픈 할 QnA 아이디
+	const [qnaAnswerForm, setQnaAnswerForm] = useState({
+		productQnaId: 0,
+		answer: "",
+	});
 
+	// 3) [useQuery / useMutation] -----------------------------------------
 	// 판매자 제품 리스트 조회
 	const {
 		data: { sellerQnaList, qnaTypeList } = { sellerQnaList: [], qnaTypeList: [] },
@@ -70,36 +82,7 @@ export default function SellerQuestionAnswerList() {
 		},
 	});
 
-	// ------------------------------------------------
-	// React
-	// ------------------------------------------------
-
-	// Qna 필터링 코드
-	const [qnaFilterCode, setQnaFilterCode] = useState<"ALL" | ProductQnaTypeCode>("ALL");
-	// qna 페이징 객체
-	const [qnaPage, setQnaPage] = useState({
-		page: 1,
-		totalPage: 1,
-	});
-	// 답변오픈 할 QnA 아이디
-	const [qnaAnswerForm, setQnaAnswerForm] = useState({
-		productQnaId: 0,
-		answer: "",
-	});
-	// QnA 답변 등록/수정 핸들러
-	const handleUpdateQnaAnswer = async () => {
-		if (!qnaAnswerForm.answer) {
-			openDialog("ALERT", {
-				content: "답변 내용을 입력해주세요.",
-			});
-		}
-		updateQnaAnswer(qnaAnswerForm);
-	};
-
-	// ------------------------------------------------
-	// useEffect, useMemo
-	// ------------------------------------------------
-
+	// 4) [derived values / useMemo] ---------------------------------------
 	type sellerQnaWithCountList = ProductQnaType & {
 		count: number;
 	};
@@ -111,7 +94,29 @@ export default function SellerQuestionAnswerList() {
 			};
 		});
 	}, [qnaTypeList, sellerQnaList]);
+	const { productQnaCurPageList } = useMemo(() => {
+		const startIdx = (qnaPage.page - 1) * 5;
+		const endIdx = startIdx + 5;
+		return {
+			productQnaCurPageList: sellerQnaList
+				.filter((qna) => qnaFilterCode === "ALL" || qna.productQnaTypeCode === qnaFilterCode)
+				.slice(startIdx, endIdx),
+		};
+	}, [sellerQnaList, qnaFilterCode, qnaPage.page]);
 
+	// 5) [handlers / useCallback] -----------------------------------------
+	// QnA 답변 등록/수정 핸들러
+	const handleUpdateQnaAnswer = async () => {
+		if (!qnaAnswerForm.answer) {
+			openDialog("ALERT", {
+				content: "답변 내용을 입력해주세요.",
+			});
+			return;
+		}
+		updateQnaAnswer(qnaAnswerForm);
+	};
+
+	// 6) [useEffect] ------------------------------------------------------
 	useEffect(() => {
 		if (sellerQnaList.length > 0) {
 			console.log({ sellerQnaList });
@@ -124,15 +129,6 @@ export default function SellerQuestionAnswerList() {
 			});
 		}
 	}, [sellerQnaList, qnaFilterCode]);
-	const { productQnaCurPageList } = useMemo(() => {
-		const startIdx = (qnaPage.page - 1) * 5;
-		const endIdx = startIdx + 5;
-		return {
-			productQnaCurPageList: sellerQnaList
-				.filter((qna) => qnaFilterCode === "ALL" || qna.productQnaTypeCode === qnaFilterCode)
-				.slice(startIdx, endIdx),
-		};
-	}, [sellerQnaList, qnaFilterCode, qnaPage.page]);
 
 	return (
 		<div id="questionAnswerList" className={styles.questionAnswerList}>

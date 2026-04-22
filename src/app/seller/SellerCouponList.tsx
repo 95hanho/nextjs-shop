@@ -31,15 +31,12 @@ export default function SellerCouponList({
 	changeAllSelectedCouponIds,
 	updateCouponStatus,
 }: CouponListProps) {
+	// 1) [store / custom hooks] -------------------------------------------
 	const queryClient = useQueryClient();
-	const couponAllowedMode = allowedSelectedCouponId !== null; // 쿠폰 허용 제품이 하나라도 있으면 true
 	const { openModal } = useModalStore();
 	const { openDialog } = useGlobalDialogStore();
 
-	// ------------------------------------------------
-	// React Query
-	// ------------------------------------------------
-
+	// 3) [useQuery / useMutation] -----------------------------------------
 	// 쿠폰 등록
 	const { mutate: registerCoupon } = useMutation({
 		mutationFn: (couponForm: AddCouponRequest) => postJson(getApiUrl(API_URL.SELLER_COUPON), { ...couponForm }),
@@ -62,13 +59,9 @@ export default function SellerCouponList({
 		},
 	});
 
-	// ------------------------------------------------
-	// React
-	// ------------------------------------------------
-
-	// ------------------------------------------------
-	// useEffect, useMemo
-	// ------------------------------------------------
+	// 4) [derived values / useMemo] ---------------------------------------
+	// 쿠폰 허용 제품이 하나라도 있으면 true
+	const couponAllowedMode = allowedSelectedCouponId !== null;
 
 	return (
 		<div id="sellerCouponList" className={styles.sellerCouponList}>

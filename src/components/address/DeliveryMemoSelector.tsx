@@ -16,9 +16,11 @@ interface DeliveryMemoSelectorProps {
 }
 
 export const DeliveryMemoSelector = ({ keyName = "deliveryMemo", shippingMemo, changeMemo }: DeliveryMemoSelectorProps) => {
+	// 2) [useState / useRef] ----------------------------------------------
 	const [memoPickidx, setMemoPickidx] = useState(0);
 	const [memoOptionInit, setMemoOptionInit] = useState(memoOptionList[0]);
 
+	// 6) [useEffect] ------------------------------------------------------
 	useEffect(() => {
 		const findIndex = memoOptionList.slice(0, 4).findIndex((v) => v.val === shippingMemo);
 		if (findIndex === -1) {

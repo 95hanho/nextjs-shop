@@ -34,6 +34,7 @@ export const AddressSection = <K extends string>({
 	labelWidthPercent,
 	inputWidthPercent,
 }: AddressSectionProps<K>) => {
+	// 5) [handlers / useCallback] -----------------------------------------
 	// 주소API 팝업 띄우기
 	const addressPopup = () => {
 		new kakao.Postcode({

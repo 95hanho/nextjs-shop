@@ -14,15 +14,10 @@ import { WishButton } from "@/components/product/WishButton";
 import { getUploadImageUrl } from "@/lib/image";
 
 export default function BrandOtherProducts({ sellerOtherProducts }: { sellerOtherProducts: OtherProduct[] }) {
+	// 1) [store / custom hooks] -------------------------------------------
 	const { loginOn } = useAuth();
-	// ------------------------------------------------
-	// React Query
-	// ------------------------------------------------
 
-	// ------------------------------------------------
-	// React
-	// ------------------------------------------------
-
+	// 2) [useState / useRef] ----------------------------------------------
 	const slideHandleRef = useRef<ImageSlideHandle | null>(null);
 	const [pageInfo, setPageInfo] = useState({ page: 1, totalPages: 2 });
 
