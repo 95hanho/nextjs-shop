@@ -12,6 +12,7 @@ import { SmartImage } from "@/components/ui/SmartImage";
 import { getUploadImageUrl } from "@/lib/image";
 import ProductReviewList from "@/app/product/detail/[productId]/_components/ProductReviewList";
 import { removeSearchParams } from "@/lib/searchParams";
+import { useModalStore } from "@/store/modal.store";
 
 interface ProductReviewProps {
 	reviewCount: number;
@@ -29,6 +30,7 @@ export default function ProductReview({ reviewCount, reviewRate }: ProductReview
 	const tab = searchParams.get("tab");
 	const router = useRouter();
 	const pathname = usePathname();
+	const { openModal } = useModalStore();
 
 	// 2) [useState / useRef] ----------------------------------------------
 	// 리뷰섹션 요소
@@ -67,6 +69,10 @@ export default function ProductReview({ reviewCount, reviewRate }: ProductReview
 			}
 		}
 	}, [productReviewList, tab, searchParams, router, pathname]);
+	// 리뷰 모달 테스트중 ------------
+	useEffect(() => {
+		openModal("PRODUCT_REVIEW", { reviewImageId: 123 });
+	}, [openModal]);
 
 	return (
 		<>

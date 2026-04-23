@@ -11,6 +11,7 @@ import { BuyShippingAddressListModal } from "@/components/modal/domain/BuyShippi
 import { SellerCouponModal } from "@/components/modal/domain/SellerCouponModal";
 import { DomainModalCloseResult, DomainModalPropsMap } from "@/store/modal.type";
 import { SellerProductOptionModal } from "@/components/modal/domain/SellerProductOptionModal";
+import { ProductReviewModal } from "@/components/modal/domain/ProductReviewModal";
 
 type ModalCommon = {
 	disableOverlayClose?: boolean;
@@ -74,6 +75,9 @@ export const DomainModalRoot = () => {
 	// 8) [return] ---------------------------------------------------------
 	if (!mounted || !modalType) return null;
 	switch (modalType) {
+		case "PRODUCT_REVIEW":
+			childrenModal = <ProductReviewModal onClose={handleClose} {...(modalProps as DomainModalPropsMap["PRODUCT_REVIEW"])} />;
+			break;
 		case "PRODUCT_OPTION":
 			childrenModal = <ProductOptionModal onClose={handleClose} {...(modalProps as DomainModalPropsMap["PRODUCT_OPTION"])} />;
 			break;
