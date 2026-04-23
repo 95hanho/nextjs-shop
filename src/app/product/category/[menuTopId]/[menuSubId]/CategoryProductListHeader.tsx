@@ -1,4 +1,5 @@
 import { OptionSelector } from "@/components/ui/OptionSelector";
+import { useGlobalDialogStore } from "@/store/globalDialog.store";
 import { ProductPopularPeriodOption, ProductSortOption } from "@/types/product";
 
 type OptionType = {
@@ -27,6 +28,9 @@ export default function CategoryProductListHeader({
 	sortOptionList,
 	popularPeriodOptionList,
 }: CategoryProductListHeaderProps) {
+	// 1) [store / custom hooks] -------------------------------------------
+	const { openDialog } = useGlobalDialogStore();
+
 	return (
 		<header>
 			<h2 className="flex justify-between px-3 my-2 tracking-wide">
@@ -38,14 +42,17 @@ export default function CategoryProductListHeader({
 						<span className="w-[80px]">
 							<OptionSelector
 								initData={{
-									id: 1,
-									val: "7일",
+									id: 4,
+									val: "ALL",
 								}}
 								pickIdx={popularPeriodOptionList.findIndex((option) => option.code === popularPeriodCode)}
 								optionSelectorName="popularPeriodOption"
 								optionList={popularPeriodOptionList}
 								changeOption={(idx) => {
 									changePopularPeriodCode(popularPeriodOptionList[idx].code);
+									openDialog("ALERT", {
+										content: "포트폴리오용으로 인기 기간은 전체로 고정되어 있습니다.",
+									});
 								}}
 							/>
 						</span>

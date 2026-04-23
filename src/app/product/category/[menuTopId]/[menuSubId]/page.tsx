@@ -28,8 +28,8 @@ export default async function CategoryProductList({ params: { menuSubId, menuTop
 	// [SSR] 제품 리스트 조회
 	const payload: GetProductListRequest = {
 		sort: "POPULAR",
-		popularPeriod: "DAYS_7",
-		menuSubId,
+		popularPeriod: "ALL",
+		menuSubId: Number(menuSubId),
 		// lastCreatedAt,
 		// lastProductId,
 		// lastPopularity
@@ -47,6 +47,7 @@ export default async function CategoryProductList({ params: { menuSubId, menuTop
 	return (
 		<main>
 			<CategoryProductListClient
+				menuSubId={Number(menuSubId)}
 				initialProductListData={productResponse}
 				topMenuName={currentTopMenu?.menuName || ""}
 				subMenuName={currentSubMenu?.menuName || ""}

@@ -457,7 +457,7 @@ export default function ProductVisualInfo({ productDetail, reviewCount, reviewRa
 								<>
 									<p>{money(productDetail.baseShippingFee)}원</p>
 									{productDetail.baseShippingFee > 0 && <p>{money(productDetail.freeShippingMinAmount)}원 이상 구매시 무료배송</p>}
-									{productDetail.extraShippingFee && <p>제주/도서산간 {money(productDetail.extraShippingFee)}원 추가</p>}
+									{!!productDetail.extraShippingFee && <p>제주/도서산간 {money(productDetail.extraShippingFee)}원 추가</p>}
 								</>
 							)}
 						</div>

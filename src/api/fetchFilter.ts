@@ -2,7 +2,7 @@ import { HttpError, isHttpError, isRecord } from "@/api/error";
 import { BASE_URL } from "@/lib/env";
 
 // fetchFilters.ts
-type Primitive = string | number | boolean;
+type Primitive = string | number | boolean | null;
 type ParamValue = Primitive | Blob | File | FileList | Primitive[] | undefined;
 
 export type Params = Record<string, ParamValue>;
@@ -60,15 +60,26 @@ const applyPathParamsFromBody = <T extends BodyLike | undefined>(url: string, bo
 
 const toSearchParams = (params: Params): URLSearchParams => {
 	const search = new URLSearchParams();
+
 	for (const key of Object.keys(params)) {
 		const value = params[key];
-		if (value === undefined) continue;
+
+		if (value === undefined || value === null) continue;
+
 		if (Array.isArray(value)) {
-			for (const item of value) search.append(key, String(item));
-		} else {
-			search.append(key, String(value));
+			for (const item of value) {
+				if (item === undefined || item === null) continue;
+				if (typeof item === "number" && Number.isNaN(item)) continue;
+				search.append(key, String(item));
+			}
+			continue;
 		}
+
+		if (typeof value === "number" && Number.isNaN(value)) continue;
+
+		search.append(key, String(value));
 	}
+
 	return search;
 };
 

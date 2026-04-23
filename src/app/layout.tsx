@@ -9,6 +9,7 @@ import RootProviders from "@/app/RootProviders";
 import DynamicHeader from "@/app/DynamicHeader";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { DialogRoot } from "@/components/modal/core/DialogRoot";
+import Footer from "@/app/Footer";
 // import { redirect } from "next/navigation";
 // import { cookies, headers } from "next/headers";
 // import { ModalTest } from "@/components/modal/ModalTest";
@@ -51,6 +52,7 @@ export default async function RootLayout({
 						{/* 모달테스트용 */}
 						{/* <ModalTest /> */}
 					</RootProviders>
+					<Footer />
 				</div>
 			</body>
 		</html>

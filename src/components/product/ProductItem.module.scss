@@ -45,6 +45,9 @@
 	> div {
 		display: inline-flex;
 		align-items: center;
+		.metaCount {
+			margin-top: 3px;
+		}
 	}
 }
 
