@@ -1,6 +1,25 @@
 /* 모바일 */
 .productReviewModal {
 	width: 100vw;
+	header.thumbRow {
+		display: flex;
+		gap: 8px;
+		overflow-x: auto;
+		padding-bottom: 4px;
+		scrollbar-width: thin;
+		.thumbItem {
+			position: relative;
+			flex: 0 0 auto;
+			width: 64px;
+			height: 64px;
+			border: 1px solid #ddd;
+			border-radius: 8px;
+			overflow: hidden;
+		}
+		.thumbItem.active {
+			border: 2px solid #f97316;
+		}
+	}
 	nav {
 		display: flex;
 		justify-content: space-between;

@@ -2,12 +2,12 @@ import { ReviewStar } from "@/components/product/ReviewStar";
 import { money } from "@/lib/format";
 import styles from "../ProductDetail.module.scss";
 import { useQuery } from "@tanstack/react-query";
-import { GetProductDetailReviewResponse, ProductReviewItem } from "@/types/product";
+import { GetProductDetailReviewResponse } from "@/types/product";
 import { getNormal } from "@/api/fetchFilter";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import API_URL from "@/api/endpoints";
 import { useParams, usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { SmartImage } from "@/components/ui/SmartImage";
 import { getUploadImageUrl } from "@/lib/image";
 import ProductReviewList from "@/app/product/detail/[productId]/_components/ProductReviewList";
@@ -35,43 +35,51 @@ export default function ProductReview({ reviewCount, reviewRate }: ProductReview
 	// 2) [useState / useRef] ----------------------------------------------
 	// 리뷰섹션 요소
 	const reviewInfoSectionRef = useRef<HTMLElement | null>(null);
+	// 리뷰 페이지
+	const [reviewPage, setReviewPage] = useState(1);
 
 	// 3) [useQuery / useMutation] -----------------------------------------
 	// 리뷰 조회
 	const {
-		data: productReviewList = [],
+		data: productReviewData = {
+			message: "",
+			page: 1,
+			// size: 10,
+			// totalCount: 0,
+			totalPage: 1,
+			productReviewList: [],
+		},
 		isSuccess,
 		isError,
 		isFetching,
-	} = useQuery<GetProductDetailReviewResponse, Error, ProductReviewItem[]>({
-		queryKey: ["productReviewList", productIdNum],
-		queryFn: () => getNormal(getApiUrl(API_URL.PRODUCT_DETAIL_REVIEW), { productId: productIdNum }),
+	} = useQuery<GetProductDetailReviewResponse, Error>({
+		queryKey: ["productReviewList", productIdNum, reviewPage],
+		queryFn: () => getNormal(getApiUrl(API_URL.PRODUCT_DETAIL_REVIEW), { productId: productIdNum, page: reviewPage }),
 		enabled: !!productIdNum,
 		refetchOnWindowFocus: false,
-		select(data) {
-			return data.productReviewList;
-		},
 	});
 
 	// 4) [derived values / useMemo] ---------------------------------------
 	const { allReviewImages } = useMemo(() => {
 		return {
-			allReviewImages: productReviewList.flatMap((review) => review.reviewImages.map((image) => ({ ...image, reviewId: review.reviewId }))),
+			allReviewImages: productReviewData.productReviewList.flatMap((review) =>
+				review.reviewImages.map((image) => ({ ...image, reviewId: review.reviewId })),
+			),
 		};
-	}, [productReviewList]);
+	}, [productReviewData]);
 
 	// 6) [useEffect] ------------------------------------------------------
 	useEffect(() => {
-		if (productReviewList?.length > 0) {
+		if (productReviewData.productReviewList.length > 0) {
 			if (tab === "review") {
 				reviewInfoSectionRef.current?.scrollIntoView({ behavior: "smooth" });
 				router.replace(removeSearchParams(pathname, searchParams, ["tab"]), { scroll: false });
 			}
 		}
-	}, [productReviewList, tab, searchParams, router, pathname]);
+	}, [productReviewData, tab, searchParams, router, pathname]);
 	// 리뷰 모달 테스트중 ------------
 	useEffect(() => {
-		openModal("PRODUCT_REVIEW", { reviewImageId: 123 });
+		// openModal("PRODUCT_REVIEW", { reviewImageId: 123, disableOverlayClose: true });
 	}, [openModal]);
 
 	return (
@@ -95,7 +103,7 @@ export default function ProductReview({ reviewCount, reviewRate }: ProductReview
 								</button>
 							))}
 						</div>
-						<ProductReviewList productReviewList={productReviewList} />
+						<ProductReviewList productReviewData={productReviewData} turnPage={(page) => setReviewPage(page)} />
 					</div>
 				</section>
 			)}

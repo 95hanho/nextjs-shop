@@ -1,11 +1,10 @@
 import { TurnToPagination } from "@/components/ui/TurnToPagination";
 import styles from "../ProductDetail.module.scss";
-import { ProductReviewItem } from "@/types/product";
+import { GetProductDetailReviewResponse } from "@/types/product";
 import { ReviewStar } from "@/components/product/ReviewStar";
 import moment from "moment";
 import { SmartImage } from "@/components/ui/SmartImage";
 import { getUploadImageUrl } from "@/lib/image";
-import { useEffect, useState } from "react";
 import clsx from "clsx";
 import { useAuth } from "@/hooks/useAuth";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -16,10 +15,11 @@ import API_URL from "@/api/endpoints";
 import { useGlobalDialogStore } from "@/store/globalDialog.store";
 
 interface ProductReviewListProps {
-	productReviewList: ProductReviewItem[];
+	productReviewData: GetProductDetailReviewResponse;
+	turnPage: (page: number) => void;
 }
 
-export default function ProductReviewList({ productReviewList = [] }: ProductReviewListProps) {
+export default function ProductReviewList({ productReviewData, turnPage }: ProductReviewListProps) {
 	// 1) [store / custom hooks] -------------------------------------------
 	const router = useRouter();
 	const { user } = useAuth();
@@ -31,11 +31,6 @@ export default function ProductReviewList({ productReviewList = [] }: ProductRev
 	const queryClient = useQueryClient();
 
 	// 2) [useState / useRef] ----------------------------------------------
-	// review 페이징 객체
-	const [reviewPage, setReviewPage] = useState({
-		page: 1,
-		totalPage: 1,
-	});
 
 	// 3) [useQuery / useMutation] -----------------------------------------
 	const { mutateAsync: deleteReview } = useMutation({
@@ -45,20 +40,27 @@ export default function ProductReviewList({ productReviewList = [] }: ProductRev
 				reviewId,
 			}),
 		onSuccess() {
-			queryClient.invalidateQueries({ queryKey: ["productReviewList", productId] });
+			const currentList = productReviewData?.productReviewList ?? [];
+			const currentPage = productReviewData?.page ?? 1;
+
+			// 마지막 페이지에 리뷰가 1개 남았을 경우, 이전 페이지로 이동
+			if (currentList.length === 1 && currentPage > 1) {
+				turnPage(currentPage - 1);
+				return;
+			}
+
+			queryClient.invalidateQueries({
+				queryKey: ["productReviewList", productId],
+			});
 		},
 	});
 
+	// 4) [derived values / useMemo] ---------------------------------------
+	const productReviewList = productReviewData.productReviewList || [];
+	const page = productReviewData.page || 1;
+	const totalPage = productReviewData.totalPage || 1;
+
 	// 6) [useEffect] ------------------------------------------------------
-	useEffect(() => {
-		if (productReviewList.length > 0) {
-			const totalPage = Math.ceil(productReviewList.length / 10);
-			setReviewPage({
-				page: 1,
-				totalPage,
-			});
-		}
-	}, [productReviewList]);
 
 	if (productReviewList.length > 0)
 		return (
@@ -125,11 +127,7 @@ export default function ProductReviewList({ productReviewList = [] }: ProductRev
 				</div>
 				{/* 리뷰 페이지네이션 */}
 				<div className="mt-5 mb-16">
-					<TurnToPagination
-						curPage={reviewPage.page}
-						totalPage={reviewPage.totalPage}
-						turnPage={(page) => setReviewPage((prev) => ({ ...prev, page }))}
-					/>
+					<TurnToPagination curPage={page} totalPage={totalPage} turnPage={(page) => turnPage(page)} />
 				</div>
 			</div>
 		);
