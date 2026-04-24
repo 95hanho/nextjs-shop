@@ -14,8 +14,7 @@ import {
 	type ProductSortOption,
 } from "@/types/product";
 import { InfiniteData, useInfiniteQuery } from "@tanstack/react-query";
-import { useParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 type OptionType = {
 	id: number;
@@ -39,39 +38,38 @@ const popularPeriodOptionList: (OptionType & { code: ProductPopularPeriodOption 
 ];
 
 interface CategoryProductListClientProps {
+	menuSubId: number;
 	initialProductListData: GetProductListResponse;
 	topMenuName: string;
 	subMenuName: string;
 }
 
-export default function CategoryProductListClient({ initialProductListData, topMenuName, subMenuName }: CategoryProductListClientProps) {
-	// 1) [store / custom hooks] -------------------------------------------
-	const params = useParams();
-	const menuSubId = Number(params.menuSubId);
-
+export default function CategoryProductListClient({ menuSubId, initialProductListData, topMenuName, subMenuName }: CategoryProductListClientProps) {
 	// 2) [useState / useRef] ----------------------------------------------
 	// 정렬 코드
-	const [sortCode, setSortCode] = useState<ProductSortOption>(sortOptionList[0].code);
+	const [sortCode, setSortCode] = useState<ProductSortOption>("POPULAR");
 	// 인기 기간 코드
-	const [popularPeriodCode, setPopularPeriodCode] = useState<ProductPopularPeriodOption>(popularPeriodOptionList[0].code);
+	const [popularPeriodCode, setPopularPeriodCode] = useState<ProductPopularPeriodOption>("ALL");
 
 	// 3) [useQuery / useMutation] -----------------------------------------
 
+	const isInitialQuery = sortCode === "POPULAR" && popularPeriodCode === "ALL";
 	// 제품리스트 조회 -
-	const { data /* fetchNextPage, hasNextPage, isFetchingNextPage, isFetching */ } = useInfiniteQuery<
+	const periodKey = sortCode === "POPULAR" ? popularPeriodCode : "NONE";
+	const { data, fetchNextPage, hasNextPage, isFetchingNextPage /* , isFetching */ } = useInfiniteQuery<
 		GetProductListResponse,
 		Error,
 		InfiniteData<GetProductListResponse>,
 		(string | number)[],
 		ProductListCursor | null
 	>({
-		queryKey: ["productList", menuSubId, sortCode, popularPeriodCode],
+		queryKey: ["productList", menuSubId, sortCode, periodKey],
 		initialPageParam: null,
 		queryFn: ({ pageParam }) => {
 			const payload: GetProductListRequest = {
 				menuSubId,
 				sort: sortCode,
-				popularPeriod: sortCode === "POPULAR" ? popularPeriodCode : undefined,
+				popularPeriod: sortCode === "POPULAR" ? "ALL" : undefined,
 				...(pageParam ?? {}),
 			};
 
@@ -81,10 +79,16 @@ export default function CategoryProductListClient({ initialProductListData, topM
 			if (!lastPage.hasNext || !lastPage.nextCursor) return undefined;
 			return lastPage.nextCursor;
 		},
-		initialData: {
-			pages: [initialProductListData],
-			pageParams: [null],
-		},
+		initialData: isInitialQuery
+			? {
+					pages: [initialProductListData],
+					pageParams: [null],
+				}
+			: undefined,
+		staleTime: 1000 * 30,
+		gcTime: 1000 * 60 * 10,
+		refetchOnWindowFocus: false,
+		retry: 1,
 	});
 
 	// 4) [derived values / useMemo] ---------------------------------------
@@ -93,29 +97,34 @@ export default function CategoryProductListClient({ initialProductListData, topM
 	}, [data]);
 
 	// 6) [useEffect] ------------------------------------------------------
-	// 정렬 코드 바뀔 때 인기 기간 초기화
-	useEffect(() => {
-		if (sortCode !== "POPULAR") {
-			setPopularPeriodCode(popularPeriodOptionList[0].code);
-		}
-	}, [sortCode]);
 
 	// 7) [UI helper values] -------------------------------------------------
 	const CategoryProductListHeaderProps = {
 		topMenuName,
 		subMenuName,
 		sortCode,
-		changeSortCode: (code: ProductSortOption) => setSortCode(code),
+		changeSortCode: (code: ProductSortOption) => {
+			setSortCode(code);
+			if (code !== "POPULAR") {
+				setPopularPeriodCode("ALL");
+			}
+		},
 		popularPeriodCode,
 		changePopularPeriodCode: (code: ProductPopularPeriodOption) => setPopularPeriodCode(code),
 		sortOptionList,
 		popularPeriodOptionList,
 	};
+	const CategoryProductListSectionProps = {
+		productList,
+		fetchNextPage,
+		hasNextPage,
+		isFetchingNextPage,
+	};
 
 	return (
 		<>
 			<CategoryProductListHeader {...CategoryProductListHeaderProps} />
-			<CategoryProductListSection productList={productList} />
+			<CategoryProductListSection {...CategoryProductListSectionProps} />
 		</>
 	);
 }

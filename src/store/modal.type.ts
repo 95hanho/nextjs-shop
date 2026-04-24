@@ -13,7 +13,14 @@ import {
 // dialog modal 타입 종류 - 모달 오픈 시 종류
 export type DialogType = "ALERT" | "CONFIRM" | null;
 // domain modal 타입 종류 - 모달 오픈 시 종류
-export type DomainModalType = "PRODUCT_OPTION" | "ADDRESS_SET" | "BUY_ADDRESSLIST" | "SELLER_COUPON" | "SELLER_PRODUCT_OPTION" | null;
+export type DomainModalType =
+	| "PRODUCT_REVIEW"
+	| "PRODUCT_OPTION"
+	| "ADDRESS_SET"
+	| "BUY_ADDRESSLIST"
+	| "SELLER_COUPON"
+	| "SELLER_PRODUCT_OPTION"
+	| null;
 
 // -- modal이 닫힐 때 동작 구분
 export type DialogCloseResult = "NEED_LOGIN_CANCEL" | "SELLER_LOGOUT";
@@ -55,7 +62,11 @@ export type DialogPropsMap = {
 		handleAfterOk?: () => void | Promise<void>;
 	};
 };
+// modal 열릴 때 넣어주는 props의 타입
 export type DomainModalPropsMap = {
+	PRODUCT_REVIEW: DomainModalCommon & {
+		reviewImageId: number;
+	};
 	PRODUCT_OPTION: DomainModalCommon & {
 		product: CartItem;
 		handleAfterCartProductOptionChange: (cartProductOption: {

@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import clsx from "clsx";
 import { useAuth } from "@/hooks/useAuth";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { deleteNormal } from "@/api/fetchFilter";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import API_URL from "@/api/endpoints";
@@ -21,6 +21,7 @@ interface ProductReviewListProps {
 
 export default function ProductReviewList({ productReviewList = [] }: ProductReviewListProps) {
 	// 1) [store / custom hooks] -------------------------------------------
+	const router = useRouter();
 	const { user } = useAuth();
 	const params = useParams<{
 		productId: string;
@@ -92,8 +93,19 @@ export default function ProductReviewList({ productReviewList = [] }: ProductRev
 								</div>
 								{isMyReview && (
 									<div className="px-3 pb-2 text-right">
+										{/* 작성 7일까지 수정가능 */}
+										{moment(review.reviewDate).isSameOrAfter(moment().subtract(7, "days"), "day") && (
+											<button
+												className="text-base text-orange-400"
+												onClick={() => {
+													router.push(`/mypage/review/${review.orderItemId}`);
+												}}
+											>
+												수정하기
+											</button>
+										)}
 										<button
-											className="text-base text-red-600"
+											className="ml-2 text-base text-red-600"
 											onClick={() => {
 												openDialog("CONFIRM", {
 													content: "리뷰를 삭제하시겠습니까?",

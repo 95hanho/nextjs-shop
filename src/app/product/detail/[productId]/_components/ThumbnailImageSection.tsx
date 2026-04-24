@@ -49,45 +49,52 @@ export default function ThumbnailImageSection({ productImageList }: ThumbnailIma
 	if (!currentImage) return null;
 	return (
 		<div className={styles.productImageSection}>
-			<div className={styles.productImageArea} onMouseEnter={handleMouseEnter} onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave}>
-				<SmartImage src={getUploadImageUrl(currentImage.filePath)} width={900} height={900} objectFit="contain" />
-				{/* 마우스 오버 시 확대할 곳 마우스 따라다니는 영역 */}
+			<div className={styles.productImageAreaWrap}>
 				<div
-					className={styles.productImageEnlargeMouse}
-					style={{
-						display: isHovering ? "block" : "none",
-						left: `${lensPosition.x}px`,
-						top: `${lensPosition.y}px`,
-					}}
-				></div>
-			</div>
-			<div className={styles.productImageList}>
-				{productImageList.map((image: FileInfo & { productId: number }) => (
+					className={styles.productImageArea}
+					onMouseEnter={handleMouseEnter}
+					onMouseMove={handleMouseMove}
+					onMouseLeave={handleMouseLeave}
+				>
+					<SmartImage src={getUploadImageUrl(currentImage.filePath)} width={900} height={900} objectFit="contain" />
+					{/* 마우스 오버 시 확대할 곳 마우스 따라다니는 영역 */}
 					<div
-						key={"productImageList-" + image.fileId}
-						className={clsx(styles.productImageItem, currentImage.fileId === image.fileId && styles.active)}
-						onMouseEnter={() => {
-							setCurrentImage(image);
-							setIsHovering(false);
-							setLensPosition({ x: 0, y: 0 });
+						className={styles.productImageEnlargeMouse}
+						style={{
+							display: isHovering ? "block" : "none",
+							left: `${lensPosition.x}px`,
+							top: `${lensPosition.y}px`,
 						}}
-					>
-						<SmartImage src={getUploadImageUrl(image.filePath)} width={40} height={40} alt={image.fileName} />
-					</div>
-				))}
+					></div>
+				</div>
+				<div className={styles.productImageList}>
+					{productImageList.map((image: FileInfo & { productId: number }) => (
+						<div
+							key={"productImageList-" + image.fileId}
+							className={clsx(styles.productImageItem, currentImage.fileId === image.fileId && styles.active)}
+							onMouseEnter={() => {
+								setCurrentImage(image);
+								setIsHovering(false);
+								setLensPosition({ x: 0, y: 0 });
+							}}
+						>
+							<SmartImage src={getUploadImageUrl(image.filePath)} width={40} height={40} alt={image.fileName} />
+						</div>
+					))}
+				</div>
+				{/* 마우스 오버 시 확대 이미지 표시할 영역 */}
+				{isHovering && (
+					<div
+						className={styles.productImageEnlargeView}
+						style={{
+							backgroundImage: `url(${currentImage.filePath})`,
+							backgroundRepeat: "no-repeat",
+							backgroundPosition: `${bgPosX}% ${bgPosY}%`,
+							backgroundSize: `${zoomScale * 100}%`,
+						}}
+					></div>
+				)}
 			</div>
-			{/* 마우스 오버 시 확대 이미지 표시할 영역 */}
-			{isHovering && (
-				<div
-					className={styles.productImageEnlargeView}
-					style={{
-						backgroundImage: `url(${currentImage.filePath})`,
-						backgroundRepeat: "no-repeat",
-						backgroundPosition: `${bgPosX}% ${bgPosY}%`,
-						backgroundSize: `${zoomScale * 100}%`,
-					}}
-				></div>
-			)}
 		</div>
 	);
 }

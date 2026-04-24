@@ -34,7 +34,13 @@ export const ProductItem = ({ product, wishProductIds }: ProductItemProps) => {
 						items={product.productImageList}
 						renderItem={(item) => (
 							<div className={styles.imageBox}>
-								<SmartImage src={getUploadImageUrl(item.filePath)} fill objectFit={"cover"} className={styles.productImg} />
+								<SmartImage
+									src={getUploadImageUrl(item.filePath)}
+									alt={item.fileName}
+									fill
+									objectFit={"cover"}
+									className={styles.productImg}
+								/>
 							</div>
 						)}
 						pagination
