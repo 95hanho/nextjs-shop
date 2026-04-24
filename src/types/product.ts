@@ -180,6 +180,10 @@ export type ProductReviewItem = Review & {
 };
 export interface GetProductDetailReviewResponse extends BaseResponse {
 	productReviewList: ProductReviewItem[];
+	page: number;
+	// size: number;
+	// totalCount: number;
+	totalPage: number;
 }
 /* 제품 상세보기 Q&A 조회 */
 export type ProductQnaItem = ProductQna & {
