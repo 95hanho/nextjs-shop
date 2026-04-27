@@ -1,3 +1,5 @@
+"use client";
+
 import { MainProduct } from "@/types/main";
 import { useRef, useState } from "react";
 import styles from "./ProductSlider.module.scss";

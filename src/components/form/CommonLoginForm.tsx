@@ -62,7 +62,7 @@ export const CommonLoginForm = ({ apiUrl, redirectTo, invalidateKeys, loginIdFie
 			console.log(a);
 		},
 		onSuccess: async () => {
-			alert("로그인!");
+			openDialog("ALERT", { content: "로그인 되었습니다." });
 			await queryClient.invalidateQueries({ queryKey: invalidateKeys });
 
 			// ✅ state에 저장된 returnUrl 사용

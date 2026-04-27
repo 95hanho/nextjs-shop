@@ -53,6 +53,13 @@
 			&.on {
 				background-color: #f0f0f0;
 			}
+			&.disabled {
+				color: #ccc;
+				cursor: not-allowed;
+				&:hover {
+					background-color: transparent;
+				}
+			}
 			&:hover {
 				background-color: #e6e6e6;
 			}

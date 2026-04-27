@@ -7,10 +7,11 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Menu } from "@/types/main";
 import { HeaderMenu } from "../components/common/HeaderMenu";
-import { Nav } from "../components/common/Nav";
+// import { Nav } from "../components/common/Nav";
 import { useAuth } from "@/hooks/useAuth";
 import { useGetUserInfo } from "@/hooks/query/auth/useGetUserInfo";
 import { isAuthRequiredPath } from "@/utils/auth";
+import { MenuButton } from "@/components/common/MenuButton";
 
 interface HeaderProps {
 	menuList: Menu[];
@@ -71,13 +72,14 @@ export default function Header({ menuList }: HeaderProps) {
 
 	return (
 		<>
-			<header ref={headerRef} className="flex items-center justify-center py-5 bg-slate-50 z-[1000] h-12 sticky top-0">
+			<header ref={headerRef} className="flex items-center justify-between py-5 bg-slate-50 z-[1000] h-12 sticky top-0">
+				<MenuButton menuList={menuList} />
 				<h1 className={styles.title}>
 					<Link href={"/"} className="text-3xl" prefetch={false}>
 						NEXTJS-SHOP
 					</Link>
 				</h1>
-				<div className="absolute flex items-center right-5">
+				<div className="flex items-center mr-5">
 					<div className={styles.headerBtn}>
 						{user.name && `${user.name}님`}
 						<button onClick={() => set_isOpen(!isOpen)}>
@@ -118,7 +120,7 @@ export default function Header({ menuList }: HeaderProps) {
 					</div>
 				</div>
 			</header>
-			{!pathname?.startsWith("/user") && <Nav menuList={menuList} />}
+			{/* {!pathname?.startsWith("/user") && <Nav menuList={menuList} />} */}
 		</>
 	);
 }

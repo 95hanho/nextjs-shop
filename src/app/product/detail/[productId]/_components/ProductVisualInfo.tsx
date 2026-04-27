@@ -139,6 +139,7 @@ export default function ProductVisualInfo({ productDetail, reviewCount, reviewRa
 				return {
 					id: v.productOptionId,
 					val: v.size + (v.addPrice > 0 ? `(+ ${money(v.addPrice)})` : "") + (v.stock <= 10 ? ` - [${v.stock}개 남음]` : ""),
+					disabled: v.stock <= 0,
 				};
 			}),
 		);

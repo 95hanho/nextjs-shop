@@ -184,6 +184,7 @@ export interface GetProductDetailReviewResponse extends BaseResponse {
 	// size: number;
 	// totalCount: number;
 	totalPage: number;
+	initReviewImageList?: ReviewImage[];
 }
 /* 제품 상세보기 Q&A 조회 */
 export type ProductQnaItem = ProductQna & {
