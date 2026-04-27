@@ -1,27 +1,25 @@
 import { MainProductResponse } from "@/types/main";
 
-// import { ProductSlider } from "@/components/main/ProductSlider";
 import API_URL from "@/api/endpoints";
 import { getNormal } from "@/api/fetchFilter";
 import { getApiUrl } from "@/lib/getBaseUrl";
+import MainClient from "@/app/MainClient";
 
 export default async function Home() {
-	return <h1>테스트중</h1>;
+	const productsData = await getNormal<MainProductResponse>(getApiUrl(API_URL.MAIN));
 
-	const products_data = await getNormal<MainProductResponse>(getApiUrl(API_URL.MAIN));
-	// const products_data = await getNormal<MainProductResponse>("/api" + API_URL.MAIN);
-	if (!products_data) {
+	console.log({ productList: productsData.productList });
+
+	// return <h1>테스트중</h1>;
+
+	if (!productsData) {
 		return null;
 	}
-	const productList = products_data.productList;
+	const productList = productsData.productList;
 
 	return (
 		<main id="main">
-			<div>
-				<ProductSlider productList={productList} />
-				<ProductSlider productList={productList} right />
-				<ProductSlider productList={productList} />
-			</div>
+			<MainClient productList={productList} />
 		</main>
 	);
 }
