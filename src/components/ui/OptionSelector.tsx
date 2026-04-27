@@ -8,7 +8,7 @@ interface OptionSelectorProps {
 	optionSelectorName: string;
 	initData: { id: number; val: string };
 	pickIdx?: number;
-	optionList?: { id: number; val: string; description?: string }[];
+	optionList?: { id: number; val: string; description?: string; disabled?: boolean }[];
 	changeOption?: (pickIdx: number, id: number) => void;
 	variant?: "default" | "addressModal";
 	inputColor?: string;
@@ -68,7 +68,9 @@ export const OptionSelector = forwardRef((props: OptionSelectorProps, ref: React
 							return (
 								<li
 									key={optionSelectorName + "-optionItem" + option.id}
-									className={`${pickIdx === optionIdx ? styles.on : ""}`}
+									className={clsx(pickIdx === optionIdx && styles.on, {
+										[styles.disabled]: option.disabled,
+									})}
 									onClick={() => {
 										if (changeOption) changeOption(optionIdx, option.id);
 										setOpenOptionList(false);

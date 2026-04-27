@@ -1,5 +1,7 @@
+import { PrepareReviewModalListParams, PrepareReviewModalListReturn } from "@/app/product/detail/[productId]/_components/ProductReview";
 import { AddressForm } from "@/components/modal/domain/ShippingAddressEditorModal";
 import { CartItem, UserAddressListItem } from "@/types/mypage";
+import { ProductReviewItem } from "@/types/product";
 import {
 	AddCouponRequest,
 	AddProductOptionBase,
@@ -66,6 +68,10 @@ export type DialogPropsMap = {
 export type DomainModalPropsMap = {
 	PRODUCT_REVIEW: DomainModalCommon & {
 		reviewImageId: number;
+		initReviewList: ProductReviewItem[];
+		initPrevPage: number;
+		initNextPage: number;
+		fetchMoreReviewImages: (params: PrepareReviewModalListParams) => Promise<PrepareReviewModalListReturn>;
 	};
 	PRODUCT_OPTION: DomainModalCommon & {
 		product: CartItem;

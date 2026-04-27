@@ -17,9 +17,10 @@ import { useGlobalDialogStore } from "@/store/globalDialog.store";
 interface ProductReviewListProps {
 	productReviewData: GetProductDetailReviewResponse;
 	turnPage: (page: number) => void;
+	openReviewModal: (reviewImageId: number) => void;
 }
 
-export default function ProductReviewList({ productReviewData, turnPage }: ProductReviewListProps) {
+export default function ProductReviewList({ productReviewData, turnPage, openReviewModal }: ProductReviewListProps) {
 	// 1) [store / custom hooks] -------------------------------------------
 	const router = useRouter();
 	const { user } = useAuth();
@@ -82,7 +83,12 @@ export default function ProductReviewList({ productReviewData, turnPage }: Produ
 								<div className="flex justify-between py-3">
 									<span className={clsx(styles.reviewContent, "content-center")}>{review.content}</span>
 									{review.reviewImages.length > 0 && (
-										<button className={styles.reviewImages}>
+										<button
+											className={styles.reviewImages}
+											onClick={() => {
+												openReviewModal(review.reviewImages[0].reviewImageId);
+											}}
+										>
 											<SmartImage
 												src={getUploadImageUrl(review.reviewImages[0].filePath)}
 												alt={review.reviewImages[0].fileName}

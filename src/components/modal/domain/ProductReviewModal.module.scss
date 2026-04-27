@@ -1,29 +1,38 @@
 /* 모바일 */
 .productReviewModal {
-	width: 100vw;
+	width: 100%;
 	header.thumbRow {
-		display: flex;
-		gap: 8px;
-		overflow-x: auto;
 		padding-bottom: 4px;
-		scrollbar-width: thin;
-		.thumbItem {
-			position: relative;
-			flex: 0 0 auto;
-			width: 64px;
-			height: 64px;
-			border: 1px solid #ddd;
-			border-radius: 8px;
-			overflow: hidden;
-		}
-		.thumbItem.active {
-			border: 2px solid #f97316;
+		position: relative;
+		width: 100%;
+		overflow-x: auto;
+		scrollbar-width: none;
+		.thumbList {
+			display: flex;
+			gap: 5px;
+			justify-content: flex-start; // 변경
+			width: max-content; // 추가 추천
+			min-width: 100%; // 7개보다 적을 때는 영역 채움
+			.thumbItem {
+				position: relative;
+				flex: 0 0 auto;
+				width: calc(100% / 7 - 5px);
+				aspect-ratio: 1/1;
+				border: 1px solid #ddd;
+				border-radius: 8px;
+				overflow: hidden;
+				background-color: #eee;
+			}
+			.thumbItem.active {
+				border: 2px solid #000000;
+			}
 		}
 	}
 	nav {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
+		margin-top: 5px;
 		.reviewImageContainer {
 			position: relative;
 			width: 100%;
