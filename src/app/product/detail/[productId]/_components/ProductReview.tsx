@@ -219,7 +219,7 @@ export default function ProductReview({ reviewCount, reviewRate }: ProductReview
 						<span className="ml-2">
 							<ReviewStar rate={reviewRate} />
 						</span>
-						<span className="inline-flex items-center mt-2 ml-2 text-xs">{reviewRate.toFixed(1)}</span>
+						<span className="inline-flex items-center mt-2 ml-2 text-xs">{reviewRate?.toFixed(1)}</span>
 					</h2>
 					<div className="px-2">
 						{/* 사진 모음 */}

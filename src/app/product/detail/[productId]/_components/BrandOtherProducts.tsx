@@ -53,6 +53,11 @@ export default function BrandOtherProducts({ sellerOtherProducts }: { sellerOthe
 											/>
 										</div>
 									)}
+									{item.soldOut && (
+										<div className={styles.soldOutOverlay}>
+											<span className={styles.soldOutText}>품절</span>
+										</div>
+									)}
 								</div>
 								<div className={styles.slideProductName}>
 									<p>{item.name}</p>

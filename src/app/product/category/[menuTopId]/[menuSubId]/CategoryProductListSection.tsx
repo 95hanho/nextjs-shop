@@ -85,6 +85,7 @@ export default function CategoryProductListSection({ productList, fetchNextPage,
 								finalPrice: productItem.finalPrice,
 								viewCount: productItem.viewCount,
 								wishCount: productItem.wishCount,
+								soldOut: productItem.soldOut,
 							}}
 							wishProductIds={wishProductIds}
 						/>

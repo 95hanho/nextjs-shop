@@ -279,14 +279,16 @@ export type wishlistItem = {
 	wishId: number;
 	createdAt: string;
 	productId: number;
-	name: string;
+	productName: string;
 	originPrice: number;
 	finalPrice: number;
 	likeCount: number;
 	viewCount: number;
 	wishCount: number;
-	productImageList: FileInfo[];
+	saleStop: boolean;
+	soldOut: boolean;
 	sellerName: string;
+	productImageList: FileInfo[];
 };
 export interface GetWishListResponse extends BaseResponse {
 	wishlistItems: wishlistItem[];

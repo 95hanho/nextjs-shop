@@ -4,10 +4,15 @@ import Link from "next/link";
 import styles from "./MenuButton.module.scss";
 import { useMemo, useState } from "react";
 
-export const MenuButton = ({ menuList }: { menuList: Menu[] }) => {
+interface MenuButtonProps {
+	menuList: Menu[];
+	showMenu: boolean;
+	setShowMenu: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+export const MenuButton = ({ menuList, showMenu, setShowMenu }: MenuButtonProps) => {
 	// 2) [useState / useRef] ----------------------------------------------
 	const [activeGender, setActiveGender] = useState<string>("M");
-	const [showMenu, setShowMenu] = useState<boolean>(false);
 
 	// 4) [derived values / useMemo] ---------------------------------------
 	const maleMenuList = menuList.filter((menu) => menu.gender === "M");
@@ -15,13 +20,17 @@ export const MenuButton = ({ menuList }: { menuList: Menu[] }) => {
 	const showMenuList = useMemo(() => (activeGender === "M" ? maleMenuList : femaleMenuList), [activeGender, maleMenuList, femaleMenuList]);
 
 	return (
-		<div className="relative flex items-center ml-4" onMouseEnter={() => setShowMenu(true)}>
+		<div className="relative flex items-center ml-4">
 			{["M", "F"].map((gender) => (
 				<button
 					key={"menu-gender-" + gender}
 					className={clsx(styles.genderBtn, `${activeGender === gender ? "active" : ""}`)}
 					onClick={() => {
-						setActiveGender(gender);
+						if (showMenu && activeGender !== gender) {
+							setActiveGender(gender);
+						} else {
+							setShowMenu((prev) => !prev);
+						}
 					}}
 				>
 					{gender === "M" ? "남자" : "여자"}

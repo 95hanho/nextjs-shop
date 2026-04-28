@@ -3,5 +3,9 @@
 import CartClient from "./CartClient";
 
 export default function Cart() {
-	return <CartClient />;
+	return (
+		<main id="cart">
+			<CartClient />
+		</main>
+	);
 }

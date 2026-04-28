@@ -11,17 +11,16 @@ interface ImageSlideProps<T> {
 	className?: string;
 	mode?: Mode;
 	getItemKey?: (item: T, index: number) => string | number;
-	slidesPerView?: number;
+	slidesPerView?: number | "auto";
 	spaceBetween?: number;
+	speed?: number;
 	/** 페이지네이션 연동이 필요하면 */
 	onPageChange?: (info: { page: number; totalPages: number; swiper: SwiperType }) => void;
 	/** 외부에서 prev/next 누르려고 ref로 받기 */
 	onReady?: (handle: ImageSlideHandle) => void;
 	items: T[];
 	renderItem: (item: T, index: number) => ReactNode;
-	autoplay?: {
-		delay: number;
-	};
+	autoplay?: SwiperProps["autoplay"];
 	loop?: boolean;
 	pagination?: boolean;
 }
@@ -31,6 +30,7 @@ export const ImageSlide = <T,>({
 	mode = "slide",
 	slidesPerView = 5,
 	spaceBetween = 20,
+	speed,
 	onPageChange,
 	onReady,
 	items,
@@ -48,6 +48,10 @@ export const ImageSlide = <T,>({
 	// 5) [handlers / useCallback] -----------------------------------------
 	// 페이지네이션 계산 함수 (Swiper의 snapGrid 기준)
 	const computePageInfo = (swiper: SwiperType) => {
+		if (slidesPerView === "auto") {
+			return { page: swiper.activeIndex + 1, totalPages: items.length };
+		}
+
 		const totalPages = Math.max(1, Math.ceil(items.length / slidesPerView));
 		const page = Math.min(totalPages, Math.floor((swiper.activeIndex ?? 0) / slidesPerView) + 1);
 
@@ -71,16 +75,16 @@ export const ImageSlide = <T,>({
 				const swiper = swiperRef.current;
 				if (!swiper) return;
 
-				const totalPages = Math.max(1, Math.ceil(items.length / slidesPerView));
+				const totalPages = Math.max(1, Math.ceil(items.length / (slidesPerView === "auto" ? 1 : slidesPerView)));
 				const clampedPage = Math.min(totalPages, Math.max(1, page));
-				const targetIndex = (clampedPage - 1) * slidesPerView;
+				const targetIndex = (clampedPage - 1) * (slidesPerView === "auto" ? 1 : slidesPerView);
 				swiper.slideTo(targetIndex);
 			},
 			slidePrevByGroup: () => {
 				const swiper = swiperRef.current;
 				if (!swiper) return;
 
-				const step = slidesPerView;
+				const step = slidesPerView === "auto" ? 1 : slidesPerView;
 				const nextIndex = Math.max(0, (swiper.activeIndex ?? 0) - step);
 				swiper.slideTo(nextIndex);
 			},
@@ -88,8 +92,8 @@ export const ImageSlide = <T,>({
 				const swiper = swiperRef.current;
 				if (!swiper) return;
 
-				const step = slidesPerView;
-				const maxIndex = Math.max(0, items.length - slidesPerView);
+				const step = slidesPerView === "auto" ? 1 : slidesPerView;
+				const maxIndex = Math.max(0, items.length - (slidesPerView === "auto" ? 1 : slidesPerView));
 				const nextIndex = Math.min(maxIndex, (swiper.activeIndex ?? 0) + step);
 				swiper.slideTo(nextIndex);
 			},
@@ -105,6 +109,7 @@ export const ImageSlide = <T,>({
 
 	// 슬라이드 모드별 기본 설정
 	const commonSwiperProps: Partial<SwiperProps> = {
+		speed,
 		onSwiper: (swiper: SwiperType) => {
 			swiperRef.current = swiper;
 			syncPageInfo(swiper);

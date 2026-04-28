@@ -40,21 +40,19 @@ export default function ProductDetailClient({ productDetailResponse }: ProductDe
 	};
 
 	return (
-		<main id="productDetail">
-			<div className={styles.productDetail}>
-				{/* 상품 사진 및 가격배송 정보 */}
-				<ProductVisualInfo {...productVisualInfoProps} />
-				{/* 업체등록 상품 상세 블로그 */}
-				<ProductDescriptionSection />
-				{/* 상품정보 보기, 판매자 정보 */}
-				<ProductInfoSection productDetail={productDetailResponse.productDetail} />
-				{/* 상품 리뷰 */}
-				<ProductReview {...ProductReviewProps} />
-				{/* 상품 QnA */}
-				<QuestionAnswer sellerName={productDetailResponse.productDetail.sellerName} />
-				{/* 배송정보, 교환, 환불, A/S안내, 같은 카테고리 추천 */}
-				<ProductEtcInfoSection />
-			</div>
-		</main>
+		<div className={styles.productDetail}>
+			{/* 상품 사진 및 가격배송 정보 */}
+			<ProductVisualInfo {...productVisualInfoProps} />
+			{/* 업체등록 상품 상세 블로그 */}
+			<ProductDescriptionSection />
+			{/* 상품정보 보기, 판매자 정보 */}
+			<ProductInfoSection productDetail={productDetailResponse.productDetail} />
+			{/* 상품 리뷰 */}
+			<ProductReview {...ProductReviewProps} />
+			{/* 상품 QnA */}
+			<QuestionAnswer sellerName={productDetailResponse.productDetail.sellerName} />
+			{/* 배송정보, 교환, 환불, A/S안내, 같은 카테고리 추천 */}
+			<ProductEtcInfoSection />
+		</div>
 	);
 }

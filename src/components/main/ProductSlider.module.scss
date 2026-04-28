@@ -1,57 +1,25 @@
 .productSlider {
 	user-select: none;
+	width: 100%;
+	overflow: hidden;
 }
 
-.marqueeContainer {
-	overflow: hidden;
+.productSwiper {
 	width: 100%;
 
-	// 마우스 호버 시 일시정지
-	&:hover .marqueeTrack {
-		animation-play-state: paused;
+	:global(.swiper-wrapper) {
+		transition-timing-function: linear !important;
+		align-items: stretch;
+	}
+
+	:global(.swiper-slide) {
+		width: auto;
 	}
 }
-
-// 상태 기반 일시정지
-.paused {
-	.marqueeTrack {
-		animation-play-state: paused !important;
-	}
-}
-
-.marqueeTrack {
-	display: flex;
-	width: max-content;
-	animation: scrollLeft 30s linear infinite;
-}
-
-.right {
-	animation: scrollRight 30s linear infinite;
-}
-
-@keyframes scrollLeft {
-	0% {
-		transform: translateX(0);
-	}
-	100% {
-		transform: translateX(-50%);
-	}
-}
-
-@keyframes scrollRight {
-	0% {
-		transform: translateX(-50%);
-	}
-	100% {
-		transform: translateX(0);
-	}
-}
-
 .productItem {
 	position: relative;
-	flex: 0 0 auto;
-	margin-right: 20px;
 	height: 300px;
+	width: auto;
 
 	img {
 		height: 100%;
@@ -72,14 +40,4 @@
 	&:hover {
 		text-decoration: underline;
 	}
-}
-
-.marqueeToggleBtn {
-	margin-top: 10px;
-	padding: 6px 12px;
-	background-color: #444;
-	color: white;
-	border: none;
-	border-radius: 6px;
-	cursor: pointer;
 }

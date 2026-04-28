@@ -511,7 +511,7 @@ export default function CartClient() {
 	};
 
 	return (
-		<main id="cart" className={styles.cart}>
+		<div className={styles.cart}>
 			<div className={styles.cartFrame}>
 				<h1 className={`${styles.cartTitle} py-3`}>장바구니</h1>
 
@@ -526,6 +526,6 @@ export default function CartClient() {
 					<CartSummaryAside {...CartSummaryAsideProps} />
 				</div>
 			</div>
-		</main>
+		</div>
 	);
 }

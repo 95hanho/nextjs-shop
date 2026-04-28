@@ -3,7 +3,7 @@ import { getNormal } from "@/api/fetchFilter";
 import CategoryProductListClient from "./CategoryProductListClient";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { GetProductListRequest, GetProductListResponse } from "@/types/product";
-import { cookies, headers } from "next/headers";
+// import { cookies, headers } from "next/headers";
 import { MenuResponse } from "@/types/main";
 
 interface ProductListParams {
@@ -18,7 +18,7 @@ interface ProductListParams {
 	};
 }
 
-export default async function CategoryProductList({ params: { menuSubId, menuTopId }, searchParams: { keyword, page = 1 } }: ProductListParams) {
+export default async function CategoryProductList({ params: { menuSubId, menuTopId } }: ProductListParams) {
 	// const accessToken = cookies().get("accessToken")?.value || headers().get("accessToken") || undefined;
 	// console.log("서버에서 accessToken", accessToken);
 

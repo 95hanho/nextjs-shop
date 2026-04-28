@@ -101,6 +101,7 @@ export type GetProductListRequest = {
 export type ProductItem = Product & {
 	sellerId: "seller07";
 	sellerName: "Casual Mood";
+	soldOut: boolean;
 	productImageList: FileInfo[];
 };
 export interface GetProductListResponse {
@@ -167,6 +168,7 @@ export interface GetProductDetailImageResponse extends BaseResponse {
 export type OtherProduct = Product & {
 	sellerName: string;
 	wished: boolean; // 해당 유저 위시 여부
+	soldOut: boolean;
 } & FileInfo;
 export interface SellerLikeAndOtherProductsResponse extends BaseResponse {
 	isSellerLiked: boolean;

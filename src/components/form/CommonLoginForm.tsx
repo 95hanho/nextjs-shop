@@ -77,7 +77,7 @@ export const CommonLoginForm = ({ apiUrl, redirectTo, invalidateKeys, loginIdFie
 		},
 		onError(err) {
 			console.log(err);
-			if (err.message === "USER_NOT_FOUND" || err.message === "LOGIN_FAILED") {
+			if (err.message === "USER_NOT_FOUND" || err.message === "LOGIN_FAILED" || err.message === "SELLER_NOT_FOUND") {
 				console.error(err.message);
 				openDialog("ALERT", {
 					content: "아이디 또는 비밀번호가 일치하지 않습니다.",
@@ -116,7 +116,8 @@ export const CommonLoginForm = ({ apiUrl, redirectTo, invalidateKeys, loginIdFie
 			loginData.id = testAdmin.id;
 			loginData.password = testAdmin.password;
 		}
-	}, [pathname]);
+		setLoginForm({ [loginIdField]: loginData.id, password: loginData.password });
+	}, [pathname, loginIdField]);
 	useEffect(() => {
 		const url = searchParams.get("returnUrl");
 		const params = new URLSearchParams(searchParams);
