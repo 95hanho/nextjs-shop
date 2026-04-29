@@ -62,18 +62,21 @@ export const CommonLoginForm = ({ apiUrl, redirectTo, invalidateKeys, loginIdFie
 			console.log(a);
 		},
 		onSuccess: async () => {
-			openDialog("ALERT", { content: "로그인 되었습니다." });
-			await queryClient.invalidateQueries({ queryKey: invalidateKeys });
-
-			// ✅ state에 저장된 returnUrl 사용
-			if (returnUrl) {
-				console.log("returnUrl 존재, 이동:", returnUrl);
-				const target = decodeURIComponent(returnUrl ?? redirectTo);
-				window.location.assign(target); // ✅ 무조건 서버로 다시 요청 → middleware 확실히 탐
-			} else {
-				console.log("returnUrl 없음, 기본 이동:", redirectTo);
-				router.push(redirectTo);
-			}
+			await queryClient.invalidateQueries({ queryKey: invalidateKeys }); // 로그인 후 해당 info 초기화
+			openDialog("ALERT", {
+				content: "로그인 되었습니다.",
+				handleAfterClose: () => {
+					// ✅ state에 저장된 returnUrl 사용
+					if (returnUrl) {
+						console.log("returnUrl 존재, 이동:", returnUrl);
+						const target = decodeURIComponent(returnUrl ?? redirectTo);
+						window.location.replace(target); // ✅ 무조건 서버로 다시 요청 → middleware 확실히 탐
+					} else {
+						console.log("returnUrl 없음, 기본 이동:", redirectTo);
+						router.push(redirectTo);
+					}
+				},
+			});
 		},
 		onError(err) {
 			console.log(err);

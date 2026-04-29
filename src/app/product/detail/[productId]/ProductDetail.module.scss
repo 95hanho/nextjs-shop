@@ -298,6 +298,7 @@
 
 				.installmentInfo {
 					margin-bottom: 5px;
+					display: flex;
 
 					b {
 						margin-top: 5px;
@@ -314,6 +315,7 @@
 
 						p {
 							vertical-align: text-top;
+							font-size: 11px;
 						}
 
 						> div {
@@ -448,6 +450,7 @@
 	/* 업체등록 상품 상세 블로그 */
 	section.productDescription {
 		.descriptionToggle {
+			// margin-top: 140px;
 			border-bottom: 1px solid #e4e4e4;
 
 			button {
@@ -499,6 +502,7 @@
 
 			.productBlogWrap {
 				padding: 0 60px;
+				min-height: 300px;
 				max-height: 500px;
 				overflow: hidden;
 				&.open {
@@ -527,7 +531,15 @@
 				font-weight: bold;
 				width: 100%;
 				margin-top: 10px;
-
+				&.close::after {
+					position: absolute;
+					left: 0px;
+					right: 0px;
+					bottom: calc(100% + 1px);
+					height: 160px;
+					background: linear-gradient(rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 100%);
+					content: "";
+				}
 				> div {
 					display: flex;
 					align-items: center;
@@ -545,16 +557,6 @@
 							display: inline;
 						}
 					}
-				}
-
-				&::after {
-					position: absolute;
-					left: 0px;
-					right: 0px;
-					bottom: calc(100% + 1px);
-					height: 160px;
-					background: linear-gradient(rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 100%);
-					content: "";
 				}
 			}
 		}

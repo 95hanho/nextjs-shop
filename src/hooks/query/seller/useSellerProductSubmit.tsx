@@ -2,6 +2,7 @@ import API_URL from "@/api/endpoints";
 import { postJson, postMultipart, putJson } from "@/api/fetchFilter";
 import { ProductSetForm } from "@/components/seller/product/ProductSetForm";
 import { getApiUrl } from "@/lib/getBaseUrl";
+import { useGlobalDialogStore } from "@/store/globalDialog.store";
 import { BaseResponse } from "@/types/common";
 import { AddFile, AddSellerProductRequest, SetSellerProductImageRequest, UpdateFile, UpdateSellerProductRequest } from "@/types/seller";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -12,6 +13,7 @@ export function useSellerProductSubmit() {
 	// 1) [store / custom hooks] -------------------------------------------
 	const router = useRouter();
 	const queryClient = useQueryClient();
+	const { openDialog } = useGlobalDialogStore();
 
 	// 3) [useQuery / useMutation] -----------------------------------------
 	// 제품 추가
@@ -102,6 +104,9 @@ export function useSellerProductSubmit() {
 				} else if (type === "UPDATE") {
 					console.log("이미지 설정 API 요청");
 					queryClient.invalidateQueries({ queryKey: ["sellerProductDetail", productId] });
+					openDialog("ALERT", {
+						content: "제품이 수정되었습니다.",
+					});
 				}
 			});
 		}

@@ -94,7 +94,7 @@ export default function SellerInfoSection({ productDetail }: { productDetail: Pr
 				</tbody>
 			</table>
 
-			<div className={styles.relatedBrandProducts}>
+			{/* <div className={styles.relatedBrandProducts}>
 				<div className={styles.brandThumbnail}>
 					{loginOn && (
 						<button
@@ -115,7 +115,7 @@ export default function SellerInfoSection({ productDetail }: { productDetail: Pr
 						</span>
 					</a>
 				</div>
-			</div>
+			</div> */}
 
 			{/* 판매자 다른 상품 */}
 			<BrandOtherProducts sellerOtherProducts={sellerOtherProducts} />

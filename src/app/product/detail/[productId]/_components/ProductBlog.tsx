@@ -54,7 +54,10 @@ export default function ProductBlog() {
 				))}
 			</div>
 
-			<button className={styles.descriptionMoreBtn} onClick={() => setOpenProductBlog(!openProductBlog)}>
+			<button
+				className={clsx(styles.descriptionMoreBtn, { [styles.close]: !openProductBlog })}
+				onClick={() => setOpenProductBlog(!openProductBlog)}
+			>
 				<div>
 					<span>상품 설명 {openProductBlog ? "닫기" : "더보기"}</span>
 					<span className={styles.moreIcon}>{openProductBlog ? <IoIosArrowUp /> : <IoIosArrowDown />}</span>

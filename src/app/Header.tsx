@@ -27,15 +27,12 @@ export default function Header({ menuList }: HeaderProps) {
 
 	// 2) [useState / useRef] ----------------------------------------------
 	const headerRef = useRef<HTMLInputElement | null>(null);
-	const [showMenu, setShowMenu] = useState<boolean>(false);
 	const [isOpen, set_isOpen] = useState<boolean>(false);
 
 	// 4) [derived values / useMemo] ---------------------------------------
 	// 로그인 href
-	const loginHref =
-		pathname.startsWith("/user") || pathname === "/"
-			? "/user"
-			: `/user?returnUrl=${encodeURIComponent(pathname + `?${searchParams.toString()}`)}`;
+	const isUserPath = pathname.startsWith("/user") || pathname === "/";
+	const loginHref = isUserPath ? "/user" : `/user?returnUrl=${encodeURIComponent(pathname + `?${searchParams.toString()}`)}`;
 
 	// 5) [handlers / useCallback] -----------------------------------------
 	const menuMouseleave = () => {
@@ -73,12 +70,8 @@ export default function Header({ menuList }: HeaderProps) {
 
 	return (
 		<>
-			<header
-				ref={headerRef}
-				className="flex items-center justify-between py-5 bg-slate-50 z-[1000] h-12 sticky top-0"
-				onMouseLeave={() => setShowMenu(false)}
-			>
-				<MenuButton menuList={menuList} showMenu={showMenu} setShowMenu={setShowMenu} />
+			<header ref={headerRef} className="flex items-center justify-between py-5 bg-slate-50 z-[1000] h-12 sticky top-0">
+				<MenuButton menuList={menuList} />
 				<h1 className={styles.title}>
 					<Link href={"/"} className="text-3xl" prefetch={false}>
 						NEXTJS-SHOP
@@ -97,7 +90,7 @@ export default function Header({ menuList }: HeaderProps) {
 									</Link>,
 									<>
 										{!user.name ? (
-											<Link key="login" href={loginHref} prefetch={false}>
+											<Link key="login" href={loginHref} prefetch={false} replace={!isUserPath}>
 												로그인
 											</Link>
 										) : (
