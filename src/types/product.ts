@@ -102,6 +102,7 @@ export type ProductItem = Product & {
 	sellerId: "seller07";
 	sellerName: "Casual Mood";
 	soldOut: boolean;
+	wishId: number | null;
 	productImageList: FileInfo[];
 };
 export interface GetProductListResponse {

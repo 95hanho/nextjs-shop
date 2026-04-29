@@ -48,6 +48,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 		// -- React Query 캐시 무효화
 		// 로그인 회원 정보 초기화
 		queryClient.setQueryData(["me"], initUser); // 직접 캐시 업데이트
+		// 제품 카테고리 리스트 페이지 일 시 제품 카테고리 리스트 정보 갱신
+		if (pathname.startsWith("/product/category/")) {
+			queryClient.removeQueries({ queryKey: ["productList"] }); // 캐시 제거
+		}
 		// 제품 상세보기 페이지 일 시 제품상세 정보 갱신 (특히 위시 정보)
 		if (pathname.startsWith("/product/detail/")) {
 			queryClient.invalidateQueries({ queryKey: ["productDetail"] });

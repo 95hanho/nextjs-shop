@@ -107,9 +107,10 @@ export default function WishClient() {
 									finalPrice: wishItem.finalPrice,
 									viewCount: wishItem.viewCount,
 									wishCount: wishItem.wishCount,
+									soldOut: wishItem.soldOut,
 									saleStop: wishItem.saleStop,
+									wishId: 1, // 위시리스트에서는 무조건 true라서 임의이 값 넣음
 								}}
-								wishProductIds={[]}
 							/>
 						);
 					})}

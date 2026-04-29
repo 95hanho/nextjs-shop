@@ -75,11 +75,12 @@ export const WishButton = ({ initWishOn, productId, bottom = 1, right = 1, size 
 	const changeWish = async (e: MouseEvent) => {
 		e.stopPropagation(); // 클릭 이벤트가 부모 요소로 전파되는 것을 방지
 		e.preventDefault();
-		setWishOn(!wishOn);
-		await mutateAsync(productId);
-		if (clickHandler) {
-			clickHandler();
-		}
+		await mutateAsync(productId).then(() => {
+			setWishOn(!wishOn);
+			if (clickHandler) {
+				clickHandler();
+			}
+		});
 	};
 
 	// 6) [useEffect] ------------------------------------------------------

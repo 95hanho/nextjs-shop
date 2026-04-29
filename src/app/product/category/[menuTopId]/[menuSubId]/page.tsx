@@ -1,10 +1,11 @@
 import API_URL from "@/api/endpoints";
-import { getNormal } from "@/api/fetchFilter";
+import { getNormal, RequestHeaders } from "@/api/fetchFilter";
 import CategoryProductListClient from "./CategoryProductListClient";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { GetProductListRequest, GetProductListResponse } from "@/types/product";
 // import { cookies, headers } from "next/headers";
 import { MenuResponse } from "@/types/main";
+import { cookies, headers } from "next/headers";
 
 interface ProductListParams {
 	params: {
@@ -19,9 +20,6 @@ interface ProductListParams {
 }
 
 export default async function CategoryProductList({ params: { menuSubId, menuTopId } }: ProductListParams) {
-	// const accessToken = cookies().get("accessToken")?.value || headers().get("accessToken") || undefined;
-	// console.log("서버에서 accessToken", accessToken);
-
 	// [SSR] 현재 메뉴명을 가져오기 위한
 	const menusResponse = await getNormal<MenuResponse>(getBackendUrl(API_URL.MAIN_MENU));
 	const menuList = [...menusResponse.menuList].sort((a, b) => a.menuTopId - b.menuTopId);
@@ -34,15 +32,15 @@ export default async function CategoryProductList({ params: { menuSubId, menuTop
 		// lastProductId,
 		// lastPopularity
 	};
-	const productResponse: GetProductListResponse = await getNormal(getBackendUrl(API_URL.PRODUCT), { ...payload });
+
+	const accessToken = cookies().get("accessToken")?.value || headers().get("accessToken") || undefined;
+	const headerParams: RequestHeaders = {};
+	if (accessToken) headerParams.Authorization = `Bearer ${accessToken}`;
+	const productResponse: GetProductListResponse = await getNormal(getBackendUrl(API_URL.PRODUCT), { ...payload }, headerParams);
 
 	// 현재 메뉴명 찾기
 	const currentTopMenu = menuList.find((menu) => menu.menuTopId === Number(menuTopId));
 	const currentSubMenu = currentTopMenu?.menuSubList.find((sub) => sub.menuSubId === Number(menuSubId));
-
-	/* ============ */
-	// menuSubId = 25; // TEST 입력
-	/* ============ */
 
 	return (
 		<main>

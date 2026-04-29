@@ -4,6 +4,7 @@ import API_URL from "@/api/endpoints";
 import { getNormal } from "@/api/fetchFilter";
 import CategoryProductListHeader from "@/app/product/category/[menuTopId]/[menuSubId]/CategoryProductListHeader";
 import CategoryProductListSection from "@/app/product/category/[menuTopId]/[menuSubId]/CategoryProductListSection";
+import { useAuth } from "@/hooks/useAuth";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import {
 	GetProductListRequest,
@@ -14,7 +15,7 @@ import {
 	type ProductSortOption,
 } from "@/types/product";
 import { InfiniteData, useInfiniteQuery } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type OptionType = {
 	id: number;
@@ -45,6 +46,9 @@ interface CategoryProductListClientProps {
 }
 
 export default function CategoryProductListClient({ menuSubId, initialProductListData, topMenuName, subMenuName }: CategoryProductListClientProps) {
+	// 1) [store / custom hooks] -------------------------------------------
+	const { loginOn } = useAuth();
+
 	// 2) [useState / useRef] ----------------------------------------------
 	// 정렬 코드
 	const [sortCode, setSortCode] = useState<ProductSortOption>("POPULAR");
@@ -52,9 +56,8 @@ export default function CategoryProductListClient({ menuSubId, initialProductLis
 	const [popularPeriodCode, setPopularPeriodCode] = useState<ProductPopularPeriodOption>("ALL");
 
 	// 3) [useQuery / useMutation] -----------------------------------------
-
+	// 제품리스트 조회
 	const isInitialQuery = sortCode === "POPULAR" && popularPeriodCode === "ALL";
-	// 제품리스트 조회 -
 	const periodKey = sortCode === "POPULAR" ? popularPeriodCode : "NONE";
 	const { data, fetchNextPage, hasNextPage, isFetchingNextPage /* , isFetching */ } = useInfiniteQuery<
 		GetProductListResponse,
@@ -97,6 +100,9 @@ export default function CategoryProductListClient({ menuSubId, initialProductLis
 	}, [data]);
 
 	// 6) [useEffect] ------------------------------------------------------
+	useEffect(() => {
+		window.scrollTo({ top: 0, behavior: "smooth" });
+	}, [loginOn]);
 
 	// 7) [UI helper values] -------------------------------------------------
 	const CategoryProductListHeaderProps = {

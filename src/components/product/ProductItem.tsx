@@ -21,10 +21,11 @@ interface ProductItemProps {
 		wishCount: number;
 		saleStop?: boolean;
 		soldOut?: boolean;
+		wishId?: number | null;
 	};
-	wishProductIds: number[];
 }
-export const ProductItem = ({ product, wishProductIds }: ProductItemProps) => {
+export const ProductItem = ({ product }: ProductItemProps) => {
+	// 7) [UI helper values] -------------------------------------------------
 	// 상품 썸네일 영역 콘텐츠
 	const productThumbContent = (
 		<>
@@ -51,15 +52,7 @@ export const ProductItem = ({ product, wishProductIds }: ProductItemProps) => {
 					<SmartImage fill />
 				</div>
 			)}
-			{wishProductIds.length > 0 && (
-				<WishButton
-					productId={product.productId}
-					initWishOn={wishProductIds.includes(product.productId)}
-					right={6}
-					bottom={6}
-					clickHandler={() => {}}
-				/>
-			)}
+			<WishButton productId={product.productId} initWishOn={!!product.wishId} right={6} bottom={6} zIndex={11} size={19} />
 			{(product.saleStop || product.soldOut) && (
 				<div className={styles.notSaleBadgeWrapper}>
 					{product.saleStop && <div className={styles.saleStopBadge}>판매중지</div>}
@@ -102,7 +95,6 @@ export const ProductItem = ({ product, wishProductIds }: ProductItemProps) => {
 			</div>
 		</>
 	);
-
 	return (
 		<div className={styles.productItem}>
 			{!product.saleStop ? (
