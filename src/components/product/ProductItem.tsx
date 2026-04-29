@@ -72,9 +72,7 @@ export const ProductItem = ({ product, wishProductIds }: ProductItemProps) => {
 	const productInfoContent = (
 		<>
 			<h4 className={styles.productBrand}>{product.sellerName}</h4>
-			<h5 className={styles.productName}>
-				({product.productId}){product.productName}
-			</h5>
+			<h5 className={styles.productName}>{product.productName}</h5>
 
 			<div className={styles.productPrice}>
 				<div aria-live="polite">

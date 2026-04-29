@@ -24,13 +24,13 @@ export interface MenuResponse extends BaseResponse {
 export type MainProduct = {
 	productId: number;
 	productName: string;
-	// brand: string;
-	price: string;
-	createdAt: Date;
-	likeCount: number;
+	originPrice: number;
+	finalPrice: number;
 	viewCount: number;
 	wishCount: number;
-	// salesCount: number;
+	//
+	sellerName: string;
+	//
 	wishId: number | null;
 } & FileInfo;
 export interface MainProductResponse extends BaseResponse {
