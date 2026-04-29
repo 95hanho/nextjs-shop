@@ -275,7 +275,7 @@ export interface GetCartOtherOptionListResponse extends BaseResponse {
 	cartOptionProductOptionList: ProductOption[];
 }
 /* 위시리스트 조회 */
-export type wishlistItem = {
+export type WishlistItem = {
 	wishId: number;
 	createdAt: string;
 	productId: number;
@@ -286,12 +286,16 @@ export type wishlistItem = {
 	viewCount: number;
 	wishCount: number;
 	saleStop: boolean;
+	//
+	menuSubId: number;
+	//
 	soldOut: boolean;
 	sellerName: string;
+	//
 	productImageList: FileInfo[];
 };
 export interface GetWishListResponse extends BaseResponse {
-	wishlistItems: wishlistItem[];
+	wishlistItems: WishlistItem[];
 }
 /* 유저배송지 조회 */
 export type UserAddressListItem = UserAddress & {

@@ -2,7 +2,7 @@ import { Menu } from "@/types/main";
 import clsx from "clsx";
 import Link from "next/link";
 import styles from "./MenuButton.module.scss";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 interface MenuButtonProps {
 	menuList: Menu[];
@@ -12,14 +12,24 @@ export const MenuButton = ({ menuList }: MenuButtonProps) => {
 	// 2) [useState / useRef] ----------------------------------------------
 	const [activeGender, setActiveGender] = useState<string>("M");
 	const [showMenu, setShowMenu] = useState<boolean>(false);
+	const [isReady, setIsReady] = useState(false);
 
 	// 4) [derived values / useMemo] ---------------------------------------
 	const maleMenuList = menuList.filter((menu) => menu.gender === "M");
 	const femaleMenuList = menuList.filter((menu) => menu.gender === "F");
 	const showMenuList = useMemo(() => (activeGender === "M" ? maleMenuList : femaleMenuList), [activeGender, maleMenuList, femaleMenuList]);
 
+	// 6) [useEffect] ------------------------------------------------------
+	useEffect(() => {
+		setIsReady(true);
+	}, []);
+
 	return (
-		<div className="relative flex items-center ml-4" onMouseLeave={() => setShowMenu(false)} onMouseEnter={() => setShowMenu(true)}>
+		<div
+			className={clsx("relative flex items-center ml-4", { ["pointer-events-none"]: !isReady })}
+			onMouseLeave={() => isReady && setShowMenu(false)}
+			onMouseEnter={() => isReady && setShowMenu(true)}
+		>
 			{["M", "F"].map((gender) => (
 				<button
 					key={"menu-gender-" + gender}

@@ -12,9 +12,10 @@ import { ProductItem } from "@/components/product/ProductItem";
 import { ProductGrid } from "@/components/product/ProductGrid";
 import styles from "./Wish.module.scss";
 import clsx from "clsx";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { Menu } from "@/types/main";
 
-export default function WishClient() {
+export default function WishClient({ menuList }: { menuList: Menu[] }) {
 	// 1) [store / custom hooks] -------------------------------------------
 	const { loginOn } = useAuth();
 
@@ -23,6 +24,8 @@ export default function WishClient() {
 	const [saleOn, setSaleOn] = useState(false);
 	// 판매 중 상품만 보기 on/off
 	const [sellingOn, setSellingOn] = useState(false);
+	// 필터링 subMenuId
+	const [filterSubMenuId, setFilterSubMenuId] = useState<number | null>(null);
 
 	// 3) [useQuery / useMutation] -----------------------------------------
 	// React Query 쓰면 위시리스트 수정(추가/삭제) 후 invalidateQueries(["wishlist"])로 새로고침 처리 가능.
@@ -38,14 +41,52 @@ export default function WishClient() {
 	});
 
 	// 4) [derived values / useMemo] ---------------------------------------
+	// 서브메뉴 리스트
+	const subMenuList = useMemo(() => {
+		if (!wishListData) return [];
+		const wishMenuSubIds = wishListData?.wishlistItems.map((wishItem) => wishItem.menuSubId) ?? [];
+		const list = menuList
+			.map((menu) =>
+				menu.menuSubList
+					.map((subMenu) => ({ ...subMenu, gender: menu.gender }))
+					.filter((subMenu) => wishMenuSubIds.includes(subMenu.menuSubId)),
+			)
+			.flat();
+		list.sort((a, b) => a.menuName.localeCompare(b.menuName));
+		// 2개 이상있는 menuName 찾기
+		const uniqueMenuNames = Object.entries(
+			list.reduce(
+				(acc, menu) => {
+					if (acc[menu.menuName]) acc[menu.menuName]++;
+					else acc[menu.menuName] = 1;
+					return acc;
+				},
+				{} as Record<string, number>,
+			),
+		)
+			.filter(([, count]: [string, number]) => count > 1)
+			.map(([menuName]: [string, number]) => menuName);
+
+		return list.map((menu) => {
+			return {
+				menuSubId: menu.menuSubId,
+				menuName: menu.menuName + (uniqueMenuNames.includes(menu.menuName) ? ` (${menu.gender === "M" ? "남" : "여"})` : ""),
+			};
+		});
+	}, [menuList, wishListData]);
 	// 필터링 된 위시리스트
 	const { wishList } = useMemo(() => {
 		if (!wishListData)
 			return {
 				wishList: [],
 			};
-
 		let wishList = wishListData?.wishlistItems;
+		/* 서브메뉴 필터링 처리 */
+		if (filterSubMenuId) {
+			wishList = wishList.filter((wishItem) => wishItem.menuSubId === filterSubMenuId);
+		}
+
+		/* 세일중, 판매 중 상품만 보기 필터링처리 */
 		if (saleOn) {
 			wishList = wishList.filter((wishItem) => wishItem.originPrice > wishItem.finalPrice);
 		}
@@ -56,7 +97,12 @@ export default function WishClient() {
 		return {
 			wishList,
 		};
-	}, [wishListData, saleOn, sellingOn]);
+	}, [wishListData, saleOn, sellingOn, filterSubMenuId]);
+
+	// 6) [useEffect] ------------------------------------------------------
+	useEffect(() => {
+		console.log({ subMenuList });
+	}, [subMenuList]);
 
 	if (isLoading) return null;
 	return (
@@ -73,12 +119,23 @@ export default function WishClient() {
 							<li>브랜드 2</li>
 						</ul>
 					</div> */}
-
 					<div className="px-[9px] py-3 bg-gray-200">
 						<ul className={clsx(styles.tabList, styles.categoryTabList)}>
-							<li className="on">전체</li>
-							<li>신발</li>
-							<li>바지</li>
+							<li>
+								<button className={filterSubMenuId === null ? styles.on : ""} onClick={() => setFilterSubMenuId(null)}>
+									전체
+								</button>
+							</li>
+							{subMenuList.map((subMenu) => (
+								<li key={subMenu.menuSubId}>
+									<button
+										className={filterSubMenuId === subMenu.menuSubId ? styles.on : ""}
+										onClick={() => setFilterSubMenuId(subMenu.menuSubId)}
+									>
+										{subMenu.menuName}
+									</button>
+								</li>
+							))}
 						</ul>
 					</div>
 				</nav>
@@ -86,9 +143,12 @@ export default function WishClient() {
 			{/* 상품들 */}
 			<section>
 				{/* 상품 필터 on/off 버튼 */}
-				<div className="mx-1 my-2 font-semibold">
-					<OnOffButton text="세일중" checked={saleOn} size="sm" onChange={(checked) => setSaleOn(checked)} />
-					<OnOffButton text="판매 중 상품만 보기" checked={sellingOn} size="sm" onChange={(checked) => setSellingOn(checked)} />
+				<div className="flex items-center justify-between mx-1 my-2 font-semibold">
+					<span>
+						<OnOffButton text="세일중" checked={saleOn} size="sm" onChange={(checked) => setSaleOn(checked)} />
+						<OnOffButton text="판매 중 상품만 보기" checked={sellingOn} size="sm" onChange={(checked) => setSellingOn(checked)} />
+					</span>
+					<span className="mr-3 text-lg">{wishList.length}개</span>
 				</div>
 				{/* 상품 리스트 */}
 				<ProductGrid>

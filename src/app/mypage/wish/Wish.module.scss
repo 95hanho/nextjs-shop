@@ -23,10 +23,14 @@
 
 .categoryTabList {
 	li {
-		&:global(.on) {
-			font-size: 16px;
-			font-weight: 600;
-			color: #000;
+		button {
+			font-family: "Noto Sans KR", sans-serif;
+			font-size: 12px;
+			&.on {
+				font-size: 13px;
+				font-weight: 600;
+				color: #000;
+			}
 		}
 	}
 }
