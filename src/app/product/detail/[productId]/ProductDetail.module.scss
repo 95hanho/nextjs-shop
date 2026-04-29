@@ -107,10 +107,11 @@
 					font-size: 11px;
 					align-items: center;
 
-					a {
-						margin-left: 10px;
+					button {
+						margin-left: 5px;
 						color: #494949;
 						text-decoration: underline;
+						margin-top: 4px;
 					}
 				}
 
@@ -674,6 +675,7 @@
 
 	/* 상품리뷰 뷰 */
 	section.reviewInfoSection {
+		scroll-margin-top: 50px;
 		h2 {
 		}
 		.allReviewImages {

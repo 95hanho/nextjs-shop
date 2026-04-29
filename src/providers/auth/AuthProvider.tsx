@@ -4,6 +4,7 @@ import { authContext } from "@/components/ui/context/authContext";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { UserInfo } from "@/types/auth";
 import { useQueryClient } from "@tanstack/react-query";
+import { usePathname } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 
 interface AuthProviderProps {
@@ -27,6 +28,7 @@ const initUser = {
 export const AuthProvider = ({ children }: AuthProviderProps) => {
 	// 1) [store / custom hooks] -------------------------------------------
 	const queryClient = useQueryClient();
+	const pathname = usePathname();
 
 	// 2) [useState / useRef] ----------------------------------------------
 	const [user, setUser] = useState<UserInfo>(initUser);
@@ -41,10 +43,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 	const logout = useCallback(async () => {
 		console.log("로그아웃");
 		setUser(initUser);
-		// React Query 캐시 무효화
-		queryClient.setQueryData(["me"], initUser); // 직접 캐시 업데이트
 		await postJson(getApiUrl(API_URL.AUTH_LOGOUT));
-	}, [queryClient]);
+
+		// -- React Query 캐시 무효화
+		// 로그인 회원 정보 초기화
+		queryClient.setQueryData(["me"], initUser); // 직접 캐시 업데이트
+		// 제품 상세보기 페이지 일 시 제품상세 정보 갱신 (특히 위시 정보)
+		if (pathname.startsWith("/product/detail/")) {
+			queryClient.invalidateQueries({ queryKey: ["productDetail"] });
+		}
+	}, [queryClient, pathname]);
 
 	// 7) [UI helper values] -------------------------------------------------
 	// Provider value

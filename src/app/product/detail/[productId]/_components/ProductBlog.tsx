@@ -17,7 +17,7 @@ export default function ProductBlog() {
 	const params = useParams<{
 		productId: string;
 	}>();
-	const productIdNum = Number(params.productId);
+	const productId = Number(params.productId);
 
 	// 2) [useState / useRef] ----------------------------------------------
 	// 상품설명 더보기
@@ -26,8 +26,8 @@ export default function ProductBlog() {
 	// 3) [useQuery / useMutation] -----------------------------------------
 	// 제품 상세보기 상세이미지(상품소개) 조회
 	const { data: productDetailImageList = [] } = useQuery<GetProductDetailImageResponse, Error, ProductImage[]>({
-		queryKey: ["productDetailImageList", productIdNum],
-		queryFn: () => getNormal<GetProductDetailImageResponse>(getApiUrl(API_URL.PRODUCT_DETAIL_IMAGE), { productId: productIdNum }),
+		queryKey: ["productDetailImageList", productId],
+		queryFn: () => getNormal<GetProductDetailImageResponse>(getApiUrl(API_URL.PRODUCT_DETAIL_IMAGE), { productId }),
 		refetchOnWindowFocus: false,
 		select: (data) => {
 			return data.productDetailImageList;

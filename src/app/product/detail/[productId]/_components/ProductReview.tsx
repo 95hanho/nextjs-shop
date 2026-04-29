@@ -6,12 +6,11 @@ import { GetProductDetailReviewResponse, ProductReviewItem } from "@/types/produ
 import { getNormal } from "@/api/fetchFilter";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import API_URL from "@/api/endpoints";
-import { useParams, usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useParams } from "next/navigation";
+import { forwardRef, useEffect, useState } from "react";
 import { SmartImage } from "@/components/ui/SmartImage";
 import { getUploadImageUrl } from "@/lib/image";
 import ProductReviewList from "@/app/product/detail/[productId]/_components/ProductReviewList";
-import { removeSearchParams } from "@/lib/searchParams";
 import { useModalStore } from "@/store/modal.store";
 import { ReviewImage } from "@/types/mypage";
 import clsx from "clsx";
@@ -31,22 +30,16 @@ interface ProductReviewProps {
 	reviewRate: number;
 }
 // 상품 리뷰
-export default function ProductReview({ reviewCount, reviewRate }: ProductReviewProps) {
+const ProductReview = forwardRef(({ reviewCount, reviewRate }: ProductReviewProps, ref: React.ForwardedRef<HTMLDivElement>) => {
 	// 1) [store / custom hooks] -------------------------------------------
 	const params = useParams<{
 		productId: string;
 	}>();
-	const productIdNum = Number(params.productId);
-	const searchParams = useSearchParams();
-	const tab = searchParams.get("tab");
-	const router = useRouter();
-	const pathname = usePathname();
+	const productId = Number(params.productId);
 	const { openModal } = useModalStore();
 	const queryClient = useQueryClient();
 
 	// 2) [useState / useRef] ----------------------------------------------
-	// 리뷰섹션 요소
-	const reviewInfoSectionRef = useRef<HTMLElement | null>(null);
 	// 리뷰 페이지
 	const [reviewPage, setReviewPage] = useState(1);
 	// 리뷰 초기 상단 이미지 리스트
@@ -65,12 +58,10 @@ export default function ProductReview({ reviewCount, reviewRate }: ProductReview
 			initReviewImageList: [],
 		},
 		isSuccess,
-		isError,
-		isFetching,
 	} = useQuery<GetProductDetailReviewResponse, Error>({
-		queryKey: ["productReviewList", productIdNum, reviewPage],
-		queryFn: () => getNormal(getApiUrl(API_URL.PRODUCT_DETAIL_REVIEW), { productId: productIdNum, page: reviewPage }),
-		enabled: !!productIdNum,
+		queryKey: ["productReviewList", productId, reviewPage],
+		queryFn: () => getNormal(getApiUrl(API_URL.PRODUCT_DETAIL_REVIEW), { productId, page: reviewPage }),
+		enabled: !!productId,
 		refetchOnWindowFocus: false,
 	});
 
@@ -123,10 +114,10 @@ export default function ProductReview({ reviewCount, reviewRate }: ProductReview
 			prevPage--;
 
 			const prevData = await queryClient.fetchQuery<GetProductDetailReviewResponse>({
-				queryKey: ["productReviewList", productIdNum, prevPage],
+				queryKey: ["productReviewList", productId, prevPage],
 				queryFn: () =>
 					getNormal(getApiUrl(API_URL.PRODUCT_DETAIL_REVIEW), {
-						productId: productIdNum,
+						productId,
 						page: prevPage,
 					}),
 			});
@@ -150,10 +141,10 @@ export default function ProductReview({ reviewCount, reviewRate }: ProductReview
 			nextPage++;
 
 			const nextData = await queryClient.fetchQuery<GetProductDetailReviewResponse>({
-				queryKey: ["productReviewList", productIdNum, nextPage],
+				queryKey: ["productReviewList", productId, nextPage],
 				queryFn: () =>
 					getNormal(getApiUrl(API_URL.PRODUCT_DETAIL_REVIEW), {
-						productId: productIdNum,
+						productId,
 						page: nextPage,
 					}),
 			});
@@ -193,35 +184,20 @@ export default function ProductReview({ reviewCount, reviewRate }: ProductReview
 			setInitReviewImageList(productReviewData.initReviewImageList);
 		}
 	}, [productReviewData.initReviewImageList]);
-	useEffect(() => {
-		if (productReviewData.productReviewList.length > 0) {
-			// productReviewData.productReviewList.map((review) => {
-			// 	review.reviewImages.map((image) => {
-			// 		console.log(image.filePath);
-			// 	});
-			// });
-			if (tab === "review") {
-				reviewInfoSectionRef.current?.scrollIntoView({ behavior: "smooth" });
-				router.replace(removeSearchParams(pathname, searchParams, ["tab"]), { scroll: false });
-			}
-		}
-	}, [productReviewData, tab, searchParams, router, pathname]);
 	// 리뷰 모달 테스트중 ------------
 
 	return (
-		<>
-			{isFetching && <div>리뷰 불러오는 중...</div>}
-			{isError && <div>리뷰를 불러오지 못했어요.</div>}
-			{isSuccess && (
-				<section id="reviewInfoSection" className={styles.reviewInfoSection} ref={reviewInfoSectionRef}>
-					<h2 className="flex">
-						<span>리뷰({money(reviewCount)}개)</span>
-						<span className="ml-2">
-							<ReviewStar rate={reviewRate} />
-						</span>
-						<span className="inline-flex items-center mt-2 ml-2 text-xs">{reviewRate?.toFixed(1)}</span>
-					</h2>
-					<div className="px-2">
+		<section id="reviewInfoSection" className={styles.reviewInfoSection} ref={ref}>
+			<h2 className="flex">
+				<span>리뷰({money(reviewCount)}개)</span>
+				<span className="ml-2">
+					<ReviewStar rate={reviewRate} />
+				</span>
+				<span className="inline-flex items-center mt-2 ml-2 text-xs">{reviewRate?.toFixed(1)}</span>
+			</h2>
+			<div className="px-2">
+				{isSuccess && (
+					<>
 						{/* 사진 모음 */}
 						<div className={styles.allReviewImages}>
 							{initReviewImageList.map((image, index) => (
@@ -242,9 +218,11 @@ export default function ProductReview({ reviewCount, reviewRate }: ProductReview
 							turnPage={(page) => setReviewPage(page)}
 							openReviewModal={handleOpenProductReviewModal}
 						/>
-					</div>
-				</section>
-			)}
-		</>
+					</>
+				)}
+			</div>
+		</section>
 	);
-}
+});
+ProductReview.displayName = "ProductReview";
+export default ProductReview;

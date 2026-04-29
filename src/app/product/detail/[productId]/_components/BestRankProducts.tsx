@@ -24,7 +24,7 @@ export default function BestRankProducts() {
 	const params = useParams<{
 		productId: string;
 	}>();
-	const productIdNum = Number(params.productId);
+	const productId = Number(params.productId);
 
 	// 2) [useState / useRef] ----------------------------------------------
 	const slideHandleRef = useRef<ImageSlideHandle | null>(null);
@@ -33,12 +33,12 @@ export default function BestRankProducts() {
 	// 3) [useQuery / useMutation] -----------------------------------------
 	// 같은 카테고리 BEST 제품 조회
 	const { data: categoryBestProductList = [] } = useQuery<GetCategoryBestProductsResponse, Error, OtherProduct[]>({
-		queryKey: ["categoryBestProducts", productIdNum],
+		queryKey: ["categoryBestProducts", productId],
 		queryFn: async () =>
 			getNormal(getApiUrl(API_URL.PRODUCT_CATEGORY_BEST), {
-				productId: productIdNum,
+				productId,
 			}),
-		enabled: !!productIdNum,
+		enabled: !!productId,
 		select: (data) => data.categoryBestProductList,
 	});
 

@@ -8,7 +8,7 @@ export default function ProductDescription() {
 	const params = useParams<{
 		productId: string;
 	}>();
-	const productIdNum = Number(params.productId);
+	const productId = Number(params.productId);
 
 	// 2) [useState / useRef] ----------------------------------------------
 	const [openDescription, setOpenDescription] = useState(false);
@@ -26,7 +26,7 @@ export default function ProductDescription() {
 			{openDescription && (
 				<h3 className={styles.productNumber}>
 					<strong>상품번호 : </strong>
-					<span>{productIdNum}</span>
+					<span>{productId}</span>
 				</h3>
 			)}
 		</article>

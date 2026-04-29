@@ -30,7 +30,7 @@ export default async function ProductDetail({
 
 		return (
 			<main id="productDetail">
-				<ProductDetailClient productDetailResponse={productDetailResponse} />
+				<ProductDetailClient initProductDetailResponse={productDetailResponse} />
 			</main>
 		);
 	} catch (err: unknown) {

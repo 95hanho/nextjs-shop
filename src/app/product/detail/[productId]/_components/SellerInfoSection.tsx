@@ -18,7 +18,7 @@ export default function SellerInfoSection({ productDetail }: { productDetail: Pr
 	const params = useParams<{
 		productId: string;
 	}>();
-	const productIdNum = Number(params.productId);
+	const productId = Number(params.productId);
 
 	// 3) [useQuery / useMutation] -----------------------------------------
 	// 판매자 좋아요 여부 및 판매자 다른 제품 조회
@@ -28,12 +28,12 @@ export default function SellerInfoSection({ productDetail }: { productDetail: Pr
 			sellerOtherProducts: [],
 		},
 	} = useQuery<SellerLikeAndOtherProductsResponse, Error, { isSellerLiked: boolean; sellerOtherProducts: OtherProduct[] }>({
-		queryKey: ["sellerLikeAndOtherProducts", productIdNum],
+		queryKey: ["sellerLikeAndOtherProducts", productId],
 		queryFn: async () =>
 			getNormal(getApiUrl(API_URL.PRODUCT_SELLER_LIKE_OTHER_PRODUCT), {
-				productId: productIdNum,
+				productId: productId,
 			}),
-		enabled: !!productIdNum,
+		enabled: !!productId,
 		select: (data) => ({
 			isSellerLiked: data.isSellerLiked,
 			sellerOtherProducts: data.sellerOtherProducts,
@@ -42,11 +42,11 @@ export default function SellerInfoSection({ productDetail }: { productDetail: Pr
 	// 판매자 좋아요/취소
 	const { mutate: toggleSellerLike } = useMutation({
 		mutationFn: async (liked: boolean) => {
-			console.log("toggleSellerLike", { productId: productIdNum, like: !liked });
-			return postJson(getApiUrl(API_URL.PRODUCT_SELLER_LIKE), { productId: productIdNum, like: !liked });
+			console.log("toggleSellerLike", { productId, like: !liked });
+			return postJson(getApiUrl(API_URL.PRODUCT_SELLER_LIKE), { productId, like: !liked });
 		},
 		onSuccess() {
-			queryClient.invalidateQueries({ queryKey: ["sellerLikeAndOtherProducts", productIdNum] });
+			queryClient.invalidateQueries({ queryKey: ["sellerLikeAndOtherProducts", productId] });
 		},
 	});
 
