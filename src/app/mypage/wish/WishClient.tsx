@@ -12,10 +12,17 @@ import { ProductItem } from "@/components/product/ProductItem";
 import { ProductGrid } from "@/components/product/ProductGrid";
 import styles from "./Wish.module.scss";
 import clsx from "clsx";
+import { useMemo, useState } from "react";
 
 export default function WishClient() {
 	// 1) [store / custom hooks] -------------------------------------------
 	const { loginOn } = useAuth();
+
+	// 2) [useState / useRef] ----------------------------------------------
+	// 세일 중 on/off
+	const [saleOn, setSaleOn] = useState(false);
+	// 판매 중 상품만 보기 on/off
+	const [sellingOn, setSellingOn] = useState(false);
 
 	// 3) [useQuery / useMutation] -----------------------------------------
 	// React Query 쓰면 위시리스트 수정(추가/삭제) 후 invalidateQueries(["wishlist"])로 새로고침 처리 가능.
@@ -30,7 +37,28 @@ export default function WishClient() {
 		},
 	});
 
-	if (isLoading) return <h1>로딩중....</h1>;
+	// 4) [derived values / useMemo] ---------------------------------------
+	// 필터링 된 위시리스트
+	const { wishList } = useMemo(() => {
+		if (!wishListData)
+			return {
+				wishList: [],
+			};
+
+		let wishList = wishListData?.wishlistItems;
+		if (saleOn) {
+			wishList = wishList.filter((wishItem) => wishItem.originPrice > wishItem.finalPrice);
+		}
+		if (sellingOn) {
+			wishList = wishList.filter((wishItem) => !wishItem.saleStop);
+		}
+
+		return {
+			wishList,
+		};
+	}, [wishListData, saleOn, sellingOn]);
+
+	if (isLoading) return null;
 	return (
 		<>
 			{/* 상단 선택메뉴 */}
@@ -39,12 +67,12 @@ export default function WishClient() {
 					<span className="text-xl">좋아요</span>
 				</div>
 				<nav>
-					<div className="px-2 pb-3">
+					{/* <div className="px-2 pb-3">
 						<ul className={clsx(styles.tabList, styles.brandTabList)}>
 							<li className="on">상품 4</li>
 							<li>브랜드 2</li>
 						</ul>
-					</div>
+					</div> */}
 
 					<div className="px-[9px] py-3 bg-gray-200">
 						<ul className={clsx(styles.tabList, styles.categoryTabList)}>
@@ -58,14 +86,14 @@ export default function WishClient() {
 			{/* 상품들 */}
 			<section>
 				{/* 상품 필터 on/off 버튼 */}
-				{/* <div className="wish__filters">
-					<OnOffButton text="세일중" checked={false} />
-					<OnOffButton text="판매 중 상품만 보기" checked />
-				</div> */}
+				<div className="mx-1 my-2 font-semibold">
+					<OnOffButton text="세일중" checked={saleOn} size="sm" onChange={(checked) => setSaleOn(checked)} />
+					<OnOffButton text="판매 중 상품만 보기" checked={sellingOn} size="sm" onChange={(checked) => setSellingOn(checked)} />
+				</div>
 				{/* 상품 리스트 */}
 				<ProductGrid>
 					{/* 각 상품들 */}
-					{wishListData?.wishlistItems.map((wishItem) => {
+					{wishList.map((wishItem) => {
 						return (
 							<ProductItem
 								key={"wishItem-" + wishItem.wishId}
@@ -74,13 +102,15 @@ export default function WishClient() {
 									productId: wishItem.productId,
 									productImageList: wishItem.productImageList,
 									sellerName: wishItem.sellerName,
-									productName: wishItem.name,
+									productName: wishItem.productName,
 									originPrice: wishItem.originPrice,
 									finalPrice: wishItem.finalPrice,
 									viewCount: wishItem.viewCount,
 									wishCount: wishItem.wishCount,
+									soldOut: wishItem.soldOut,
+									saleStop: wishItem.saleStop,
+									wishId: 1, // 위시리스트에서는 무조건 true라서 임의이 값 넣음
 								}}
-								wishProductIds={[]}
 							/>
 						);
 					})}

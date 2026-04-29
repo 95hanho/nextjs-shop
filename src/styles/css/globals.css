@@ -129,6 +129,9 @@
 	button > svg {
 		display: inline;
 	}
+	main {
+		min-height: calc(100vh - 168px);
+	}
 }
 /* ===============================
    Scrollbar (브라우저 vendor) - base 밖에 둬도 OK

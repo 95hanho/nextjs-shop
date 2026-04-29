@@ -31,10 +31,8 @@ export default function Header({ menuList }: HeaderProps) {
 
 	// 4) [derived values / useMemo] ---------------------------------------
 	// 로그인 href
-	const loginHref =
-		pathname.startsWith("/user") || pathname === "/"
-			? "/user"
-			: `/user?returnUrl=${encodeURIComponent(pathname + `?${searchParams.toString()}`)}`;
+	const isUserPath = pathname.startsWith("/user") || pathname === "/";
+	const loginHref = isUserPath ? "/user" : `/user?returnUrl=${encodeURIComponent(pathname + `?${searchParams.toString()}`)}`;
 
 	// 5) [handlers / useCallback] -----------------------------------------
 	const menuMouseleave = () => {
@@ -92,7 +90,7 @@ export default function Header({ menuList }: HeaderProps) {
 									</Link>,
 									<>
 										{!user.name ? (
-											<Link key="login" href={loginHref} prefetch={false}>
+											<Link key="login" href={loginHref} prefetch={false} replace={!isUserPath}>
 												로그인
 											</Link>
 										) : (

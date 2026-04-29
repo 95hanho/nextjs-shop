@@ -1,69 +1,57 @@
 "use client";
 
 import { MainProduct } from "@/types/main";
-import { useRef, useState } from "react";
+import { ImageSlide } from "@/components/product/ImageSlide";
 import styles from "./ProductSlider.module.scss";
 import clsx from "clsx";
+import { useRef, useState } from "react";
+import { ProductSliderItem } from "@/components/main/ProductSliderItem";
 
 export const ProductSlider = ({ productList, right }: { productList: MainProduct[]; right?: boolean }) => {
 	// 2) [useState / useRef] ----------------------------------------------
-	const [isPaused, setIsPaused] = useState(false);
-	const marqueeRef = useRef<HTMLDivElement>(null);
-	// 드래그 관련 상태
-	const isDragging = useRef(false);
-	const startX = useRef(0);
-	const scrollLeft = useRef(0);
+	const [paused, setPaused] = useState(false);
+	const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
 	// 5) [handlers / useCallback] -----------------------------------------
-	const handleMouseDown = (e: React.MouseEvent) => {
-		isDragging.current = true;
-		startX.current = e.pageX - (marqueeRef.current?.offsetLeft ?? 0);
-		scrollLeft.current = marqueeRef.current?.scrollLeft ?? 0;
+	const stopSlider = () => {
+		if (timerRef.current) {
+			clearTimeout(timerRef.current);
+			timerRef.current = null;
+		}
+
+		setPaused(true);
 	};
-	const handleMouseMove = (e: React.MouseEvent) => {
-		if (!isDragging.current || !marqueeRef.current) return;
-		const x = e.pageX - marqueeRef.current.offsetLeft;
-		const walk = (x - startX.current) * 1; // 스크롤 민감도
-		marqueeRef.current.scrollLeft = scrollLeft.current - walk;
-	};
-	const handleMouseUp = () => {
-		isDragging.current = false;
-	};
-	const handleMouseLeave = () => {
-		isDragging.current = false;
-	};
-	const togglePlay = () => {
-		setIsPaused((prev) => !prev);
+
+	const resumeSlider = () => {
+		if (timerRef.current) {
+			clearTimeout(timerRef.current);
+		}
+
+		timerRef.current = setTimeout(() => {
+			setPaused(false);
+		}, 2000);
 	};
 
 	return (
-		<div className={styles.productSlider}>
-			<div
-				className={clsx(styles.marqueeContainer, isPaused && styles.paused, "mx-auto")}
-				ref={marqueeRef}
-				onMouseDown={handleMouseDown}
-				onMouseMove={handleMouseMove}
-				onMouseUp={handleMouseUp}
-				onMouseLeave={handleMouseLeave}
-				onTouchStart={(e) => handleMouseDown(e as any)}
-				onTouchMove={(e) => handleMouseMove(e as any)}
-				onTouchEnd={handleMouseUp}
-			>
-				<div className={clsx(styles.marqueeTrack, right && styles.right)}>
-					{[...productList, ...productList].map((product, idx) => (
-						<div className={styles.productItem} key={idx}>
-							<img src={product.imgPath} alt={`Product ${product.productId}`} />
-							<a href={product.copyrightUrl} target="_blank" className={styles.copyright}>
-								{product.copyright}
-							</a>
-						</div>
-					))}
-				</div>
+		<div className={styles.productSlider} onMouseEnter={stopSlider} onMouseLeave={resumeSlider}>
+			<div className={clsx(styles.productSwiper, right && styles.right, paused && styles.paused)}>
+				<ImageSlide
+					className={clsx(styles.productSwiper, right && styles.right)}
+					items={productList}
+					loop
+					slidesPerView="auto"
+					spaceBetween={0}
+					speed={700}
+					autoplay={{
+						delay: 2500,
+						disableOnInteraction: false,
+						pauseOnMouseEnter: true,
+						reverseDirection: right,
+					}}
+					getItemKey={(product) => product.productId}
+					renderItem={(product) => <ProductSliderItem product={product} />}
+				/>
 			</div>
-
-			<button className={styles.marqueeToggleBtn} onClick={togglePlay}>
-				{isPaused ? "▶️ 재생" : "⏸️ 멈춤"}
-			</button>
 		</div>
 	);
 };

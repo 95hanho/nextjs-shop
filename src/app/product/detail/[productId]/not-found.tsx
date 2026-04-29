@@ -1,6 +1,7 @@
 import Link from "next/link";
+import styles from "./ProductDetail.module.scss";
 
-export default function NotFound() {
+export default function ProductDetailNotFound() {
 	return (
 		<div
 			style={{
@@ -17,13 +18,9 @@ export default function NotFound() {
 
 			<p style={{ color: "#666" }}>삭제되었거나 존재하지 않는 상품입니다.</p>
 
-			<div style={{ display: "flex", gap: "8px", marginTop: "16px" }}>
+			<div style={{ display: "flex", gap: "8px", marginTop: "16px", fontSize: "18px" }}>
 				<Link href="/">
-					<button>홈으로</button>
-				</Link>
-
-				<Link href="/product">
-					<button>상품 목록</button>
+					<button className={styles.notFoundButton}>홈으로</button>
 				</Link>
 			</div>
 		</div>

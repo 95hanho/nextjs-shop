@@ -11,7 +11,7 @@ export default function SellerNav() {
 	const pathname = usePathname();
 	const { seller } = useSellerAuth();
 
-	if (!seller.sellerName) return null; // 판매자 정보 없으면 네비 안보이게 (예: 로그인 페이지)
+	if (!seller.sellerName || pathname.startsWith("/seller/login")) return null; // 판매자 정보 없으면 네비 안보이게 (예: 로그인 페이지)
 	return (
 		<nav className={styles.sellerNav}>
 			<ul className="flex gap-4 mb-5 border-b">

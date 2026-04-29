@@ -3,6 +3,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { useGlobalDialogStore } from "@/store/globalDialog.store";
 import { DialogResultMap } from "@/store/modal.type";
+import { isAuthRequiredPath } from "@/utils/auth";
 
 // 공통 인증 관련 전역 효과 처리 (로그아웃 모달 닫힌 후, 인증 오류 등)
 export function AuthGlobalEffects() {
@@ -41,12 +42,15 @@ export function AuthGlobalEffects() {
 						// ✅ 여기서 logout을 “AuthProvider의 logout” 그대로 재사용
 						await logout();
 
-						router.replace("/");
-						// replace가 완료되기 전에 refresh가 섞이는 걸 피함
-						setTimeout(
-							() => router.refresh(), // ✅ RSC 캐시 갱신 (로그인 페이지에서 최신 로그인 상태 반영 위해)
-							0,
-						);
+						// 로그인이 필요한 경로면 홈으로 보내기 / 아니면 그냥 닫기
+						if (isAuthRequiredPath(pathname)) {
+							router.replace("/");
+							// replace가 완료되기 전에 refresh가 섞이는 걸 피함
+							setTimeout(
+								() => router.refresh(), // ✅ RSC 캐시 갱신 (로그인 페이지에서 최신 로그인 상태 반영 위해)
+								0,
+							);
+						}
 					}
 				}
 			} finally {

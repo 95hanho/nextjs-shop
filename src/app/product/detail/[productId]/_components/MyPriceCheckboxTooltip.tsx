@@ -34,7 +34,7 @@ export default function MyPriceCheckboxTooltip(props: MyPriceCheckboxTooltipProp
 	const params = useParams<{
 		productId: string;
 	}>();
-	const productIdNum = Number(params.productId);
+	const productId = Number(params.productId);
 
 	// 3) [useQuery / useMutation] -----------------------------------------
 	// 쿠폰 다운로드
@@ -42,7 +42,7 @@ export default function MyPriceCheckboxTooltip(props: MyPriceCheckboxTooltipProp
 		mutationFn: (couponId: number) => postJson<BaseResponse & { userCouponId: number }>(getApiUrl(API_URL.PRODUCT_COUPON_DOWNLOAD), { couponId }),
 		onSuccess(data) {
 			console.log("couponDownload data", data);
-			queryClient.invalidateQueries({ queryKey: ["productCouponList", productIdNum] });
+			queryClient.invalidateQueries({ queryKey: ["productCouponList", productId] });
 		},
 		onError(err) {
 			console.log("couponDownload err", err);

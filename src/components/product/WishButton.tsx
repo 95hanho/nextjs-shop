@@ -1,15 +1,11 @@
 /* 장바구니 위시버튼 */
 
-import API_URL from "@/api/endpoints";
-import { postJson } from "@/api/fetchFilter";
-import { getApiUrl } from "@/lib/getBaseUrl";
-import { BaseResponse } from "@/types/common";
-import { useMutation } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { FaStar } from "react-icons/fa";
 import { FiStar } from "react-icons/fi";
 import styled from "@emotion/styled";
 import { MouseEvent } from "@/types/event";
+import { useChangeProductWish } from "@/hooks/query/product/useChangeProductWish";
 
 const WishALink = styled.button<{ bottom: number; right: number; size: number; zIndex: number; wishOn: boolean }>`
 	position: absolute;
@@ -66,37 +62,25 @@ interface WishButtonProps {
 }
 
 export const WishButton = ({ initWishOn, productId, bottom = 1, right = 1, size = 16, zIndex = 10, clickHandler }: WishButtonProps) => {
+	// 1) [store / custom hooks] -------------------------------------------
+	const { mutateAsync } = useChangeProductWish();
+
 	// 2) [useState / useRef] ----------------------------------------------
 	const [wishOn, setWishOn] = useState(initWishOn);
 
 	// 3) [useQuery / useMutation] -----------------------------------------
-	// 위시 여부 변경
-	const handleProductWish = useMutation({
-		mutationFn: () => postJson<BaseResponse>(getApiUrl(API_URL.PRODUCT_WISH), { productId }),
-		// Mutation이 시작되기 직전에 특정 작업을 수행
-		// onMutate(a) {
-		// 	console.log(a);
-		// },
-		onSuccess(data) {
-			console.log(data);
-		},
-		onError(err) {
-			console.log(err);
-		},
-		// 결과에 관계 없이 무언가 실행됨
-		// onSettled(a, b) {},
-	});
 
 	// 5) [handlers / useCallback] -----------------------------------------
 	// 위시 선택변경
 	const changeWish = async (e: MouseEvent) => {
 		e.stopPropagation(); // 클릭 이벤트가 부모 요소로 전파되는 것을 방지
 		e.preventDefault();
-		setWishOn(!wishOn);
-		await handleProductWish.mutateAsync();
-		if (clickHandler) {
-			clickHandler();
-		}
+		await mutateAsync(productId).then(() => {
+			setWishOn(!wishOn);
+			if (clickHandler) {
+				clickHandler();
+			}
+		});
 	};
 
 	// 6) [useEffect] ------------------------------------------------------

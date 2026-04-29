@@ -101,6 +101,8 @@ export type GetProductListRequest = {
 export type ProductItem = Product & {
 	sellerId: "seller07";
 	sellerName: "Casual Mood";
+	soldOut: boolean;
+	wishId: number | null;
 	productImageList: FileInfo[];
 };
 export interface GetProductListResponse {
@@ -140,6 +142,8 @@ export type ProductDetailResponse = ProductDetail & {
 	shippingType: "IMMEDIATE" | "RESERVED"; // 출고 방식('IMMEDIATE','RESERVED')
 	shippingDueDate: string; // 출고 예정일
 	shippingNote: string; // 출고 관련 추가 안내 문구
+	//
+	wishId: number | null; // 위시 아이디 (위시한 경우에만 존재)
 };
 export interface GetProductDetailResponse extends BaseResponse {
 	productDetail: ProductDetailResponse;
@@ -167,6 +171,7 @@ export interface GetProductDetailImageResponse extends BaseResponse {
 export type OtherProduct = Product & {
 	sellerName: string;
 	wished: boolean; // 해당 유저 위시 여부
+	soldOut: boolean;
 } & FileInfo;
 export interface SellerLikeAndOtherProductsResponse extends BaseResponse {
 	isSellerLiked: boolean;

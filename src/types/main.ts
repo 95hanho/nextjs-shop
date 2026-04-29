@@ -1,3 +1,4 @@
+import { FileInfo } from "@/types/file";
 import { BaseResponse } from "./common";
 
 /* ---- API --------------------------------------------- */
@@ -22,18 +23,16 @@ export interface MenuResponse extends BaseResponse {
 /* 메인 슬라이드 제품 가져오기 */
 export type MainProduct = {
 	productId: number;
-	name: string;
-	// brand: string;
-	price: string;
-	imgPath: string;
-	copyright: string;
-	copyrightUrl: string;
-	createdAt: Date;
-	likeCount: number;
+	productName: string;
+	originPrice: number;
+	finalPrice: number;
 	viewCount: number;
 	wishCount: number;
-	// salesCount: number;
-};
+	//
+	sellerName: string;
+	//
+	wishId: number | null;
+} & FileInfo;
 export interface MainProductResponse extends BaseResponse {
 	productList: MainProduct[];
 }

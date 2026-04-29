@@ -1,12 +1,6 @@
-import API_URL from "@/api/endpoints";
-import { getNormal } from "@/api/fetchFilter";
 import { ProductGrid } from "@/components/product/ProductGrid";
 import { ProductItem } from "@/components/product/ProductItem";
-import { useAuth } from "@/hooks/useAuth";
-import { getApiUrl } from "@/lib/getBaseUrl";
-import { BaseResponse } from "@/types/common";
 import type { ProductItem as ProductItemType } from "@/types/product";
-import { useQuery } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 
 interface CategoryProductListSectionProps {
@@ -17,30 +11,13 @@ interface CategoryProductListSectionProps {
 }
 
 export default function CategoryProductListSection({ productList, fetchNextPage, hasNextPage, isFetchingNextPage }: CategoryProductListSectionProps) {
-	// 1) [store / custom hooks] -------------------------------------------
-	const { loginOn } = useAuth();
 	// 2) [useState / useRef] ----------------------------------------------
 	const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
-	// 3) [useQuery / useMutation] -----------------------------------------
-	const { data: wishProductIds = [] } = useQuery<BaseResponse & { wishProductIds: number[] }, Error, number[]>({
-		queryKey: ["wishProductIds"],
-		queryFn: () => getNormal(getApiUrl(API_URL.PRODUCT_WISH)),
-		enabled: loginOn,
-		refetchOnWindowFocus: false,
-		retry: false,
-		select: (data) => data.wishProductIds,
-	});
-
 	// 6) [useEffect] ------------------------------------------------------
 	useEffect(() => {
-		if (wishProductIds.length > 0) {
-			console.log("wishProductIds", wishProductIds);
-		}
-	}, [wishProductIds]);
-	useEffect(() => {
 		if (productList.length > 0) {
-			console.log({ productList });
+			// console.log({ productList });
 		}
 	}, [productList]);
 	// 무한 스크롤 - 인터섹션 옵저버
@@ -85,8 +62,9 @@ export default function CategoryProductListSection({ productList, fetchNextPage,
 								finalPrice: productItem.finalPrice,
 								viewCount: productItem.viewCount,
 								wishCount: productItem.wishCount,
+								soldOut: productItem.soldOut,
+								wishId: productItem.wishId,
 							}}
-							wishProductIds={wishProductIds}
 						/>
 					);
 				})}

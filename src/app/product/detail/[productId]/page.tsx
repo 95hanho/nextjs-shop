@@ -28,7 +28,11 @@ export default async function ProductDetail({
 			headerParams,
 		);
 
-		return <ProductDetailClient productDetailResponse={productDetailResponse} />;
+		return (
+			<main id="productDetail">
+				<ProductDetailClient initProductDetailResponse={productDetailResponse} />
+			</main>
+		);
 	} catch (err: unknown) {
 		const { status, payload } = toErrorResponse(err);
 
@@ -36,6 +40,7 @@ export default async function ProductDetail({
 
 		// error.tsx로 보내기 위한 throw (message는 안전하게)
 		const message = typeof payload.message === "string" ? payload.message : "SERVER_ERROR";
+		console.log({ status, message });
 
 		throw new Error(message);
 	}

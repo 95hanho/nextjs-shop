@@ -4,7 +4,11 @@ import Link from "next/link";
 import styles from "./MenuButton.module.scss";
 import { useMemo, useState } from "react";
 
-export const MenuButton = ({ menuList }: { menuList: Menu[] }) => {
+interface MenuButtonProps {
+	menuList: Menu[];
+}
+
+export const MenuButton = ({ menuList }: MenuButtonProps) => {
 	// 2) [useState / useRef] ----------------------------------------------
 	const [activeGender, setActiveGender] = useState<string>("M");
 	const [showMenu, setShowMenu] = useState<boolean>(false);
@@ -15,20 +19,23 @@ export const MenuButton = ({ menuList }: { menuList: Menu[] }) => {
 	const showMenuList = useMemo(() => (activeGender === "M" ? maleMenuList : femaleMenuList), [activeGender, maleMenuList, femaleMenuList]);
 
 	return (
-		<div className="relative flex items-center ml-4" onMouseEnter={() => setShowMenu(true)}>
+		<div className="relative flex items-center ml-4" onMouseLeave={() => setShowMenu(false)} onMouseEnter={() => setShowMenu(true)}>
 			{["M", "F"].map((gender) => (
 				<button
 					key={"menu-gender-" + gender}
 					className={clsx(styles.genderBtn, `${activeGender === gender ? "active" : ""}`)}
 					onClick={() => {
-						setActiveGender(gender);
+						if (activeGender !== gender) {
+							setActiveGender(gender);
+							setShowMenu(true); // 성별 변경 시 메뉴 보이도록 설정
+						} else setShowMenu((prev) => !prev);
 					}}
 				>
 					{gender === "M" ? "남자" : "여자"}
 				</button>
 			))}
 			{showMenu && (
-				<div className="-ml-4 absolute bg-white z-[100] shadow-md top-9">
+				<div className={clsx("-ml-4 absolute bg-white z-[100] shadow-md top-8", styles.menuList)}>
 					<div className="mb-4 ml-10 mr-6">
 						<ul className={styles.menuListUi}>
 							{showMenuList.map((menu) => {
@@ -40,7 +47,6 @@ export const MenuButton = ({ menuList }: { menuList: Menu[] }) => {
 												{menu.menuName}
 											</Link>
 										</div>
-
 										{menu.menuSubList.map((subMenu) => (
 											<div key={"subMenu" + subMenu.menuSubId} className={styles.subMenuList}>
 												{subMenu.productCount === 0 ? (

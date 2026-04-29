@@ -30,7 +30,7 @@ export default function QuestionAnswer({ sellerName }: { sellerName: string }) {
 	const params = useParams<{
 		productId: string;
 	}>();
-	const productIdNum = Number(params.productId);
+	const productId = Number(params.productId);
 
 	// 2) [useState / useRef] ----------------------------------------------
 	// QnA 작성 뷰
@@ -71,9 +71,9 @@ export default function QuestionAnswer({ sellerName }: { sellerName: string }) {
 			productQnaTypeList: ProductQnaType[];
 		}
 	>({
-		queryKey: ["productQnaList", productIdNum],
-		queryFn: () => getNormal(getApiUrl(API_URL.PRODUCT_DETAIL_QNA), { productId: productIdNum }),
-		enabled: !!productIdNum,
+		queryKey: ["productQnaList", productId],
+		queryFn: () => getNormal(getApiUrl(API_URL.PRODUCT_DETAIL_QNA), { productId }),
+		enabled: !!productId,
 		refetchOnWindowFocus: false,
 		select: (data) => ({
 			productQnaList: data.productQnaList,
@@ -82,40 +82,40 @@ export default function QuestionAnswer({ sellerName }: { sellerName: string }) {
 	});
 	// QnA 등록
 	const { mutate: addProductQna } = useMutation({
-		mutationKey: ["addProductQna", productIdNum],
-		mutationFn: (form: AddProductQnaRequest) => postJson(getApiUrl(API_URL.PRODUCT_DETAIL_QNA), { ...form, productId: productIdNum }),
+		mutationKey: ["addProductQna", productId],
+		mutationFn: (form: AddProductQnaRequest) => postJson(getApiUrl(API_URL.PRODUCT_DETAIL_QNA), { ...form, productId }),
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["productQnaList", productIdNum] });
+			queryClient.invalidateQueries({ queryKey: ["productQnaList", productId] });
 			setQnaViewOpen(false);
 		},
 	});
 	// QnA 수정
 	const { mutate: updateProductQna } = useMutation({
-		mutationKey: ["updateProductQna", productIdNum],
-		mutationFn: (form: UpdateProductQnaRequest) => putJson(getApiUrl(API_URL.PRODUCT_DETAIL_QNA), { ...form, productId: productIdNum }),
+		mutationKey: ["updateProductQna", productId],
+		mutationFn: (form: UpdateProductQnaRequest) => putJson(getApiUrl(API_URL.PRODUCT_DETAIL_QNA), { ...form, productId }),
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["productQnaList", productIdNum] });
+			queryClient.invalidateQueries({ queryKey: ["productQnaList", productId] });
 			setQnaViewOpen(false);
 		},
 	});
 	// QnA 삭제
 	const { mutate: deleteProductQna } = useMutation({
-		mutationKey: ["deleteProductQna", productIdNum],
-		mutationFn: (productQnaId: number) => deleteNormal(getApiUrl(API_URL.PRODUCT_DETAIL_QNA_DELETE), { productQnaId, productId: productIdNum }),
+		mutationKey: ["deleteProductQna", productId],
+		mutationFn: (productQnaId: number) => deleteNormal(getApiUrl(API_URL.PRODUCT_DETAIL_QNA_DELETE), { productQnaId, productId }),
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["productQnaList", productIdNum] });
+			queryClient.invalidateQueries({ queryKey: ["productQnaList", productId] });
 		},
 	});
 	// Qna 답변 읽음 처리
 	const { mutate: markQnaAsRead } = useMutation({
-		mutationKey: ["markQnaAsRead", productIdNum],
+		mutationKey: ["markQnaAsRead", productId],
 		mutationFn: (productQnaId: number) =>
 			putJson(getApiUrl(API_URL.PRODUCT_DETAIL_QNA_READ), {
-				productId: productIdNum,
+				productId,
 				productQnaId,
 			}),
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["productQnaList", productIdNum] });
+			queryClient.invalidateQueries({ queryKey: ["productQnaList", productId] });
 		},
 	});
 

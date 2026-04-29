@@ -1,7 +1,5 @@
 import { ReviewStar } from "@/components/product/ReviewStar";
 import { OptionSelector } from "@/components/ui/OptionSelector";
-import Link from "next/link";
-import { FaHeart } from "react-icons/fa";
 import { GoQuestion } from "react-icons/go";
 import { IoIosArrowDown, IoIosArrowUp, IoIosClose } from "react-icons/io";
 import styles from "../ProductDetail.module.scss";
@@ -25,6 +23,9 @@ import { useProductCheckAndHold } from "@/hooks/query/buy/useProductCheckAndHold
 import ThumbnailImageSection from "@/app/product/detail/[productId]/_components/ThumbnailImageSection";
 import { useParams } from "next/navigation";
 import { useGlobalDialogStore } from "@/store/globalDialog.store";
+import { FaHeart } from "react-icons/fa";
+import { FiHeart } from "react-icons/fi";
+import { useChangeProductWish } from "@/hooks/query/product/useChangeProductWish";
 
 export type ProductCouponWithDiscount = AvailableCouponAtProductDetail & {
 	discountAmount: number;
@@ -38,10 +39,17 @@ interface ProductVisualInfoProps {
 	reviewCount: number;
 	reviewRate: number;
 	initProductOptionList: ProductOption[];
+	handleMoveToReviewSection: () => void;
 }
 
 // 상품 사진 및 가격배송 정보
-export default function ProductVisualInfo({ productDetail, reviewCount, reviewRate, initProductOptionList }: ProductVisualInfoProps) {
+export default function ProductVisualInfo({
+	productDetail,
+	reviewCount,
+	reviewRate,
+	initProductOptionList,
+	handleMoveToReviewSection,
+}: ProductVisualInfoProps) {
 	// 1) [store / custom hooks] -------------------------------------------
 	const { openDialog } = useGlobalDialogStore();
 	const { loginOn, user, isAuthLoading } = useAuth();
@@ -51,7 +59,8 @@ export default function ProductVisualInfo({ productDetail, reviewCount, reviewRa
 	const params = useParams<{
 		productId: string;
 	}>();
-	const productIdNum = Number(params.productId);
+	const productId = Number(params.productId);
+	const { mutateAsync: handleChangeProductWish } = useChangeProductWish();
 
 	// 2) [useState / useRef] ----------------------------------------------
 	// 나의 가격 상세 보기 토글
@@ -72,12 +81,14 @@ export default function ProductVisualInfo({ productDetail, reviewCount, reviewRa
 	const [productSelectList, setProductSelectList] = useState<(ProductOption & { quantity: number })[]>([]);
 	// 장바구니 담기 팝업 오픈 키
 	const [addCartPopupKey, setAddCartPopupKey] = useState(0);
+	// 위시여부
+	const [isWish, setIsWish] = useState(!!productDetail.wishId);
 
 	// 3) [useQuery / useMutation] -----------------------------------------
 	// 제품 옵션 리스트 (장바구니 담기 후 재고 수량 반영)
 	const { data: productOptionList = initProductOptionList } = useQuery<GetCartOtherOptionListResponse, Error, ProductOption[]>({
-		queryKey: ["productOptions", productIdNum],
-		queryFn: () => getNormal(getApiUrl(API_URL.MY_CART_PRODUCT_OPTION), { productId: productIdNum }),
+		queryKey: ["productOptions", productId],
+		queryFn: () => getNormal(getApiUrl(API_URL.MY_CART_PRODUCT_OPTION), { productId }),
 		initialData: { cartOptionProductOptionList: initProductOptionList, message: "SUCCESS" },
 		staleTime: 30_000,
 		select: (data) => {
@@ -86,8 +97,8 @@ export default function ProductVisualInfo({ productDetail, reviewCount, reviewRa
 	});
 	// 이용가능쿠폰 조회
 	const { data: availableCouponResponse } = useQuery<GetProductDetailCouponResponse, Error, GetProductDetailCouponWithDiscountData>({
-		queryKey: ["productCouponList", productIdNum],
-		queryFn: () => getNormal(getApiUrl(API_URL.PRODUCT_DETAIL_COUPON), { productId: productIdNum }),
+		queryKey: ["productCouponList", productId],
+		queryFn: () => getNormal(getApiUrl(API_URL.PRODUCT_DETAIL_COUPON), { productId }),
 		enabled: loginOn,
 		refetchOnWindowFocus: false,
 		select: (data) => {
@@ -219,10 +230,10 @@ export default function ProductVisualInfo({ productDetail, reviewCount, reviewRa
 		setAddCartPopupKey((prev) => prev + 1);
 		setProductSelectList([]); // 상품 선택 초기화
 		// 제품 옵션 리스트 갱신 (재고 수량 반영)
-		queryClient.invalidateQueries({ queryKey: ["productOptions", productIdNum] });
+		queryClient.invalidateQueries({ queryKey: ["productOptions", productId] });
 
 		reset();
-	}, [isAddCartSuccess, queryClient, productIdNum, reset]);
+	}, [isAddCartSuccess, queryClient, productId, reset]);
 	// 상품 점유 실패 시 처리
 	useEffect(() => {
 		if (!buyNowError) return;
@@ -230,20 +241,25 @@ export default function ProductVisualInfo({ productDetail, reviewCount, reviewRa
 		console.error("상품 점유 실패", buyNowError);
 		if (buyNowError.message === "STOCK_HOLD_FAILED") {
 			setProductSelectList([]);
-			queryClient.invalidateQueries({ queryKey: ["productOptions", productIdNum] });
+			queryClient.invalidateQueries({ queryKey: ["productOptions", productId] });
 		}
-	}, [buyNowError, queryClient, productIdNum]);
+	}, [buyNowError, queryClient, productId]);
 	// 로그인 상태에 가져온 후
 	useEffect(() => {
 		if (!isAuthLoading) {
 			setShowMyPriceDetail(true);
 		}
 	}, [isAuthLoading]);
-	// TEST
+	// 위시 정보 초기화
+	useEffect(() => {
+		setIsWish(!!productDetail.wishId);
+	}, [productDetail.wishId]);
+
+	// --- TEST ----------------
 	// 제품 옵션 선택 시 수량 초기화
 	useEffect(() => {
 		if (productSelectList.length === 0) return;
-		console.log({ productSelectList });
+		// console.log({ productSelectList });
 	}, [productSelectList]);
 
 	// 7) [UI helper values] -------------------------------------------------
@@ -261,14 +277,21 @@ export default function ProductVisualInfo({ productDetail, reviewCount, reviewRa
 				<div className={styles.productMetaInfo}>
 					<div className={styles.productTitleWishlist}>
 						<div className={styles.productName}>{productDetail.name}</div>
-						<button className={styles.productWishlist}>
-							<FaHeart />
+						<button
+							className={styles.productWishlist}
+							onClick={() =>
+								handleChangeProductWish(productDetail.productId).then(() => {
+									setIsWish((prev) => !prev);
+								})
+							}
+						>
+							{isWish ? <FaHeart /> : <FiHeart />}
 						</button>
 					</div>
 
 					<div className={styles.productReviewSection}>
 						<ReviewStar rate={reviewRate} size={15} />
-						<Link href="">{reviewCount}개 리뷰보기</Link>
+						<button onClick={handleMoveToReviewSection}>{reviewCount}개 리뷰보기</button>
 					</div>
 
 					<div className={styles.productPriceInfo}>
@@ -542,7 +565,7 @@ export default function ProductVisualInfo({ productDetail, reviewCount, reviewRa
 											</>
 										)}
 										<div className={styles.actionButtons}>
-											<button className={styles.btnCart} onClick={() => handleAddCart(productSelectList, productIdNum)}>
+											<button className={styles.btnCart} onClick={() => handleAddCart(productSelectList, productId)}>
 												장바구니 담기
 											</button>
 											<button
@@ -561,7 +584,7 @@ export default function ProductVisualInfo({ productDetail, reviewCount, reviewRa
 															count: option.quantity,
 															couponIds: appliedProductCouponIds, // 나의 가격에서 쿠폰 적용은 UI에서만 처리, 실제 구매 시에는 쿠폰 적용 안 함
 														})),
-														returnUrl: `/product/detail/${productIdNum}`,
+														returnUrl: `/product/detail/${productId}`,
 													});
 												}}
 											>
@@ -574,7 +597,7 @@ export default function ProductVisualInfo({ productDetail, reviewCount, reviewRa
 								)}
 							</>
 						)}
-						<AddCartPopup triggerKey={addCartPopupKey} productId={productIdNum} />
+						<AddCartPopup triggerKey={addCartPopupKey} productId={productId} />
 					</div>
 				)}
 			</div>
