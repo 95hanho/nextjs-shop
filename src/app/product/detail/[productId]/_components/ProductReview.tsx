@@ -196,6 +196,7 @@ const ProductReview = forwardRef(({ reviewCount, reviewRate }: ProductReviewProp
 				<span className="inline-flex items-center mt-2 ml-2 text-xs">{reviewRate?.toFixed(1)}</span>
 			</h2>
 			<div className="px-2">
+				{!isSuccess && <div className="py-10 text-center">리뷰를 불러오는 중입니다...</div>}
 				{isSuccess && (
 					<>
 						{/* 사진 모음 */}

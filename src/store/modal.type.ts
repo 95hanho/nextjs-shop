@@ -59,6 +59,7 @@ export type DialogPropsMap = {
 		okResult?: ConfirmOkResult;
 		cancelText?: string;
 		cancelResult?: ConfirmCancelResult;
+		/** 취소버튼 숨기기 */
 		hideCancel?: boolean;
 		reverse?: boolean;
 		handleAfterOk?: () => void | Promise<void>;

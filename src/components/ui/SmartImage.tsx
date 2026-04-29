@@ -6,7 +6,7 @@ type CommonProps = {
 	src?: string | null;
 	alt?: string | null;
 	sizes?: string;
-	priority?: boolean;
+	priority?: boolean; // 모바일: 2~4개, 데스크탑: 4~8개 정도만 true로 주는 걸 권장. 너무 많이 주면 오히려 성능 저하될 수 있음
 	quality?: number;
 	objectFit?: "cover" | "contain";
 	style?: React.CSSProperties;
@@ -31,6 +31,8 @@ export const SmartImage = ({ className = "", src = "", alt, sizes, priority, qua
 	// 4) [derived values / useMemo] ---------------------------------------
 	const finalSrc = src || BASIC_NO_IMAGE;
 	const finalAlt = alt || "사진없음";
+	const isExternal = finalSrc.startsWith("http://") || finalSrc.startsWith("https://");
+	const isCdn = finalSrc.includes("cdn1.cafe24.com");
 
 	// fill: true 케이스finalSrc
 	if ("fill" in rest && rest.fill) {
@@ -44,6 +46,7 @@ export const SmartImage = ({ className = "", src = "", alt, sizes, priority, qua
 				priority={priority}
 				quality={quality}
 				style={{ ...style, objectFit }}
+				unoptimized={isExternal || isCdn}
 			/>
 		);
 	}
@@ -60,6 +63,7 @@ export const SmartImage = ({ className = "", src = "", alt, sizes, priority, qua
 			priority={priority}
 			quality={quality}
 			style={{ ...style, objectFit }}
+			unoptimized={isExternal || isCdn}
 			// style={{ width: "100%", height: "auto", objectFit }}
 		/>
 	);

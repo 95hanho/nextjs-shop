@@ -1,19 +1,12 @@
 import { BsChevronRight } from "react-icons/bs";
 import styles from "../ProductDetail.module.scss";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-	AddProductQnaRequest,
-	GetProductDetailQnaResponse,
-	ProductQnaItem,
-	ProductQnaType,
-	ProductQnaTypeCode,
-	UpdateProductQnaRequest,
-} from "@/types/product";
-import { deleteNormal, getNormal, postJson, putJson } from "@/api/fetchFilter";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { AddProductQnaRequest, ProductQnaItem, ProductQnaType, ProductQnaTypeCode, UpdateProductQnaRequest } from "@/types/product";
+import { deleteNormal, postJson, putJson } from "@/api/fetchFilter";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import API_URL from "@/api/endpoints";
-import { useParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { forwardRef, useEffect, useMemo, useState } from "react";
 import { OnOffButton } from "@/components/ui/OnOffButton";
 import clsx from "clsx";
 import moment from "moment";
@@ -21,312 +14,298 @@ import { useGlobalDialogStore } from "@/store/globalDialog.store";
 import { useAuth } from "@/hooks/useAuth";
 import { TurnToPagination } from "@/components/ui/TurnToPagination";
 
+interface QuestionAnswerProps {
+	sellerName: string;
+	productQnaList: ProductQnaItem[];
+	productQnaTypeList: ProductQnaType[];
+	isGetProductQnaSuccess: boolean;
+}
 // 상품 QnA
-export default function QuestionAnswer({ sellerName }: { sellerName: string }) {
-	// 1) [store / custom hooks] -------------------------------------------
-	const { loginOn, user } = useAuth();
-	const { openDialog } = useGlobalDialogStore();
-	const queryClient = useQueryClient();
-	const params = useParams<{
-		productId: string;
-	}>();
-	const productId = Number(params.productId);
+const QuestionAnswer = forwardRef(
+	({ sellerName, productQnaList, productQnaTypeList, isGetProductQnaSuccess }: QuestionAnswerProps, ref: React.ForwardedRef<HTMLDivElement>) => {
+		// 1) [store / custom hooks] -------------------------------------------
+		const router = useRouter();
+		const { loginOn, user } = useAuth();
+		const { openDialog } = useGlobalDialogStore();
+		const queryClient = useQueryClient();
+		const params = useParams<{
+			productId: string;
+		}>();
+		const productId = Number(params.productId);
 
-	// 2) [useState / useRef] ----------------------------------------------
-	// QnA 작성 뷰
-	const [qnaViewOpen, setQnaViewOpen] = useState(false);
-	// Qna 작성 폼
-	const [qnaFormType, setQnaFormType] = useState<"ADD" | "UPDATE">("ADD");
-	const [qnaForm, setQnaForm] = useState({
-		productQnaId: 0,
-		productQnaTypeId: 1,
-		question: "",
-		secret: false,
-	});
-	// Qna 필터링 코드
-	const [qnaFilterCode, setQnaFilterCode] = useState<"ALL" | ProductQnaTypeCode>("ALL");
-	// qna 페이징 객체
-	const [qnaPage, setQnaPage] = useState({
-		page: 1,
-		totalPage: 1,
-	});
-	// 답변오픈 할 QnA 아이디
-	const [answerOpenQnaId, setAnswerOpenQnaId] = useState<number | null>(null);
-
-	// 3) [useQuery / useMutation] -----------------------------------------
-	// QnA 조회
-	const {
-		data: { productQnaList, productQnaTypeList } = {
-			productQnaList: [],
-			productQnaTypeList: [],
-		},
-		isSuccess,
-		isError,
-		isFetching,
-	} = useQuery<
-		GetProductDetailQnaResponse,
-		Error,
-		{
-			productQnaList: ProductQnaItem[];
-			productQnaTypeList: ProductQnaType[];
-		}
-	>({
-		queryKey: ["productQnaList", productId],
-		queryFn: () => getNormal(getApiUrl(API_URL.PRODUCT_DETAIL_QNA), { productId }),
-		enabled: !!productId,
-		refetchOnWindowFocus: false,
-		select: (data) => ({
-			productQnaList: data.productQnaList,
-			productQnaTypeList: data.productQnaTypeList,
-		}),
-	});
-	// QnA 등록
-	const { mutate: addProductQna } = useMutation({
-		mutationKey: ["addProductQna", productId],
-		mutationFn: (form: AddProductQnaRequest) => postJson(getApiUrl(API_URL.PRODUCT_DETAIL_QNA), { ...form, productId }),
-		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["productQnaList", productId] });
-			setQnaViewOpen(false);
-		},
-	});
-	// QnA 수정
-	const { mutate: updateProductQna } = useMutation({
-		mutationKey: ["updateProductQna", productId],
-		mutationFn: (form: UpdateProductQnaRequest) => putJson(getApiUrl(API_URL.PRODUCT_DETAIL_QNA), { ...form, productId }),
-		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["productQnaList", productId] });
-			setQnaViewOpen(false);
-		},
-	});
-	// QnA 삭제
-	const { mutate: deleteProductQna } = useMutation({
-		mutationKey: ["deleteProductQna", productId],
-		mutationFn: (productQnaId: number) => deleteNormal(getApiUrl(API_URL.PRODUCT_DETAIL_QNA_DELETE), { productQnaId, productId }),
-		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["productQnaList", productId] });
-		},
-	});
-	// Qna 답변 읽음 처리
-	const { mutate: markQnaAsRead } = useMutation({
-		mutationKey: ["markQnaAsRead", productId],
-		mutationFn: (productQnaId: number) =>
-			putJson(getApiUrl(API_URL.PRODUCT_DETAIL_QNA_READ), {
-				productId,
-				productQnaId,
-			}),
-		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["productQnaList", productId] });
-		},
-	});
-
-	// 4) [derived values / useMemo] ---------------------------------------
-	type ProductQnaTypeWithCountList = ProductQnaType & {
-		count: number;
-	};
-	const productQnaTypeWithCountList: ProductQnaTypeWithCountList[] = useMemo(() => {
-		return productQnaTypeList.map((type) => {
-			return {
-				...type,
-				count: productQnaList.filter((qna) => qna.productQnaTypeId === type.productQnaTypeId).length,
-			};
+		// 2) [useState / useRef] ----------------------------------------------
+		// QnA 작성 뷰
+		const [qnaViewOpen, setQnaViewOpen] = useState(false);
+		// Qna 작성 폼
+		const [qnaFormType, setQnaFormType] = useState<"ADD" | "UPDATE">("ADD");
+		const [qnaForm, setQnaForm] = useState({
+			productQnaId: 0,
+			productQnaTypeId: 1,
+			question: "",
+			secret: false,
 		});
-	}, [productQnaTypeList, productQnaList]);
-	const { productQnaCurPageList } = useMemo(() => {
-		const startIdx = (qnaPage.page - 1) * 5;
-		const endIdx = startIdx + 5;
-		return {
-			productQnaCurPageList: productQnaList
-				.filter((qna) => qnaFilterCode === "ALL" || qna.qnaTypeCode === qnaFilterCode)
-				.slice(startIdx, endIdx),
+		// Qna 필터링 코드
+		const [qnaFilterCode, setQnaFilterCode] = useState<"ALL" | ProductQnaTypeCode>("ALL");
+		// qna 페이징 객체
+		const [qnaPage, setQnaPage] = useState({
+			page: 1,
+			totalPage: 1,
+		});
+		// 답변오픈 할 QnA 아이디
+		const [answerOpenQnaId, setAnswerOpenQnaId] = useState<number | null>(null);
+
+		// 3) [useQuery / useMutation] -----------------------------------------
+		// QnA 등록
+		const { mutate: addProductQna } = useMutation({
+			mutationKey: ["addProductQna", productId],
+			mutationFn: (form: AddProductQnaRequest) => postJson(getApiUrl(API_URL.PRODUCT_DETAIL_QNA), { ...form, productId }),
+			onSuccess: () => {
+				queryClient.invalidateQueries({ queryKey: ["productQnaList", productId] });
+				setQnaViewOpen(false);
+			},
+		});
+		// QnA 수정
+		const { mutate: updateProductQna } = useMutation({
+			mutationKey: ["updateProductQna", productId],
+			mutationFn: (form: UpdateProductQnaRequest) => putJson(getApiUrl(API_URL.PRODUCT_DETAIL_QNA), { ...form, productId }),
+			onSuccess: () => {
+				queryClient.invalidateQueries({ queryKey: ["productQnaList", productId] });
+				setQnaViewOpen(false);
+			},
+		});
+		// QnA 삭제
+		const { mutate: deleteProductQna } = useMutation({
+			mutationKey: ["deleteProductQna", productId],
+			mutationFn: (productQnaId: number) => deleteNormal(getApiUrl(API_URL.PRODUCT_DETAIL_QNA_DELETE), { productQnaId, productId }),
+			onSuccess: () => {
+				queryClient.invalidateQueries({ queryKey: ["productQnaList", productId] });
+			},
+		});
+		// Qna 답변 읽음 처리
+		const { mutate: markQnaAsRead } = useMutation({
+			mutationKey: ["markQnaAsRead", productId],
+			mutationFn: (productQnaId: number) =>
+				putJson(getApiUrl(API_URL.PRODUCT_DETAIL_QNA_READ), {
+					productId,
+					productQnaId,
+				}),
+			onSuccess: () => {
+				queryClient.invalidateQueries({ queryKey: ["productQnaList", productId] });
+			},
+		});
+
+		// 4) [derived values / useMemo] ---------------------------------------
+		type ProductQnaTypeWithCountList = ProductQnaType & {
+			count: number;
 		};
-	}, [productQnaList, qnaFilterCode, qnaPage.page]);
-
-	// 5) [handlers / useCallback] -----------------------------------------
-	// QnA 작성 제출
-	const handleQnaSubmit = () => {
-		if (!qnaForm.question.trim()) {
-			openDialog("ALERT", { content: "문의 내용을 입력해주세요." });
-			return;
-		}
-		if (qnaForm.question.trim().length > 300) {
-			openDialog("ALERT", { content: "문의 내용은 300자 이하로 입력해주세요." });
-			return;
-		}
-		// 줄바꿈 갯수는 10개로 제한
-		const lineBreakCount = (qnaForm.question.match(/\n/g)?.length || 0) + 1;
-		if (lineBreakCount > 10) {
-			openDialog("ALERT", { content: "문의 내용은 줄바꿈을 10회 이하로 입력해주세요." });
-			return;
-		}
-		if (qnaFormType === "ADD" && !qnaForm.productQnaId) {
-			addProductQna({
-				productQnaTypeId: qnaForm.productQnaTypeId,
-				question: qnaForm.question,
-				secret: qnaForm.secret,
+		const productQnaTypeWithCountList: ProductQnaTypeWithCountList[] = useMemo(() => {
+			return productQnaTypeList.map((type) => {
+				return {
+					...type,
+					count: productQnaList.filter((qna) => qna.productQnaTypeId === type.productQnaTypeId).length,
+				};
 			});
-			return;
-		}
-		if (qnaFormType === "UPDATE" && qnaForm.productQnaId) {
-			updateProductQna({ productQnaId: qnaForm.productQnaId, question: qnaForm.question, secret: qnaForm.secret });
-			return;
-		}
-		openDialog("ALERT", { content: "알 수 없는 오류가 발생했습니다. 다시 시도해주세요." });
-	};
+		}, [productQnaTypeList, productQnaList]);
+		const { productQnaCurPageList } = useMemo(() => {
+			const startIdx = (qnaPage.page - 1) * 5;
+			const endIdx = startIdx + 5;
+			return {
+				productQnaCurPageList: productQnaList
+					.filter((qna) => qnaFilterCode === "ALL" || qna.qnaTypeCode === qnaFilterCode)
+					.slice(startIdx, endIdx),
+			};
+		}, [productQnaList, qnaFilterCode, qnaPage.page]);
 
-	// 6) [useEffect] ------------------------------------------------------
-	useEffect(() => {
-		if (productQnaList.length > 0) {
-			const totalPage = Math.ceil(productQnaList.filter((qna) => qnaFilterCode === "ALL" || qna.qnaTypeCode === qnaFilterCode).length / 5);
-			setQnaPage({
-				page: 1,
-				totalPage,
-			});
-		}
-	}, [productQnaList, qnaFilterCode]);
+		// 5) [handlers / useCallback] -----------------------------------------
+		// QnA 작성 제출
+		const handleQnaSubmit = () => {
+			if (!qnaForm.question.trim()) {
+				openDialog("ALERT", { content: "문의 내용을 입력해주세요." });
+				return;
+			}
+			if (qnaForm.question.trim().length > 300) {
+				openDialog("ALERT", { content: "문의 내용은 300자 이하로 입력해주세요." });
+				return;
+			}
+			// 줄바꿈 갯수는 10개로 제한
+			const lineBreakCount = (qnaForm.question.match(/\n/g)?.length || 0) + 1;
+			if (lineBreakCount > 10) {
+				openDialog("ALERT", { content: "문의 내용은 줄바꿈을 10회 이하로 입력해주세요." });
+				return;
+			}
+			if (qnaFormType === "ADD" && !qnaForm.productQnaId) {
+				addProductQna({
+					productQnaTypeId: qnaForm.productQnaTypeId,
+					question: qnaForm.question,
+					secret: qnaForm.secret,
+				});
+				return;
+			}
+			if (qnaFormType === "UPDATE" && qnaForm.productQnaId) {
+				updateProductQna({ productQnaId: qnaForm.productQnaId, question: qnaForm.question, secret: qnaForm.secret });
+				return;
+			}
+			openDialog("ALERT", { content: "알 수 없는 오류가 발생했습니다. 다시 시도해주세요." });
+		};
 
-	return (
-		<>
-			{isFetching && <div>QnA 불러오는 중...</div>}
-			{isError && <div>QnA를 불러오지 못했어요.</div>}
-			{isSuccess && (
-				<section className={styles.qnaInfoSection}>
-					<header className="flex justify-between pb-1 mb-2">
-						<span className="text-2xl font-extrabold">상품 Q&A</span>
-						{!qnaViewOpen && (
-							<button
-								className="flex items-center gap-1 pr-1"
-								onClick={() => {
-									if (!loginOn) {
-										openDialog("ALERT", { content: "로그인이 필요한 서비스입니다." });
-										return;
-									}
-									setQnaFormType("ADD");
-									setQnaForm({
-										productQnaId: 0,
-										productQnaTypeId: 1,
-										question: "",
-										secret: false,
+		// 6) [useEffect] ------------------------------------------------------
+		useEffect(() => {
+			if (productQnaList.length > 0) {
+				const totalPage = Math.ceil(productQnaList.filter((qna) => qnaFilterCode === "ALL" || qna.qnaTypeCode === qnaFilterCode).length / 5);
+				setQnaPage({
+					page: 1,
+					totalPage,
+				});
+			}
+		}, [productQnaList, qnaFilterCode]);
+
+		return (
+			<section className={styles.qnaInfoSection} ref={ref}>
+				<header className="flex justify-between pb-1 mb-2">
+					<span className="text-2xl font-extrabold">상품 Q&A</span>
+					{!qnaViewOpen && (
+						<button
+							className="flex items-center gap-1 pr-1"
+							onClick={() => {
+								if (!loginOn) {
+									openDialog("CONFIRM", {
+										content: "로그인이 필요한 서비스입니다. 로그인 페이지로 이동하시겠습니까?",
+										hideCancel: true,
+										okText: "로그인 페이지로",
+										handleAfterOk: () => {
+											const returnUrl = encodeURIComponent(`/product/detail/${productId}?tab=qna`);
+											router.replace(`/user?returnUrl=${returnUrl}`);
+										},
+										disableOverlayClose: true,
 									});
-									setQnaViewOpen(true);
-								}}
-							>
-								<span>Q&A 작성</span>
-								<span className="relative top-[1px]">
-									<BsChevronRight />
-								</span>
-							</button>
-						)}
-					</header>
-					{qnaViewOpen ? (
-						<>
-							<hr />
-							<article className="p-3 bg-gray-100">
-								<header>
-									<h3>Q&A {qnaFormType === "ADD" ? "작성" : "수정"}</h3>
-								</header>
-								<nav className={clsx("flex gap-2.5 mt-3", styles.qnaFilterNav)}>
-									{qnaFormType === "ADD" ? (
-										<>
-											{productQnaTypeList.map((type) => (
-												<button
-													key={`qnaWriting-${type.productQnaTypeId}`}
-													className={clsx(
-														"px-3 py-1 text-sm bg-gray-200 border rounded-full cursor-pointer text-slate-900",
-														{
-															[styles.on]: qnaForm.productQnaTypeId === type.productQnaTypeId,
-														},
-													)}
-													onClick={() => setQnaForm({ ...qnaForm, productQnaTypeId: type.productQnaTypeId })}
-												>
-													{type.name}
-												</button>
-											))}
-										</>
-									) : (
-										<span className="px-1 font-bold">
-											[{productQnaTypeList.find((type) => type.productQnaTypeId === qnaForm.productQnaTypeId)?.name}]
-										</span>
-									)}
-								</nav>
-								<section className="px-2 mt-3">
-									<div className="flex">
-										<label htmlFor="qnaContent" className="pt-4 text-lg select-none whitespace-nowrap">
-											문의내용
-										</label>
-										<textarea
-											name="qnaContent"
-											id="qnaContent"
-											cols={30}
-											rows={3}
-											className="w-full p-2 mt-1 ml-10 border rounded-md resize-none"
-											value={qnaForm.question}
-											onChange={(e) => {
-												setQnaForm((prev) => ({
-													...prev,
-													question: e.target.value,
-												}));
-											}}
-											onBlur={(e) => {
-												setQnaForm((prev) => ({
-													...prev,
-													question: e.target.value.trim(),
-												}));
-											}}
-										></textarea>
-									</div>
-									<div className="px-1 mt-1 text-sm text-right">{qnaForm.question.trim().length} / 300</div>
-									<div className="mt-1 text-right">
-										<label htmlFor="qnaSecret" className="select-none">
-											비밀글 여부
-										</label>
-										<OnOffButton
-											checkId="qnaSecret"
-											checked={qnaForm.secret}
-											onChange={(checked) => {
-												setQnaForm((prev) => ({
-													...prev,
-													secret: checked,
-												}));
-											}}
-											size="sm"
-										/>
-									</div>
-									<p className="mt-2 text-sm text-right">※ 판매자 답변 전까지만 수정 및 비밀글 변경을 할 수 있습니다.</p>
-									<div className="mt-1 text-right">
-										<button className="text-base" onClick={handleQnaSubmit}>
-											작성완료
-										</button>
-										<button onClick={() => setQnaViewOpen(false)} className="ml-4 text-base">
-											취소
-										</button>
-									</div>
-								</section>
-							</article>
-							<hr />
-						</>
-					) : (
-						<article className="px-4 py-3 bg-gray-100">
-							<nav className={clsx("flex gap-2.5 mt-2", styles.qnaFilterNav)}>
-								<button
-									className={clsx("px-3 py-1 text-sm bg-gray-200 border rounded-full cursor-pointer text-slate-900", {
-										[styles.on]: qnaFilterCode === "ALL",
-									})}
-									onClick={() => setQnaFilterCode("ALL")}
-								>
-									전체({productQnaList.length})
-								</button>
-								{productQnaTypeWithCountList.map((type) => (
-									<button
-										key={`qnaView-${type.productQnaTypeId}`}
-										className={clsx("px-3 py-1 text-sm bg-gray-200 border rounded-full cursor-pointer text-slate-900", {
-											[styles.on]: qnaFilterCode === type.code,
-										})}
-										onClick={() => setQnaFilterCode(type.code)}
-									>
-										{type.name}({type.count})
-									</button>
-								))}
+									return;
+								}
+								setQnaFormType("ADD");
+								setQnaForm({
+									productQnaId: 0,
+									productQnaTypeId: 1,
+									question: "",
+									secret: false,
+								});
+								setQnaViewOpen(true);
+							}}
+						>
+							<span>Q&A 작성</span>
+							<span className="relative top-[1px]">
+								<BsChevronRight />
+							</span>
+						</button>
+					)}
+				</header>
+				{qnaViewOpen ? (
+					<>
+						<hr />
+						<article className="p-3 bg-gray-100">
+							<header>
+								<h3>Q&A {qnaFormType === "ADD" ? "작성" : "수정"}</h3>
+							</header>
+							<nav className={clsx("flex gap-2.5 mt-3", styles.qnaFilterNav)}>
+								{qnaFormType === "ADD" ? (
+									<>
+										{productQnaTypeList.map((type) => (
+											<button
+												key={`qnaWriting-${type.productQnaTypeId}`}
+												className={clsx("px-3 py-1 text-sm bg-gray-200 border rounded-full cursor-pointer text-slate-900", {
+													[styles.on]: qnaForm.productQnaTypeId === type.productQnaTypeId,
+												})}
+												onClick={() => setQnaForm({ ...qnaForm, productQnaTypeId: type.productQnaTypeId })}
+											>
+												{type.name}
+											</button>
+										))}
+									</>
+								) : (
+									<span className="px-1 font-bold">
+										[{productQnaTypeList.find((type) => type.productQnaTypeId === qnaForm.productQnaTypeId)?.name}]
+									</span>
+								)}
 							</nav>
+							<section className="px-2 mt-3">
+								<div className="flex">
+									<label htmlFor="qnaContent" className="pt-4 text-lg select-none whitespace-nowrap">
+										문의내용
+									</label>
+									<textarea
+										name="qnaContent"
+										id="qnaContent"
+										cols={30}
+										rows={3}
+										className="w-full p-2 mt-1 ml-10 border rounded-md resize-none"
+										value={qnaForm.question}
+										onChange={(e) => {
+											setQnaForm((prev) => ({
+												...prev,
+												question: e.target.value,
+											}));
+										}}
+										onBlur={(e) => {
+											setQnaForm((prev) => ({
+												...prev,
+												question: e.target.value.trim(),
+											}));
+										}}
+									></textarea>
+								</div>
+								<div className="px-1 mt-1 text-sm text-right">{qnaForm.question.trim().length} / 300</div>
+								<div className="mt-1 text-right">
+									<label htmlFor="qnaSecret" className="select-none">
+										비밀글 여부
+									</label>
+									<OnOffButton
+										checkId="qnaSecret"
+										checked={qnaForm.secret}
+										onChange={(checked) => {
+											setQnaForm((prev) => ({
+												...prev,
+												secret: checked,
+											}));
+										}}
+										size="sm"
+									/>
+								</div>
+								<p className="mt-2 text-sm text-right">※ 판매자 답변 전까지만 수정 및 비밀글 변경을 할 수 있습니다.</p>
+								<div className="mt-1 text-right">
+									<button className="text-base" onClick={handleQnaSubmit}>
+										작성완료
+									</button>
+									<button onClick={() => setQnaViewOpen(false)} className="ml-4 text-base">
+										취소
+									</button>
+								</div>
+							</section>
+						</article>
+						<hr />
+					</>
+				) : (
+					<article className="px-4 py-3 bg-gray-100">
+						<nav className={clsx("flex gap-2.5 mt-2", styles.qnaFilterNav)}>
+							<button
+								className={clsx("px-3 py-1 text-sm bg-gray-200 border rounded-full cursor-pointer text-slate-900", {
+									[styles.on]: qnaFilterCode === "ALL",
+								})}
+								onClick={() => setQnaFilterCode("ALL")}
+							>
+								전체{productQnaList.length > 0 && <span>({productQnaList.length})</span>}
+							</button>
+							{productQnaTypeWithCountList.map((type) => (
+								<button
+									key={`qnaView-${type.productQnaTypeId}`}
+									className={clsx("px-3 py-1 text-sm bg-gray-200 border rounded-full cursor-pointer text-slate-900", {
+										[styles.on]: qnaFilterCode === type.code,
+									})}
+									onClick={() => setQnaFilterCode(type.code)}
+								>
+									{type.name}({type.count})
+								</button>
+							))}
+						</nav>
+						{!isGetProductQnaSuccess && <div className="py-10 text-center">Q&A를 불러오는 중입니다...</div>}
+						{isGetProductQnaSuccess && (
 							<section className="mt-3">
 								{productQnaList.length === 0 && <div className="py-10 text-center">등록된 Q&A가 없습니다.</div>}
 								{productQnaCurPageList.length > 0 &&
@@ -443,10 +422,12 @@ export default function QuestionAnswer({ sellerName }: { sellerName: string }) {
 									/>
 								</div>
 							</section>
-						</article>
-					)}
-				</section>
-			)}
-		</>
-	);
-}
+						)}
+					</article>
+				)}
+			</section>
+		);
+	},
+);
+QuestionAnswer.displayName = "QuestionAnswer";
+export default QuestionAnswer;
