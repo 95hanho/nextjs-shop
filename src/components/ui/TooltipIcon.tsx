@@ -6,9 +6,9 @@ import styled from "@emotion/styled";
 const StyledIcon = styled.i<{ size?: number; marginLeft?: string }>`
 	position: relative;
 	display: inline-block;
-	margin-left: ${(props) => props.marginLeft || "0.25rem"};
 	font-size: ${(props) => props.size || 12}px;
 	color: #717171;
+	vertical-align: top;
 `;
 
 interface TooltipIconProps {
