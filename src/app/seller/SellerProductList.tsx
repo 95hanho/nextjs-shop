@@ -185,7 +185,7 @@ export default function SellerProductList({
 												<td>{product.likeCount}</td>
 												<td>{product.wishCount}</td>
 												<td>{`${getGender(product.gender)}-${product.topMenuName}-${product.subMenuName}`}</td>
-												<td>
+												<td className={styles.saleStopCell}>
 													<button
 														className={clsx(styles.saleStopButton, product.saleStop ? styles.on : styles.off)}
 														onClick={(e) => {

@@ -91,14 +91,29 @@ export default function OrderHistoryClient() {
 							className={styles.orderHistorySearchInput}
 							placeholder="상품명/브랜드명으로 검색하세요."
 							value={inputValue}
-							onChange={(e) => setInputValue(e.target.value)}
+							onChange={(e) => {
+								const value = e.target.value;
+								// 완전히 지웠을 때 → 이전 검색값 복구
+								if (value === "") {
+									setSearchText("");
+								}
+
+								setInputValue(value);
+							}}
 							onKeyUp={(e) => {
 								if (e.key == "Enter") {
+									if (!inputValue.trim()) return; // 공백 검색 방지
 									setSearchText(inputValue);
 								}
 							}}
 						/>
-						<button className={styles.orderHistorySearchBtn} onClick={() => setSearchText(inputValue)}>
+						<button
+							className={styles.orderHistorySearchBtn}
+							onClick={() => {
+								if (!inputValue.trim()) return; // 공백 검색 방지
+								setSearchText(inputValue);
+							}}
+						>
 							<FaSearch />
 						</button>
 					</div>
@@ -186,9 +201,7 @@ export default function OrderHistoryClient() {
 															<button
 																className={styles.orderHistoryBtn}
 																onClick={() => {
-																	openDialog("ALERT", {
-																		content: "배송 조회는 아직 구현되지 않았습니다.",
-																	});
+																	openDialog("ALERT", { content: "준비되지 않은 컨텐츠입니다." });
 																}}
 															>
 																배송 조회

@@ -24,6 +24,7 @@ export interface PhoneAuthRequest {
 	phone: string;
 	mode: "JOIN" | "IDFIND" | "PWDFIND" | "CHANGE";
 	phoneAuthToken?: string;
+	userId?: string; // PW 찾기 시 필요
 }
 /* 휴대폰 인증 확인 */
 export interface PhoneAuthCheckRequest {

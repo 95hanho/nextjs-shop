@@ -13,7 +13,7 @@ import { NextResponse } from "next/server";
 export const POST = userWithOptionalAuth(async ({ nextRequest, accessToken }) => {
 	console.log("[API] 휴대폰 인증");
 	try {
-		const { phone, mode }: PhoneAuthRequest = await nextRequest.json();
+		const { phone, mode, userId }: PhoneAuthRequest = await nextRequest.json();
 		if (!phone) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
 
 		const xffHeader = nextRequest.headers.get("x-forwarded-for");
@@ -26,14 +26,12 @@ export const POST = userWithOptionalAuth(async ({ nextRequest, accessToken }) =>
 		const phoneAuthToken = generatePhoneAuthToken();
 
 		const payload: PhoneAuthRequest = { phone, mode, phoneAuthToken };
+		if (userId && mode == "PWDFIND") payload.userId = userId; // PW 찾기 시 userId 포함
 		const headers: RequestHeaders = {
 			userAgent: nextRequest.headers.get("user-agent") || "",
 			["x-forwarded-for"]: ip,
 		};
-		// console.log("accessToken", accessToken);
 		if (accessToken) headers.Authorization = `Bearer ${accessToken}`;
-
-		// console.log(headers);
 
 		const data = await postUrlFormData<BaseResponse>(getBackendUrl(API_URL.AUTH_PHONE_AUTH), { ...payload }, headers);
 

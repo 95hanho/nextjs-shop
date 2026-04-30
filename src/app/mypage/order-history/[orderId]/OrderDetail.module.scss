@@ -159,14 +159,17 @@
 									display: flex;
 									flex-wrap: wrap;
 									gap: 5px;
-									button {
+									button,
+									a {
+										text-align: center;
 										display: block;
 										background-color: #e5e5e5;
 										width: calc(50% - 2.5px);
 										border-radius: 5px;
 										padding: 5px 0;
-										font-size: 16px;
+										font-size: 17px;
 										border: 1px solid #d5d5d5;
+										letter-spacing: 1px;
 										&.active {
 											background-color: #7aecef;
 											color: #377ad1;

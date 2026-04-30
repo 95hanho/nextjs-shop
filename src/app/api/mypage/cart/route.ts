@@ -54,6 +54,7 @@ export const PUT = userWithAuth(async ({ nextRequest, accessToken }) => {
 		if (!cartIdList?.length || selected === undefined) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
 
 		const payload: UpdateCartSelectedRequest = { cartIdList, selected };
+		console.log({ ...payload });
 		const data = await putUrlFormData<BaseResponse>(
 			getBackendUrl(API_URL.MY_CART),
 			{ ...payload },

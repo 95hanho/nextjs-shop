@@ -43,6 +43,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 	const logout = useCallback(async () => {
 		console.log("로그아웃");
 		setUser(initUser);
+		setCartCount(0);
+		setOrderCount(0);
 		await postJson(getApiUrl(API_URL.AUTH_LOGOUT));
 
 		// -- React Query 캐시 무효화

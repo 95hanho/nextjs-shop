@@ -22,7 +22,7 @@ export const GET = userWithAuth(async ({ nextRequest, accessToken }) => {
 				Authorization: `Bearer ${accessToken}`,
 			},
 		);
-		console.log({ data });
+		// console.log({ data });
 
 		return NextResponse.json({ ...data }, { status: 200 });
 	} catch (err: unknown) {

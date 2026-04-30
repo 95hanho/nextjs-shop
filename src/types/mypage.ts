@@ -235,6 +235,9 @@ export type CartItem = Cart & {
 	productName: string;
 	originPrice: number;
 	finalPrice: number;
+	saleStop: boolean;
+	shippingDueDate: string;
+	//
 	wishId: number;
 } & FileInfo & {
 		sellerName: string;

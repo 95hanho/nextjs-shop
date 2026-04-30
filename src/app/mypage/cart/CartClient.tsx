@@ -88,6 +88,8 @@ export default function CartClient() {
 	const userCouponChanged = useRef<boolean>(false);
 	// 쿠폰 초기화가 불필요 할 때
 	const noResetCoupon = useRef<boolean>(false);
+	// 초과상품 존재 여부 모달은 한 번만
+	const [exceedQuantityAlertShown, setExceedQuantityAlertShown] = useState<boolean>(false);
 
 	// 3) [useQuery / useMutation] ---------------------------------
 	// 장바구니 리스트 조회
@@ -160,6 +162,7 @@ export default function CartClient() {
 		> = {};
 
 		cartData.cartList.forEach((cart) => {
+			console.log({ productName: cart.productName, selected: cart.selected, saleStop: cart.saleStop });
 			const initPrice = (cart.finalPrice + cart.addPrice) * cart.quantity;
 			const cartItem: CartItemWithCoupon = { ...cart, discountedPrice: initPrice, discountAmount: 0 };
 
@@ -290,17 +293,18 @@ export default function CartClient() {
 	const { /* totalCount, */ selectedCount, allSelected, anySelected, unselectedCartIdList, selectedCartIdList }: CartItemSelectCollection =
 		useMemo(() => {
 			const items = brandGroupList.flatMap(([, carts]) => carts);
-			const total = items.length;
-			const selected = items.filter((c) => c.selected).length;
-			const allSelected = total > 0 && selected === total;
+			// const total = items.length;
+			const selectedCount = items.filter((c) => c.selected).length; // 선택된 상품 수
+			const selectableItems = items.filter((c) => !c.saleStop && c.stock >= c.quantity); // 선택 가능한 items
+			const allSelected = selectableItems.length > 0 && selectedCount === selectableItems.length; // 선택된 상품 수가 선택 가능한 상품 수와 같으면 전체 선택된 상태
 
 			return {
 				// totalCount: total, // UI에 “3/5 선택” 표시 가능
-				selectedCount: selected, // UI에 “3/5 선택” 표시 가능
+				selectedCount: selectedCount, // UI에 “3/5 선택” 표시 가능
 				allSelected, // 전체 체크박스 checked에 사용
-				anySelected: selected > 0, // “하나라도 선택” (예: 삭제 버튼 활성화)
-				unselectedCartIdList: items.filter((c) => (allSelected ? true : !c.selected)).map((c) => c.cartId), // 전체 선택 변경을 위한 cartId들
-				selectedCartIdList: items.filter((c) => c.selected).map((c) => c.cartId),
+				anySelected: selectedCount > 0, // “하나라도 선택” (예: 삭제 버튼 활성화)
+				unselectedCartIdList: selectableItems.filter((c) => (allSelected ? true : !c.selected)).map((c) => c.cartId), // 전체 선택 변경을 위한 cartId들
+				selectedCartIdList: selectableItems.filter((c) => c.selected).map((c) => c.cartId),
 			};
 		}, [brandGroupList]);
 
@@ -452,12 +456,13 @@ export default function CartClient() {
 
 	// 장바구니 내 상품 중 재고 수량보다 주문 수량이 초과된 상품이 있는지 여부에 따른 모달 띄우기
 	useEffect(() => {
-		if (cartData && cartData.isExceedQuantity) {
+		if (cartData && cartData.isExceedQuantity && !exceedQuantityAlertShown) {
 			openDialog("ALERT", {
-				content: "장바구니 내 상품 중 재고 수량보다 주문 수량이 초과된 상품이 있습니다. 주문 수량을 확인해주세요.",
+				content: "장바구니 내 상품 중 재고 수량보다 주문 수량이 초과되거나 판매 중지된 상품이 있습니다. <br  />주문 수량을 확인해주세요.",
 			});
+			setExceedQuantityAlertShown(true);
 		}
-	}, [openDialog, cartData]);
+	}, [openDialog, cartData, exceedQuantityAlertShown]);
 	// 디버깅용 - 장바구니 데이터 및 쿠폰 적용 상태 변화 감지
 	useEffect(() => {
 		// if (cartCouponList.length > 0) console.log({ cartCouponList });
