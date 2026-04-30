@@ -186,9 +186,7 @@ export default function OrderHistoryClient() {
 															<button
 																className={styles.orderHistoryBtn}
 																onClick={() => {
-																	openDialog("ALERT", {
-																		content: "배송 조회는 아직 구현되지 않았습니다.",
-																	});
+																	openDialog("ALERT", { content: "준비되지 않은 컨텐츠입니다." });
 																}}
 															>
 																배송 조회

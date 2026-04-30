@@ -138,9 +138,14 @@ export default function CartSummaryAside({
 					<div className={`${styles.title} ${styles.benefitHeader}`}>
 						<div className={styles.benefitTitle}>결제 혜택</div>
 						<div className={`text-sm ${styles.benefitMore}`}>
-							<a href="#" className="text-gray-600 underline">
+							<button
+								className="text-gray-600 underline"
+								onClick={() => {
+									openDialog("ALERT", { content: "준비되지 않은 컨텐츠입니다." });
+								}}
+							>
 								더보기
-							</a>
+							</button>
 						</div>
 					</div>
 
@@ -188,7 +193,7 @@ export default function CartSummaryAside({
 			{noticeOpen && (
 				<div className={styles.noticeWrap}>
 					<ul className={`${styles.noticeList} text-xs`}>
-						<li>무신사는 제주/도서산간 지역 제외 전 지역, 전 상품 무료 배송입니다.</li>
+						<li>제주/도서산간 지역 제외 전 지역, 전 상품 무료 배송입니다.</li>
 						<li>주문완료 후 출고 전 배송지 변경은 동일 권역(일반, 제주, 제주 외 도서산간 지역) 내에서만 가능합니다.</li>
 						<li>2개 이상의 브랜드를 주문하신 경우, 개별 배송됩니다.</li>
 						<li>결제 시 각종 할인 적용이 달라질 수 있습니다.</li>

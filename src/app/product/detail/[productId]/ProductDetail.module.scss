@@ -678,6 +678,7 @@
 	/* 상품리뷰 뷰 */
 	section.reviewInfoSection {
 		scroll-margin-top: 50px;
+		min-height: 240px;
 		h2 {
 		}
 		.allReviewImages {
@@ -727,6 +728,7 @@
 	section.qnaInfoSection {
 		scroll-margin-top: 50px;
 		margin-top: 20px;
+		min-height: 240px;
 		.qnaFilterNav {
 			button.on {
 				font-weight: bold;

@@ -19,6 +19,7 @@ import "moment/locale/ko"; // 한국어 로케일 추가
 import { AddCartPopup } from "@/components/mypage/AddCartPopup";
 import { useProductCartAction } from "@/hooks/query/mypage/useProductCartAction";
 import { getUploadImageUrl } from "@/lib/image";
+import { useGlobalDialogStore } from "@/store/globalDialog.store";
 
 type ItemSellerMap = {
 	[sellerName: string]: MyOrderDetailItem[];
@@ -28,6 +29,7 @@ export default function OrderDetailClient({ orderId }: { orderId: string }) {
 	// 1) [store / custom hooks] -------------------------------------------
 	const { loginOn } = useAuth();
 	const { handleAddCart, isSuccess: isAddCartSuccess, reset } = useProductCartAction();
+	const { openDialog } = useGlobalDialogStore();
 
 	// 2) [useState / useRef] ----------------------------------------------
 	const [openCouponInfo, setOpenCouponInfo] = useState<number | null>(null); // 열린 쿠폰 정보의 orderItemId
@@ -111,7 +113,13 @@ export default function OrderDetailClient({ orderId }: { orderId: string }) {
 									<li key={"itemSeller-" + sellerName}>
 										<header className={styles.sellerInfo}>
 											<div className={styles.sellerName}>
-												<Link href="#">
+												<Link
+													href="#"
+													onClick={(e) => {
+														e.preventDefault();
+														openDialog("ALERT", { content: "준비되지 않은 컨텐츠입니다." });
+													}}
+												>
 													{sellerName}{" "}
 													<i className="inline-block">
 														<GoHome />
@@ -120,7 +128,13 @@ export default function OrderDetailClient({ orderId }: { orderId: string }) {
 												<h5>무료 배송</h5>
 											</div>
 											<div className={styles.sellerActions}>
-												<button>문의하기</button>
+												<button
+													onClick={() => {
+														openDialog("ALERT", { content: "준비되지 않은 컨텐츠입니다." });
+													}}
+												>
+													문의하기
+												</button>
 											</div>
 										</header>
 										<div className="mt-2">
@@ -190,7 +204,14 @@ export default function OrderDetailClient({ orderId }: { orderId: string }) {
 														</div>
 													)}
 													<div className={styles.orderItemActions}>
-														<button className={styles.active}>배송조회</button>
+														<button
+															className={styles.active}
+															onClick={() => {
+																openDialog("ALERT", { content: "준비되지 않은 컨텐츠입니다." });
+															}}
+														>
+															배송조회
+														</button>
 														<button
 															className="relative"
 															onClick={() => {
@@ -213,7 +234,15 @@ export default function OrderDetailClient({ orderId }: { orderId: string }) {
 																curProductId={addCartCurProductId}
 															/>
 														</button>
-														<button>리뷰 작성</button>
+														<Link
+															href={
+																item.reviewId
+																	? `/product/detail/${item.productId}?tab=review`
+																	: `/mypage/review/${item.orderItemId}`
+															}
+														>
+															{item.reviewId ? "작성 리뷰 보기" : "리뷰 작성"}
+														</Link>
 													</div>
 												</section>
 											))}
