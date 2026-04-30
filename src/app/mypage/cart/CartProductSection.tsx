@@ -8,7 +8,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import API_URL from "@/api/endpoints";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { IoIosClose } from "react-icons/io";
-import { BsExclamationCircle } from "react-icons/bs";
 import { deleteNormal, postJson, putJson } from "@/api/fetchFilter";
 import { discountPercent, money } from "@/lib/format";
 import { BaseResponse } from "@/types/common";
@@ -31,6 +30,9 @@ import { scrollIntoCenter } from "@/utils/ui";
 import { MaxDiscountBanner } from "@/components/buy/MaxDiscountBanner";
 import { useGlobalDialogStore } from "@/store/globalDialog.store";
 import { getUploadImageUrl } from "@/lib/image";
+import moment from "moment";
+import "moment/locale/ko";
+import { TooltipIcon } from "@/components/ui/TooltipIcon";
 
 interface CartProductSectionProps extends CartItemSelectCollection {
 	noResetCouponOn: () => void;
@@ -218,9 +220,10 @@ export default function CartProductSection({
 				{brandGroupList?.map((brandGroup, brandGroupIdx) => {
 					const brandName = brandGroup[0];
 					const productList = brandGroup[1];
-					const brandSelectedCount = productList.filter((v) => v.selected).length;
-					const brandAllchecked = brandSelectedCount === productList.length;
-					const brandAllCartIdList = productList.filter((v) => (brandAllchecked ? true : !v.selected)).map((v) => v.cartId);
+					const brandSelectedCount = productList.filter((v) => v.selected).length; // 브랜드 내 선택된 제품 수
+					const selectableProductList = productList.filter((v) => !v.saleStop && v.stock >= v.quantity); // 선택가능한 제품
+					const brandAllchecked = brandSelectedCount > 0 && brandSelectedCount === selectableProductList.length; // 브랜드 내 모든 제품이 선택된 상태 여부
+					const brandAllCartIdList = selectableProductList.filter((v) => (brandAllchecked ? true : !v.selected)).map((v) => v.cartId);
 
 					return (
 						<React.Fragment key={"cartBrand-" + brandName}>
@@ -236,6 +239,7 @@ export default function CartProductSection({
 												type="checkbox"
 												className="checkbox"
 												checked={brandAllchecked}
+												disabled={selectableProductList.length === 0}
 												onChange={async () => {
 													await handleChangeSelected.mutateAsync({
 														cartIdList: brandAllCartIdList,
@@ -251,7 +255,14 @@ export default function CartProductSection({
 										</label>
 									</span>
 
-									<a href="#" className={styles.brandGroupLink}>
+									<a
+										href="#"
+										className={styles.brandGroupLink}
+										onClick={(e) => {
+											e.preventDefault();
+											openDialog("ALERT", { content: "준비되지 않은 컨텐츠입니다." });
+										}}
+									>
 										브랜드숍
 									</a>
 								</h2>
@@ -262,10 +273,11 @@ export default function CartProductSection({
 									{productList.map((product) => {
 										const initialOriginPrice = (product.originPrice + product.addPrice) * product.quantity;
 										const initialFinalPrice = (product.finalPrice + product.addPrice) * product.quantity;
-										const selectDisabled = product.stock < product.quantity;
+										const outOfStock = product.stock < product.quantity;
+										const selectDisabled = outOfStock || product.saleStop;
 
 										let productAlarm = "";
-										if (product.stock !== 0 && selectDisabled) {
+										if (product.stock !== 0 && outOfStock) {
 											productAlarm = "재고가 부족합니다. 옵션을 변경하시면 선택이 가능합니다.";
 										}
 
@@ -319,11 +331,16 @@ export default function CartProductSection({
 																<SmartImage src={getUploadImageUrl(product.filePath)} alt={product.fileName} fill />
 
 																{selectDisabled && (
-																	<div className={styles.productOutOfStockCover}>
-																		<span className={styles.productOutOfStockSticker}>
-																			{product.stock === 0 && "품절"}
-																			{product.stock !== 0 && selectDisabled && "재고부족"}
-																		</span>
+																	<div className={styles.productDisabledCover}>
+																		{outOfStock && (
+																			<span className={styles.productOutOfStockSticker}>
+																				{product.stock === 0 && "품절"}
+																				{product.stock !== 0 && selectDisabled && "재고부족"}
+																			</span>
+																		)}
+																		{product.saleStop && (
+																			<span className={styles.productSaleStopSticker}>판매중지</span>
+																		)}
 																	</div>
 																)}
 															</Link>
@@ -354,17 +371,19 @@ export default function CartProductSection({
 																</p>
 
 																{/* 10개 이하 시에 표시 */}
-																{product.stock < 10 && (
+																{0 < product.stock && product.stock < 10 && (
 																	<div className={styles.productItemWarning}>
 																		<span>품절임박 {product.stock}개 남음</span>
 																	</div>
 																)}
 
 																<div className={styles.productItemPrices}>
-																	<h5 className={`${styles.price} ${styles.priceSale}`}>
-																		<b>{discountPercent(initialOriginPrice, product.discountedPrice)}%</b>
-																		<del>{money(initialOriginPrice)}원</del>
-																	</h5>
+																	{initialOriginPrice > initialFinalPrice && (
+																		<h5 className={`${styles.price} ${styles.priceSale}`}>
+																			<b>{discountPercent(initialOriginPrice, product.discountedPrice)}%</b>
+																			<del>{money(initialOriginPrice)}원</del>
+																		</h5>
+																	)}
 																	<h5 className={`${styles.price} ${styles.priceOrigin}`}>
 																		<span>{money(initialFinalPrice - product.discountAmount)}원</span>
 																	</h5>
@@ -375,12 +394,14 @@ export default function CartProductSection({
 
 													{productAlarm && <p className={styles.productAlert}>* {productAlarm}</p>}
 
-													<h5 className={styles.productItemDelivery}>
-														<b>10.02(목) 도착 예정</b>
-														<span>
-															<BsExclamationCircle />
-														</span>
-													</h5>
+													{product.shippingDueDate && (
+														<h5 className={styles.productItemDelivery}>
+															<b>{moment(product.shippingDueDate).format("MM.DD(ddd)")} 출발 예정</b>
+															<span className="ml-1 mb-[2px]">
+																<TooltipIcon tooltipText="택배 상황에 따라 출발일이 변경될 수 있습니다." />
+															</span>
+														</h5>
+													)}
 
 													<div className={styles.productItemActions}>
 														<button onClick={() => openOptionChangeModal(product)}>옵션 변경</button>

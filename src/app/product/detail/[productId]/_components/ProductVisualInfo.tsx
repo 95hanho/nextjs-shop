@@ -512,7 +512,7 @@ export default function ProductVisualInfo({
 													{productSelectList.map((option) => (
 														<div key={option.productOptionId} className={styles.selectedOptionItem}>
 															<span className={styles.selectedOptionName}>
-																{option.size} {option.addPrice > 0 && `(추가금 ${money(option.addPrice)})`}
+																{option.size} {option.addPrice > 0 && `(+${money(option.addPrice)})`}
 															</span>
 															<div className="flex items-center">
 																<span>

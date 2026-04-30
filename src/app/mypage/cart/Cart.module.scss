@@ -154,16 +154,14 @@
 										position: relative;
 
 										.productItemThumb {
-											.productOutOfStockCover {
+											.productDisabledCover {
 												position: absolute;
 												width: 100%;
 												height: 100%;
 												background-color: rgba(0, 0, 0, 0.3);
 												top: 0;
 												left: 0;
-
-												.productOutOfStockSticker {
-													background-color: #4a4a4a;
+												span {
 													color: #fff;
 													position: absolute;
 													left: 3px;
@@ -171,6 +169,12 @@
 													font-size: 11px;
 													padding: 1px 2px;
 													border-radius: 2px;
+												}
+												.productOutOfStockSticker {
+													background-color: #4a4a4a;
+												}
+												.productSaleStopSticker {
+													background-color: rgba(255, 0, 0, 0.7);
 												}
 											}
 										}
@@ -325,7 +329,7 @@
 														background-color: #ccc;
 													}
 												}
-												span {
+												> span {
 													font-weight: 600;
 													margin-left: 5px;
 												}

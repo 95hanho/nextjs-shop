@@ -27,6 +27,7 @@ import { FormActionButton } from "@/components/form/FormActionButton";
 import { useGlobalDialogStore } from "@/store/globalDialog.store";
 import { BaseResponse } from "@/types/common";
 import { getUploadImageUrl } from "@/lib/image";
+import { toErrorResponse } from "@/api/error";
 
 type PrevImageItem = ReviewImage & {
 	type: "prev";
@@ -64,6 +65,8 @@ export default function ReviewWriteClient() {
 			reviewOrderItem: null,
 			prevReview: null,
 		},
+		isError,
+		error,
 	} = useQuery<
 		ReviewOrderInfoResponse,
 		Error,
@@ -75,6 +78,17 @@ export default function ReviewWriteClient() {
 		queryKey: ["reviewOrderItem", orderItemId],
 		queryFn: () => getNormal(getApiUrl(API_URL.MY_REVIEW), { orderItemId }),
 		enabled: !!orderItemId,
+		retry: (failureCount, error) => {
+			const { payload } = toErrorResponse(error);
+
+			// 리뷰 수정 기간 만료는 재시도 X
+			if (payload.message === "REVIEW_MODIFY_PERIOD_EXPIRED") {
+				return false;
+			}
+
+			// 그 외 서버/네트워크 에러만 최대 2번 재시도
+			return failureCount < 2;
+		},
 		select: (data) => ({
 			reviewOrderItem: data.reviewOrderItem,
 			prevReview: data.review,
@@ -201,17 +215,33 @@ export default function ReviewWriteClient() {
 	};
 
 	// 6) [useEffect] ------------------------------------------------------
+	// 리뷰 수정 기간 만료 에러 처리
 	useEffect(() => {
-		if (reviewOrderItem) {
-			console.log("reviewOrderItem", reviewOrderItem);
+		if (!isError || !error) return;
+
+		const { payload } = toErrorResponse(error);
+
+		if (payload.message === "REVIEW_MODIFY_PERIOD_EXPIRED") {
+			openDialog("ALERT", {
+				content: "리뷰 작성한 지 7일이 지난 리뷰는 수정할 수 없습니다.",
+				handleAfterClose: () => {
+					router.replace(`/mypage/order-history`);
+				},
+			});
 		}
+	}, [isError, error, openDialog, router]);
+	// 리뷰 수정인 경우, 기존 리뷰 정보 세팅
+	useEffect(() => {
 		if (prevReview) {
-			console.log({ prevReview });
+			// console.log({ prevReview });
 			setReviewForm({
 				rating: prevReview.rating,
 				content: prevReview.content,
 			});
 			setPrevReviewList(prevReview.reviewImages.map((image) => ({ ...image, type: "prev", deleting: false })) || []);
+		}
+		if (reviewOrderItem) {
+			// console.log("reviewOrderItem", reviewOrderItem);
 		}
 	}, [reviewOrderItem, prevReview]);
 

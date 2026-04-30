@@ -91,9 +91,11 @@ export default function MyPriceCheckboxTooltip(props: MyPriceCheckboxTooltipProp
 					) : (
 						<span className="inline-flex items-center w-100px">
 							<strong className="text-[10px] text-red-500">적용불가</strong>
-							<TooltipIcon
-								tooltipText={`[최소 주문 금액:${money(coupon.minimumOrderBeforeAmount)}원]수량을 늘리거나, 같은 판매자 상품을 함께 구매하면 적용될 수 있어요.`}
-							/>
+							<span className="mb-[2px]">
+								<TooltipIcon
+									tooltipText={`[최소 주문 금액:${money(coupon.minimumOrderBeforeAmount)}원]수량을 늘리거나, 같은 판매자 상품을 함께 구매하면 적용될 수 있어요.`}
+								/>
+							</span>
 						</span>
 					)}
 					{coupon.userCouponId ? (
