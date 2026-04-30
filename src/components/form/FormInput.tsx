@@ -1,9 +1,10 @@
 import styles from "./Form.module.scss";
-import { forwardRef } from "react";
+import { forwardRef, useState } from "react";
 import clsx from "clsx";
 import { ChangeFunction } from "@/types/event";
 import { FormInputAlarm } from "@/types/form";
 import styled from "@emotion/styled";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 
 const LeftLabel = styled.div<{ $labelWidthPercent?: number }>`
 	width: ${({ $labelWidthPercent }) => $labelWidthPercent || 33.333333}%;
@@ -12,6 +13,9 @@ const RightInput = styled.div<{ $inputWidthPercent?: number; $labelWidthPercent?
 	width: ${({ $labelWidthPercent }) => ($labelWidthPercent ? 100 - $labelWidthPercent : 66.666667)}%;
 	> div input {
 		width: ${({ $inputWidthPercent }) => $inputWidthPercent || 70}%;
+	}
+	.show-pwd {
+		right: ${({ $inputWidthPercent }) => 100 - ($inputWidthPercent || 70)}%;
 	}
 `;
 
@@ -61,6 +65,10 @@ export const FormInput = forwardRef(<T extends string>(props: FormInputProps<T>,
 		cursorPointer = false,
 		unit,
 	} = props;
+	// 2) [useState / useRef] ----------------------------------------------
+	const [showPassword, setShowPassword] = useState(false);
+	const [inputFocus, setInputFocus] = useState(false);
+	const [inputType, setInputType] = useState(type);
 
 	// 4) [derived values / useMemo] ---------------------------------------
 	let alarmStatus,
@@ -82,15 +90,26 @@ export const FormInput = forwardRef(<T extends string>(props: FormInputProps<T>,
 				$labelWidthPercent={labelWidthPercent}
 				$inputWidthPercent={inputWidthPercent}
 			>
-				<div>
+				<div
+					className="relative"
+					onMouseEnter={() => {
+						if (inputFocus) setShowPassword(true);
+					}}
+					onMouseLeave={() => {
+						setShowPassword(false);
+					}}
+				>
 					<input
 						ref={ref}
-						type={type}
+						type={inputType}
 						name={name}
 						placeholder={placeholder}
 						value={value}
 						onChange={onChange}
-						onBlur={onBlur}
+						onBlur={(e) => {
+							onBlur?.(e);
+							setInputFocus(false);
+						}}
 						readOnly={readOnly}
 						onClick={onClick}
 						inputMode={inputMode}
@@ -98,6 +117,10 @@ export const FormInput = forwardRef(<T extends string>(props: FormInputProps<T>,
 						max={max}
 						maxLength={maxLength}
 						className={clsx(cursorPointer && styles.cursorPointer)}
+						onFocus={() => {
+							setShowPassword(true);
+							setInputFocus(true);
+						}}
 					/>
 					{unit && <span className={clsx(styles.unit, "ml-1")}>{unit}</span>}
 					{searchBtn && (
@@ -110,6 +133,17 @@ export const FormInput = forwardRef(<T extends string>(props: FormInputProps<T>,
 							)}
 						>
 							{searchBtn.txt}
+						</button>
+					)}
+					{name === "password" && showPassword && value && (
+						<button
+							className={clsx("show-pwd", styles.showPwd)}
+							type="button"
+							onClick={() => {
+								setInputType(inputType === "password" ? "text" : "password");
+							}}
+						>
+							{inputType === "password" ? <FiEyeOff /> : <FiEye />}
 						</button>
 					)}
 				</div>

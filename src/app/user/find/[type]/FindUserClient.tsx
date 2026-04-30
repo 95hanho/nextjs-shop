@@ -13,7 +13,7 @@ export default function FindUserClient() {
 	const {
 		findType,
 		phoneAuthComplete,
-		findUserSubmit,
+		// findUserSubmit,
 		findUserForm,
 		findUserFormAlarm,
 		changeFindUserForm,
@@ -36,7 +36,7 @@ export default function FindUserClient() {
 			}
 		>
 			{!phoneAuthComplete ? (
-				<form onSubmit={findUserSubmit}>
+				<form>
 					{findType == "password" && (
 						<FormInput
 							name="userId"
@@ -66,6 +66,21 @@ export default function FindUserClient() {
 						phoneAuthView={phoneAuthView}
 						clickCheckPhoneAuth={clickCheckPhoneAuth}
 					/>
+					<div className={styles.findResultActions}>
+						<Link className={styles.btnLogin} href={"/user"}>
+							로그인
+						</Link>
+						{findType == "id" && (
+							<Link className={styles.btnPassword} href={"/user/find/password"}>
+								비밀번호 찾기
+							</Link>
+						)}
+						{findType == "password" && (
+							<Link className={styles.btnPassword} href={"/user/find/id"}>
+								아이디 찾기
+							</Link>
+						)}
+					</div>
 				</form>
 			) : (
 				<div>

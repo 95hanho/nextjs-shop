@@ -32,19 +32,19 @@ const initJoinForm: JoinForm = {
 	phoneAuth: "",
 	email: "",
 };
-const testJoinForm: JoinForm = {
-	userId: "hoseongs",
-	password: "aaaaaa1!",
-	passwordCheck: "aaaaaa1!",
-	name: "한호성",
-	zonecode: "05718",
-	address: "서울 송파구 중대로 121",
-	addressDetail: "2층",
-	birthday: "1995/08/14",
-	phone: "01085546674",
-	phoneAuth: "",
-	email: "ehfqntuqntu@naver.com",
-};
+// const testJoinForm: JoinForm = {
+// 	userId: "test01",
+// 	password: "aaaaaa1!",
+// 	passwordCheck: "aaaaaa1!",
+// 	name: "한호성",
+// 	zonecode: "05718",
+// 	address: "서울 송파구 중대로 121",
+// 	addressDetail: "2층",
+// 	birthday: "1995/08/14",
+// 	phone: "01085546674",
+// 	phoneAuth: "",
+// 	email: "ehfqntuqntu@naver.com",
+// };
 
 const joinFormRegex: { [key: string]: RegExp } = {
 	userId: /^[a-zA-Z][a-zA-Z0-9_]{5,14}$/,
@@ -154,9 +154,7 @@ export function useUserJoinForm() {
 	const handleRegister = useMutation({
 		mutationFn: () => postJson<BaseResponse, JoinRequest>(getApiUrl(API_URL.AUTH_JOIN), { ...joinForm }),
 		// Mutation이 시작되기 직전에 특정 작업을 수행
-		onMutate(a) {
-			console.log(a);
-		},
+		onMutate() {},
 		onSuccess(data) {
 			console.log(data);
 			alert("회원가입이 완료되었습니다.");

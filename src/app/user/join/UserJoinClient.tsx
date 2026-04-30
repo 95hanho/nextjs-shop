@@ -6,7 +6,6 @@ import { FormInput } from "@/components/form/FormInput";
 import { FormPageShell } from "@/components/form/FormPageShell";
 import { PhoneAuthSection } from "@/components/auth/PhoneAuthSection";
 import { useUserJoinForm } from "@/hooks/query/auth/form/useUserJoinForm";
-import Link from "next/link";
 
 /* 회원가입 */
 export default function UserJoinClient() {
@@ -25,7 +24,7 @@ export default function UserJoinClient() {
 	} = useUserJoinForm();
 
 	return (
-		<FormPageShell title={<Link href={"/"}>NextJS-SHOP</Link>} formWidth={500}>
+		<FormPageShell title={"회원가입"} formWidth={500}>
 			<form onSubmit={joinSubmit}>
 				<FormInput
 					name="userId"
@@ -39,6 +38,11 @@ export default function UserJoinClient() {
 						joinFormInputRefs.current.userId = el;
 					}}
 				/>
+				{/* {pwdFocus && loginForm.password && (
+					<button className={styles.showPwd} type="button" onClick={() => setShowPassword(!showPassword)}>
+						{showPassword ? <FiEyeOff /> : <FiEye />}
+					</button>
+				)} */}
 				<FormInput
 					name="password"
 					label="비밀번호"

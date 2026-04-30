@@ -171,8 +171,17 @@
 	font-weight: bold;
 	cursor: pointer;
 }
+// 비밀번호 표시 버튼
+.showPwd {
+	position: absolute;
+	cursor: pointer;
+	top: 0;
+	font-size: 25px;
+	height: 100%;
+	padding-right: 10px;
+	color: #777;
+}
 /* 버튼 타입별 */
-
 .zonecode,
 .address {
 	border: 2px solid #ad9090;

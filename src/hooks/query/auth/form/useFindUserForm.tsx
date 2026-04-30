@@ -1,6 +1,7 @@
 import API_URL from "@/api/endpoints";
 import { postJson } from "@/api/fetchFilter";
 import { getApiUrl } from "@/lib/getBaseUrl";
+import { useGlobalDialogStore } from "@/store/globalDialog.store";
 import { BaseResponse } from "@/types/common";
 import { ChangeEvent, FormEvent } from "@/types/event";
 import { FormInputAlarm, FormInputRefs } from "@/types/form";
@@ -30,6 +31,7 @@ const phoneRegexFailMent: string = "휴대폰 번호 형식에 일치하지 않�
 
 export function useFindUserForm() {
 	// 1) [store / custom hooks] -------------------------------------------
+	const { openDialog } = useGlobalDialogStore();
 	const { push } = useRouter();
 	const params = useParams<{ type?: FindType }>(); // `type`이 있을 수도 있고 없을 수도 있음
 	const findType = params.type;
@@ -56,6 +58,7 @@ export function useFindUserForm() {
 			postJson<BaseResponse & { phoneAuthToken: string }>(getApiUrl(API_URL.AUTH_PHONE_AUTH), {
 				userId: findUserForm.userId,
 				phone: findUserForm.phone,
+				mode: findType === "id" ? "IDFIND" : "PWDFIND",
 			}),
 		onSuccess(data) {
 			setPhoneAuthView(true);
@@ -64,6 +67,7 @@ export function useFindUserForm() {
 			setFindUserFormAlarm({
 				name: "phoneAuth",
 				message: "인증 번호가 발송되었습니다. 제한시간 3분",
+				status: "SUCCESS",
 			});
 			setFindUserForm((prev) => ({
 				...prev,
@@ -72,6 +76,11 @@ export function useFindUserForm() {
 		},
 		onError(err) {
 			console.log(err);
+			if (err.message === "PWD_FIND_USER_NOT_FOUND") {
+				openDialog("ALERT", {
+					content: "해당 아이디와 휴대폰 번호가 일치하는 사용자를 찾을 수 없습니다.",
+				});
+			}
 		},
 	});
 	// 휴대폰 인증확인
@@ -128,6 +137,7 @@ export function useFindUserForm() {
 		if (name === "phoneAuth") {
 			changeValue = value.replace(/[^0-9]/g, "").slice(0, 6); // 예: 6자리 인증번호
 		}
+		setFindUserFormAlarm(null);
 		setFindUserForm((prev) => ({
 			...prev,
 			[name]: changeValue,
@@ -151,7 +161,7 @@ export function useFindUserForm() {
 				}
 			}
 		}
-		setFindUserFormAlarm(changeAlarm);
+		if (changeAlarm) setFindUserFormAlarm(changeAlarm);
 		setFindUserForm((prev) => ({
 			...prev,
 			[name]: changeVal,
@@ -208,6 +218,7 @@ export function useFindUserForm() {
 	};
 	// 휴대폰 인증확인 버튼
 	const clickCheckPhoneAuth = () => {
+		console.log("clickCheckPhoneAuth");
 		if (findUserFormAlarm?.name === "phoneAuth" && findUserFormAlarm.status === "FAIL") {
 			findUserFormInputRefs.current.phoneAuth?.focus();
 			return;
