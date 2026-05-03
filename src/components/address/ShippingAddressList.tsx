@@ -104,18 +104,20 @@ export const ShippingAddressList = forwardRef((props: ShippingAddressListProps, 
 								</button>
 							)}
 							<button onClick={() => props.openAddressModal({ ...userAddress })}>수정</button>
-							<button
-								onClick={() => {
-									openDialog("CONFIRM", {
-										content: `'${userAddress.addressName}' 배송지를 삭제하시겠습니까?`,
-										handleAfterOk: () => {
-											props.deleteAddress(userAddress.addressId!);
-										},
-									});
-								}}
-							>
-								삭제
-							</button>
+							{props.userAddressList.length > 1 && (
+								<button
+									onClick={() => {
+										openDialog("CONFIRM", {
+											content: `'${userAddress.addressName}' 배송지를 삭제하시겠습니까?`,
+											handleAfterOk: () => {
+												props.deleteAddress(userAddress.addressId!);
+											},
+										});
+									}}
+								>
+									삭제
+								</button>
+							)}
 						</div>
 					)}
 				</li>

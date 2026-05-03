@@ -14,7 +14,4 @@ export const userPolicy: MiddlewarePolicy = {
 		const returnUrl = encodeURIComponent(pathname + search);
 		return `/user?message=${message}&returnUrl=${returnUrl}`;
 	},
-	isAuthRequiredPath: (pathname) => {
-		return false;
-	},
 };

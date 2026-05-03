@@ -1,20 +1,14 @@
 import BrandOtherProducts from "@/app/product/detail/[productId]/_components/BrandOtherProducts";
-import { BsChevronRight } from "react-icons/bs";
-import { FiHeart } from "react-icons/fi";
 import styles from "../ProductDetail.module.scss";
 import { ProductDetailResponse, SellerLikeAndOtherProductsResponse, OtherProduct } from "@/types/product";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useAuth } from "@/hooks/useAuth";
-import { getNormal, postJson } from "@/api/fetchFilter";
+import { useQuery } from "@tanstack/react-query";
+import { getNormal } from "@/api/fetchFilter";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import API_URL from "@/api/endpoints";
-import { FaHeart } from "react-icons/fa";
 import { useParams } from "next/navigation";
 
 export default function SellerInfoSection({ productDetail }: { productDetail: ProductDetailResponse }) {
 	// 1) [store / custom hooks] -------------------------------------------
-	const { loginOn } = useAuth();
-	const queryClient = useQueryClient();
 	const params = useParams<{
 		productId: string;
 	}>();
@@ -23,11 +17,10 @@ export default function SellerInfoSection({ productDetail }: { productDetail: Pr
 	// 3) [useQuery / useMutation] -----------------------------------------
 	// 판매자 좋아요 여부 및 판매자 다른 제품 조회
 	const {
-		data: { isSellerLiked, sellerOtherProducts } = {
-			isSellerLiked: false,
+		data: { sellerOtherProducts } = {
 			sellerOtherProducts: [],
 		},
-	} = useQuery<SellerLikeAndOtherProductsResponse, Error, { isSellerLiked: boolean; sellerOtherProducts: OtherProduct[] }>({
+	} = useQuery<SellerLikeAndOtherProductsResponse, Error, { sellerOtherProducts: OtherProduct[] }>({
 		queryKey: ["sellerLikeAndOtherProducts", productId],
 		queryFn: async () =>
 			getNormal(getApiUrl(API_URL.PRODUCT_SELLER_LIKE_OTHER_PRODUCT), {
@@ -35,20 +28,19 @@ export default function SellerInfoSection({ productDetail }: { productDetail: Pr
 			}),
 		enabled: !!productId,
 		select: (data) => ({
-			isSellerLiked: data.isSellerLiked,
 			sellerOtherProducts: data.sellerOtherProducts,
 		}),
 	});
 	// 판매자 좋아요/취소
-	const { mutate: toggleSellerLike } = useMutation({
-		mutationFn: async (liked: boolean) => {
-			console.log("toggleSellerLike", { productId, like: !liked });
-			return postJson(getApiUrl(API_URL.PRODUCT_SELLER_LIKE), { productId, like: !liked });
-		},
-		onSuccess() {
-			queryClient.invalidateQueries({ queryKey: ["sellerLikeAndOtherProducts", productId] });
-		},
-	});
+	// const { mutate: toggleSellerLike } = useMutation({
+	// 	mutationFn: async (liked: boolean) => {
+	// 		console.log("toggleSellerLike", { productId, like: !liked });
+	// 		return postJson(getApiUrl(API_URL.PRODUCT_SELLER_LIKE), { productId, like: !liked });
+	// 	},
+	// 	onSuccess() {
+	// 		queryClient.invalidateQueries({ queryKey: ["sellerLikeAndOtherProducts", productId] });
+	// 	},
+	// });
 
 	return (
 		<article className={styles.sellerInfoSection}>

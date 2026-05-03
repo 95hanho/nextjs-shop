@@ -7,7 +7,7 @@ import { PhoneAuthRequest, UserUpdateRequest } from "@/types/auth";
 import { BaseResponse } from "@/types/common";
 import { ChangeEvent, FormEvent } from "@/types/event";
 import { FormInputAlarm, FormInputRefs } from "@/types/form";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Error from "next/error";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -48,6 +48,7 @@ export function useUserUpdateForm() {
 	const { replace } = useRouter();
 	const { openDialog } = useGlobalDialogStore();
 	const { user, setUser, loginOn } = useAuth();
+	const queryClient = useQueryClient();
 
 	// 2) [useState / useRef] ----------------------------------------------
 	// 유저업데이트 폼
@@ -155,6 +156,9 @@ export function useUserUpdateForm() {
 
 			openDialog("ALERT", {
 				content: "내 정보 수정이 완료되었습니다.",
+				handleAfterClose() {
+					queryClient.invalidateQueries({ queryKey: ["me"] });
+				},
 			});
 			replace("/mypage/info");
 		},

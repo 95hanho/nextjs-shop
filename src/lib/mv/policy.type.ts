@@ -17,7 +17,4 @@ export type MiddlewarePolicy = {
 
 	// 로그인 URL 만들기 (returnUrl 규칙이 role별로 다를 수 있음)
 	buildLoginUrl: (pathname: string, search: string, message: string) => string;
-
-	// 인증이 필요한 path 판별 (role별로 다를 수 있음)
-	isAuthRequiredPath: (pathname: string) => boolean;
 };

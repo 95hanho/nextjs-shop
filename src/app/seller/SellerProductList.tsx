@@ -315,7 +315,6 @@ export default function SellerProductList({
 																									addPrice: option.addPrice,
 																									stock: option.stock,
 																									isDisplayed: !option.displayed,
-																									size: option.size,
 																								},
 																							});
 																						}}
