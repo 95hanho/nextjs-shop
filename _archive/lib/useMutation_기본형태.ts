@@ -1,7 +1,7 @@
 import { getNormal } from "@/api/fetchFilter";
 import { BaseResponse } from "@/types/common";
 import { useMutation } from "@tanstack/react-query";
-import { getApiUrl } from "./getBaseUrl";
+import { getApiUrl } from "../../lib/getBaseUrl";
 import API_URL from "@/api/endpoints";
 
 // 동작이름(한글)

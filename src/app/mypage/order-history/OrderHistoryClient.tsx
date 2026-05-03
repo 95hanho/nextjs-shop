@@ -103,7 +103,7 @@ export default function OrderHistoryClient() {
 							onKeyUp={(e) => {
 								if (e.key == "Enter") {
 									if (!inputValue.trim()) return; // 공백 검색 방지
-									setSearchText(inputValue);
+									if (myOrderList.length > 0) setSearchText(inputValue);
 								}
 							}}
 						/>
@@ -111,7 +111,7 @@ export default function OrderHistoryClient() {
 							className={styles.orderHistorySearchBtn}
 							onClick={() => {
 								if (!inputValue.trim()) return; // 공백 검색 방지
-								setSearchText(inputValue);
+								if (myOrderList.length > 0) setSearchText(inputValue);
 							}}
 						>
 							<FaSearch />

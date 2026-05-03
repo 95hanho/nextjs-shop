@@ -143,7 +143,6 @@ export interface UpdateSellerProductOptionRequest {
 	productOptionId: number;
 	addPrice: number;
 	stock: number;
-	size: ProductSize;
 	isDisplayed: boolean;
 }
 /* 제품 옵션 삭제 */

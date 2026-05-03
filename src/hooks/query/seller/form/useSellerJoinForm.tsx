@@ -32,19 +32,19 @@ const initJoinForm: JoinForm = {
 	phoneAuth: "",
 	email: "",
 };
-const testJoinForm: JoinForm = {
-	userId: "hoseongs",
-	password: "aaaaaa1!",
-	passwordCheck: "aaaaaa1!",
-	name: "한호성",
-	zonecode: "05718",
-	address: "서울 송파구 중대로 121",
-	addressDetail: "2층",
-	birthday: "1995/08/14",
-	phone: "01085546674",
-	phoneAuth: "",
-	email: "ehfqntuqntu@naver.com",
-};
+// const testJoinForm: JoinForm = {
+// 	userId: "hoseongs",
+// 	password: "aaaaaa1!",
+// 	passwordCheck: "aaaaaa1!",
+// 	name: "한호성",
+// 	zonecode: "05718",
+// 	address: "서울 송파구 중대로 121",
+// 	addressDetail: "2층",
+// 	birthday: "1995/08/14",
+// 	phone: "01085546674",
+// 	phoneAuth: "",
+// 	email: "ehfqntuqntu@naver.com",
+// };
 
 const joinFormRegex: { [key: string]: RegExp } = {
 	userId: /^[a-zA-Z][a-zA-Z0-9_]{5,14}$/,

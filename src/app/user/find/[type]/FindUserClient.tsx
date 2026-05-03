@@ -28,6 +28,7 @@ export default function FindUserClient() {
 	if (!findType) return null;
 	return (
 		<FormPageShell
+			formWidth={500}
 			title={
 				<>
 					{findType == "id" && "아이디"}

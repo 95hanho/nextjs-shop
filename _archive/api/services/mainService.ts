@@ -1,5 +1,5 @@
-import { getNormal } from "../apiFilter";
-import API_URL from "../endpoints";
+import { getNormal } from "../../../api/apiFilter";
+import API_URL from "../../../api/endpoints";
 import { AxiosResponse } from "axios";
 
 export const mainServiceDoc = {

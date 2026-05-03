@@ -1,10 +1,11 @@
-import { JoinForm, LoginData } from "@/types/form";
 import API_URL from "../endpoints";
 import { AxiosResponse } from "axios";
 import { getNormal, postUrlFormData } from "../apiFilter";
+import { LoginFormData } from "@/types/auth";
+import { JoinForm } from "@/hooks/query/auth/form/useUserJoinForm";
 
 export const authServiceDoc = {
-	login: async (obj: LoginData): Promise<AxiosResponse<any>> => postUrlFormData(API_URL.AUTH, obj),
+	login: async (obj: LoginFormData): Promise<AxiosResponse<any>> => postUrlFormData(API_URL.AUTH, obj),
 	// --------------------------> Partial JoinForm에서 일부속성만 가능
 	idDuplcheck: async (obj: Partial<JoinForm>): Promise<AxiosResponse<any>> => await getNormal(API_URL.AUTH_ID, obj),
 	// --------------------------> Pick JoinForm에서 id 만 선택해서 사용
