@@ -13,11 +13,12 @@ import { ProductGrid } from "@/components/product/ProductGrid";
 import styles from "./Wish.module.scss";
 import clsx from "clsx";
 import { useEffect, useMemo, useState } from "react";
-import { Menu } from "@/types/main";
+import { useGetMenu } from "@/hooks/query/main/useGetMenu";
 
-export default function WishClient({ menuList }: { menuList: Menu[] }) {
+export default function WishClient() {
 	// 1) [store / custom hooks] -------------------------------------------
 	const { loginOn } = useAuth();
+	const { data: menuList = [] } = useGetMenu();
 
 	// 2) [useState / useRef] ----------------------------------------------
 	// 세일 중 on/off

@@ -4,23 +4,20 @@ import styles from "./Header.module.scss";
 import { FiShoppingCart, FiStar, FiUser } from "react-icons/fi";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
-import { Menu } from "@/types/main";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { HeaderMenu } from "../components/common/HeaderMenu";
 // import { Nav } from "../components/common/Nav";
 import { useAuth } from "@/hooks/useAuth";
 import { useGetUserInfo } from "@/hooks/query/auth/useGetUserInfo";
 import { isAuthRequiredPath } from "@/utils/auth";
 import { MenuButton } from "@/components/common/MenuButton";
+import { useGetMenu } from "@/hooks/query/main/useGetMenu";
 
-interface HeaderProps {
-	menuList: Menu[];
-}
-
-export default function Header({ menuList }: HeaderProps) {
+export default function Header() {
 	// 1) [store / custom hooks] -------------------------------------------
 	const pathname = usePathname();
 	const searchParams = useSearchParams();
+	const { data: initMenuList = [] } = useGetMenu();
 	const { data: user } = useGetUserInfo();
 	const { logout, cartCount, orderCount } = useAuth();
 	const { refresh } = useRouter();
@@ -33,6 +30,9 @@ export default function Header({ menuList }: HeaderProps) {
 	// 로그인 href
 	const isUserPath = pathname.startsWith("/user") || pathname === "/";
 	const loginHref = isUserPath ? "/user" : `/user?returnUrl=${encodeURIComponent(pathname + `?${searchParams.toString()}`)}`;
+	const menuList = useMemo(() => {
+		return [...initMenuList].sort((a, b) => a.menuTopId - b.menuTopId);
+	}, [initMenuList]);
 
 	// 5) [handlers / useCallback] -----------------------------------------
 	const menuMouseleave = () => {
