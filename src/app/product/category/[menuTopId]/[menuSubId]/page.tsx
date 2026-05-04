@@ -1,29 +1,36 @@
 import API_URL from "@/api/endpoints";
-import { getNormal, RequestHeaders } from "@/api/fetchFilter";
+import { getCached } from "@/api/fetchFilter";
 import CategoryProductListClient from "./CategoryProductListClient";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { GetProductListRequest, GetProductListResponse } from "@/types/product";
-// import { cookies, headers } from "next/headers";
 import { MenuResponse } from "@/types/main";
-import { cookies, headers } from "next/headers";
+
+export const revalidate = 60;
+
+export async function generateStaticParams() {
+	console.log("[SSG] category generateStaticParams 실행");
+
+	const menusResponse = await getCached<MenuResponse>(getBackendUrl(API_URL.MAIN_MENU));
+
+	return menusResponse.menuList.flatMap((topMenu) =>
+		topMenu.menuSubList.map((subMenu) => ({
+			menuTopId: String(topMenu.menuTopId),
+			menuSubId: String(subMenu.menuSubId),
+		})),
+	);
+}
 
 interface ProductListParams {
 	params: {
-		menuSubId: number;
-		menuTopId: number;
-	};
-	searchParams: {
-		page?: string;
-		sort?: string;
-		keyword?: string;
+		menuSubId: string;
+		menuTopId: string;
 	};
 }
-
 export default async function CategoryProductList({ params: { menuSubId, menuTopId } }: ProductListParams) {
-	// [SSR] 현재 메뉴명을 가져오기 위한
-	const menusResponse = await getNormal<MenuResponse>(getBackendUrl(API_URL.MAIN_MENU));
+	// [ISR] 현재 메뉴명을 가져오기 위한
+	const menusResponse = await getCached<MenuResponse>(getBackendUrl(API_URL.MAIN_MENU));
 	const menuList = [...menusResponse.menuList].sort((a, b) => a.menuTopId - b.menuTopId);
-	// [SSR] 제품 리스트 조회
+	// [ISR] 제품 리스트 조회
 	const payload: GetProductListRequest = {
 		sort: "POPULAR",
 		popularPeriod: "ALL",
@@ -33,10 +40,7 @@ export default async function CategoryProductList({ params: { menuSubId, menuTop
 		// lastPopularity
 	};
 
-	const accessToken = cookies().get("accessToken")?.value || headers().get("accessToken") || undefined;
-	const headerParams: RequestHeaders = {};
-	if (accessToken) headerParams.Authorization = `Bearer ${accessToken}`;
-	const productResponse: GetProductListResponse = await getNormal(getBackendUrl(API_URL.PRODUCT), { ...payload }, headerParams);
+	const productResponse: GetProductListResponse = await getCached(getBackendUrl(API_URL.PRODUCT), { ...payload });
 
 	// 현재 메뉴명 찾기
 	const currentTopMenu = menuList.find((menu) => menu.menuTopId === Number(menuTopId));

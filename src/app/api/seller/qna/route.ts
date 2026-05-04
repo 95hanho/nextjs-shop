@@ -5,7 +5,7 @@ import { getBackendUrl } from "@/lib/getBaseUrl";
 import { GetSellerQnaResponse, UpdateQnaAnswerRequest } from "@/types/seller";
 import { NextResponse } from "next/server";
 import { sellerWithAuth } from "@/lib/auth/seller";
-import { WRONG_REQUEST_MESSAGE } from "@/lib/env";
+import { WRONG_REQUEST_MESSAGE } from "@/lib/env.server";
 import { BaseResponse } from "@/types/common";
 
 // 판매자 QnA 조회

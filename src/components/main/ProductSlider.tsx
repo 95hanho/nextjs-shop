@@ -7,7 +7,13 @@ import clsx from "clsx";
 import { useRef, useState } from "react";
 import { ProductSliderItem } from "@/components/main/ProductSliderItem";
 
-export const ProductSlider = ({ productList, right }: { productList: MainProduct[]; right?: boolean }) => {
+interface ProductSliderProps {
+	productList: MainProduct[];
+	right?: boolean;
+	checkedProductIdList?: number[]; // 위시 여부 확인용
+}
+
+export const ProductSlider = ({ productList, right, checkedProductIdList }: ProductSliderProps) => {
 	// 2) [useState / useRef] ----------------------------------------------
 	const [paused, setPaused] = useState(false);
 	const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -49,7 +55,7 @@ export const ProductSlider = ({ productList, right }: { productList: MainProduct
 						reverseDirection: right,
 					}}
 					getItemKey={(product) => product.productId}
-					renderItem={(product) => <ProductSliderItem product={product} />}
+					renderItem={(product) => <ProductSliderItem product={product} checkedProductIdList={checkedProductIdList} />}
 				/>
 			</div>
 		</div>

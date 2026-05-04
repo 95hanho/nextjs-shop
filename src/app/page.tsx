@@ -1,23 +1,18 @@
 import { MainProductResponse } from "@/types/main";
-
 import API_URL from "@/api/endpoints";
-import { getNormal, RequestHeaders } from "@/api/fetchFilter";
+import { getCached } from "@/api/fetchFilter";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import MainClient from "@/app/MainClient";
-import { cookies, headers } from "next/headers";
 import { toErrorResponse } from "@/api/error";
 import { notFound } from "next/navigation";
 
+export const revalidate = 60;
+
 export default async function Home() {
 	try {
-		const accessToken = cookies().get("accessToken")?.value || headers().get("accessToken") || undefined;
-		const headerParams: RequestHeaders = {};
-		if (accessToken) headerParams.Authorization = `Bearer ${accessToken}`;
-
-		const productsData = await getNormal<MainProductResponse>(getBackendUrl(API_URL.MAIN), undefined, headerParams);
+		const productsData = await getCached<MainProductResponse>(getBackendUrl(API_URL.MAIN));
 
 		// console.log({ productList: productsData.productList });
-
 		// return <h1>테스트중</h1>;
 
 		if (!productsData) {

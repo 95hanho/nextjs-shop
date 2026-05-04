@@ -5,7 +5,7 @@ import { getBackendUrl } from "@/lib/getBaseUrl";
 import { sellerWithAuth } from "@/lib/auth/seller";
 import { GetSellerInterestingUserResponse } from "@/types/seller";
 import { NextResponse } from "next/server";
-import { WRONG_REQUEST_MESSAGE } from "@/lib/env";
+import { WRONG_REQUEST_MESSAGE } from "@/lib/env.server";
 
 // 판매자와 관련된 회원 조회
 export const GET = sellerWithAuth(async ({ sellerToken, nextRequest }) => {

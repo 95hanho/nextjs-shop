@@ -6,7 +6,7 @@ import API_URL from "@/api/endpoints";
 
 // 위시 페이지
 export default async function Wish() {
-	// [SSR] 현재 메뉴명을 가져오기 위한
+	// [ISR] 현재 메뉴명을 가져오기 위한
 	const menusResponse = await getNormal<MenuResponse>(getBackendUrl(API_URL.MAIN_MENU));
 	const menuList = [...menusResponse.menuList].sort((a, b) => a.menuTopId - b.menuTopId);
 

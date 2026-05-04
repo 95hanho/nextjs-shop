@@ -4,17 +4,17 @@ import type { StringValue } from "ms";
 // TOKEN_COOKIE : 토큰 저장할 쿠키 유지시간 => 쿠키 시간은 토큰 시간보다 짧게
 const cookiesAgeBuffer = 60; // 1분 버퍼
 // -------------------------------------------------------------
-export const ACCESS_TOKEN_EXPIRES_IN = "10d"; // 10일
-export const ACCESS_TOKEN_COOKIE_AGE = 60 * 60 * 24 * 10 - cookiesAgeBuffer; // 10일
-export const REFRESH_TOKEN_EXPIRES_IN: StringValue = "30d"; // 30일
-export const REFRESH_TOKEN_COOKIE_AGE: number = 60 * 60 * 24 * 30 - cookiesAgeBuffer; // 30일
+export const ACCESS_TOKEN_EXPIRES_IN = "10m"; // 10분
+export const ACCESS_TOKEN_COOKIE_AGE = 60 * 10 - cookiesAgeBuffer; // 10분
 // -------------------------------------------------------------
 export const SELLER_TOKEN_EXPIRES_IN: StringValue = "5d"; // 5일
 export const SELLER_TOKEN_COOKIE_AGE: number = 60 * 60 * 24 * 5 - cookiesAgeBuffer; // 5일
 // -------------------------------------------------------------
 export const ADMIN_TOKEN_EXPIRES_IN: StringValue = "5d"; // 5일
 export const ADMIN_TOKEN_COOKIE_AGE: number = 60 * 60 * 24 * 5 - cookiesAgeBuffer; // 5일
-
+// ------------
+export const REFRESH_TOKEN_EXPIRES_IN: StringValue = "7d"; // 7일
+export const REFRESH_TOKEN_COOKIE_AGE: number = 60 * 60 * 24 * 7 - cookiesAgeBuffer; // 7일
 // -------------------------------------------------------------
 export const PHONE_AUTH_EXPIRES_IN: StringValue = "3m";
 export const PHONE_AUTH_COMPLETE_EXPIRES_IN: StringValue = "30m";

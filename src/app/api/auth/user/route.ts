@@ -1,7 +1,7 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { postUrlFormData, putUrlFormData } from "@/api/fetchFilter";
-import { isProd } from "@/lib/env";
+import { isProd } from "@/lib/env.common";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { verifyPhoneAuthCompleteToken } from "@/lib/auth/utils/token";
 import { JoinRequest, UserUpdateRequest } from "@/types/auth";

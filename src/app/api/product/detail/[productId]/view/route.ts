@@ -7,14 +7,15 @@ import { getBackendUrl } from "@/lib/getBaseUrl";
 import { BaseResponse } from "@/types/common";
 import { NextResponse } from "next/server";
 
-// 좋아요/취소
-export const POST = userWithAuth(async ({ nextRequest, accessToken }) => {
-	console.log("[API] 좋아요/취소");
+// 제품 상세보기 제품 뷰 테이블 삽입
+export const POST = userWithAuth<{ productId: string }>(async ({ params, accessToken }) => {
+	console.log("[API] 제품 상세보기 제품 뷰 테이블 삽입");
 	try {
-		const { productId }: { productId: number } = await nextRequest.json();
+		const productId = Number(params.productId);
 		if (!productId) return NextResponse.json({ message: WRONG_REQUEST_MESSAGE }, { status: 400 });
+
 		const data = await postUrlFormData<BaseResponse>(
-			getBackendUrl(API_URL.PRODUCT_LIKE),
+			getBackendUrl(API_URL.PRODUCT_DETAIL_VIEW),
 			{ productId },
 			{
 				Authorization: `Bearer ${accessToken}`,

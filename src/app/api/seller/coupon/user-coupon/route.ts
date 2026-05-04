@@ -6,7 +6,7 @@ import { sellerWithAuth } from "@/lib/auth/seller";
 import { BaseResponse } from "@/types/common";
 import { IssueCouponToUsersRequest } from "@/types/seller";
 import { NextResponse } from "next/server";
-import { WRONG_REQUEST_MESSAGE } from "@/lib/env";
+import { WRONG_REQUEST_MESSAGE } from "@/lib/env.server";
 
 // 쿠폰을 유저에게 발행하기
 export const POST = sellerWithAuth(async ({ nextRequest, sellerToken }) => {

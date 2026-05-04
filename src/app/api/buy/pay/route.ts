@@ -2,7 +2,7 @@ import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { getNormal, postJson } from "@/api/fetchFilter";
 import { userWithAuth } from "@/lib/auth/user";
-import { WRONG_REQUEST_MESSAGE } from "@/lib/env";
+import { WRONG_REQUEST_MESSAGE } from "@/lib/env.server";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { GetStockHoldResponse, payRequest } from "@/types/buy";
 import { BaseResponse } from "@/types/common";

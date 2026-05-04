@@ -11,10 +11,12 @@ import { useEffect, useMemo, useRef } from "react";
 import ProductReview from "@/app/product/detail/[productId]/_components/ProductReview";
 import { useParams, usePathname, useRouter, useSearchParams } from "next/navigation";
 import { removeSearchParams } from "@/lib/searchParams";
-import { useQuery } from "@tanstack/react-query";
-import { getNormal } from "@/api/fetchFilter";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { getNormal, postJson } from "@/api/fetchFilter";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import API_URL from "@/api/endpoints";
+import { useWishCheck } from "@/hooks/query/product/useWishCheck";
+import { useAuth } from "@/hooks/useAuth";
 interface ProductDetailClientProps {
 	initProductDetailResponse: GetProductDetailResponse;
 }
@@ -23,12 +25,14 @@ export default function ProductDetailClient({ initProductDetailResponse }: Produ
 	// 1) [store / custom hooks] -------------------------------------------
 	const router = useRouter();
 	const pathname = usePathname();
+	const { loginOn } = useAuth();
 	const searchParams = useSearchParams();
 	const tab = searchParams.get("tab");
 	const params = useParams<{
 		productId: string;
 	}>();
 	const productId = Number(params.productId);
+	const { data: checkedProductIdList = [] } = useWishCheck([productId]);
 
 	// 2) [useState / useRef] ----------------------------------------------
 	// 리뷰섹션 요소
@@ -43,6 +47,12 @@ export default function ProductDetailClient({ initProductDetailResponse }: Produ
 		queryFn: () => getNormal(getApiUrl(API_URL.PRODUCT_DETAIL), { productId }),
 		initialData: initProductDetailResponse,
 		staleTime: Infinity,
+	});
+	// 제품 상세보기 제품 뷰 테이블 삽입
+	const { mutate: insertProductDetailView } = useMutation({
+		mutationKey: ["insertProductDetailView", productId],
+		mutationFn: () => postJson(getApiUrl(API_URL.PRODUCT_DETAIL_VIEW), { productId }),
+		retry: false,
 	});
 	// QnA 조회
 	const {
@@ -89,6 +99,10 @@ export default function ProductDetailClient({ initProductDetailResponse }: Produ
 	};
 
 	// 6) [useEffect] ------------------------------------------------------
+	// 페이지 진입 시 제품 상세보기 제품 뷰 테이블 삽입
+	useEffect(() => {
+		if (loginOn) insertProductDetailView();
+	}, [insertProductDetailView, loginOn]);
 	// 쿼리 tab이 리뷰인 경우 리뷰 섹션으로 이동
 	useEffect(() => {
 		if (tab === "review") {
@@ -108,6 +122,7 @@ export default function ProductDetailClient({ initProductDetailResponse }: Produ
 		reviewRate,
 		initProductOptionList,
 		handleMoveToReviewSection,
+		wished: checkedProductIdList.includes(productId),
 	};
 	const ProductReviewProps = {
 		reviewCount,

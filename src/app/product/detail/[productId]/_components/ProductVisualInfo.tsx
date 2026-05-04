@@ -40,6 +40,7 @@ interface ProductVisualInfoProps {
 	reviewRate: number;
 	initProductOptionList: ProductOption[];
 	handleMoveToReviewSection: () => void;
+	wished: boolean;
 }
 
 // 상품 사진 및 가격배송 정보
@@ -49,6 +50,7 @@ export default function ProductVisualInfo({
 	reviewRate,
 	initProductOptionList,
 	handleMoveToReviewSection,
+	wished,
 }: ProductVisualInfoProps) {
 	// 1) [store / custom hooks] -------------------------------------------
 	const { openDialog } = useGlobalDialogStore();
@@ -82,7 +84,7 @@ export default function ProductVisualInfo({
 	// 장바구니 담기 팝업 오픈 키
 	const [addCartPopupKey, setAddCartPopupKey] = useState(0);
 	// 위시여부
-	const [isWish, setIsWish] = useState(!!productDetail.wishId);
+	const [isWish, setIsWish] = useState(wished);
 
 	// 3) [useQuery / useMutation] -----------------------------------------
 	// 제품 옵션 리스트 (장바구니 담기 후 재고 수량 반영)
@@ -252,8 +254,8 @@ export default function ProductVisualInfo({
 	}, [isAuthLoading]);
 	// 위시 정보 초기화
 	useEffect(() => {
-		setIsWish(!!productDetail.wishId);
-	}, [productDetail.wishId]);
+		setIsWish(wished);
+	}, [wished]);
 
 	// --- TEST ----------------
 	// 제품 옵션 선택 시 수량 초기화

@@ -169,7 +169,7 @@ export default function WishClient({ menuList }: { menuList: Menu[] }) {
 									wishCount: wishItem.wishCount,
 									soldOut: wishItem.soldOut,
 									saleStop: wishItem.saleStop,
-									wishId: 1, // 위시리스트에서는 무조건 true라서 임의이 값 넣음
+									initWish: true, // 위시리스트에서는 무조건 true라서 임의이 값 넣음
 								}}
 							/>
 						);

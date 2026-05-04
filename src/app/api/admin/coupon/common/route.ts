@@ -2,7 +2,7 @@ import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { getNormal, postUrlFormData, putUrlFormData } from "@/api/fetchFilter";
 import { adminWithAuth } from "@/lib/auth/admin";
-import { WRONG_REQUEST_MESSAGE } from "@/lib/env";
+import { WRONG_REQUEST_MESSAGE } from "@/lib/env.server";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { AddCommonCouponRequest, GetCommonCouponListResponse, UpdateCommonCouponRequest } from "@/types/admin";
 import { BaseResponse, ISODateTimeLocal } from "@/types/common";

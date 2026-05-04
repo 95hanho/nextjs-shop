@@ -1,5 +1,5 @@
 import { toErrorResponse } from "@/api/error";
-import { isProd } from "@/lib/env";
+import { isProd } from "@/lib/env.common";
 import { NextResponse } from "next/server";
 
 // 로그아웃

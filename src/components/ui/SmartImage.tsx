@@ -1,4 +1,4 @@
-import { BASIC_NO_IMAGE } from "@/lib/env";
+import { BASIC_NO_IMAGE } from "@/lib/env.client";
 import Image from "next/image";
 
 type CommonProps = {

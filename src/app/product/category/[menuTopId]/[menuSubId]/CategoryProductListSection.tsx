@@ -8,9 +8,16 @@ interface CategoryProductListSectionProps {
 	fetchNextPage: () => Promise<unknown>;
 	hasNextPage?: boolean;
 	isFetchingNextPage: boolean;
+	checkedProductIdList?: number[];
 }
 
-export default function CategoryProductListSection({ productList, fetchNextPage, hasNextPage, isFetchingNextPage }: CategoryProductListSectionProps) {
+export default function CategoryProductListSection({
+	productList,
+	fetchNextPage,
+	hasNextPage,
+	isFetchingNextPage,
+	checkedProductIdList,
+}: CategoryProductListSectionProps) {
 	// 2) [useState / useRef] ----------------------------------------------
 	const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
@@ -63,7 +70,7 @@ export default function CategoryProductListSection({ productList, fetchNextPage,
 								viewCount: productItem.viewCount,
 								wishCount: productItem.wishCount,
 								soldOut: productItem.soldOut,
-								wishId: productItem.wishId,
+								initWish: checkedProductIdList?.includes(productItem.productId) ?? false,
 							}}
 						/>
 					);
