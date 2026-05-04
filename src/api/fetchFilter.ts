@@ -1,5 +1,5 @@
 import { HttpError, isHttpError, isRecord } from "@/api/error";
-import { BASE_URL } from "@/lib/env";
+import { BASE_URL } from "@/lib/env.client";
 
 // fetchFilters.ts
 type Primitive = string | number | boolean | null;

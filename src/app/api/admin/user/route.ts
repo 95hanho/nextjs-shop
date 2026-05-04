@@ -2,7 +2,7 @@ import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { getNormal, postUrlFormData } from "@/api/fetchFilter";
 import { adminWithAuth } from "@/lib/auth/admin";
-import { WRONG_REQUEST_MESSAGE } from "@/lib/env";
+import { WRONG_REQUEST_MESSAGE } from "@/lib/env.server";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { GetUserInfoUnmaskedResponse, GetUserListResponse } from "@/types/admin";
 import { NextResponse } from "next/server";

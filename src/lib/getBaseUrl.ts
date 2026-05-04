@@ -1,4 +1,5 @@
-import { BASE_URL, SERVER_URL } from "@/lib/env";
+import { BASE_URL } from "@/lib/env.client";
+import { SERVER_URL } from "@/lib/env.server";
 
 /** NEXT API */
 export const getApiUrl = (apiUrl: string) => {

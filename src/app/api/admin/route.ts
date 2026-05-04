@@ -5,7 +5,7 @@ import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { getNormal, postUrlFormData } from "@/api/fetchFilter";
 import { adminWithAuth } from "@/lib/auth/admin";
-import { isProd } from "@/lib/env";
+import { isProd } from "@/lib/env.common";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { ADMIN_TOKEN_COOKIE_AGE, REFRESH_TOKEN_COOKIE_AGE } from "@/lib/auth/utils/tokenTime";
 import { AdminLoginForm, AdminLoginResponse, GetAdminInfoResponse } from "@/types/admin";

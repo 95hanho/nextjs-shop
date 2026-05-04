@@ -1,4 +1,4 @@
-import { MILEAGE_RATE } from "@/lib/env";
+import { MILEAGE_RATE } from "@/lib/env.client";
 
 /** 상품 적립 마일리지 계산 */
 export const calculateMileage = (price: number): number => {

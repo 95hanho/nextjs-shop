@@ -10,7 +10,7 @@ import {
 	PWD_CHANGE_KEY,
 	REFRESH_JWT_SECRET_KEY,
 	SELLER_JWT_SECRET_KEY,
-} from "@/lib/env";
+} from "@/lib/env.server";
 import {
 	ACCESS_TOKEN_EXPIRES_IN,
 	ADMIN_TOKEN_EXPIRES_IN,

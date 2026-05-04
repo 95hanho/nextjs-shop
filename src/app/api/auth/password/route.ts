@@ -1,7 +1,7 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { postUrlFormData } from "@/api/fetchFilter";
-import { isProd, WRONG_REQUEST_MESSAGE } from "@/lib/env";
+import { WRONG_REQUEST_MESSAGE } from "@/lib/env.server";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { generatePwdResetToken, verifyPhoneAuthCompleteToken, verifyPwdResetToken, verifyRefreshToken } from "@/lib/auth/utils/token";
 import { PWD_CHANGE_COOKIE_AGE } from "@/lib/auth/utils/tokenTime";
@@ -9,6 +9,7 @@ import { PasswordChangeRequest } from "@/types/auth";
 import { BaseResponse } from "@/types/common";
 import { NextResponse } from "next/server";
 import { userWithOptionalAuth, userWithAuth } from "@/lib/auth/user";
+import { isProd } from "@/lib/env.common";
 
 // 비밀번호 변경 토큰 생성
 export const POST = userWithAuth(async ({ userNo }) => {

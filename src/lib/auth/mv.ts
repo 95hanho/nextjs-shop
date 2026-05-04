@@ -2,7 +2,7 @@ import { postUrlFormData } from "@/api/fetchFilter";
 import { BaseResponse } from "@/types/common";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { REFRESH_TOKEN_COOKIE_AGE } from "@/lib/auth/utils/tokenTime";
-import { isProd } from "@/lib/env";
+import { isProd } from "@/lib/env.common";
 import { toErrorResponse } from "@/api/error";
 import { NextRequest, NextResponse } from "next/server";
 import { tokenRefreshLock } from "@/lib/auth/utils/lock";

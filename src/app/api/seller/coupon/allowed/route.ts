@@ -1,7 +1,7 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { getNormal, postUrlFormData } from "@/api/fetchFilter";
-import { WRONG_REQUEST_MESSAGE } from "@/lib/env";
+import { WRONG_REQUEST_MESSAGE } from "@/lib/env.server";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { sellerWithAuth } from "@/lib/auth/seller";
 import { BaseResponse } from "@/types/common";

@@ -1,7 +1,7 @@
 import { postUrlFormData } from "@/api/fetchFilter";
 import { NextRequest, NextResponse } from "next/server";
 import { BaseResponse } from "@/types/common";
-import { isProd } from "@/lib/env";
+import { isProd } from "@/lib/env.common";
 import { REFRESH_TOKEN_COOKIE_AGE } from "@/lib/auth/utils/tokenTime";
 import { Token } from "@/types/token";
 import { AutoRefreshResult, AuthHandler, KeyOf, RefreshAuthPreset, Role, WithAuthPreset } from "@/lib/auth/types";

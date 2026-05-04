@@ -2,7 +2,7 @@ import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { getNormal } from "@/api/fetchFilter";
 import { userWithOptionalAuth } from "@/lib/auth/user";
-import { WRONG_REQUEST_MESSAGE } from "@/lib/env";
+import { WRONG_REQUEST_MESSAGE } from "@/lib/env.server";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { popularPeriodOptionCodes, sortOptionCodes } from "@/lib/product";
 import { GetProductListRequest, GetProductListResponse, ProductPopularPeriodOption, ProductSortOption } from "@/types/product";

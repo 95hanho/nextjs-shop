@@ -8,7 +8,7 @@ import {
 } from "@/lib/auth/presets/user";
 import { AuthHandler } from "@/lib/auth/types";
 import { ACCESS_TOKEN_COOKIE_AGE, REFRESH_TOKEN_COOKIE_AGE } from "@/lib/auth/utils/tokenTime";
-import { isProd } from "@/lib/env";
+import { isProd } from "@/lib/env.common";
 import { NextRequest, NextResponse } from "next/server";
 
 // 유저 페이지 인증 필요 API 핸들러
