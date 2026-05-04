@@ -171,7 +171,7 @@ async function http<T>(url: string, init?: RequestInit & { baseUrl?: string; tim
 	}
 }
 
-// ---- 메서드별 헬퍼 ----
+// ---- 메서드별 헬퍼 ----------
 
 // GET (쿼리스트링)
 export function getNormal<T>(url: string, params?: Params, headers?: RequestHeaders) {
@@ -267,7 +267,7 @@ export function putUrlFormData<T>(url: string, params: Params, headers?: Request
 	});
 }
 
-// PUT JSON
+/** PUT JSON */
 export function putJson<TRes, TBody extends object = object>(url: string, body?: TBody, headers?: RequestHeaders) {
 	const [u2, restBody] = applyPathParamsFromBody(url, body);
 	return http<TRes>(u2, {
@@ -277,7 +277,7 @@ export function putJson<TRes, TBody extends object = object>(url: string, body?:
 	});
 }
 
-// DELETE (쿼리스트링)
+/** DELETE (쿼리스트링) */
 export function deleteNormal<T>(url: string, params?: Params, headers?: RequestHeaders) {
 	const [u2, rest] = applyPathParams(url, cloneParams(params));
 	const qs = rest && Object.keys(rest).length > 0 ? `?${toSearchParams(rest).toString()}` : "";
@@ -285,4 +285,65 @@ export function deleteNormal<T>(url: string, params?: Params, headers?: RequestH
 		method: "DELETE",
 		headers,
 	});
+}
+
+// ----------------------------------------------------------------------------------------------------------------------------------
+
+/** GET (쿼리스트링) - 캐싱 허용 / ISR용 */
+export async function getCached<T>(url: string, params?: Params, headers?: RequestHeaders): Promise<T> {
+	const [u2, rest] = applyPathParams(url, cloneParams(params));
+	const qs = rest && Object.keys(rest).length > 0 ? `?${toSearchParams(rest).toString()}` : "";
+	const safeUrl = (u2 + qs).replace(/ /g, "%20");
+
+	const fullUrl = BASE_URL + safeUrl;
+	const timer = withTimeout(20000);
+
+	try {
+		const res = await fetch(fullUrl, {
+			credentials: "include",
+			signal: timer.signal,
+			headers: {
+				Accept: "application/json, text/plain, */*",
+				...(headers ?? {}),
+			},
+			// ❗ cache 옵션 없음 → Next 기본 캐싱 → ISR 가능
+		});
+
+		if (res.status === 204) return undefined as unknown as T;
+
+		const ct = res.headers.get("content-type") ?? "";
+
+		let raw: unknown;
+		if (ct.includes("application/json")) {
+			raw = await res.json().catch(async () => ({ _raw: await res.text() }));
+		} else if (ct.startsWith("text/") || ct.includes("application/xml")) {
+			raw = await res.text();
+		} else {
+			raw = await res.blob();
+		}
+
+		if (!res.ok) {
+			const message = extractMessage(raw, res.statusText || "REQUEST_FAILED");
+			const err: HttpError = { message, status: res.status, data: raw, url };
+			throw err;
+		}
+
+		return raw as T;
+	} catch (err: unknown) {
+		if (err instanceof DOMException && err.name === "AbortError") {
+			const status = isServer ? 504 : 0;
+			throw { message: "REQUEST_TIMEOUT", status, data: null, url } as HttpError;
+		}
+
+		if (err instanceof TypeError) {
+			const status = isServer ? 502 : 0;
+			throw { message: "NETWORK_ERROR", status, data: null, url } as HttpError;
+		}
+
+		if (isHttpError(err)) throw err;
+
+		throw { message: "SERVER_ERROR", status: 500, data: err, url } as HttpError;
+	} finally {
+		timer.clear();
+	}
 }

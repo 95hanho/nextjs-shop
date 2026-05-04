@@ -21,7 +21,7 @@ interface ProductItemProps {
 		wishCount: number;
 		saleStop?: boolean;
 		soldOut?: boolean;
-		wishId?: number | null;
+		initWish?: boolean;
 	};
 }
 export const ProductItem = ({ product }: ProductItemProps) => {
@@ -52,7 +52,7 @@ export const ProductItem = ({ product }: ProductItemProps) => {
 					<SmartImage fill />
 				</div>
 			)}
-			<WishButton productId={product.productId} initWishOn={!!product.wishId} right={6} bottom={6} zIndex={11} size={19} />
+			<WishButton productId={product.productId} initWishOn={!!product.initWish} right={6} bottom={6} zIndex={11} size={19} />
 			{(product.saleStop || product.soldOut) && (
 				<div className={styles.notSaleBadgeWrapper}>
 					{product.saleStop && <div className={styles.saleStopBadge}>판매중지</div>}

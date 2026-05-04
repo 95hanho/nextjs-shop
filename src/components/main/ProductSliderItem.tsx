@@ -9,7 +9,7 @@ import { useState } from "react";
 import clsx from "clsx";
 import Link from "next/link";
 
-export const ProductSliderItem = ({ product }: { product: MainProduct }) => {
+export const ProductSliderItem = ({ product, checkedProductIdList }: { product: MainProduct; checkedProductIdList?: number[] }) => {
 	// 2) [useState / useRef] ----------------------------------------------
 	const [showInfo, setShowInfo] = useState(false); // productInfo(제품 설명) 보여줄 지 여부
 	const [isClosing, setIsClosing] = useState(false); // productInfo가 사라지는 애니메이션이 재생 중인지 여부 (true면 사라지는 중, false면 나타나는 중 또는 애니메이션 없음)
@@ -29,7 +29,13 @@ export const ProductSliderItem = ({ product }: { product: MainProduct }) => {
 			}}
 		>
 			<SmartImage src={getUploadImageUrl(product.filePath)} alt={product.fileName} width={200} height={200} />
-			<WishButton initWishOn={!!product.wishId} productId={product.productId} bottom={4} right={4} size={23} />
+			<WishButton
+				initWishOn={checkedProductIdList?.includes(product.productId) || false}
+				productId={product.productId}
+				bottom={4}
+				right={4}
+				size={23}
+			/>
 			{showInfo && (
 				<div
 					className={clsx(styles.productInfo, {

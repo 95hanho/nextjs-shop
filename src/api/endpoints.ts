@@ -94,10 +94,14 @@ const API_URL = {
 	PRODUCT_LIKE: "/product/like",
 	/** 현재 회원 위시 productId 목록 조회, 위시 등록/해제 */
 	PRODUCT_WISH: "/product/wish",
+	/** 위시 여부 확인 */
+	PRODUCT_WISH_CHECK: "/product/wish/check",
 	/** 장바구니 확인, 장바구니 넣기 */
 	PRODUCT_CART: "/product/cart",
 	/** 제품상세보기 조회 */
 	PRODUCT_DETAIL: "/product/detail/:productId",
+	/** 제품 상세보기 제품 뷰 테이블 삽입 */
+	PRODUCT_DETAIL_VIEW: "/product/detail/:productId/view",
 	/** 제품 사용가능 쿠폰 조회 */
 	PRODUCT_DETAIL_COUPON: "/product/detail/:productId/coupon",
 	/** 제품 상세보기 상세이미지(상품소개) 조회 */

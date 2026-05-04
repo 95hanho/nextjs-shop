@@ -4,6 +4,7 @@ import API_URL from "@/api/endpoints";
 import { getNormal } from "@/api/fetchFilter";
 import CategoryProductListHeader from "@/app/product/category/[menuTopId]/[menuSubId]/CategoryProductListHeader";
 import CategoryProductListSection from "@/app/product/category/[menuTopId]/[menuSubId]/CategoryProductListSection";
+import { useWishCheck } from "@/hooks/query/product/useWishCheck";
 import { useAuth } from "@/hooks/useAuth";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import {
@@ -99,6 +100,9 @@ export default function CategoryProductListClient({ menuSubId, initialProductLis
 		return data?.pages.flatMap((page) => page.productList) ?? [];
 	}, [data]);
 
+	// 4.5) [custom hooks] -----------------------------------------
+	const { data: checkedProductIdList } = useWishCheck(productList.map((p) => p.productId));
+
 	// 6) [useEffect] ------------------------------------------------------
 	useEffect(() => {
 		window.scrollTo({ top: 0, behavior: "smooth" });
@@ -125,6 +129,7 @@ export default function CategoryProductListClient({ menuSubId, initialProductLis
 		fetchNextPage,
 		hasNextPage,
 		isFetchingNextPage,
+		checkedProductIdList,
 	};
 
 	return (

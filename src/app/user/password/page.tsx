@@ -2,6 +2,8 @@
 import { cookies } from "next/headers";
 import PasswordChangeClient from "./PasswordChangeClient";
 
+export const dynamic = "force-dynamic";
+
 export default function PasswordChangePage() {
 	const cookieStore = cookies();
 

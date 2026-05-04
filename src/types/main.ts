@@ -30,8 +30,6 @@ export type MainProduct = {
 	wishCount: number;
 	//
 	sellerName: string;
-	//
-	wishId: number | null;
 } & FileInfo;
 export interface MainProductResponse extends BaseResponse {
 	productList: MainProduct[];

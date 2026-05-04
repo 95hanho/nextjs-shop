@@ -3,7 +3,7 @@ import { Inter, Roboto_Mono } from "next/font/google";
 import "@/styles/css/globals.css";
 import { MenuResponse } from "@/types/main";
 import API_URL from "@/api/endpoints";
-import { getNormal } from "@/api/fetchFilter";
+import { getCached } from "@/api/fetchFilter";
 import { DomainModalRoot } from "@/components/modal/core/DomainModalRoot";
 import RootProviders from "@/app/RootProviders";
 import DynamicHeader from "@/app/DynamicHeader";
@@ -35,7 +35,7 @@ export default async function RootLayout({
 	children: React.ReactNode;
 }>) {
 	// 공통 메뉴 가져오기(SSR에서 가져올 떄는 직접 spring에서 가져오기)
-	const menusData = await getNormal<MenuResponse>(getBackendUrl(API_URL.MAIN_MENU));
+	const menusData = await getCached<MenuResponse>(getBackendUrl(API_URL.MAIN_MENU));
 	const menuList = [...menusData.menuList].sort((a, b) => a.menuTopId - b.menuTopId);
 
 	return (
