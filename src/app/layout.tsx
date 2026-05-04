@@ -1,13 +1,9 @@
 import type { Metadata } from "next";
 import { Inter, Roboto_Mono } from "next/font/google";
 import "@/styles/css/globals.css";
-import { MenuResponse } from "@/types/main";
-import API_URL from "@/api/endpoints";
-import { getCached } from "@/api/fetchFilter";
 import { DomainModalRoot } from "@/components/modal/core/DomainModalRoot";
 import RootProviders from "@/app/RootProviders";
 import DynamicHeader from "@/app/DynamicHeader";
-import { getBackendUrl } from "@/lib/getBaseUrl";
 import { DialogRoot } from "@/components/modal/core/DialogRoot";
 import Footer from "@/app/Footer";
 // import { redirect } from "next/navigation";
@@ -35,15 +31,14 @@ export default async function RootLayout({
 	children: React.ReactNode;
 }>) {
 	// 공통 메뉴 가져오기(SSR에서 가져올 떄는 직접 spring에서 가져오기)
-	const menusData = await getCached<MenuResponse>(getBackendUrl(API_URL.MAIN_MENU));
-	const menuList = [...menusData.menuList].sort((a, b) => a.menuTopId - b.menuTopId);
+	// const menuList = [...menusData.menuList].sort((a, b) => a.menuTopId - b.menuTopId);
 
 	return (
 		<html lang="ko">
 			<body className={`${inter.variable} ${robotoMono.variable} antialiased`}>
 				<div className="wrap">
 					<RootProviders>
-						<DynamicHeader menuList={menuList} />
+						<DynamicHeader />
 						{children}
 						{/* 공통 모달(alert, confirm 등) */}
 						<DialogRoot />

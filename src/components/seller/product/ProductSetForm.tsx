@@ -7,9 +7,8 @@ import { OptionSelector } from "@/components/ui/OptionSelector";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { ChangeEvent } from "@/types/event";
 import { FormInputAlarm, FormInputRefs } from "@/types/form";
-import { Menu, MenuResponse } from "@/types/main";
 import { ProductColorName } from "@/types/product";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef, useState } from "react";
 import styles from "./ProductSet.module.scss";
 import { DateInput } from "@/components/form/DateInput";
@@ -19,6 +18,7 @@ import { money } from "@/lib/format";
 import clsx from "clsx";
 import { FaExchangeAlt } from "react-icons/fa";
 import { useSellerProductSubmit } from "@/hooks/query/seller/useSellerProductSubmit";
+import { useGetMenu } from "@/hooks/query/main/useGetMenu";
 
 export type ProductSetForm = {
 	name: string;
@@ -92,6 +92,7 @@ interface ProductSetFormProps {
 export const ProductSetForm = ({ productId, prevProductSetData }: ProductSetFormProps) => {
 	// 1) [store / custom hooks] -------------------------------------------
 	const { sellerProductSubmit } = useSellerProductSubmit();
+	const { data: menuList } = useGetMenu();
 
 	// 2) [useState / useRef] ----------------------------------------------
 	// 제품수정 폼
@@ -102,12 +103,6 @@ export const ProductSetForm = ({ productId, prevProductSetData }: ProductSetForm
 	const productImageSetRef = useRef<ProductImageSetHandle | null>(null);
 
 	// 3) [useQuery / useMutation] -----------------------------------------
-	// 메뉴 카테고리 조회 getNormal<MenuResponse>(getBackendUrl(API_URL.MAIN_MENU));
-	const { data: menuList } = useQuery<MenuResponse, Error, Menu[]>({
-		queryKey: ["mainMenu"],
-		queryFn: () => getNormal<MenuResponse>(getApiUrl(API_URL.MAIN_MENU)),
-		select: (data) => data.menuList,
-	});
 	// 제품명 중복확인
 	const { mutateAsync: checkProductNameDuplicate } = useMutation({
 		mutationKey: ["productNameDuplicate"],

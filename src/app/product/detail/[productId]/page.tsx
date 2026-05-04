@@ -3,19 +3,15 @@ import { toErrorResponse } from "@/api/error";
 import { getCached } from "@/api/fetchFilter";
 import ProductDetailClient from "@/app/product/detail/[productId]/ProductDetailClient";
 import { getBackendUrl } from "@/lib/getBaseUrl";
-import { MainProductResponse } from "@/types/main";
 import { GetProductDetailResponse } from "@/types/product";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
 export const revalidate = 60;
+export const dynamicParams = true;
 
 export async function generateStaticParams() {
-	const productsData = await getCached<MainProductResponse>(getBackendUrl(API_URL.MAIN));
-
-	return productsData.productList.slice(0, 20).map((p) => ({
-		productId: String(p.productId),
-	}));
+	return [];
 }
 
 export default async function ProductDetail({

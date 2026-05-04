@@ -1,23 +1,17 @@
-import { MainProductResponse } from "@/types/main";
-import API_URL from "@/api/endpoints";
-import { getCached } from "@/api/fetchFilter";
-import { getBackendUrl } from "@/lib/getBaseUrl";
 import MainClient from "@/app/MainClient";
 import { toErrorResponse } from "@/api/error";
 import { notFound } from "next/navigation";
+import { getSafeMainProducts } from "@/api/main/getSafeMainProducts";
 
 export const revalidate = 60;
 
 export default async function Home() {
 	try {
-		const productsData = await getCached<MainProductResponse>(getBackendUrl(API_URL.MAIN));
+		const productsData = await getSafeMainProducts();
 
 		// console.log({ productList: productsData.productList });
 		// return <h1>테스트중</h1>;
 
-		if (!productsData) {
-			return null;
-		}
 		const productList = productsData.productList;
 
 		return (
