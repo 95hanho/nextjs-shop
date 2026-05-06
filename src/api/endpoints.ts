@@ -136,6 +136,10 @@ const API_URL = {
 	SELLER_LOGOUT: "/seller/logout",
 	/** 판매자id 중복확인 */
 	SELLER_ID: "/seller/id",
+	/** 판매자 전화번호 인증 */
+	SELLER_PHONE_AUTH: "/seller/phone",
+	/** 판매자 전화번호 인증 확인 */
+	SELLER_PHONE_AUTH_CHECK: "/seller/phone/check",
 	/** 판매자 등록요청(회원가입) */
 	SELLER_REGISTRATION: "/seller/registration",
 	/** 제품 조회, 제품추가, 제품수정 */

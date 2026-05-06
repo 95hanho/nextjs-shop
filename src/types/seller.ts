@@ -41,6 +41,18 @@ export interface SellerLoginResponse extends BaseResponse {
 export interface GetSellerInfoResponse extends BaseResponse {
 	seller: SellerInfo;
 }
+/* 판매자 전화번호 인증 */
+export interface SellerPhoneAuthRequest {
+	phone: string;
+	mode: "REGISTRATION"; // 판매자 등록(회원가입) 또는 비밀번호 찾기
+	phoneAuthToken?: string; // 서버에서 생성한 인증 토큰
+}
+/* 판매자 전화번호 인증 확인 */
+export interface SellerPhoneAuthCheckRequest {
+	phoneAuthToken: string;
+	authNumber: string;
+}
+
 /* 판매자 등록요청 */
 export interface SellerRegisterRequest extends SellerLoginForm, SellerInfo {}
 
