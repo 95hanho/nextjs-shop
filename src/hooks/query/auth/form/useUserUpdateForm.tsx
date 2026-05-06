@@ -76,7 +76,7 @@ export function useUserUpdateForm() {
 		},
 	});
 	// 휴대폰 인증
-	const handlePhoneAuth = useMutation({
+	const phoneAuthMutation = useMutation({
 		mutationFn: () =>
 			postJson<BaseResponse & { phoneAuthToken: string }, PhoneAuthRequest>(
 				getApiUrl(API_URL.AUTH_PHONE_AUTH),
@@ -103,7 +103,7 @@ export function useUserUpdateForm() {
 		},
 	});
 	// 휴대폰 인증 확인
-	const handlePhoneAuthComplete = useMutation({
+	const phoneAuthCompleteMutation = useMutation({
 		mutationFn: () =>
 			postJson<BaseResponse>(getApiUrl(API_URL.AUTH_PHONE_AUTH_CHECK), {
 				phone: userUpdateForm.phone,
@@ -138,7 +138,7 @@ export function useUserUpdateForm() {
 		},
 	});
 	// 회원정보변경 API
-	const handleUserUpdate = useMutation<BaseResponse, Error>({
+	const userUpdateMutation = useMutation<BaseResponse, Error>({
 		mutationFn: () =>
 			putJson<BaseResponse, UserUpdateRequest>(getApiUrl(API_URL.AUTH_JOIN), {
 				...userUpdateForm,
@@ -218,6 +218,7 @@ export function useUserUpdateForm() {
 	const userUpdateSubmit = (e: FormEvent) => {
 		console.log("userUpdateSubmit");
 		e.preventDefault();
+		if (userUpdateMutation.isPending) return;
 		/* 변한게 없으면 다시 그냥 유저정보보기 화면으로 */
 		if (
 			Object.entries(userUpdateForm).every((entry) => {
@@ -256,7 +257,7 @@ export function useUserUpdateForm() {
 			userUpdateFormInputRefs.current[changeAlarm.name]?.focus();
 			return;
 		}
-		handleUserUpdate.mutate();
+		userUpdateMutation.mutate();
 	};
 	// 휴대폰 인증 보내기 버튼
 	const clickPhoneAuth = () => {
@@ -280,7 +281,7 @@ export function useUserUpdateForm() {
 				return;
 			}
 		}
-		handlePhoneAuth.mutate();
+		phoneAuthMutation.mutate();
 	};
 	// 휴대폰 인증확인 버튼
 	const clickCheckPhoneAuth = () => {
@@ -293,7 +294,7 @@ export function useUserUpdateForm() {
 			userUpdateFormInputRefs.current.phoneAuth?.focus();
 			return;
 		}
-		handlePhoneAuthComplete.mutate();
+		phoneAuthCompleteMutation.mutate();
 	};
 
 	// 6) [useEffect] ------------------------------------------------------

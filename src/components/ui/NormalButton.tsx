@@ -23,9 +23,10 @@ interface NormalButtonProps {
 	borderColor?: string;
 	bgHoverColor?: string;
 	bgActiveColor?: string;
+	disabled?: boolean;
 }
 
-export const NormalButton = ({ title, onClick, bgColor, borderColor, bgHoverColor, bgActiveColor }: NormalButtonProps) => {
+export const NormalButton = ({ title, onClick, bgColor, borderColor, bgHoverColor, bgActiveColor, disabled = false }: NormalButtonProps) => {
 	// 7) [UI helper values] -------------------------------------------------
 	const btnStyleProps = {
 		bgColor,
@@ -35,7 +36,7 @@ export const NormalButton = ({ title, onClick, bgColor, borderColor, bgHoverColo
 	};
 
 	return (
-		<ButtonUI onClick={onClick} {...btnStyleProps}>
+		<ButtonUI onClick={onClick} {...btnStyleProps} disabled={disabled}>
 			{title}
 		</ButtonUI>
 	);

@@ -34,7 +34,7 @@ export default function MyShippingAddressClient() {
 		enabled: loginOn,
 	});
 	// 유저 배송지 추가
-	const handleAddressAdd = useMutation({
+	const addressAddMutation = useMutation({
 		mutationFn: (address: setUserAddressRequest) =>
 			postJson<BaseResponse, setUserAddressRequest>(getApiUrl(API_URL.MY_ADDRESS), {
 				...address,
@@ -47,7 +47,7 @@ export default function MyShippingAddressClient() {
 		},
 	});
 	// 유저 배송지 수정/ 기본주소 변경
-	const handleAddressUpdate = useMutation({
+	const addressUpdateMutation = useMutation({
 		mutationFn: (address: setUserAddressRequest) =>
 			putJson<BaseResponse, setUserAddressRequest>(getApiUrl(API_URL.MY_ADDRESS), {
 				...address,
@@ -60,7 +60,7 @@ export default function MyShippingAddressClient() {
 		},
 	});
 	// 유저 배송지 삭제
-	const handleAddressDelete = useMutation({
+	const addressDeleteMutation = useMutation({
 		mutationFn: (addressId: number) =>
 			deleteNormal<BaseResponse>(getApiUrl(API_URL.MY_ADDRESS_DELETE), {
 				addressId,
@@ -97,17 +97,17 @@ export default function MyShippingAddressClient() {
 								prevAddress: address,
 								disableOverlayClose: true,
 								handleAfterSetAddress: async (nextAddress) => {
-									await handleAddressUpdate.mutateAsync({ ...address, ...nextAddress });
+									await addressUpdateMutation.mutateAsync({ ...address, ...nextAddress });
 									await queryClient.invalidateQueries({ queryKey: ["userAddressList"] });
 								},
 							});
 						}}
 						changeDefaultAddress={async (address) => {
-							await handleAddressUpdate.mutateAsync(address);
+							await addressUpdateMutation.mutateAsync(address);
 							await queryClient.invalidateQueries({ queryKey: ["userAddressList"] });
 						}}
 						deleteAddress={async (addressId) => {
-							await handleAddressDelete.mutateAsync(addressId);
+							await addressDeleteMutation.mutateAsync(addressId);
 							await queryClient.invalidateQueries({ queryKey: ["userAddressList"] });
 						}}
 						ref={(el) => {
@@ -121,7 +121,7 @@ export default function MyShippingAddressClient() {
 									prevAddress: undefined,
 									disableOverlayClose: true,
 									handleAfterSetAddress: async (nextAddress) => {
-										await handleAddressAdd.mutateAsync(nextAddress);
+										await addressAddMutation.mutateAsync(nextAddress);
 										await queryClient.invalidateQueries({ queryKey: ["userAddressList"] });
 										addressListRef.current?.scrollTo({ top: 0, behavior: "instant" });
 									},

@@ -5,11 +5,12 @@ import { postJson } from "@/api/fetchFilter";
 import { BaseResponse } from "@/types/common";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import API_URL from "@/api/endpoints";
-import { JoinRequest, LoginFormData, PhoneAuthCheckRequest, PhoneAuthRequest } from "@/types/auth";
+import { JoinRequest, LoginFormData } from "@/types/auth";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, FormEvent } from "@/types/event";
 import { FormInputAlarm, FormInputRefs } from "@/types/form";
 import { User } from "@/types/user";
+import { SellerPhoneAuthCheckRequest, SellerPhoneAuthRequest } from "@/types/seller";
 
 export interface JoinForm extends LoginFormData, User {
 	phoneAuth: string;
@@ -83,7 +84,7 @@ export function useUserJoinForm() {
 
 	// 3) [useQuery / useMutation] -----------------------------------------
 	// 아이디중복확인 mutate
-	const handleIdDuplcheck = useMutation({
+	const idDuplcheckMutation = useMutation({
 		mutationFn: (userId: string) => postJson<BaseResponse>(getApiUrl(API_URL.AUTH_ID), { userId }),
 		// Mutation이 시작되기 직전에 특정 작업을 수행
 		onMutate(a) {
@@ -99,11 +100,11 @@ export function useUserJoinForm() {
 		// onSettled(a, b) {},
 	});
 	// 휴대폰 인증
-	const handlePhoneAuth = useMutation({
+	const phoneAuthMutation = useMutation({
 		mutationFn: () =>
-			postJson<BaseResponse & { phoneAuthToken: string }, PhoneAuthRequest>(getApiUrl(API_URL.AUTH_PHONE_AUTH), {
+			postJson<BaseResponse & { phoneAuthToken: string }, SellerPhoneAuthRequest>(getApiUrl(API_URL.SELLER_PHONE_AUTH), {
 				phone: joinForm.phone,
-				mode: "JOIN",
+				mode: "REGISTRATION",
 			}),
 		onSuccess(data) {
 			setPhoneAuthView(true);
@@ -123,13 +124,13 @@ export function useUserJoinForm() {
 		},
 	});
 	// 휴대폰 인증 확인
-	const handlePhoneAuthComplete = useMutation({
+	const phoneAuthCompleteMutation = useMutation({
 		mutationFn: async () => {
 			if (!phoneAuthToken) {
 				// 인증을 다시 해야한다는 동작
 				return;
 			}
-			return postJson<BaseResponse, PhoneAuthCheckRequest>(getApiUrl(API_URL.AUTH_PHONE_AUTH_CHECK), {
+			return postJson<BaseResponse, SellerPhoneAuthCheckRequest>(getApiUrl(API_URL.SELLER_PHONE_AUTH_CHECK), {
 				phoneAuthToken,
 				authNumber: joinForm.phoneAuth,
 			});
@@ -151,7 +152,7 @@ export function useUserJoinForm() {
 		},
 	});
 	// 회원가입
-	const handleRegister = useMutation({
+	const userJoinMutation = useMutation({
 		mutationFn: () => postJson<BaseResponse, JoinRequest>(getApiUrl(API_URL.AUTH_JOIN), { ...joinForm }),
 		// Mutation이 시작되기 직전에 특정 작업을 수행
 		onMutate() {},
@@ -221,7 +222,7 @@ export function useUserJoinForm() {
 				changeAlarm = { name, message: joinFormRegexFailMent[name], status: "FAIL" };
 			} else {
 				if (name == "userId") {
-					await handleIdDuplcheck
+					await idDuplcheckMutation
 						.mutateAsync(joinForm.userId)
 						.then(() => {
 							changeAlarm = { name, message: "사용가능한 아이디입니다." };
@@ -265,6 +266,7 @@ export function useUserJoinForm() {
 	const joinSubmit = (e: FormEvent) => {
 		console.log("joinSubmit");
 		e.preventDefault();
+		if (userJoinMutation.isPending) return; // 중복 제출 방지
 		if (joinAlarm?.status === "FAIL") {
 			joinFormInputRefs.current[joinAlarm.name]?.focus();
 			return;
@@ -305,7 +307,7 @@ export function useUserJoinForm() {
 		}
 		// 회원가입 로직 추가
 		console.log("회원가입 완료");
-		handleRegister.mutate();
+		userJoinMutation.mutate();
 	};
 	// 휴대폰 인증 보내기 버튼
 	const clickPhoneAuth = () => {
@@ -321,7 +323,7 @@ export function useUserJoinForm() {
 				return;
 			}
 		}
-		handlePhoneAuth.mutate();
+		phoneAuthMutation.mutate();
 	};
 	// 휴대폰 인증확인 버튼
 	const clickCheckPhoneAuth = () => {
@@ -334,10 +336,11 @@ export function useUserJoinForm() {
 			joinFormInputRefs.current.phoneAuth?.focus();
 			return;
 		}
-		handlePhoneAuthComplete.mutate();
+		phoneAuthCompleteMutation.mutate();
 	};
 
 	return {
+		joinDisabled: userJoinMutation.isPending,
 		joinSubmit,
 		joinForm,
 		setJoinForm,

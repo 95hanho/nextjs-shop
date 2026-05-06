@@ -47,7 +47,7 @@ export function usePasswordChangeForm({ mode }: usePasswordChangeFormProps) {
 
 	// 3) [useQuery / useMutation] -----------------------------------------
 	// 비밀번호 변경
-	const handlePasswordChange = useMutation({
+	const passwordChangeMutation = useMutation({
 		mutationFn: () =>
 			putJson<BaseResponse>(getApiUrl(API_URL.AUTH_PASSWORD), {
 				...pwdChangeForm,
@@ -173,7 +173,7 @@ export function usePasswordChangeForm({ mode }: usePasswordChangeFormProps) {
 		}
 		//
 		console.log("비밀번호변경 완료");
-		handlePasswordChange.mutate();
+		passwordChangeMutation.mutate();
 	};
 
 	// 6) [useEffect] ------------------------------------------------------

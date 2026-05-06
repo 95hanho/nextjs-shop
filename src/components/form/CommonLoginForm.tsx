@@ -23,7 +23,6 @@ const testAdmin = {
 	id: "admin",
 	password: "a123456!!",
 };
-const loginData = { ...testUser }; // 기본은 일반 사용자 로그인 데이터로 설정
 
 interface CommonLoginFormProps {
 	apiUrl: string;
@@ -45,8 +44,8 @@ export const CommonLoginForm = ({ apiUrl, redirectTo, invalidateKeys, loginIdFie
 	const userIdRef = useRef<HTMLInputElement>(null);
 	const pwdRef = useRef<HTMLInputElement>(null);
 	const [loginForm, setLoginForm] = useState<LoginFormData<typeof loginIdField>>({
-		[loginIdField]: loginData.id,
-		password: loginData.password,
+		[loginIdField]: "",
+		password: "",
 	} as LoginFormData);
 	const [userIdFocus, setUserIdFocus] = useState<boolean>(false);
 	const [pwdFocus, setPwdFocus] = useState<boolean>(false);
@@ -56,7 +55,7 @@ export const CommonLoginForm = ({ apiUrl, redirectTo, invalidateKeys, loginIdFie
 
 	// 3) [useQuery / useMutation] -----------------------------------------
 	// 로그인 API
-	const handleLogin = useMutation({
+	const loginMutation = useMutation({
 		mutationFn: (obj: LoginFormData<typeof loginIdField>) => postJson<BaseResponse>(apiUrl, obj),
 		onMutate(a) {
 			console.log(a);
@@ -95,6 +94,7 @@ export const CommonLoginForm = ({ apiUrl, redirectTo, invalidateKeys, loginIdFie
 	// 5) [handlers / useCallback] -----------------------------------------
 	const loginSubmit = (e: FormEvent) => {
 		e.preventDefault();
+		if (loginMutation.isPending) return; // 중복 로그인 방지
 		if (!loginForm[loginIdField]) {
 			setAlarmMessage("아이디를 입력해주세요.");
 			userIdRef.current?.focus();
@@ -105,22 +105,26 @@ export const CommonLoginForm = ({ apiUrl, redirectTo, invalidateKeys, loginIdFie
 			pwdRef.current?.focus();
 			return;
 		}
-		handleLogin.mutate(loginForm);
+		loginMutation.mutate(loginForm);
 	};
 
 	// 6) [useEffect] ------------------------------------------------------
 	// pathname에 따라 로그인 폼에 미리 데이터 채워넣기 (개발 편의용)
 	useEffect(() => {
-		if (pathname.startsWith("/seller")) {
-			loginData.id = testSeller.id;
-			loginData.password = testSeller.password;
+		// 테스트 계정 로그인 데이터 자동 입력 (개발 편의용)
+		console.log(loginForm[loginIdField]);
+		if (loginForm[loginIdField] === "123159") {
+			if (pathname.startsWith("/user")) {
+				setLoginForm({ [loginIdField]: testUser.id, password: testUser.password });
+			}
+			if (pathname.startsWith("/seller")) {
+				setLoginForm({ [loginIdField]: testSeller.id, password: testSeller.password });
+			}
+			if (pathname.startsWith("/admin")) {
+				setLoginForm({ [loginIdField]: testAdmin.id, password: testAdmin.password });
+			}
 		}
-		if (pathname.startsWith("/admin")) {
-			loginData.id = testAdmin.id;
-			loginData.password = testAdmin.password;
-		}
-		setLoginForm({ [loginIdField]: loginData.id, password: loginData.password });
-	}, [pathname, loginIdField]);
+	}, [pathname, loginIdField, loginForm]);
 	useEffect(() => {
 		const url = searchParams.get("returnUrl");
 		const params = new URLSearchParams(searchParams);
@@ -211,7 +215,7 @@ export const CommonLoginForm = ({ apiUrl, redirectTo, invalidateKeys, loginIdFie
 				)}
 			</div>
 			{alarmMessage && <p>* {alarmMessage}</p>}
-			<FormActionButton title="로그인" />
+			<FormActionButton title="로그인" disabled={loginMutation.isPending} />
 		</form>
 	);
 };

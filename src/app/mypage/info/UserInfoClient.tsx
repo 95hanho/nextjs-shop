@@ -26,7 +26,7 @@ export default function UserInfoClient() {
 		enabled: loginOn,
 	});
 	// 비밀변경 토큰 생성 후 비밀변경 페이지로
-	const handlePhoneAuth = useMutation({
+	const passwordChangeMutation = useMutation({
 		mutationFn: () => postJson<BaseResponse>(getApiUrl(API_URL.AUTH_PASSWORD), {}),
 		onSuccess() {
 			push("/user/password");
@@ -38,7 +38,7 @@ export default function UserInfoClient() {
 
 	if (!user.name) return null;
 	return (
-		<FormPageShell title={"내 정보 수정"} wrapMinHeight={100}>
+		<FormPageShell title={"내 정보"} wrapMinHeight={100}>
 			<InfoMark title="아이디" infoVal={<span>{userIdResponse?.userId}</span>} />
 			<InfoMark
 				title="비밀번호"
@@ -46,12 +46,13 @@ export default function UserInfoClient() {
 					<NormalButton
 						title="비밀번호 변경"
 						onClick={() => {
-							handlePhoneAuth.mutate();
+							passwordChangeMutation.mutate();
 						}}
 						bgColor="#f9c703"
 						borderColor="#a98704"
 						bgHoverColor="#efc007"
 						bgActiveColor="#f9c90b"
+						disabled={passwordChangeMutation.isPending}
 					/>
 				}
 			/>
