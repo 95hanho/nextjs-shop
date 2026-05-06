@@ -32,7 +32,6 @@ export default async function RootLayout({
 }>) {
 	// 공통 메뉴 가져오기(SSR에서 가져올 떄는 직접 spring에서 가져오기)
 	// const menuList = [...menusData.menuList].sort((a, b) => a.menuTopId - b.menuTopId);
-
 	return (
 		<html lang="ko">
 			<body className={`${inter.variable} ${robotoMono.variable} antialiased`}>
