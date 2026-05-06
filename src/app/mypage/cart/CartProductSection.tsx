@@ -87,7 +87,7 @@ export default function CartProductSection({
 
 	// 3) [useQuery / useMutation] ---------------------------------
 	// 장바구니 제품 옵션/수량 변경
-	const handleChangeQuantity = useMutation<BaseResponse, Error, UpdateCartRequest>({
+	const changeQuantityMutation = useMutation<BaseResponse, Error, UpdateCartRequest>({
 		mutationFn: ({ cartId, productOptionId, quantity }) =>
 			postJson<BaseResponse>(getApiUrl(API_URL.MY_CART), { cartId, productOptionId, quantity }),
 		// Mutation이 시작되기 직전에 특정 작업을 수행
@@ -104,7 +104,7 @@ export default function CartProductSection({
 		// onSettled(data, error, variables, context) {},
 	});
 	// 장바구니 선택여부 변경
-	const handleChangeSelected = useMutation<BaseResponse, Error, UpdateCartSelectedRequest>({
+	const changeSelectedMutation = useMutation<BaseResponse, Error, UpdateCartSelectedRequest>({
 		mutationFn: ({ cartIdList, selected }) => putJson<BaseResponse>(getApiUrl(API_URL.MY_CART), { cartIdList, selected }),
 		// Mutation이 시작되기 직전에 특정 작업을 수행
 		// onMutate(a) {
@@ -120,7 +120,7 @@ export default function CartProductSection({
 		// onSettled(a, b) {},
 	});
 	// 장바구니 제품 삭제
-	const handleCartProductDelete = useMutation<BaseResponse, Error, { cartIdList: number[] }>({
+	const cartProductDeleteMutation = useMutation<BaseResponse, Error, { cartIdList: number[] }>({
 		mutationFn: ({ cartIdList }) => deleteNormal<BaseResponse>(getApiUrl(API_URL.MY_CART), { cartIdList }),
 		// Mutation이 시작되기 직전에 특정 작업을 수행
 		// onMutate(a) {
@@ -142,7 +142,8 @@ export default function CartProductSection({
 		openModal("PRODUCT_OPTION", {
 			product,
 			handleAfterCartProductOptionChange: async (cartProductOption) => {
-				await handleChangeQuantity.mutateAsync({
+				if (changeQuantityMutation.isPending) return;
+				await changeQuantityMutation.mutateAsync({
 					cartId: cartProductOption.cartId,
 					productOptionId: cartProductOption.productOptionId,
 					quantity: cartProductOption.quantity,
@@ -159,7 +160,7 @@ export default function CartProductSection({
 		openDialog("CONFIRM", {
 			content,
 			handleAfterOk: async () => {
-				await handleCartProductDelete.mutateAsync({ cartIdList: cartIds });
+				await cartProductDeleteMutation.mutateAsync({ cartIdList: cartIds });
 				if (noReset) noResetCouponOn(); // 삭제 시 selected 상태가 안된 경우 쿠폰 초기화 방지
 				queryClient.invalidateQueries({ queryKey: ["cartList"] });
 			},
@@ -191,7 +192,7 @@ export default function CartProductSection({
 							className="checkbox checkbox--lg"
 							checked={allSelected}
 							onChange={async () => {
-								await handleChangeSelected.mutateAsync({ cartIdList: unselectedCartIdList, selected: !allSelected });
+								await changeSelectedMutation.mutateAsync({ cartIdList: unselectedCartIdList, selected: !allSelected });
 								queryClient.invalidateQueries({ queryKey: ["cartList"] });
 							}}
 						/>
@@ -241,7 +242,7 @@ export default function CartProductSection({
 												checked={brandAllchecked}
 												disabled={selectableProductList.length === 0}
 												onChange={async () => {
-													await handleChangeSelected.mutateAsync({
+													await changeSelectedMutation.mutateAsync({
 														cartIdList: brandAllCartIdList,
 														selected: !brandAllchecked,
 													});
@@ -315,7 +316,7 @@ export default function CartProductSection({
 														checked={product.selected}
 														disabled={selectDisabled}
 														onChange={async () => {
-															await handleChangeSelected.mutateAsync({
+															await changeSelectedMutation.mutateAsync({
 																cartIdList: [product.cartId],
 																selected: !product.selected,
 															});

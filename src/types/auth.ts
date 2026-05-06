@@ -20,9 +20,10 @@ export interface GetUserResponse extends BaseResponse {
 	orderCount: number;
 }
 /* 휴대폰 인증 */
+export type PhoneAuthMode = "USER_JOIN" | "IDFIND" | "PWDFIND" | "CHANGE" | "SELLER_JOIN";
 export interface PhoneAuthRequest {
 	phone: string;
-	mode: "JOIN" | "IDFIND" | "PWDFIND" | "CHANGE";
+	mode: PhoneAuthMode;
 	phoneAuthToken?: string;
 	userId?: string; // PW 찾기 시 필요
 }

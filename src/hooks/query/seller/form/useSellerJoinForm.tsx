@@ -82,7 +82,7 @@ export function useSellerJoinForm() {
 
 	// 3) [useQuery / useMutation] -----------------------------------------
 	// 아이디중복확인 mutate
-	const handleIdDuplcheck = useMutation({
+	const idDuplcheckMutation = useMutation({
 		mutationFn: (userId: string) => postJson<BaseResponse>(getApiUrl(API_URL.AUTH_ID), { userId }),
 		// Mutation이 시작되기 직전에 특정 작업을 수행
 		onMutate(a) {
@@ -98,11 +98,11 @@ export function useSellerJoinForm() {
 		// onSettled(a, b) {},
 	});
 	// 휴대폰 인증
-	const handlePhoneAuth = useMutation({
+	const phoneAuthMutation = useMutation({
 		mutationFn: () =>
 			postJson<BaseResponse & { phoneAuthToken: string }, PhoneAuthRequest>(getApiUrl(API_URL.AUTH_PHONE_AUTH), {
 				phone: joinForm.phone,
-				mode: "JOIN",
+				mode: "SELLER_JOIN",
 			}),
 		onSuccess(data) {
 			setPhoneAuthView(true);
@@ -122,7 +122,7 @@ export function useSellerJoinForm() {
 		},
 	});
 	// 휴대폰 인증 확인
-	const handlePhoneAuthComplete = useMutation({
+	const phoneAuthCompleteMutation = useMutation({
 		mutationFn: async () => {
 			if (!phoneAuthToken) {
 				// 인증을 다시 해야한다는 동작
@@ -150,8 +150,8 @@ export function useSellerJoinForm() {
 		},
 	});
 	// 회원가입
-	const handleRegister = useMutation({
-		mutationFn: () => postJson<BaseResponse, JoinRequest>(getApiUrl(API_URL.AUTH_JOIN), { ...joinForm }),
+	const sellerRegisterMutation = useMutation({
+		mutationFn: () => postJson<BaseResponse, JoinRequest>(getApiUrl(API_URL.SELLER_REGISTRATION), { ...joinForm }),
 		// Mutation이 시작되기 직전에 특정 작업을 수행
 		onMutate(a) {
 			console.log(a);
@@ -222,7 +222,7 @@ export function useSellerJoinForm() {
 				changeAlarm = { name, message: joinFormRegexFailMent[name], status: "FAIL" };
 			} else {
 				if (name == "userId") {
-					await handleIdDuplcheck
+					await idDuplcheckMutation
 						.mutateAsync(joinForm.userId)
 						.then(() => {
 							changeAlarm = { name, message: "사용가능한 아이디입니다." };
@@ -306,7 +306,7 @@ export function useSellerJoinForm() {
 		}
 		// 회원가입 로직 추가
 		console.log("회원가입 완료");
-		handleRegister.mutate();
+		sellerRegisterMutation.mutate();
 	};
 	// 휴대폰 인증 보내기 버튼
 	const clickPhoneAuth = () => {
@@ -322,7 +322,7 @@ export function useSellerJoinForm() {
 				return;
 			}
 		}
-		handlePhoneAuth.mutate();
+		phoneAuthMutation.mutate();
 	};
 	// 휴대폰 인증확인 버튼
 	const clickCheckPhoneAuth = () => {
@@ -335,7 +335,7 @@ export function useSellerJoinForm() {
 			joinFormInputRefs.current.phoneAuth?.focus();
 			return;
 		}
-		handlePhoneAuthComplete.mutate();
+		phoneAuthCompleteMutation.mutate();
 	};
 
 	return {

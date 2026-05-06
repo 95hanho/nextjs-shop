@@ -11,6 +11,7 @@ import { useUserJoinForm } from "@/hooks/query/auth/form/useUserJoinForm";
 export default function UserJoinClient() {
 	// 1) [store / custom hooks] -------------------------------------------
 	const {
+		joinDisabled,
 		joinSubmit,
 		joinForm,
 		setJoinForm,
@@ -131,7 +132,6 @@ export default function UserJoinClient() {
 					phoneAuthView={phoneAuthView}
 					clickCheckPhoneAuth={clickCheckPhoneAuth}
 				/>
-
 				<FormInput
 					name="email"
 					label="이메일"
@@ -145,7 +145,7 @@ export default function UserJoinClient() {
 						joinFormInputRefs.current.email = el;
 					}}
 				/>
-				<FormActionButton title="회원가입" />
+				<FormActionButton title="회원가입" disabled={joinDisabled} />
 			</form>
 		</FormPageShell>
 	);

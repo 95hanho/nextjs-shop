@@ -55,14 +55,14 @@ export default function ProductVisualInfo({
 	// 1) [store / custom hooks] -------------------------------------------
 	const { openDialog } = useGlobalDialogStore();
 	const { loginOn, user, isAuthLoading } = useAuth();
-	const { handleAddCart, isSuccess: isAddCartSuccess, reset } = useProductCartAction();
-	const { mutate: handleStockHold, error: buyNowError } = useProductCheckAndHold();
+	const productCartAction = useProductCartAction();
+	const productCheckAndHoldMutation = useProductCheckAndHold();
 	const queryClient = useQueryClient();
 	const params = useParams<{
 		productId: string;
 	}>();
 	const productId = Number(params.productId);
-	const { mutateAsync: handleChangeProductWish } = useChangeProductWish();
+	const changeProductWishMutation = useChangeProductWish();
 
 	// 2) [useState / useRef] ----------------------------------------------
 	// 나의 가격 상세 보기 토글
@@ -227,25 +227,25 @@ export default function ProductVisualInfo({
 	}, [availableCouponResponse, isInitialCouponApplied, productDetail.finalPrice]);
 	// 장바구니 담기 후 팝업 오픈 및 제품 옵션 리스트 갱신
 	useEffect(() => {
-		if (!isAddCartSuccess) return;
+		if (!productCartAction.isSuccess) return;
 
 		setAddCartPopupKey((prev) => prev + 1);
 		setProductSelectList([]); // 상품 선택 초기화
 		// 제품 옵션 리스트 갱신 (재고 수량 반영)
 		queryClient.invalidateQueries({ queryKey: ["productOptions", productId] });
 
-		reset();
-	}, [isAddCartSuccess, queryClient, productId, reset]);
+		productCartAction.reset();
+	}, [productCartAction.isSuccess, queryClient, productId, productCartAction.reset, productCartAction]);
 	// 상품 점유 실패 시 처리
 	useEffect(() => {
-		if (!buyNowError) return;
+		if (!productCheckAndHoldMutation.error) return;
 
-		console.error("상품 점유 실패", buyNowError);
-		if (buyNowError.message === "STOCK_HOLD_FAILED") {
+		console.error("상품 점유 실패", productCheckAndHoldMutation.error);
+		if (productCheckAndHoldMutation.error.message === "STOCK_HOLD_FAILED") {
 			setProductSelectList([]);
 			queryClient.invalidateQueries({ queryKey: ["productOptions", productId] });
 		}
-	}, [buyNowError, queryClient, productId]);
+	}, [productCheckAndHoldMutation.error, queryClient, productId]);
 	// 로그인 상태에 가져온 후
 	useEffect(() => {
 		if (!isAuthLoading) {
@@ -281,11 +281,14 @@ export default function ProductVisualInfo({
 						<div className={styles.productName}>{productDetail.name}</div>
 						<button
 							className={styles.productWishlist}
-							onClick={() =>
-								handleChangeProductWish(productDetail.productId).then(() => {
-									setIsWish((prev) => !prev);
-								})
-							}
+							onClick={() => {
+								if (changeProductWishMutation.isPending) return;
+								changeProductWishMutation.mutate(productDetail.productId, {
+									onSuccess: () => {
+										setIsWish((prev) => !prev);
+									},
+								});
+							}}
 						>
 							{isWish ? <FaHeart /> : <FiHeart />}
 						</button>
@@ -567,7 +570,14 @@ export default function ProductVisualInfo({
 											</>
 										)}
 										<div className={styles.actionButtons}>
-											<button className={styles.btnCart} onClick={() => handleAddCart(productSelectList, productId)}>
+											<button
+												className={styles.btnCart}
+												onClick={() => {
+													if (productCartAction.isPending) return;
+													productCartAction.handleAddCart(productSelectList, productId);
+												}}
+												disabled={productCartAction.isPending}
+											>
 												장바구니 담기
 											</button>
 											<button
@@ -579,8 +589,8 @@ export default function ProductVisualInfo({
 														});
 														return;
 													}
-
-													handleStockHold({
+													if (productCheckAndHoldMutation.isPending) return;
+													productCheckAndHoldMutation.mutate({
 														buyList: productSelectList.map((option) => ({
 															productOptionId: option.productOptionId,
 															count: option.quantity,

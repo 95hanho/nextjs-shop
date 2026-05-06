@@ -1,7 +1,7 @@
 import API_URL from "@/api/endpoints";
 import { postJson } from "@/api/fetchFilter";
+import { usePhoneAuth } from "@/hooks/query/auth/usePhoneAuth";
 import { getApiUrl } from "@/lib/getBaseUrl";
-import { useGlobalDialogStore } from "@/store/globalDialog.store";
 import { BaseResponse } from "@/types/common";
 import { ChangeEvent, FormEvent } from "@/types/event";
 import { FormInputAlarm, FormInputRefs } from "@/types/form";
@@ -31,7 +31,6 @@ const phoneRegexFailMent: string = "휴대폰 번호 형식에 일치하지 않�
 
 export function useFindUserForm() {
 	// 1) [store / custom hooks] -------------------------------------------
-	const { openDialog } = useGlobalDialogStore();
 	const { push } = useRouter();
 	const params = useParams<{ type?: FindType }>(); // `type`이 있을 수도 있고 없을 수도 있음
 	const findType = params.type;
@@ -53,7 +52,17 @@ export function useFindUserForm() {
 
 	// 3) [useQuery / useMutation] -----------------------------------------
 	// 휴대폰 인증
-	const handlePhoneAuth = useMutation({
+	// const {
+	// 	mutate: phoneAuthMutation,
+	// 	data: phoneAuthData,
+	// 	isSuccess: phoneAuthSuccess,
+	// 	error: phoneAuthError,
+	// 	isError: phoneAuthIsError,
+	// 	isPending: phoneAuthIsPending,
+	// } = usePhoneAuth(findType === "id" ? "IDFIND" : "PWDFIND");
+	const phoneAuthMutation = usePhoneAuth(findType === "id" ? "IDFIND" : "PWDFIND");
+	/*
+	const phoneAuthMutation = useMutation({
 		mutationFn: () =>
 			postJson<BaseResponse & { phoneAuthToken: string }>(getApiUrl(API_URL.AUTH_PHONE_AUTH), {
 				userId: findUserForm.userId,
@@ -83,8 +92,9 @@ export function useFindUserForm() {
 			}
 		},
 	});
+	*/
 	// 휴대폰 인증확인
-	const handlePhoneAuthComplete = useMutation({
+	const phoneAuthCompleteMutation = useMutation({
 		mutationFn: () =>
 			postJson<BaseResponse & { userId: string }>(getApiUrl(API_URL.AUTH_PHONE_AUTH_CHECK), {
 				userId: findUserForm.userId,
@@ -201,6 +211,7 @@ export function useFindUserForm() {
 	};
 	// 휴대폰 인증 보내기 버튼
 	const clickPhoneAuth = () => {
+		if (phoneAuthMutation.isPending) return;
 		if (!findUserForm.phone) {
 			setFindUserFormAlarm({
 				name: "phone",
@@ -214,11 +225,15 @@ export function useFindUserForm() {
 			findUserFormInputRefs.current.phone?.focus();
 			return;
 		}
-		handlePhoneAuth.mutate();
+		phoneAuthMutation.mutate({
+			phone: findUserForm.phone,
+			userId: findUserForm.userId,
+		});
 	};
 	// 휴대폰 인증확인 버튼
 	const clickCheckPhoneAuth = () => {
 		console.log("clickCheckPhoneAuth");
+		if (phoneAuthCompleteMutation.isPending) return;
 		if (findUserFormAlarm?.name === "phoneAuth" && findUserFormAlarm.status === "FAIL") {
 			findUserFormInputRefs.current.phoneAuth?.focus();
 			return;
@@ -228,7 +243,7 @@ export function useFindUserForm() {
 			findUserFormInputRefs.current.phoneAuth?.focus();
 			return;
 		}
-		handlePhoneAuthComplete.mutate();
+		phoneAuthCompleteMutation.mutate();
 	};
 
 	// 6) [useEffect] ------------------------------------------------------
@@ -237,6 +252,40 @@ export function useFindUserForm() {
 			push("/user");
 		}
 	}, [findType, push]);
+	useEffect(() => {
+		const { isSuccess, data, isError, error } = phoneAuthMutation;
+		if (isSuccess && data) {
+			setPhoneAuthView(true);
+			setPhoneAuthToken(data.phoneAuthToken);
+			setPhoneAuthComplete(false);
+			setFindUserFormAlarm({
+				name: "phoneAuth",
+				message: "인증 번호가 발송되었습니다. 제한시간 3분",
+				status: "SUCCESS",
+			});
+			setFindUserForm((prev) => ({
+				...prev,
+				phoneAuth: "",
+			}));
+		}
+		if (isError && error) {
+			setPhoneAuthView(false);
+			if (error.message === "PHONE_NOT_FOUND") {
+				setFindUserFormAlarm({
+					name: "phone",
+					message: "존재하지 않는 번호입니다.",
+					status: "FAIL",
+				});
+			}
+			if (error.message === "PWD_FIND_USER_NOT_FOUND") {
+				setFindUserFormAlarm({
+					name: "phone",
+					message: "해당 아이디와 휴대폰 번호가 일치하는 사용자를 찾을 수 없습니다.",
+					status: "FAIL",
+				});
+			}
+		}
+	}, [phoneAuthMutation, phoneAuthMutation.data, phoneAuthMutation.isError, phoneAuthMutation.error, phoneAuthMutation.isSuccess]);
 
 	return {
 		findType,

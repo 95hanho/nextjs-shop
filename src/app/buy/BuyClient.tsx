@@ -75,28 +75,28 @@ export default function BuyClient() {
 		retry: false,
 	});
 
-	// 점유 연장 handleStockHoldExtend
-	const { mutateAsync: handleStockHoldExtend } = useMutation({
+	// 점유 연장 stockHoldExtendMutate
+	const { mutateAsync: stockHoldExtendMutate } = useMutation({
 		mutationFn: () => postJson(getApiUrl(API_URL.BUY_HOLD_EXTEND), {}),
 		onSuccess() {},
 		onError(err) {
-			console.log("handleStockHoldExtend err", err);
+			console.log("stockHoldExtendMutate err", err);
 		},
 	});
-	// 점유 쿠폰 추가 handleAddBuyHoldCoupon
-	const { mutateAsync: handleAddBuyHoldCoupon } = useMutation({
+	// 점유 쿠폰 추가 addBuyHoldCouponMutate
+	const { mutateAsync: addBuyHoldCouponMutate } = useMutation({
 		mutationFn: (data: ManageBuyHoldCouponRequest) => postJson(getApiUrl(API_URL.BUY_HOLD_COUPON), data),
 		onSuccess() {},
 		onError(err) {
-			console.log("handleAddBuyHoldCoupon err", err);
+			console.log("addBuyHoldCouponMutate err", err);
 		},
 	});
-	// 점유 쿠폰 삭제 handleDeleteBuyHoldCoupon
-	const { mutateAsync: handleDeleteBuyHoldCoupon } = useMutation({
+	// 점유 쿠폰 삭제 deleteBuyHoldCouponMutate
+	const { mutateAsync: deleteBuyHoldCouponMutate } = useMutation({
 		mutationFn: (data: ManageBuyHoldCouponRequest) => putJson(getApiUrl(API_URL.BUY_HOLD_COUPON), data),
 		onSuccess() {},
 		onError(err) {
-			console.log("handleDeleteBuyHoldCoupon err", err);
+			console.log("deleteBuyHoldCouponMutate err", err);
 		},
 	});
 
@@ -311,13 +311,13 @@ export default function BuyClient() {
 		// 점유 쿠폰 추가/삭제 handleBuyHoldCoupon 호출
 		// 쿠폰 삭제
 		if (toDelete.length > 0) {
-			await handleDeleteBuyHoldCoupon({
+			await deleteBuyHoldCouponMutate({
 				holdCoupons: toDelete,
 			});
 		}
 		// 쿠폰 추가
 		if (toAdd.length > 0) {
-			await handleAddBuyHoldCoupon({
+			await addBuyHoldCouponMutate({
 				holdCoupons: toAdd,
 			});
 		}
@@ -343,7 +343,7 @@ export default function BuyClient() {
 		const toAdd = maxCoupons.filter((mc) => !curCoupons.some((cc) => cc.couponId === mc.couponId && cc.holdId === mc.holdId));
 		// API 호출 삭제
 		if (toDelete.length > 0) {
-			await handleDeleteBuyHoldCoupon({
+			await deleteBuyHoldCouponMutate({
 				holdCoupons: toDelete.map((coupon) => ({
 					holdId: coupon.holdId,
 					userCouponId: coupon.userCouponId,
@@ -352,7 +352,7 @@ export default function BuyClient() {
 		}
 		// API 호출 추가
 		if (toAdd.length > 0) {
-			await handleAddBuyHoldCoupon({
+			await addBuyHoldCouponMutate({
 				holdCoupons: toAdd.map((coupon) => ({
 					holdId: coupon.holdId,
 					userCouponId: coupon.userCouponId,
@@ -422,7 +422,7 @@ export default function BuyClient() {
 			if (inFlightRef.current || document.hidden) return;
 			inFlightRef.current = true;
 			try {
-				await handleStockHoldExtend();
+				await stockHoldExtendMutate();
 			} finally {
 				inFlightRef.current = false;
 			}
@@ -434,7 +434,7 @@ export default function BuyClient() {
 		// tick();
 
 		return () => window.clearInterval(id);
-	}, [handleStockHoldExtend, canExtendHold]);
+	}, [stockHoldExtendMutate, canExtendHold]);
 	// 탭이 활성화될 때마다 구매상품 점유 연장 시도 (사용자가 탭을 다시 볼 때마다 연장 시도)
 	useEffect(() => {
 		const onVisible = async () => {
@@ -442,7 +442,7 @@ export default function BuyClient() {
 
 			inFlightRef.current = true;
 			try {
-				await handleStockHoldExtend();
+				await stockHoldExtendMutate();
 			} finally {
 				inFlightRef.current = false;
 			}
@@ -450,7 +450,7 @@ export default function BuyClient() {
 
 		document.addEventListener("visibilitychange", onVisible);
 		return () => document.removeEventListener("visibilitychange", onVisible);
-	}, [canExtendHold, handleStockHoldExtend]);
+	}, [canExtendHold, stockHoldExtendMutate]);
 	// 최대 할인쿠폰 저장 및 초기 쿠폰을 통한 적용 쿠폰 저장.
 	useEffect(() => {
 		if (!stockHoldData) return;

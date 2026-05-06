@@ -28,7 +28,7 @@ type ItemSellerMap = {
 export default function OrderDetailClient({ orderId }: { orderId: string }) {
 	// 1) [store / custom hooks] -------------------------------------------
 	const { loginOn } = useAuth();
-	const { handleAddCart, isSuccess: isAddCartSuccess, reset } = useProductCartAction();
+	const productCartAction = useProductCartAction();
 	const { openDialog } = useGlobalDialogStore();
 
 	// 2) [useState / useRef] ----------------------------------------------
@@ -87,11 +87,11 @@ export default function OrderDetailClient({ orderId }: { orderId: string }) {
 	// 6) [useEffect] ------------------------------------------------------
 	// 장바구니 담기 성공 시 트리거 키 업데이트
 	useEffect(() => {
-		if (!isAddCartSuccess) return;
+		if (!productCartAction.isSuccess) return;
 
 		setAddCartTriggerKey((prev) => prev + 1); // 장바구니 담기 트리거 키 업데이트
-		reset();
-	}, [isAddCartSuccess, reset]);
+		productCartAction.reset();
+	}, [productCartAction, productCartAction.isSuccess, productCartAction.reset]);
 
 	if (!orderDetailData) return null;
 	return (
@@ -216,7 +216,7 @@ export default function OrderDetailClient({ orderId }: { orderId: string }) {
 															className="relative"
 															onClick={() => {
 																setAddCartCurProductId(item.productId);
-																handleAddCart(
+																productCartAction.handleAddCart(
 																	[
 																		{
 																			productOptionId: item.productOptionId,

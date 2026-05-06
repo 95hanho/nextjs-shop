@@ -63,7 +63,7 @@ interface WishButtonProps {
 
 export const WishButton = ({ initWishOn, productId, bottom = 1, right = 1, size = 16, zIndex = 10, clickHandler }: WishButtonProps) => {
 	// 1) [store / custom hooks] -------------------------------------------
-	const { mutateAsync } = useChangeProductWish();
+	const { mutateAsync, isPending } = useChangeProductWish();
 
 	// 2) [useState / useRef] ----------------------------------------------
 	const [wishOn, setWishOn] = useState(initWishOn);
@@ -75,6 +75,7 @@ export const WishButton = ({ initWishOn, productId, bottom = 1, right = 1, size 
 	const changeWish = async (e: MouseEvent) => {
 		e.stopPropagation(); // 클릭 이벤트가 부모 요소로 전파되는 것을 방지
 		e.preventDefault();
+		if (isPending) return;
 		await mutateAsync(productId).then(() => {
 			setWishOn(!wishOn);
 			if (clickHandler) {

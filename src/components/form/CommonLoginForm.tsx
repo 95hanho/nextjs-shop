@@ -56,7 +56,7 @@ export const CommonLoginForm = ({ apiUrl, redirectTo, invalidateKeys, loginIdFie
 
 	// 3) [useQuery / useMutation] -----------------------------------------
 	// 로그인 API
-	const handleLogin = useMutation({
+	const loginMutation = useMutation({
 		mutationFn: (obj: LoginFormData<typeof loginIdField>) => postJson<BaseResponse>(apiUrl, obj),
 		onMutate(a) {
 			console.log(a);
@@ -95,6 +95,7 @@ export const CommonLoginForm = ({ apiUrl, redirectTo, invalidateKeys, loginIdFie
 	// 5) [handlers / useCallback] -----------------------------------------
 	const loginSubmit = (e: FormEvent) => {
 		e.preventDefault();
+		if (loginMutation.isPending) return; // 중복 로그인 방지
 		if (!loginForm[loginIdField]) {
 			setAlarmMessage("아이디를 입력해주세요.");
 			userIdRef.current?.focus();
@@ -105,7 +106,7 @@ export const CommonLoginForm = ({ apiUrl, redirectTo, invalidateKeys, loginIdFie
 			pwdRef.current?.focus();
 			return;
 		}
-		handleLogin.mutate(loginForm);
+		loginMutation.mutate(loginForm);
 	};
 
 	// 6) [useEffect] ------------------------------------------------------
@@ -211,7 +212,7 @@ export const CommonLoginForm = ({ apiUrl, redirectTo, invalidateKeys, loginIdFie
 				)}
 			</div>
 			{alarmMessage && <p>* {alarmMessage}</p>}
-			<FormActionButton title="로그인" />
+			<FormActionButton title="로그인" disabled={loginMutation.isPending} />
 		</form>
 	);
 };

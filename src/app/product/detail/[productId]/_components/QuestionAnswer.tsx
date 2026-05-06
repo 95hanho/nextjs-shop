@@ -56,7 +56,7 @@ const QuestionAnswer = forwardRef(
 
 		// 3) [useQuery / useMutation] -----------------------------------------
 		// QnA 등록
-		const { mutate: addProductQna } = useMutation({
+		const { mutate: addProductQna, isPending: isAddProductQnaPending } = useMutation({
 			mutationKey: ["addProductQna", productId],
 			mutationFn: (form: AddProductQnaRequest) => postJson(getApiUrl(API_URL.PRODUCT_DETAIL_QNA), { ...form, productId }),
 			onSuccess: () => {
@@ -65,7 +65,7 @@ const QuestionAnswer = forwardRef(
 			},
 		});
 		// QnA 수정
-		const { mutate: updateProductQna } = useMutation({
+		const { mutate: updateProductQna, isPending: isUpdateProductQnaPending } = useMutation({
 			mutationKey: ["updateProductQna", productId],
 			mutationFn: (form: UpdateProductQnaRequest) => putJson(getApiUrl(API_URL.PRODUCT_DETAIL_QNA), { ...form, productId }),
 			onSuccess: () => {
@@ -133,6 +133,7 @@ const QuestionAnswer = forwardRef(
 				openDialog("ALERT", { content: "문의 내용은 줄바꿈을 10회 이하로 입력해주세요." });
 				return;
 			}
+			if (isAddProductQnaPending || isUpdateProductQnaPending) return;
 			if (qnaFormType === "ADD" && !qnaForm.productQnaId) {
 				addProductQna({
 					productQnaTypeId: qnaForm.productQnaTypeId,

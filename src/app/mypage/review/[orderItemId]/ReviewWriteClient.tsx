@@ -95,21 +95,21 @@ export default function ReviewWriteClient() {
 		}),
 	});
 	// 리뷰 작성
-	const { mutateAsync: writeReview } = useMutation<BaseResponse & { reviewId: number }, Error, WriteReviewRequest>({
+	const writeReview = useMutation<BaseResponse & { reviewId: number }, Error, WriteReviewRequest>({
 		mutationFn: (productForm: WriteReviewRequest) =>
 			postJson(getApiUrl(API_URL.MY_REVIEW), {
 				...productForm,
 			}),
 	});
 	// 리뷰 수정
-	const { mutateAsync: updateReview } = useMutation<BaseResponse, Error, UpdateReviewRequest>({
+	const updateReview = useMutation<BaseResponse, Error, UpdateReviewRequest>({
 		mutationFn: (productForm: UpdateReviewRequest) =>
 			putJson(getApiUrl(API_URL.MY_REVIEW), {
 				...productForm,
 			}),
 	});
 	// 리뷰 이미지 설정
-	const { mutateAsync: setReviewImage } = useMutation<BaseResponse, Error, SetReviewImageRequest>({
+	const setReviewImage = useMutation<BaseResponse, Error, SetReviewImageRequest>({
 		mutationFn: ({ reviewId, files, addFiles, updateFiles, deleteImageIds }: SetReviewImageRequest) => {
 			const formData = new FormData();
 			formData.append(
@@ -132,6 +132,7 @@ export default function ReviewWriteClient() {
 	// 5) [handlers / useCallback] -----------------------------------------
 	// 리뷰 작성/수정 제출
 	const handleReviewSubmit = () => {
+		if (writeReview.isPending || updateReview.isPending || setReviewImage.isPending) return;
 		if (!reviewForm.rating) {
 			openDialog("ALERT", {
 				content: "별점을 선택해주세요.",
@@ -168,23 +169,27 @@ export default function ReviewWriteClient() {
 
 		// 리뷰 작성
 		if (!prevReview) {
-			writeReview({
-				content: reviewForm.content,
-				rating: reviewForm.rating,
-				orderItemId,
-			}).then((response) => {
-				reviewImageSubmit(response.reviewId);
-			});
+			writeReview
+				.mutateAsync({
+					content: reviewForm.content,
+					rating: reviewForm.rating,
+					orderItemId,
+				})
+				.then((response) => {
+					reviewImageSubmit(response.reviewId);
+				});
 		}
 		// 리뷰 수정
 		else {
-			updateReview({
-				reviewId: prevReview.reviewId,
-				content: reviewForm.content,
-				rating: reviewForm.rating,
-			}).then(() => {
-				reviewImageSubmit(prevReview.reviewId);
-			});
+			updateReview
+				.mutateAsync({
+					reviewId: prevReview.reviewId,
+					content: reviewForm.content,
+					rating: reviewForm.rating,
+				})
+				.then(() => {
+					reviewImageSubmit(prevReview.reviewId);
+				});
 		}
 
 		function reviewImageSubmit(reviewId: number) {
@@ -197,20 +202,22 @@ export default function ReviewWriteClient() {
 					fileName: item.file.name,
 				};
 			});
-			setReviewImage({
-				files: [...addFiles.map((file) => file.file)], // File 객체 배열로 변환
-				reviewId,
-				addFiles: addFilesMeta,
-				updateFiles,
-				deleteImageIds,
-			}).then(() => {
-				openDialog("ALERT", {
-					content: prevReview ? "리뷰가 수정되었습니다." : "리뷰가 작성되었습니다.",
-					handleAfterClose: () => {
-						router.push(`/product/detail/${reviewOrderItem?.productId}?tab=review`);
-					},
+			setReviewImage
+				.mutateAsync({
+					files: [...addFiles.map((file) => file.file)], // File 객체 배열로 변환
+					reviewId,
+					addFiles: addFilesMeta,
+					updateFiles,
+					deleteImageIds,
+				})
+				.then(() => {
+					openDialog("ALERT", {
+						content: prevReview ? "리뷰가 수정되었습니다." : "리뷰가 작성되었습니다.",
+						handleAfterClose: () => {
+							router.push(`/product/detail/${reviewOrderItem?.productId}?tab=review`);
+						},
+					});
 				});
-			});
 		}
 	};
 

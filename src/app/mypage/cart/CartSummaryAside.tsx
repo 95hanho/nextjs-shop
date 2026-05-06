@@ -39,7 +39,7 @@ export default function CartSummaryAside({
 	// 1) [store / custom hooks] -------------------------------------------
 	const { openDialog } = useGlobalDialogStore();
 	const { push } = useRouter();
-	const { mutate: handleStockHold, isSuccess } = useProductCheckAndHold();
+	const checkAndHoldMutation = useProductCheckAndHold();
 
 	// 2) [useState / useRef] ----------------------------------------------
 	// 유의사항 on/off
@@ -48,6 +48,7 @@ export default function CartSummaryAside({
 	// 5) [handlers / useCallback] -----------------------------------------
 	// 상품 구매하기 버튼 - 상품 확인 및 점유 -> 성공 시 결제 페이지로 이동, 실패 시 에러 메시지 노출
 	const handlePurchaseClick = () => {
+		if (checkAndHoldMutation.isPending) return;
 		if (buyList.length === 0) {
 			openDialog("ALERT", {
 				content: "선택된 상품이 없습니다.",
@@ -55,15 +56,15 @@ export default function CartSummaryAside({
 			return;
 		}
 		// console.log("buyList", buyList);
-		handleStockHold({ buyList, returnUrl: "/mypage/cart" });
+		checkAndHoldMutation.mutate({ buyList, returnUrl: "/mypage/cart" });
 	};
 
 	// 6) [useEffect] ------------------------------------------------------
 	// 상품 점유 성공 시 결제 페이지로 이동
 	useEffect(() => {
-		if (!isSuccess) return;
+		if (!checkAndHoldMutation.isSuccess) return;
 		push("/buy");
-	}, [isSuccess, push]);
+	}, [checkAndHoldMutation.isSuccess, push]);
 
 	return (
 		<aside className={styles.priceWrap} aria-label="주문 요약">
