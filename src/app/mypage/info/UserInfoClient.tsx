@@ -38,7 +38,7 @@ export default function UserInfoClient() {
 
 	if (!user.name) return null;
 	return (
-		<FormPageShell title={"내 정보 수정"} wrapMinHeight={100}>
+		<FormPageShell title={"내 정보"} wrapMinHeight={100}>
 			<InfoMark title="아이디" infoVal={<span>{userIdResponse?.userId}</span>} />
 			<InfoMark
 				title="비밀번호"
