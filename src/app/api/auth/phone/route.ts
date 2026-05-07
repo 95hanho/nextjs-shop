@@ -33,9 +33,9 @@ export const POST = userWithOptionalAuth(async ({ nextRequest, accessToken }) =>
 		};
 		if (accessToken) headers.Authorization = `Bearer ${accessToken}`;
 
-		const data = await postUrlFormData<BaseResponse>(getBackendUrl(API_URL.AUTH_PHONE_AUTH), { ...payload }, headers);
+		const data = await postUrlFormData<BaseResponse & { testCode: string }>(getBackendUrl(API_URL.AUTH_PHONE_AUTH), { ...payload }, headers);
 
-		return NextResponse.json({ message: data.message, phoneAuthToken }, { status: 200 });
+		return NextResponse.json({ message: data.message, phoneAuthToken, testCode: data.testCode }, { status: 200 });
 	} catch (err: unknown) {
 		const { status, payload } = toErrorResponse(err);
 		return NextResponse.json(payload, { status });

@@ -1,11 +1,7 @@
-import API_URL from "@/api/endpoints";
-import { postJson } from "@/api/fetchFilter";
 import { usePhoneAuth } from "@/hooks/query/auth/usePhoneAuth";
-import { getApiUrl } from "@/lib/getBaseUrl";
-import { BaseResponse } from "@/types/common";
+import { usePhoneAuthCheck } from "@/hooks/query/auth/usePhoneAuthCheck";
 import { ChangeEvent, FormEvent } from "@/types/event";
 import { FormInputAlarm, FormInputRefs } from "@/types/form";
-import { useMutation } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
@@ -34,6 +30,8 @@ export function useFindUserForm() {
 	const { push } = useRouter();
 	const params = useParams<{ type?: FindType }>(); // `type`이 있을 수도 있고 없을 수도 있음
 	const findType = params.type;
+	const phoneAuthMutation = usePhoneAuth(findType === "id" ? "IDFIND" : "PWDFIND");
+	const phoneAuthCompleteMutation = usePhoneAuthCheck();
 
 	// 2) [useState / useRef] ----------------------------------------------
 	// 비번변경 폼 데이터
@@ -49,86 +47,6 @@ export function useFindUserForm() {
 	const [phoneAuthComplete, setPhoneAuthComplete] = useState<boolean>(false);
 	// 찾은 아이디
 	const [findId, setFindId] = useState<string>("userId");
-
-	// 3) [useQuery / useMutation] -----------------------------------------
-	// 휴대폰 인증
-	// const {
-	// 	mutate: phoneAuthMutation,
-	// 	data: phoneAuthData,
-	// 	isSuccess: phoneAuthSuccess,
-	// 	error: phoneAuthError,
-	// 	isError: phoneAuthIsError,
-	// 	isPending: phoneAuthIsPending,
-	// } = usePhoneAuth(findType === "id" ? "IDFIND" : "PWDFIND");
-	const phoneAuthMutation = usePhoneAuth(findType === "id" ? "IDFIND" : "PWDFIND");
-	/*
-	const phoneAuthMutation = useMutation({
-		mutationFn: () =>
-			postJson<BaseResponse & { phoneAuthToken: string }>(getApiUrl(API_URL.AUTH_PHONE_AUTH), {
-				userId: findUserForm.userId,
-				phone: findUserForm.phone,
-				mode: findType === "id" ? "IDFIND" : "PWDFIND",
-			}),
-		onSuccess(data) {
-			setPhoneAuthView(true);
-			setPhoneAuthToken(data.phoneAuthToken);
-			setPhoneAuthComplete(false);
-			setFindUserFormAlarm({
-				name: "phoneAuth",
-				message: "인증 번호가 발송되었습니다. 제한시간 3분",
-				status: "SUCCESS",
-			});
-			setFindUserForm((prev) => ({
-				...prev,
-				phoneAuth: "",
-			}));
-		},
-		onError(err) {
-			console.log(err);
-			if (err.message === "PWD_FIND_USER_NOT_FOUND") {
-				openDialog("ALERT", {
-					content: "해당 아이디와 휴대폰 번호가 일치하는 사용자를 찾을 수 없습니다.",
-				});
-			}
-		},
-	});
-	*/
-	// 휴대폰 인증확인
-	const phoneAuthCompleteMutation = useMutation({
-		mutationFn: () =>
-			postJson<BaseResponse & { userId: string }>(getApiUrl(API_URL.AUTH_PHONE_AUTH_CHECK), {
-				userId: findUserForm.userId,
-				phoneAuthToken,
-				authNumber: findUserForm.phoneAuth,
-			}),
-		onSuccess(data) {
-			if (findType === "id") {
-				setFindId(data.userId);
-				setPhoneAuthComplete(true);
-			} else if (findType === "password") {
-				// 비밀번호 변경페이지로
-				push("/user/password");
-			}
-		},
-		onError(err) {
-			console.log(err);
-			if (["VERIFICATION_EXPIRED", "PHONEAUTH_TOKEN_UNAUTHORIZED"].includes(err.message)) {
-				setFindUserFormAlarm({
-					name: "phone",
-					message: "인증시간이 만료되었습니다.",
-					status: "FAIL",
-				});
-				setPhoneAuthView(false);
-			}
-			if (err.message === "INVALID_VERIFICATION_CODE") {
-				setFindUserFormAlarm({
-					name: "phoneAuth",
-					message: "인증번호가 일치하지 않습니다.",
-					status: "FAIL",
-				});
-			}
-		},
-	});
 
 	// 5) [handlers / useCallback] -----------------------------------------
 	// 비번변경 폼 변경
@@ -225,15 +143,56 @@ export function useFindUserForm() {
 			findUserFormInputRefs.current.phone?.focus();
 			return;
 		}
-		phoneAuthMutation.mutate({
-			phone: findUserForm.phone,
-			userId: findUserForm.userId,
-		});
+		phoneAuthMutation.mutate(
+			{
+				phone: findUserForm.phone,
+				userId: findUserForm.userId,
+			},
+			{
+				onSuccess(data) {
+					setPhoneAuthView(true);
+					setPhoneAuthToken(data.phoneAuthToken);
+					setPhoneAuthComplete(false);
+					setFindUserFormAlarm({
+						name: "phoneAuth",
+						message: "인증 번호가 발송되었습니다. 제한시간 3분",
+						status: "SUCCESS",
+					});
+					setFindUserForm((prev) => ({
+						...prev,
+						phoneAuth: "",
+					}));
+				},
+				onError(err) {
+					setPhoneAuthView(false);
+					if (err.message === "PHONE_NOT_FOUND") {
+						setFindUserFormAlarm({
+							name: "phone",
+							message: "존재하지 않는 번호입니다.",
+							status: "FAIL",
+						});
+					}
+					if (err.message === "PWD_FIND_USER_NOT_FOUND") {
+						setFindUserFormAlarm({
+							name: "phone",
+							message: "해당 아이디와 휴대폰 번호가 일치하는 사용자를 찾을 수 없습니다.",
+							status: "FAIL",
+						});
+					}
+				},
+			},
+		);
 	};
 	// 휴대폰 인증확인 버튼
 	const clickCheckPhoneAuth = () => {
 		console.log("clickCheckPhoneAuth");
 		if (phoneAuthCompleteMutation.isPending) return;
+		if (!phoneAuthToken) {
+			setPhoneAuthView(false);
+			setFindUserFormAlarm({ name: "phone", message: "인증번호 인증을 먼저 진행해주세요.", status: "FAIL" });
+			findUserFormInputRefs.current.phoneAuth?.focus();
+			return;
+		}
 		if (findUserFormAlarm?.name === "phoneAuth" && findUserFormAlarm.status === "FAIL") {
 			findUserFormInputRefs.current.phoneAuth?.focus();
 			return;
@@ -243,7 +202,41 @@ export function useFindUserForm() {
 			findUserFormInputRefs.current.phoneAuth?.focus();
 			return;
 		}
-		phoneAuthCompleteMutation.mutate();
+		phoneAuthCompleteMutation.mutate(
+			{
+				phoneAuthToken,
+				authNumber: findUserForm.phoneAuth,
+			},
+			{
+				onSuccess(data) {
+					if (findType === "id" && data.userId) {
+						setFindId(data.userId);
+						setPhoneAuthComplete(true);
+					} else if (findType === "password") {
+						// 비밀번호 변경페이지로
+						push("/user/password");
+					}
+				},
+				onError(err) {
+					console.log(err);
+					if (["VERIFICATION_EXPIRED", "PHONEAUTH_TOKEN_UNAUTHORIZED"].includes(err.message)) {
+						setFindUserFormAlarm({
+							name: "phone",
+							message: "인증시간이 만료되었습니다.",
+							status: "FAIL",
+						});
+						setPhoneAuthView(false);
+					}
+					if (err.message === "INVALID_VERIFICATION_CODE") {
+						setFindUserFormAlarm({
+							name: "phoneAuth",
+							message: "인증번호가 일치하지 않습니다.",
+							status: "FAIL",
+						});
+					}
+				},
+			},
+		);
 	};
 
 	// 6) [useEffect] ------------------------------------------------------
@@ -252,40 +245,6 @@ export function useFindUserForm() {
 			push("/user");
 		}
 	}, [findType, push]);
-	useEffect(() => {
-		const { isSuccess, data, isError, error } = phoneAuthMutation;
-		if (isSuccess && data) {
-			setPhoneAuthView(true);
-			setPhoneAuthToken(data.phoneAuthToken);
-			setPhoneAuthComplete(false);
-			setFindUserFormAlarm({
-				name: "phoneAuth",
-				message: "인증 번호가 발송되었습니다. 제한시간 3분",
-				status: "SUCCESS",
-			});
-			setFindUserForm((prev) => ({
-				...prev,
-				phoneAuth: "",
-			}));
-		}
-		if (isError && error) {
-			setPhoneAuthView(false);
-			if (error.message === "PHONE_NOT_FOUND") {
-				setFindUserFormAlarm({
-					name: "phone",
-					message: "존재하지 않는 번호입니다.",
-					status: "FAIL",
-				});
-			}
-			if (error.message === "PWD_FIND_USER_NOT_FOUND") {
-				setFindUserFormAlarm({
-					name: "phone",
-					message: "해당 아이디와 휴대폰 번호가 일치하는 사용자를 찾을 수 없습니다.",
-					status: "FAIL",
-				});
-			}
-		}
-	}, [phoneAuthMutation, phoneAuthMutation.data, phoneAuthMutation.isError, phoneAuthMutation.error, phoneAuthMutation.isSuccess]);
 
 	return {
 		findType,

@@ -303,6 +303,7 @@ export function useSellerJoinForm() {
 	};
 	// 휴대폰 인증 보내기 버튼
 	const clickPhoneAuth = () => {
+		if (phoneAuthMutation.isPending) return;
 		if (!joinForm.mobileNumber) {
 			changeJoinAlarm("mobileNumber", "휴대폰 번호를 입력해주세요.", "FAIL");
 			joinFormInputRefs.current.mobileNumber?.focus();

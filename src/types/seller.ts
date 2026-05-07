@@ -43,6 +43,10 @@ export interface SellerPhoneAuthRequest {
 	mode: "REGISTRATION"; // 판매자 등록(회원가입) 또는 비밀번호 찾기
 	phoneAuthToken?: string; // 서버에서 생성한 인증 토큰
 }
+export interface SellerPhoneAuthUiResponse extends BaseResponse {
+	phoneAuthToken: string; // 서버에서 생성한 인증 토큰
+	testCode?: string; // 테스트용 인증번호 (실제 서비스에서는 제공하지 않음)
+}
 /* 판매자 전화번호 인증 확인 */
 export interface SellerPhoneAuthCheckRequest {
 	phoneAuthToken: string;

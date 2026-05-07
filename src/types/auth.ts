@@ -20,7 +20,7 @@ export interface GetUserResponse extends BaseResponse {
 	orderCount: number;
 }
 /* 휴대폰 인증 */
-export type PhoneAuthMode = "USER_JOIN" | "IDFIND" | "PWDFIND" | "CHANGE" | "SELLER_JOIN";
+export type PhoneAuthMode = "JOIN" | "IDFIND" | "PWDFIND" | "CHANGE";
 export interface PhoneAuthRequest {
 	phone: string;
 	mode: PhoneAuthMode;

@@ -150,6 +150,10 @@ export interface GetProductDetailResponse extends BaseResponse {
 		reviewCount: number;
 	};
 }
+/* 제품 상세보기 옵션 조회 */
+export interface GetProductOptionListResponse extends BaseResponse {
+	productOptionList: ProductOption[];
+}
 /* 제품 상세보기 쿠폰 조회 */
 export type AvailableCouponAtProductDetail = Coupon & {
 	issueMethod: string;

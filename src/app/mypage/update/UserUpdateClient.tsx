@@ -15,7 +15,7 @@ export default function UserInfoUpdate() {
 	const { user } = useAuth();
 	const {
 		userUpdateSubmit,
-		userIdData,
+		userId,
 		userUpdateForm,
 		setUserUpdateForm,
 		userUpdateAlarm,
@@ -32,7 +32,7 @@ export default function UserInfoUpdate() {
 		<FormPageShell title={"내 정보 수정"} formWidth={500} wrapMinHeight={100}>
 			<form onSubmit={userUpdateSubmit}>
 				<div>
-					<InfoMark title="아이디" infoVal={<span>{userIdData?.userId}</span>} />
+					<InfoMark title="아이디" infoVal={<span>{userId}</span>} />
 					<AddressSection
 						form={userUpdateForm}
 						alarm={userUpdateAlarm}

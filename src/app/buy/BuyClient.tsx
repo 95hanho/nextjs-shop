@@ -60,8 +60,7 @@ export default function BuyClient() {
 
 	// 3) [useQuery / useMutation] ---------------------------------
 
-	// 점유한 상품 조회
-	// invalidateQueries(["stockHold"])
+	// 점유중인 상품조회
 	const {
 		data: stockHoldData,
 		isError,
