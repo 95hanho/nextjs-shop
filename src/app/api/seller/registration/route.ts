@@ -1,6 +1,7 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { postUrlFormData } from "@/api/fetchFilter";
+import { verifyPhoneAuthCompleteToken } from "@/lib/auth/utils/token";
 import { getBackendUrl } from "@/lib/getBaseUrl";
 import { BaseResponse } from "@/types/common";
 import { SellerRegisterRequest } from "@/types/seller";
@@ -28,16 +29,26 @@ export const POST = async (nextRequest: NextRequest) => {
 		if (!sellerId) return NextResponse.json({ message: "아이디를 입력해주세요." }, { status: 400 });
 		if (!password) return NextResponse.json({ message: "비밀번호를 입력해주세요." }, { status: 400 });
 		if (!sellerName) return NextResponse.json({ message: "판매자 이름(한글)을 입력해주세요." }, { status: 400 });
-		if (!sellerNameEn) return NextResponse.json({ message: "판매자 이름(영어)을 입력해주세요." }, { status: 400 });
-		if (!extensionNumber) return NextResponse.json({ message: "내선번호를 입력해주세요." }, { status: 400 });
 		if (!mobileNumber) return NextResponse.json({ message: "대표번호를 입력해주세요." }, { status: 400 });
 		if (!email) return NextResponse.json({ message: "이메일을 입력해주세요." }, { status: 400 });
-		if (!businessRegistrationNumber) return NextResponse.json({ message: "사업자등록번호를 입력해주세요." }, { status: 400 });
-		if (!telecomSalesNumber) return NextResponse.json({ message: "통신 판매자 번호를 입력해주세요." }, { status: 400 });
-		if (!representativeName) return NextResponse.json({ message: "대표자 이름를 입력해주세요." }, { status: 400 });
-		if (!businessZipcode) return NextResponse.json({ message: "사업장 소재지 우편번호를 입력해주세요." }, { status: 400 });
-		if (!businessAddress) return NextResponse.json({ message: "사업장 소재지 주소를 입력해주세요." }, { status: 400 });
-		if (!businessAddressDetail) return NextResponse.json({ message: "사업장 소재지 상세주소를 입력해주세요." }, { status: 400 });
+
+		// 휴대폰인증완료토큰 검사
+		try {
+			const phoneAuthCompleteToken =
+				nextRequest.cookies.get("phoneAuthCompleteToken")?.value || nextRequest.headers.get("phoneAuthCompleteToken") || undefined;
+			if (!phoneAuthCompleteToken?.trim()) {
+				throw new Error("NOT_EXIST_TOKEN");
+			}
+			verifyPhoneAuthCompleteToken(phoneAuthCompleteToken);
+		} catch {
+			return NextResponse.json(
+				{
+					status: 401,
+					message: "PHONEAUTH_COMPLETE_UNAUTHORIZED",
+				},
+				{ status: 401 },
+			);
+		}
 
 		const payload: SellerRegisterRequest = {
 			sellerId,
@@ -54,6 +65,9 @@ export const POST = async (nextRequest: NextRequest) => {
 			businessAddress,
 			businessAddressDetail,
 		};
+		// console.log("TEST", payload);
+		// return NextResponse.json({ message: "테스트용 응답입니다." }, { status: 200 });
+
 		const data = await postUrlFormData<BaseResponse>(getBackendUrl(API_URL.SELLER_REGISTRATION), { ...payload });
 		// console.log("data", data);
 

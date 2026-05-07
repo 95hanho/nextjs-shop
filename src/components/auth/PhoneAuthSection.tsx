@@ -10,6 +10,7 @@ type PhoneAuthForm = {
 };
 
 interface PhoneAuthSectionProps<K extends string> {
+	nameSet?: string[];
 	form: PhoneAuthForm;
 	alarm: FormInputAlarm<K>;
 	changeForm: ChangeFunction;
@@ -20,9 +21,11 @@ interface PhoneAuthSectionProps<K extends string> {
 	searchBtnHide?: boolean;
 	phoneAuthView: boolean;
 	clickCheckPhoneAuth: () => void;
+	requiredMark?: boolean;
 }
 
 export const PhoneAuthSection = <K extends string>({
+	nameSet = ["phone", "phoneAuth"],
 	form,
 	alarm,
 	changeForm,
@@ -33,11 +36,13 @@ export const PhoneAuthSection = <K extends string>({
 	searchBtnHide = false,
 	phoneAuthView,
 	clickCheckPhoneAuth,
+	requiredMark,
 }: PhoneAuthSectionProps<K>) => {
 	return (
 		<>
 			<FormInput
-				name="phone"
+				requiredMark={requiredMark}
+				name={nameSet[0]}
 				label="휴대폰"
 				placeholder="휴대폰번호를 입력해주세요."
 				type="tel"
@@ -64,7 +69,7 @@ export const PhoneAuthSection = <K extends string>({
 			/>
 			{phoneAuthView && (
 				<FormInput
-					name="phoneAuth"
+					name={nameSet[1]}
 					label="인증번호"
 					placeholder="인증번호를 입력해주세요."
 					value={form.phoneAuth}

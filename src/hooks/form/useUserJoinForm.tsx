@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { isValidDateString } from "@/utils/ui";
 import { useMutation } from "@tanstack/react-query";
 import { postJson } from "@/api/fetchFilter";
@@ -11,6 +11,7 @@ import { ChangeEvent, FormEvent } from "@/types/event";
 import { FormInputAlarm, FormInputRefs } from "@/types/form";
 import { User } from "@/types/user";
 import { SellerPhoneAuthCheckRequest, SellerPhoneAuthRequest } from "@/types/seller";
+import { useGlobalDialogStore } from "@/store/globalDialog.store";
 
 export interface JoinForm extends LoginFormData, User {
 	phoneAuth: string;
@@ -33,19 +34,19 @@ const initJoinForm: JoinForm = {
 	phoneAuth: "",
 	email: "",
 };
-// const testJoinForm: JoinForm = {
-// 	userId: "test01",
-// 	password: "aaaaaa1!",
-// 	passwordCheck: "aaaaaa1!",
-// 	name: "한호성",
-// 	zonecode: "05718",
-// 	address: "서울 송파구 중대로 121",
-// 	addressDetail: "2층",
-// 	birthday: "1995/08/14",
-// 	phone: "01085546674",
-// 	phoneAuth: "",
-// 	email: "ehfqntuqntu@naver.com",
-// };
+const testJoinForm: JoinForm = {
+	userId: "test01",
+	password: "aaaaaa1!",
+	passwordCheck: "aaaaaa1!",
+	name: "한호성",
+	zonecode: "05718",
+	address: "서울 송파구 중대로 121",
+	addressDetail: "2층",
+	birthday: "1995/08/14",
+	phone: "01085546674",
+	phoneAuth: "",
+	email: "ehfqntuqntu@naver.com",
+};
 
 const joinFormRegex: { [key: string]: RegExp } = {
 	userId: /^[a-zA-Z][a-zA-Z0-9_]{5,14}$/,
@@ -64,6 +65,7 @@ const joinFormRegexFailMent: { [key: string]: string } = {
 export function useUserJoinForm() {
 	// 1) [store / custom hooks] -------------------------------------------
 	const router = useRouter();
+	const { openDialog } = useGlobalDialogStore();
 
 	// 2) [useState / useRef] ----------------------------------------------
 	// 회원가입 폼 데이터
@@ -158,8 +160,12 @@ export function useUserJoinForm() {
 		onMutate() {},
 		onSuccess(data) {
 			console.log(data);
-			alert("회원가입이 완료되었습니다.");
-			router.push("/user");
+			openDialog("ALERT", {
+				content: "회원가입이 완료되었습니다. 로그인 페이지로 이동합니다.",
+				handleAfterClose: () => {
+					router.push("/user");
+				},
+			});
 		},
 		onError(err) {
 			console.log(err);
@@ -338,6 +344,13 @@ export function useUserJoinForm() {
 		}
 		phoneAuthCompleteMutation.mutate();
 	};
+
+	// 6) [useEffect] ------------------------------------------------------
+	useEffect(() => {
+		if (joinForm.userId === "123159") {
+			setJoinForm(testJoinForm);
+		}
+	}, [joinForm.userId]);
 
 	return {
 		joinDisabled: userJoinMutation.isPending,

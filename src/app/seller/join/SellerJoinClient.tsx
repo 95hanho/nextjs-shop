@@ -5,8 +5,8 @@ import { FormActionButton } from "@/components/form/FormActionButton";
 import { FormInput } from "@/components/form/FormInput";
 import { FormPageShell } from "@/components/form/FormPageShell";
 import { PhoneAuthSection } from "@/components/auth/PhoneAuthSection";
-import { useUserJoinForm } from "@/hooks/form/useUserJoinForm";
 import Link from "next/link";
+import { useSellerJoinForm } from "@/hooks/form/useSellerJoinForm";
 
 export default function SellerJoinClient() {
 	// 1) [store / custom hooks] -------------------------------------------
@@ -21,24 +21,26 @@ export default function SellerJoinClient() {
 		clickPhoneAuth,
 		phoneAuthView,
 		clickCheckPhoneAuth,
-	} = useUserJoinForm();
+	} = useSellerJoinForm();
 
 	return (
 		<FormPageShell title={<Link href={"/"}>판매자 등록</Link>} formWidth={500}>
 			<form onSubmit={joinSubmit}>
 				<FormInput
-					name="userId"
+					requiredMark
+					name="sellerId"
 					label="아이디"
 					placeholder="아이디를 입력해주세요."
-					value={joinForm.userId}
+					value={joinForm.sellerId}
 					alarm={joinAlarm}
 					onChange={changeJoinForm}
 					onBlur={validateJoinForm}
 					ref={(el) => {
-						joinFormInputRefs.current.userId = el;
+						joinFormInputRefs.current.sellerId = el;
 					}}
 				/>
 				<FormInput
+					requiredMark
 					name="password"
 					label="비밀번호"
 					placeholder="비밀번호를 입력해주세요."
@@ -52,6 +54,7 @@ export default function SellerJoinClient() {
 					}}
 				/>
 				<FormInput
+					requiredMark
 					name="passwordCheck"
 					label="비밀번호 확인"
 					placeholder="비밀번호를 한 번 더 입력해주세요."
@@ -66,58 +69,54 @@ export default function SellerJoinClient() {
 				/>
 				<div className="h-7"></div>
 				<FormInput
-					name="name"
-					label="이름"
-					placeholder="이름을 입력해주세요."
-					value={joinForm.name}
+					requiredMark
+					name="sellerName"
+					label="판매자이름"
+					placeholder="판매자이름을 입력해주세요."
+					value={joinForm.sellerName}
 					alarm={joinAlarm}
 					onChange={changeJoinForm}
 					onBlur={validateJoinForm}
 					ref={(el) => {
-						joinFormInputRefs.current.name = el;
-					}}
-				/>
-				<AddressSection
-					form={joinForm}
-					alarm={joinAlarm}
-					handleKakaoAddress={(result) => {
-						setJoinForm((prev) => ({
-							...prev,
-							zonecode: result.zonecode,
-							address: result.address,
-						}));
-					}}
-					changeForm={changeJoinForm}
-					validateForm={validateJoinForm}
-					refs={{
-						address(el) {
-							joinFormInputRefs.current.address = el;
-						},
-						addressDetail(el) {
-							joinFormInputRefs.current.addressDetail = el;
-						},
+						joinFormInputRefs.current.sellerName = el;
 					}}
 				/>
 				<FormInput
-					name="birthday"
-					label="생년월일"
-					placeholder="YYYY/MM/DD"
-					value={joinForm.birthday}
+					name="sellerNameEn"
+					label="판매자이름(영문)"
+					placeholder="판매자이름을 입력해주세요."
+					value={joinForm.sellerNameEn}
 					alarm={joinAlarm}
 					onChange={changeJoinForm}
 					onBlur={validateJoinForm}
 					ref={(el) => {
-						joinFormInputRefs.current.birthday = el;
+						joinFormInputRefs.current.sellerNameEn = el;
 					}}
 				/>
-				<div className="h-7"></div>
+				<FormInput
+					name="extensionNumber"
+					label="내선번호"
+					placeholder="내선번호를 입력해주세요."
+					value={joinForm.extensionNumber}
+					alarm={joinAlarm}
+					onChange={changeJoinForm}
+					onBlur={validateJoinForm}
+					ref={(el) => {
+						joinFormInputRefs.current.extensionNumber = el;
+					}}
+				/>
 				<PhoneAuthSection
-					form={joinForm}
+					requiredMark
+					nameSet={["mobileNumber", "phoneAuth"]}
+					form={{
+						phone: joinForm.mobileNumber,
+						phoneAuth: joinForm.phoneAuth,
+					}}
 					alarm={joinAlarm}
 					changeForm={changeJoinForm}
 					validateForm={validateJoinForm}
 					setPhoneRef={(el) => {
-						joinFormInputRefs.current.phone = el;
+						joinFormInputRefs.current.mobileNumber = el;
 					}}
 					setPhoneAuthRef={(el) => {
 						joinFormInputRefs.current.phoneAuth = el;
@@ -126,8 +125,8 @@ export default function SellerJoinClient() {
 					phoneAuthView={phoneAuthView}
 					clickCheckPhoneAuth={clickCheckPhoneAuth}
 				/>
-
 				<FormInput
+					requiredMark
 					name="email"
 					label="이메일"
 					placeholder="이메일을 입력해주세요."
@@ -140,7 +139,73 @@ export default function SellerJoinClient() {
 						joinFormInputRefs.current.email = el;
 					}}
 				/>
-				<FormActionButton title="회원가입" />
+				<FormInput
+					name="businessRegistrationNumber"
+					label="사업자 등록번호"
+					placeholder="사업자 등록번호를 입력해주세요."
+					type="text"
+					value={joinForm.businessRegistrationNumber}
+					alarm={joinAlarm}
+					onChange={changeJoinForm}
+					onBlur={validateJoinForm}
+					ref={(el) => {
+						joinFormInputRefs.current.businessRegistrationNumber = el;
+					}}
+				/>
+				<FormInput
+					name="telecomSalesNumber"
+					label="통신 판매자 번호"
+					placeholder="통신 판매자 번호를 입력해주세요."
+					type="text"
+					value={joinForm.telecomSalesNumber}
+					alarm={joinAlarm}
+					onChange={changeJoinForm}
+					onBlur={validateJoinForm}
+					ref={(el) => {
+						joinFormInputRefs.current.telecomSalesNumber = el;
+					}}
+				/>
+				<FormInput
+					name="representativeName"
+					label="대표자 이름"
+					placeholder="대표자 이름을 입력해주세요."
+					type="text"
+					value={joinForm.representativeName}
+					alarm={joinAlarm}
+					onChange={changeJoinForm}
+					onBlur={validateJoinForm}
+					ref={(el) => {
+						joinFormInputRefs.current.representativeName = el;
+					}}
+				/>
+				<AddressSection
+					form={{
+						zonecode: joinForm.businessZipcode,
+						address: joinForm.businessAddress,
+						addressDetail: joinForm.businessAddressDetail,
+					}}
+					alarm={joinAlarm}
+					handleKakaoAddress={(result) => {
+						setJoinForm((prev) => ({
+							...prev,
+							businessZipcode: result.zonecode,
+							businessAddress: result.address,
+						}));
+					}}
+					changeForm={changeJoinForm}
+					validateForm={validateJoinForm}
+					refs={{
+						address(el) {
+							joinFormInputRefs.current.businessAddress = el;
+						},
+						addressDetail(el) {
+							joinFormInputRefs.current.businessAddressDetail = el;
+						},
+					}}
+				/>
+				<div className="h-7"></div>
+
+				<FormActionButton title="등록요청" />
 			</form>
 		</FormPageShell>
 	);

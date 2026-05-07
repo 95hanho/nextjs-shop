@@ -28,6 +28,7 @@ export default function UserJoinClient() {
 		<FormPageShell title={"회원가입"} formWidth={500}>
 			<form onSubmit={joinSubmit}>
 				<FormInput
+					requiredMark
 					name="userId"
 					label="아이디"
 					placeholder="아이디를 입력해주세요."
@@ -45,6 +46,7 @@ export default function UserJoinClient() {
 					</button>
 				)} */}
 				<FormInput
+					requiredMark
 					name="password"
 					label="비밀번호"
 					placeholder="비밀번호를 입력해주세요."
@@ -58,6 +60,7 @@ export default function UserJoinClient() {
 					}}
 				/>
 				<FormInput
+					requiredMark
 					name="passwordCheck"
 					label="비밀번호 확인"
 					placeholder="비밀번호를 한 번 더 입력해주세요."
@@ -72,6 +75,7 @@ export default function UserJoinClient() {
 				/>
 				<div className="h-7"></div>
 				<FormInput
+					requiredMark
 					name="name"
 					label="이름"
 					placeholder="이름을 입력해주세요."
@@ -84,6 +88,7 @@ export default function UserJoinClient() {
 					}}
 				/>
 				<AddressSection
+					requiredMark
 					form={joinForm}
 					alarm={joinAlarm}
 					handleKakaoAddress={(result) => {
@@ -105,6 +110,7 @@ export default function UserJoinClient() {
 					}}
 				/>
 				<FormInput
+					requiredMark
 					name="birthday"
 					label="생년월일"
 					placeholder="YYYY/MM/DD"
@@ -118,6 +124,7 @@ export default function UserJoinClient() {
 				/>
 				<div className="h-7"></div>
 				<PhoneAuthSection
+					requiredMark
 					form={joinForm}
 					alarm={joinAlarm}
 					changeForm={changeJoinForm}
@@ -133,6 +140,7 @@ export default function UserJoinClient() {
 					clickCheckPhoneAuth={clickCheckPhoneAuth}
 				/>
 				<FormInput
+					requiredMark
 					name="email"
 					label="이메일"
 					placeholder="이메일을 입력해주세요."
