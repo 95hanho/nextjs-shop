@@ -202,6 +202,7 @@ export default function SellerJoinClient() {
 							joinFormInputRefs.current.businessAddressDetail = el;
 						},
 					}}
+					addressDetailName="businessAddressDetail"
 				/>
 				<div className="h-7"></div>
 

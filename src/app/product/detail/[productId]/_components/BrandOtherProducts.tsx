@@ -40,7 +40,7 @@ export default function BrandOtherProducts({ sellerOtherProducts }: { sellerOthe
 						return (
 							<div key={`sellerOtherProduct-${item.productId}`} className={styles.sliderItem}>
 								{/* 전체 링크 */}
-								<Link href={`/product/detail/${item.productId}`}></Link>
+								<Link href={`/product/detail/${item.productId}`} className={styles.sliderLink}></Link>
 								{/* 이미지 */}
 								<div className={styles.imageBox}>
 									<SmartImage

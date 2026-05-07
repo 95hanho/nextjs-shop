@@ -20,6 +20,7 @@ interface AddressSectionProps<K extends string> {
 	addressDetailReadOnly?: boolean;
 	labelWidthPercent?: number;
 	inputWidthPercent?: number;
+	addressDetailName?: string;
 }
 
 export const AddressSection = <K extends string>({
@@ -33,6 +34,7 @@ export const AddressSection = <K extends string>({
 	addressDetailReadOnly = false,
 	labelWidthPercent,
 	inputWidthPercent,
+	addressDetailName = "addressDetail",
 }: AddressSectionProps<K>) => {
 	// 5) [handlers / useCallback] -----------------------------------------
 	// 주소API 팝업 띄우기
@@ -89,7 +91,7 @@ export const AddressSection = <K extends string>({
 				inputWidthPercent={inputWidthPercent}
 			/>
 			<FormInput
-				name="addressDetail"
+				name={addressDetailName}
 				label="상세주소"
 				placeholder="상세주소를 입력해주세요."
 				value={form.addressDetail}

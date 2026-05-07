@@ -7,6 +7,7 @@ import Link from "next/link";
 import { ImageSlide } from "@/components/product/ImageSlide";
 import { FileInfo } from "@/types/file";
 import { getUploadImageUrl } from "@/lib/image";
+import { useRouter } from "next/navigation";
 
 interface ProductItemProps {
 	product: {
@@ -25,6 +26,9 @@ interface ProductItemProps {
 	};
 }
 export const ProductItem = ({ product }: ProductItemProps) => {
+	// 1) [store / custom hooks] -------------------------------------------
+	const router = useRouter();
+
 	// 7) [UI helper values] -------------------------------------------------
 	// 상품 썸네일 영역 콘텐츠
 	const productThumbContent = (
@@ -100,15 +104,16 @@ export const ProductItem = ({ product }: ProductItemProps) => {
 	return (
 		<div className={styles.productItem}>
 			{!product.saleStop ? (
-				<Link
-					href={`/product/detail/${product.productId}`}
+				<div
 					className={styles.productThumb}
-					onClick={(e) => {
-						if (product.saleStop) e.preventDefault();
+					onClick={() => {
+						if (!product.saleStop) {
+							router.push(`/product/detail/${product.productId}`);
+						}
 					}}
 				>
 					{productThumbContent}
-				</Link>
+				</div>
 			) : (
 				<div className={styles.productThumb}>{productThumbContent}</div>
 			)}

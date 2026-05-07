@@ -85,14 +85,7 @@ export default function ThumbnailImageSection({ productImageList }: ThumbnailIma
 								setLensPosition({ x: 0, y: 0 });
 							}}
 						>
-							<SmartImage
-								src={getUploadImageUrl(image.filePath)}
-								width={40}
-								height={40}
-								alt={image.fileName}
-								copyright={image.copyright}
-								copyrightUrl={image.copyrightUrl}
-							/>
+							<SmartImage src={getUploadImageUrl(image.filePath)} width={40} height={40} alt={image.fileName} />
 						</div>
 					))}
 				</div>

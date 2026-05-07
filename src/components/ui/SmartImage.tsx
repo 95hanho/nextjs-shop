@@ -68,6 +68,9 @@ export const SmartImage = ({
 						title={copyright}
 						onMouseEnter={() => setIsCopyrightHovered(true)}
 						onMouseLeave={() => setIsCopyrightHovered(false)}
+						onClick={(e) => {
+							e.stopPropagation();
+						}}
 					>
 						{isCopyrightHovered ? <FaCopyright /> : <FaRegCopyright />}
 					</a>
@@ -99,6 +102,9 @@ export const SmartImage = ({
 					title={copyright}
 					onMouseEnter={() => setIsCopyrightHovered(true)}
 					onMouseLeave={() => setIsCopyrightHovered(false)}
+					onClick={(e) => {
+						e.stopPropagation();
+					}}
 				>
 					{isCopyrightHovered ? <FaCopyright /> : <FaRegCopyright />}
 				</a>

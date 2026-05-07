@@ -180,7 +180,12 @@ export default function SellerMainClient() {
 		},
 	};
 
-	if (sellerProductList.length === 0 || sellerCouponList.length === 0) return null;
+	if (sellerProductList.length === 0 || sellerCouponList.length === 0)
+		return (
+			<div>
+				<h1>데이터가 없습니다.</h1>
+			</div>
+		);
 	return (
 		<div className={styles.sellerMainContainer}>
 			<h1>Seller Page - {allowedSelectedCouponId ? "쿠폰상품제한모드" : "일반모드"}</h1>
