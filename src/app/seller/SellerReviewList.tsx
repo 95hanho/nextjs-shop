@@ -1,6 +1,6 @@
 import API_URL from "@/api/endpoints";
 import { getNormal } from "@/api/fetchFilter";
-import { useSellerAuth } from "@/hooks/useSellerAuth";
+import { useSellerAuth } from "@/hooks/context/useSellerAuth";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { GetSellerReviewResponse, SellerReview } from "@/types/seller";
 import { useQuery } from "@tanstack/react-query";
@@ -82,6 +82,8 @@ export default function SellerReviewList() {
 														width={50}
 														height={50}
 														objectFit="contain"
+														copyright={review.copyright}
+														copyrightUrl={review.copyrightUrl}
 													/>
 												</button>
 											)}

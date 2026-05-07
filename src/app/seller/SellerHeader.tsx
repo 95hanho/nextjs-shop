@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useRef, useEffect, useState } from "react";
 import { HeaderMenu } from "@/components/common/HeaderMenu";
 import { useGetSellerInfo } from "@/hooks/query/seller/useGetSellerInfo";
-import { useSellerAuth } from "@/hooks/useSellerAuth";
+import { useSellerAuth } from "@/hooks/context/useSellerAuth";
 import { usePathname } from "next/navigation";
 
 export default function SellerHeader() {

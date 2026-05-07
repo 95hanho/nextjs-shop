@@ -13,7 +13,7 @@ import {
 	UpdateCouponStatusRequest,
 } from "@/types/seller";
 import { useQuery } from "@tanstack/react-query";
-import { useSellerAuth } from "@/hooks/useSellerAuth";
+import { useSellerAuth } from "@/hooks/context/useSellerAuth";
 import { useState } from "react";
 import styles from "./SellerMain.module.scss";
 import { useMutation, useQueryClient } from "@tanstack/react-query";

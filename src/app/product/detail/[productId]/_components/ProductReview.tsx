@@ -209,7 +209,14 @@ const ProductReview = forwardRef(({ reviewCount, reviewRate }: ProductReviewProp
 										handleOpenProductReviewModal(image.reviewImageId);
 									}}
 								>
-									<SmartImage src={getUploadImageUrl(image.filePath)} alt={image.fileName} fill objectFit="contain" />
+									<SmartImage
+										src={getUploadImageUrl(image.filePath)}
+										alt={image.fileName}
+										fill
+										objectFit="contain"
+										copyright={image.copyright}
+										copyrightUrl={image.copyrightUrl}
+									/>
 									{index === 6 && <div className={styles.moreCount}>더보기+</div>}
 								</button>
 							))}

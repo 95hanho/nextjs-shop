@@ -1,7 +1,7 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { getNormal } from "@/api/fetchFilter";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/context/useAuth";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { GetUserResponse } from "@/types/auth";
 import { useQuery } from "@tanstack/react-query";

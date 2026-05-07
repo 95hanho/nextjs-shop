@@ -1,6 +1,6 @@
 import API_URL from "@/api/endpoints";
 import { getNormal } from "@/api/fetchFilter";
-import { useAdminAuth } from "@/hooks/useAdminAuth";
+import { useAdminAuth } from "@/hooks/context/useAdminAuth";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { GetAdminInfoResponse } from "@/types/admin";
 import { useQuery } from "@tanstack/react-query";

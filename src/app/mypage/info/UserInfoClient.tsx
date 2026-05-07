@@ -4,7 +4,7 @@ import API_URL from "@/api/endpoints";
 import { getNormal, postJson } from "@/api/fetchFilter";
 import { InfoMark } from "@/components/form/InfoMark";
 import { NormalButton } from "@/components/ui/NormalButton";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/context/useAuth";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { BaseResponse } from "@/types/common";
 import { useMutation, useQuery } from "@tanstack/react-query";

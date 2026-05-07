@@ -1,6 +1,6 @@
 import API_URL from "@/api/endpoints";
 import { getNormal, postJson, putJson } from "@/api/fetchFilter";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/context/useAuth";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { useGlobalDialogStore } from "@/store/globalDialog.store";
 import { PhoneAuthRequest, UserUpdateRequest } from "@/types/auth";

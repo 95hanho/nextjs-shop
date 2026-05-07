@@ -5,7 +5,7 @@ import styles from "./OrderDetail.module.scss";
 import { getNormal } from "@/api/fetchFilter";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import API_URL from "@/api/endpoints";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/context/useAuth";
 import { useEffect, useMemo, useState } from "react";
 import { MyOrderDetailItem, MyOrderDetailResponse } from "@/types/mypage";
 import { BsClipboard2Minus } from "react-icons/bs";
@@ -149,7 +149,12 @@ export default function OrderDetailClient({ orderId }: { orderId: string }) {
 														</div>
 														<div className={styles.orderItemContent}>
 															<div className={styles.productImage}>
-																<SmartImage fill src={getUploadImageUrl(item.filePath)} />
+																<SmartImage
+																	fill
+																	src={getUploadImageUrl(item.filePath)}
+																	copyright={item.copyright}
+																	copyrightUrl={item.copyrightUrl}
+																/>
 															</div>
 															<div className={styles.productInfo}>
 																<h4>{item.productName}</h4>

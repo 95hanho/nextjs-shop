@@ -28,7 +28,14 @@ export const ProductSliderItem = ({ product, checkedProductIdList }: { product: 
 				setShowInfo(false);
 			}}
 		>
-			<SmartImage src={getUploadImageUrl(product.filePath)} alt={product.fileName} width={200} height={200} />
+			<SmartImage
+				src={getUploadImageUrl(product.filePath)}
+				alt={product.fileName}
+				width={200}
+				height={200}
+				copyright={product.copyright}
+				copyrightUrl={product.copyrightUrl}
+			/>
 			<WishButton
 				initWishOn={checkedProductIdList?.includes(product.productId) || false}
 				productId={product.productId}

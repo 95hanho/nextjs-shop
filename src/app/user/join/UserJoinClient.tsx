@@ -5,7 +5,7 @@ import { FormActionButton } from "@/components/form/FormActionButton";
 import { FormInput } from "@/components/form/FormInput";
 import { FormPageShell } from "@/components/form/FormPageShell";
 import { PhoneAuthSection } from "@/components/auth/PhoneAuthSection";
-import { useUserJoinForm } from "@/hooks/query/auth/form/useUserJoinForm";
+import { useUserJoinForm } from "@/hooks/form/useUserJoinForm";
 
 /* 회원가입 */
 export default function UserJoinClient() {

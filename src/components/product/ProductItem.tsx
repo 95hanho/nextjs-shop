@@ -42,6 +42,8 @@ export const ProductItem = ({ product }: ProductItemProps) => {
 								fill
 								objectFit={"cover"}
 								className={styles.productImg}
+								copyright={item.copyright}
+								copyrightUrl={item.copyrightUrl}
 							/>
 						</div>
 					)}

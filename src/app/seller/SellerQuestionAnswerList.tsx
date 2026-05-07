@@ -1,6 +1,6 @@
 import API_URL from "@/api/endpoints";
 import { getNormal, postJson } from "@/api/fetchFilter";
-import { useSellerAuth } from "@/hooks/useSellerAuth";
+import { useSellerAuth } from "@/hooks/context/useSellerAuth";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { GetSellerQnaResponse, SellerQna, UpdateQnaAnswerRequest } from "@/types/seller";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";

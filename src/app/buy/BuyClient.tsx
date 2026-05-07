@@ -16,7 +16,7 @@ import {
 	ManageHoldCoupon,
 	StockHoldProduct,
 } from "@/types/buy";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/context/useAuth";
 import { BuyProvider } from "@/providers/buy/BuyProvider";
 import { calculateDiscount } from "@/lib/price";
 import { useRouter } from "next/navigation";

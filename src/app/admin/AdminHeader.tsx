@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useRef, useEffect, useState } from "react";
 import { HeaderMenu } from "@/components/common/HeaderMenu";
 import { useGetAdminInfo } from "@/hooks/query/admin/useGetAdminInfo";
-import { useAdminAuth } from "@/hooks/useAdminAuth";
+import { useAdminAuth } from "@/hooks/context/useAdminAuth";
 
 export default function AdminHeader() {
 	// 1) [store / custom hooks] -----------------------------------

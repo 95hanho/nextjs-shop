@@ -5,7 +5,7 @@ import { getNormal } from "@/api/fetchFilter";
 import CategoryProductListHeader from "@/app/product/category/[menuTopId]/[menuSubId]/CategoryProductListHeader";
 import CategoryProductListSection from "@/app/product/category/[menuTopId]/[menuSubId]/CategoryProductListSection";
 import { useWishCheck } from "@/hooks/query/product/useWishCheck";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/context/useAuth";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import {
 	GetProductListRequest,

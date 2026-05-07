@@ -3,7 +3,7 @@
 
 import API_URL from "@/api/endpoints";
 import { getNormal } from "@/api/fetchFilter";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/context/useAuth";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { GetWishListResponse } from "@/types/mypage";
 import { useQuery } from "@tanstack/react-query";

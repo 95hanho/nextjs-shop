@@ -7,8 +7,8 @@ import { FormInput } from "@/components/form/FormInput";
 import { FormPageShell } from "@/components/form/FormPageShell";
 import { InfoMark } from "@/components/form/InfoMark";
 import { PhoneAuthSection } from "@/components/auth/PhoneAuthSection";
-import { useUserUpdateForm } from "@/hooks/query/auth/form/useUserUpdateForm";
-import { useAuth } from "@/hooks/useAuth";
+import { useUserUpdateForm } from "@/hooks/form/useUserUpdateForm";
+import { useAuth } from "@/hooks/context/useAuth";
 
 export default function UserInfoUpdate() {
 	// 1) [store / custom hooks] -------------------------------------------

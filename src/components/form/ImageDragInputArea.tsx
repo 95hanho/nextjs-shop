@@ -355,7 +355,14 @@ export const ImageDragInputArea = <T,>({
 							let image;
 							if (item.type === "prev") {
 								image = (
-									<SmartImage src={getUploadImageUrl(item.filePath)} alt={`${item.fileName}-${index}`} fill objectFit="contain" />
+									<SmartImage
+										src={getUploadImageUrl(item.filePath)}
+										alt={`${item.fileName}-${index}`}
+										fill
+										objectFit="contain"
+										copyright={item.copyright}
+										copyrightUrl={item.copyrightUrl}
+									/>
 								);
 							} else {
 								image = <SmartImage src={item.previewUrl} alt={`${item.file.name}-${index}`} fill objectFit="contain" />;
@@ -407,7 +414,14 @@ export const ImageDragInputArea = <T,>({
 							let image;
 							if (item.type === "prev") {
 								image = (
-									<SmartImage src={getUploadImageUrl(item.filePath)} alt={`${item.fileName}-${index}`} fill objectFit="contain" />
+									<SmartImage
+										src={getUploadImageUrl(item.filePath)}
+										alt={`${item.fileName}-${index}`}
+										fill
+										objectFit="contain"
+										copyright={item.copyright}
+										copyrightUrl={item.copyrightUrl}
+									/>
 								);
 							} else {
 								image = <SmartImage src={item.previewUrl} alt={`${item.file.name}-${index}`} fill objectFit="contain" />;

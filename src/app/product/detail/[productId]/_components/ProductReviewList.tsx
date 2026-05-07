@@ -6,7 +6,7 @@ import moment from "moment";
 import { SmartImage } from "@/components/ui/SmartImage";
 import { getUploadImageUrl } from "@/lib/image";
 import clsx from "clsx";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/context/useAuth";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
 import { deleteNormal } from "@/api/fetchFilter";
@@ -95,6 +95,8 @@ export default function ProductReviewList({ productReviewData, turnPage, openRev
 												width={50}
 												height={50}
 												objectFit="contain"
+												copyright={review.reviewImages[0].copyright}
+												copyrightUrl={review.reviewImages[0].copyrightUrl}
 											/>
 										</button>
 									)}

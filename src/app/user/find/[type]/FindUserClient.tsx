@@ -5,7 +5,7 @@ import styles from "./FindUser.module.scss";
 import { FormInput } from "@/components/form/FormInput";
 import { FormPageShell } from "@/components/form/FormPageShell";
 import { PhoneAuthSection } from "@/components/auth/PhoneAuthSection";
-import { useFindUserForm } from "@/hooks/query/auth/form/useFindUserForm";
+import { useFindUserForm } from "@/hooks/form/useFindUserForm";
 import Link from "next/link";
 
 export default function FindUserClient() {

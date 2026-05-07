@@ -5,7 +5,7 @@ import { FormActionButton } from "@/components/form/FormActionButton";
 import { FormInput } from "@/components/form/FormInput";
 import { FormPageShell } from "@/components/form/FormPageShell";
 import { PhoneAuthSection } from "@/components/auth/PhoneAuthSection";
-import { useUserJoinForm } from "@/hooks/query/auth/form/useUserJoinForm";
+import { useUserJoinForm } from "@/hooks/form/useUserJoinForm";
 import Link from "next/link";
 
 export default function SellerJoinClient() {
@@ -24,7 +24,7 @@ export default function SellerJoinClient() {
 	} = useUserJoinForm();
 
 	return (
-		<FormPageShell title={<Link href={"/"}>NextJS-SHOP</Link>} formWidth={500}>
+		<FormPageShell title={<Link href={"/"}>판매자 등록</Link>} formWidth={500}>
 			<form onSubmit={joinSubmit}>
 				<FormInput
 					name="userId"

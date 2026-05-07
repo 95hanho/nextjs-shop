@@ -2,7 +2,7 @@ import API_URL from "@/api/endpoints";
 import { getNormal } from "@/api/fetchFilter";
 import { ShippingAddressList } from "@/components/address/ShippingAddressList";
 import { ModalFrame } from "@/components/modal/frame/ModalFrame";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/context/useAuth";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { GetUserAddressListResponse, UserAddressListItem } from "@/types/mypage";
 import { useQuery } from "@tanstack/react-query";

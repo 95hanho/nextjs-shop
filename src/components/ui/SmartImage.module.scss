@@ -1,0 +1,17 @@
+.copyright {
+	position: absolute;
+	top: 5px;
+	right: 5px;
+	z-index: 100;
+	color: #898989;
+	&::before {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		content: "";
+		top: 0;
+		left: 0;
+		background-color: rgba(116, 116, 116, 0.1);
+		border-radius: 10px;
+	}
+}

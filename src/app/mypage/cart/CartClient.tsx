@@ -4,7 +4,7 @@ import { AvailableCartCouponAtCart, AvailableSellerCouponAtCart, CartItem, GetCa
 import { useQuery } from "@tanstack/react-query";
 import API_URL from "@/api/endpoints";
 import { getApiUrl } from "@/lib/getBaseUrl";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/context/useAuth";
 import { getNormal } from "@/api/fetchFilter";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { LodingWrap } from "@/components/common/LodingWrap";

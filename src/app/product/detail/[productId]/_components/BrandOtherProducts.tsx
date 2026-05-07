@@ -9,7 +9,7 @@ import { useRef, useState } from "react";
 import { RiArrowLeftSLine, RiArrowRightSLine } from "react-icons/ri";
 import styles from "../ProductDetail.module.scss";
 import { ImageSlideHandle } from "@/components/product/ImageSlide.type";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/context/useAuth";
 import { WishButton } from "@/components/product/WishButton";
 import { getUploadImageUrl } from "@/lib/image";
 
@@ -43,7 +43,13 @@ export default function BrandOtherProducts({ sellerOtherProducts }: { sellerOthe
 								<Link href={`/product/detail/${item.productId}`}></Link>
 								{/* 이미지 */}
 								<div className={styles.imageBox}>
-									<SmartImage fill src={getUploadImageUrl(item.filePath)} alt={item.fileName} />
+									<SmartImage
+										fill
+										src={getUploadImageUrl(item.filePath)}
+										alt={item.fileName}
+										copyright={item.copyright}
+										copyrightUrl={item.copyrightUrl}
+									/>
 									{loginOn && (
 										<div className={styles.wishButton}>
 											<WishButton
