@@ -30,7 +30,6 @@ export default function OrderDetailClient({ orderId }: { orderId: string }) {
 	// 1) [store / custom hooks] -------------------------------------------
 	const router = useRouter();
 	const { loginOn } = useAuth();
-	const productCartAction = useProductCartAction();
 	const { openDialog } = useGlobalDialogStore();
 
 	// 2) [useState / useRef] ----------------------------------------------
@@ -39,6 +38,7 @@ export default function OrderDetailClient({ orderId }: { orderId: string }) {
 	const [addCartTriggerKey, setAddCartTriggerKey] = useState<number>(0); // 장바구니 담기 트리거 키
 
 	// 3) [useQuery / useMutation] -----------------------------------------
+	const productCartAction = useProductCartAction();
 	const { data: orderDetailData } = useQuery<MyOrderDetailResponse>({
 		queryKey: ["orderDetail", Number(orderId)],
 		queryFn: async () => getNormal(getApiUrl(API_URL.MY_ORDER_DETAIL), { orderId: Number(orderId) }),

@@ -5,7 +5,7 @@ import { useWishCheck } from "@/hooks/query/product/useWishCheck";
 import { MainProduct } from "@/types/main";
 
 export default function MainClient({ productList }: { productList: MainProduct[] }) {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 3) [useQuery / useMutation] -----------------------------------------
 	const { data: checkedProductIdList = [] } = useWishCheck(productList.map((p) => p.productId));
 
 	return (

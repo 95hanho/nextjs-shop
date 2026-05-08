@@ -1,10 +1,11 @@
 import API_URL from "@/api/endpoints";
-import { postJson, postMultipart, putJson } from "@/api/fetchFilter";
+import { postJson, postMultipart } from "@/api/fetchFilter";
 import { ProductSetForm } from "@/components/seller/product/ProductSetForm";
+import { useSellerProductUpdate } from "@/hooks/query/seller/useSellerProductUpdate";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { useGlobalDialogStore } from "@/store/globalDialog.store";
 import { BaseResponse } from "@/types/common";
-import { AddFile, AddSellerProductRequest, SetSellerProductImageRequest, UpdateFile, UpdateSellerProductRequest } from "@/types/seller";
+import { AddFile, AddSellerProductRequest, SetSellerProductImageRequest, UpdateFile } from "@/types/seller";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 
@@ -16,17 +17,11 @@ export function useSellerProductSubmit() {
 	const { openDialog } = useGlobalDialogStore();
 
 	// 3) [useQuery / useMutation] -----------------------------------------
+	const { mutateAsync: updateSellerProduct } = useSellerProductUpdate();
 	// 제품 추가
 	const { mutateAsync: addSellerProduct } = useMutation<BaseResponse & { productId: number }, Error, AddSellerProductRequest>({
 		mutationFn: (productForm: AddSellerProductRequest) =>
 			postJson(getApiUrl(API_URL.SELLER_PRODUCT), {
-				...productForm,
-			}),
-	});
-	// 제품 수정
-	const { mutateAsync: updateSellerProduct } = useMutation<BaseResponse, Error, UpdateSellerProductRequest>({
-		mutationFn: (productForm: UpdateSellerProductRequest) =>
-			putJson(getApiUrl(API_URL.SELLER_PRODUCT), {
 				...productForm,
 			}),
 	});

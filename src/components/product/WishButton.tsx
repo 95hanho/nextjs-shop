@@ -62,13 +62,11 @@ interface WishButtonProps {
 }
 
 export const WishButton = ({ initWishOn, productId, bottom = 1, right = 1, size = 16, zIndex = 10, clickHandler }: WishButtonProps) => {
-	// 1) [store / custom hooks] -------------------------------------------
-	const { mutateAsync, isPending } = useChangeProductWish();
-
 	// 2) [useState / useRef] ----------------------------------------------
 	const [wishOn, setWishOn] = useState(initWishOn);
 
 	// 3) [useQuery / useMutation] -----------------------------------------
+	const { mutateAsync, isPending } = useChangeProductWish();
 
 	// 5) [handlers / useCallback] -----------------------------------------
 	// 위시 선택변경

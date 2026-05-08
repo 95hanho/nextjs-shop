@@ -10,12 +10,14 @@ import { useAdminAuth } from "@/hooks/context/useAdminAuth";
 
 export default function AdminHeader() {
 	// 1) [store / custom hooks] -----------------------------------
-	const { data: admin } = useGetAdminInfo();
 	const { logout } = useAdminAuth();
 
 	// 2) [useState / useRef] --------------------------------------
 	const headerRef = useRef<HTMLElement | null>(null);
 	const [isOpen, set_isOpen] = useState<boolean>(false);
+
+	// 3) [useQuery / useMutation] -----------------------------------------
+	const { data: admin } = useGetAdminInfo();
 
 	// 5) [handlers / useCallback] ---------------------------------
 	const handleMenuMouseleave = () => {

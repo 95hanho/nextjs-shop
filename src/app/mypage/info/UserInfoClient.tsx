@@ -18,9 +18,9 @@ export default function UserInfoClient() {
 	// 1) [store / custom hooks] -------------------------------------------
 	const { user } = useAuth();
 	const { push } = useRouter();
-	const { data: userId } = useGetUserId();
 
 	// 3) [useQuery / useMutation] -----------------------------------------
+	const { data: userId } = useGetUserId();
 	// 비밀변경 토큰 생성
 	const passwordChangeMutation = useMutation({
 		mutationFn: () => postJson<BaseResponse>(getApiUrl(API_URL.AUTH_PASSWORD), {}),

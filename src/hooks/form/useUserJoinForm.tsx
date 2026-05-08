@@ -67,8 +67,6 @@ export function useUserJoinForm() {
 	// 1) [store / custom hooks] -------------------------------------------
 	const router = useRouter();
 	const { openDialog } = useGlobalDialogStore();
-	const phoneAuthMutation = usePhoneAuth("JOIN");
-	const phoneAuthCompleteMutation = usePhoneAuthCheck();
 
 	// 2) [useState / useRef] ----------------------------------------------
 	// 회원가입 폼 데이터
@@ -87,6 +85,8 @@ export function useUserJoinForm() {
 	const [phoneAuthComplete, setPhoneAuthComplete] = useState<boolean>(false);
 
 	// 3) [useQuery / useMutation] -----------------------------------------
+	const phoneAuthMutation = usePhoneAuth("JOIN");
+	const phoneAuthCompleteMutation = usePhoneAuthCheck();
 	// 아이디중복확인 mutate
 	const idDuplcheckMutation = useMutation({
 		mutationFn: (userId: string) => postJson<BaseResponse>(getApiUrl(API_URL.AUTH_ID), { userId }),

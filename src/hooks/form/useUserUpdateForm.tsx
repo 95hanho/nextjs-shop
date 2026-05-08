@@ -52,9 +52,6 @@ export function useUserUpdateForm() {
 	const { openDialog } = useGlobalDialogStore();
 	const { user, setUser } = useAuth();
 	const queryClient = useQueryClient();
-	const { data: userId } = useGetUserId();
-	const phoneAuthMutation = usePhoneAuth("CHANGE");
-	const phoneAuthCompleteMutation = usePhoneAuthCheck();
 
 	// 2) [useState / useRef] ----------------------------------------------
 	// 유저업데이트 폼
@@ -71,6 +68,9 @@ export function useUserUpdateForm() {
 	const [phoneAuthComplete, setPhoneAuthComplete] = useState<boolean>(true);
 
 	// 3) [useQuery / useMutation] -----------------------------------------
+	const { data: userId } = useGetUserId();
+	const phoneAuthMutation = usePhoneAuth("CHANGE");
+	const phoneAuthCompleteMutation = usePhoneAuthCheck();
 	// 회원정보변경 API
 	const userUpdateMutation = useMutation<BaseResponse, Error>({
 		mutationFn: () =>

@@ -18,7 +18,6 @@ import { useGetMenu } from "@/hooks/query/main/useGetMenu";
 export default function WishClient() {
 	// 1) [store / custom hooks] -------------------------------------------
 	const { loginOn } = useAuth();
-	const { data: menuList = [] } = useGetMenu();
 
 	// 2) [useState / useRef] ----------------------------------------------
 	// 세일 중 on/off
@@ -29,6 +28,7 @@ export default function WishClient() {
 	const [filterSubMenuId, setFilterSubMenuId] = useState<number | null>(null);
 
 	// 3) [useQuery / useMutation] -----------------------------------------
+	const { data: menuList = [] } = useGetMenu();
 	// React Query 쓰면 위시리스트 수정(추가/삭제) 후 invalidateQueries(["wishlist"])로 새로고침 처리 가능.
 	// 위시리스트 조회
 	const { data: wishListData, isLoading } = useQuery<GetWishListResponse>({

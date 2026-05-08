@@ -30,8 +30,6 @@ export function useFindUserForm() {
 	const { push } = useRouter();
 	const params = useParams<{ type?: FindType }>(); // `type`이 있을 수도 있고 없을 수도 있음
 	const findType = params.type;
-	const phoneAuthMutation = usePhoneAuth(findType === "id" ? "IDFIND" : "PWDFIND");
-	const phoneAuthCompleteMutation = usePhoneAuthCheck();
 
 	// 2) [useState / useRef] ----------------------------------------------
 	// 비번변경 폼 데이터
@@ -47,6 +45,10 @@ export function useFindUserForm() {
 	const [phoneAuthComplete, setPhoneAuthComplete] = useState<boolean>(false);
 	// 찾은 아이디
 	const [findId, setFindId] = useState<string>("userId");
+
+	// 3) [useQuery / useMutation] -----------------------------------------
+	const phoneAuthMutation = usePhoneAuth(findType === "id" ? "IDFIND" : "PWDFIND");
+	const phoneAuthCompleteMutation = usePhoneAuthCheck();
 
 	// 5) [handlers / useCallback] -----------------------------------------
 	// 비번변경 폼 변경

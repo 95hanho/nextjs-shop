@@ -90,10 +90,6 @@ interface ProductSetFormProps {
 }
 
 export const ProductSetForm = ({ productId, prevProductSetData }: ProductSetFormProps) => {
-	// 1) [store / custom hooks] -------------------------------------------
-	const { sellerProductSubmit } = useSellerProductSubmit();
-	const { data: menuList } = useGetMenu();
-
 	// 2) [useState / useRef] ----------------------------------------------
 	// 제품수정 폼
 	const [productSetForm, setProductSetForm] = useState<ProductSetForm>(initProductSetForm);
@@ -103,6 +99,8 @@ export const ProductSetForm = ({ productId, prevProductSetData }: ProductSetForm
 	const productImageSetRef = useRef<ProductImageSetHandle | null>(null);
 
 	// 3) [useQuery / useMutation] -----------------------------------------
+	const { sellerProductSubmit } = useSellerProductSubmit();
+	const { data: menuList } = useGetMenu();
 	// 제품명 중복확인
 	const { mutateAsync: checkProductNameDuplicate } = useMutation({
 		mutationKey: ["productNameDuplicate"],

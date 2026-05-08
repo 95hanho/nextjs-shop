@@ -17,14 +17,16 @@ export default function Header() {
 	// 1) [store / custom hooks] -------------------------------------------
 	const pathname = usePathname();
 	const searchParams = useSearchParams();
-	const { data: initMenuList = [] } = useGetMenu();
-	const { data: user } = useGetUserInfo();
 	const { logout, cartCount, orderCount } = useAuth();
 	const { refresh } = useRouter();
 
 	// 2) [useState / useRef] ----------------------------------------------
 	const headerRef = useRef<HTMLInputElement | null>(null);
 	const [isOpen, set_isOpen] = useState<boolean>(false);
+
+	// 3) [useQuery / useMutation] -----------------------------------------
+	const { data: user } = useGetUserInfo();
+	const { data: initMenuList = [] } = useGetMenu();
 
 	// 4) [derived values / useMemo] ---------------------------------------
 	// 로그인 href

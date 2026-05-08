@@ -39,11 +39,13 @@ export default function CartSummaryAside({
 	// 1) [store / custom hooks] -------------------------------------------
 	const { openDialog } = useGlobalDialogStore();
 	const { push } = useRouter();
-	const checkAndHoldMutation = useProductCheckAndHold();
 
 	// 2) [useState / useRef] ----------------------------------------------
 	// 유의사항 on/off
 	const [noticeOpen, setNoticeOpen] = useState(false);
+
+	// 3) [useQuery / useMutation] -----------------------------------------
+	const checkAndHoldMutation = useProductCheckAndHold();
 
 	// 5) [handlers / useCallback] -----------------------------------------
 	// 상품 구매하기 버튼 - 상품 확인 및 점유 -> 성공 시 결제 페이지로 이동, 실패 시 에러 메시지 노출

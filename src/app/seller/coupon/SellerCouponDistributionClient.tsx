@@ -4,13 +4,7 @@ import API_URL from "@/api/endpoints";
 import { getNormal, postJson } from "@/api/fetchFilter";
 import { useSellerAuth } from "@/hooks/context/useSellerAuth";
 import { getApiUrl } from "@/lib/getBaseUrl";
-import {
-	GetSellerCouponListResponse,
-	GetSellerInterestingUserResponse,
-	IssueCouponToUsersRequest,
-	IssueCouponType,
-	SellerCoupon,
-} from "@/types/seller";
+import { GetSellerInterestingUserResponse, IssueCouponToUsersRequest, IssueCouponType } from "@/types/seller";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import styles from "./SellerCouponDistribution.module.scss";
@@ -19,6 +13,7 @@ import clsx from "clsx";
 import moment from "moment";
 import { money } from "@/lib/format";
 import { useGlobalDialogStore } from "@/store/globalDialog.store";
+import { useGetSellerCouponList } from "@/hooks/query/seller/useGetSellerCouponList";
 
 export default function SellerCouponDistributionClient() {
 	// 1) [store / custom hooks] -------------------------------------------
@@ -31,6 +26,8 @@ export default function SellerCouponDistributionClient() {
 	const [selectedCouponId, setSelectedCouponId] = useState<number | null>(null);
 
 	// 3) [useQuery / useMutation] -----------------------------------------
+	// 판매자 쿠폰 리스트 조회
+	const { data: sellerCouponList = [] } = useGetSellerCouponList();
 	// 판매자와 관련된 회원 조회
 	const {
 		data: summary = null,
@@ -54,19 +51,6 @@ export default function SellerCouponDistributionClient() {
 		enabled: loginOn && selectedCouponId !== null,
 		refetchOnWindowFocus: false,
 		select: (data) => data.summary,
-	});
-	// 판매자 쿠폰 리스트 조회
-	const {
-		data: sellerCouponList = [],
-		// isFetching,
-	} = useQuery<GetSellerCouponListResponse, Error, SellerCoupon[]>({
-		queryKey: ["sellerCouponList"],
-		queryFn: () => getNormal(getApiUrl(API_URL.SELLER_COUPON)),
-		select: (data) => {
-			return data.couponList;
-		},
-		enabled: loginOn,
-		refetchOnWindowFocus: false,
 	});
 	// 쿠폰을 유저에게 발행하기
 	const { mutateAsync: issueCouponToUsers } = useMutation({

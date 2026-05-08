@@ -55,15 +55,11 @@ export default function ProductVisualInfo({
 	// 1) [store / custom hooks] -------------------------------------------
 	const { openDialog } = useGlobalDialogStore();
 	const { loginOn, user, isAuthLoading } = useAuth();
-	const productCartAction = useProductCartAction();
-	const productCheckAndHoldMutation = useProductCheckAndHold();
 	const queryClient = useQueryClient();
 	const params = useParams<{
 		productId: string;
 	}>();
 	const productId = Number(params.productId);
-	const changeProductWishMutation = useChangeProductWish();
-	const { data: productOptionList = initProductOptionList } = useGetProductOptions(productId, initProductOptionList);
 
 	// 2) [useState / useRef] ----------------------------------------------
 	// 나의 가격 상세 보기 토글
@@ -88,6 +84,10 @@ export default function ProductVisualInfo({
 	const [isWish, setIsWish] = useState(wished);
 
 	// 3) [useQuery / useMutation] -----------------------------------------
+	const productCartAction = useProductCartAction();
+	const productCheckAndHoldMutation = useProductCheckAndHold();
+	const changeProductWishMutation = useChangeProductWish();
+	const { data: productOptionList = initProductOptionList } = useGetProductOptions(productId, initProductOptionList);
 	// 이용가능쿠폰 조회
 	const { data: availableCouponResponse } = useQuery<GetProductDetailCouponResponse, Error, GetProductDetailCouponWithDiscountData>({
 		queryKey: ["productCouponList", productId],

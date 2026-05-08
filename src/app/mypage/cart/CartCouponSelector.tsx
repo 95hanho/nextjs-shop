@@ -1,15 +1,11 @@
-import { useMutation } from "@tanstack/react-query";
 import styles from "./Cart.module.scss";
 import clsx from "clsx";
-import { postJson } from "@/api/fetchFilter";
-import { BaseResponse } from "@/types/common";
-import { getApiUrl } from "@/lib/getBaseUrl";
-import API_URL from "@/api/endpoints";
 import { calculateDiscount } from "@/lib/price";
 import { AppliedCartCoupon } from "@/app/mypage/cart/CartClient";
 import { discountPercent, money } from "@/lib/format";
 import { TooltipIcon } from "@/components/ui/TooltipIcon";
 import { IoMdDownload } from "react-icons/io";
+import { useCouponDownload } from "@/hooks/query/mypage/useCouponDownload";
 
 type CommonProps = {
 	finalXQuantity: number;
@@ -30,22 +26,8 @@ type CartCouponSelectorProps =
 export default function CartCouponSelector(props: CartCouponSelectorProps) {
 	const { finalXQuantity, type } = props;
 
-	// 2) [useState / useRef] --------------------------------------
-	// 3) [useQuery / useMutation] ---------------------------------
-	// 쿠폰 다운로드
-	const couponDownload = useMutation({
-		mutationFn: (couponId: number) => postJson<BaseResponse & { userCouponId: number }>(getApiUrl(API_URL.PRODUCT_COUPON_DOWNLOAD), { couponId }),
-		onSuccess(data) {
-			console.log("couponDownload data", data);
-			if (type === "COUPON") {
-				if (props.handleAfterCouponDownload) props.handleAfterCouponDownload();
-			}
-			return data;
-		},
-		onError(err) {
-			console.log("couponDownload err", err);
-		},
-	});
+	// 3) [useQuery / useMutation] -----------------------------------------
+	const { mutate: couponDownload } = useCouponDownload();
 
 	if (type === "BASE") {
 		const { originXQuantity } = props;
@@ -107,7 +89,14 @@ export default function CartCouponSelector(props: CartCouponSelectorProps) {
 								<button
 									className={clsx(styles.couponDownloadBtn)}
 									onClick={() => {
-										couponDownload.mutate(coupon.couponId);
+										couponDownload(coupon.couponId, {
+											onSuccess(data) {
+												console.log("couponDownload data", data);
+												if (type === "COUPON") {
+													if (props.handleAfterCouponDownload) props.handleAfterCouponDownload();
+												}
+											},
+										});
 									}}
 								>
 									받기
