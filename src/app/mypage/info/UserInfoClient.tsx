@@ -1,34 +1,31 @@
 "use client";
 
 import API_URL from "@/api/endpoints";
-import { getNormal, postJson } from "@/api/fetchFilter";
+import { postJson } from "@/api/fetchFilter";
 import { InfoMark } from "@/components/form/InfoMark";
 import { NormalButton } from "@/components/ui/NormalButton";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/context/useAuth";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { BaseResponse } from "@/types/common";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import moment from "moment";
 import { FormPageShell } from "@/components/form/FormPageShell";
 import { FormActionButton } from "@/components/form/FormActionButton";
+import { useGetUserId } from "@/hooks/query/user/useGetUserId";
 
 export default function UserInfoClient() {
 	// 1) [store / custom hooks] -------------------------------------------
-	const { user, loginOn } = useAuth();
+	const { user } = useAuth();
 	const { push } = useRouter();
+	const { data: userId } = useGetUserId();
 
 	// 3) [useQuery / useMutation] -----------------------------------------
-	//
-	const { data: userIdResponse } = useQuery<BaseResponse & { userId: string }>({
-		queryKey: ["userInfoUserId"],
-		queryFn: () => getNormal(getApiUrl(API_URL.AUTH_ID)),
-		enabled: loginOn,
-	});
-	// 비밀변경 토큰 생성 후 비밀변경 페이지로
+	// 비밀변경 토큰 생성
 	const passwordChangeMutation = useMutation({
 		mutationFn: () => postJson<BaseResponse>(getApiUrl(API_URL.AUTH_PASSWORD), {}),
 		onSuccess() {
+			// 비밀변경 페이지로
 			push("/user/password");
 		},
 		onError(err) {
@@ -39,7 +36,7 @@ export default function UserInfoClient() {
 	if (!user.name) return null;
 	return (
 		<FormPageShell title={"내 정보"} wrapMinHeight={100}>
-			<InfoMark title="아이디" infoVal={<span>{userIdResponse?.userId}</span>} />
+			<InfoMark title="아이디" infoVal={<span>{userId}</span>} />
 			<InfoMark
 				title="비밀번호"
 				infoVal={

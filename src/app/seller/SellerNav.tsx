@@ -4,7 +4,7 @@ import Link from "next/link";
 import styles from "./SellerMain.module.scss";
 import clsx from "clsx";
 import { usePathname } from "next/navigation";
-import { useSellerAuth } from "@/hooks/useSellerAuth";
+import { useSellerAuth } from "@/hooks/context/useSellerAuth";
 
 export default function SellerNav() {
 	// 1) [store / custom hooks] -------------------------------------------

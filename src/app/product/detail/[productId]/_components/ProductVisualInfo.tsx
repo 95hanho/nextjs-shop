@@ -11,12 +11,11 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getNormal } from "@/api/fetchFilter";
 import API_URL from "@/api/endpoints";
 import { getApiUrl } from "@/lib/getBaseUrl";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/context/useAuth";
 import moment from "moment";
 import MyPriceCheckboxTooltip from "@/app/product/detail/[productId]/_components/MyPriceCheckboxTooltip";
 import { calculateDiscount, calculateMileage } from "@/lib/price";
 import { ProductCounter } from "@/components/ui/ProductCounter";
-import { GetCartOtherOptionListResponse } from "@/types/mypage";
 import { useProductCartAction } from "@/hooks/query/mypage/useProductCartAction";
 import { AddCartPopup } from "@/components/mypage/AddCartPopup";
 import { useProductCheckAndHold } from "@/hooks/query/buy/useProductCheckAndHold";
@@ -26,6 +25,7 @@ import { useGlobalDialogStore } from "@/store/globalDialog.store";
 import { FaHeart } from "react-icons/fa";
 import { FiHeart } from "react-icons/fi";
 import { useChangeProductWish } from "@/hooks/query/product/useChangeProductWish";
+import { useGetProductOptions } from "@/hooks/query/product/useGetProductOptions";
 
 export type ProductCouponWithDiscount = AvailableCouponAtProductDetail & {
 	discountAmount: number;
@@ -63,6 +63,7 @@ export default function ProductVisualInfo({
 	}>();
 	const productId = Number(params.productId);
 	const changeProductWishMutation = useChangeProductWish();
+	const { data: productOptionList = initProductOptionList } = useGetProductOptions(productId, initProductOptionList);
 
 	// 2) [useState / useRef] ----------------------------------------------
 	// 나의 가격 상세 보기 토글
@@ -87,16 +88,6 @@ export default function ProductVisualInfo({
 	const [isWish, setIsWish] = useState(wished);
 
 	// 3) [useQuery / useMutation] -----------------------------------------
-	// 제품 옵션 리스트 (장바구니 담기 후 재고 수량 반영)
-	const { data: productOptionList = initProductOptionList } = useQuery<GetCartOtherOptionListResponse, Error, ProductOption[]>({
-		queryKey: ["productOptions", productId],
-		queryFn: () => getNormal(getApiUrl(API_URL.MY_CART_PRODUCT_OPTION), { productId }),
-		initialData: { cartOptionProductOptionList: initProductOptionList, message: "SUCCESS" },
-		staleTime: 30_000,
-		select: (data) => {
-			return data.cartOptionProductOptionList;
-		},
-	});
 	// 이용가능쿠폰 조회
 	const { data: availableCouponResponse } = useQuery<GetProductDetailCouponResponse, Error, GetProductDetailCouponWithDiscountData>({
 		queryKey: ["productCouponList", productId],

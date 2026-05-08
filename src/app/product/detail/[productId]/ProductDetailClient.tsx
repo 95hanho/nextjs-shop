@@ -16,7 +16,7 @@ import { getNormal, postJson } from "@/api/fetchFilter";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import API_URL from "@/api/endpoints";
 import { useWishCheck } from "@/hooks/query/product/useWishCheck";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/context/useAuth";
 interface ProductDetailClientProps {
 	initProductDetailResponse: GetProductDetailResponse;
 }

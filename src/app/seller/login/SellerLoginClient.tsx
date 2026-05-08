@@ -9,7 +9,7 @@ export default function SellerLoginClient() {
 		<FormPageShell title="판매자 로그인">
 			<SellerLoginForm />
 			<div className="flex justify-center gap-5 p-0 text-xl">
-				<Link className="hover:underline" href={"/user/join"}>
+				<Link className="hover:underline" href={"/seller/join"}>
 					판매자 등록
 				</Link>
 			</div>

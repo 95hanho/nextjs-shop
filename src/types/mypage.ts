@@ -1,6 +1,6 @@
 import { BaseResponse } from "./common";
 import { FileInfo } from "./file";
-import { ProductOption, ProductSize } from "./product";
+import { ProductSize } from "./product";
 // 쿠폰
 export type Coupon = {
 	couponId: number;
@@ -272,10 +272,6 @@ export interface UpdateCartRequest {
 export interface UpdateCartSelectedRequest {
 	cartIdList: number[];
 	selected: boolean;
-}
-/* 장바구니 제품 다른 option조회 */
-export interface GetCartOtherOptionListResponse extends BaseResponse {
-	cartOptionProductOptionList: ProductOption[];
 }
 /* 위시리스트 조회 */
 export type WishlistItem = {

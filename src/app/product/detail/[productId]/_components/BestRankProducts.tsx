@@ -11,7 +11,7 @@ import styles from "../ProductDetail.module.scss";
 import { ImageSlideHandle } from "@/components/product/ImageSlide.type";
 import { useParams } from "next/navigation";
 import { WishButton } from "@/components/product/WishButton";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/context/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import { getNormal } from "@/api/fetchFilter";
 import { getApiUrl } from "@/lib/getBaseUrl";
@@ -60,7 +60,13 @@ export default function BestRankProducts() {
 							{/* 전체 링크 */}
 							<Link href={`/product/detail/${item.productId}`}></Link>
 							<div className={styles.imageBox}>
-								<SmartImage fill src={getUploadImageUrl(item.filePath)} alt={item.fileName} />
+								<SmartImage
+									fill
+									src={getUploadImageUrl(item.filePath)}
+									alt={item.fileName}
+									copyright={item.copyright}
+									copyrightUrl={item.copyrightUrl}
+								/>
 								<mark>{index + 1}</mark>
 								{loginOn && (
 									<div className={styles.wishButton}>

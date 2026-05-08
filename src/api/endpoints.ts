@@ -76,12 +76,8 @@ const API_URL = {
 	MY_REVIEW_IMAGE: "/mypage/review/image",
 	/** 장바구니 조회, 장바구니 제품 수량 변경, 장바구니 선택여부 변경, 장바구니 제품 삭제 */
 	MY_CART: "/mypage/cart",
-	/** 장바구니 제품 다른 option조회 */
-	MY_CART_PRODUCT_OPTION: "/mypage/cart/option",
 	/** 위시리스트 조회 */
 	MY_WISH: "/mypage/wish",
-	/** 위시리스트 삭제 */
-	MY_WISH_DELETE: "/mypage/wish/:wishId",
 	/** 유저배송지 조회, 유저배송지 추가/수정 */
 	MY_ADDRESS: "/mypage/address",
 	/** 유저배송지 삭제 */
@@ -100,7 +96,9 @@ const API_URL = {
 	PRODUCT_CART: "/product/cart",
 	/** 제품상세보기 조회 */
 	PRODUCT_DETAIL: "/product/detail/:productId",
-	/** 제품 상세보기 제품 뷰 테이블 삽입 */
+	/** 제품상세보기 옵션 조회 */
+	PRODUCT_DETAIL_OPTION: "/product/detail/:productId/option",
+	/** 제품 상세보기 제품 뷰(조회) 테이블 삽입 */
 	PRODUCT_DETAIL_VIEW: "/product/detail/:productId/view",
 	/** 제품 사용가능 쿠폰 조회 */
 	PRODUCT_DETAIL_COUPON: "/product/detail/:productId/coupon",

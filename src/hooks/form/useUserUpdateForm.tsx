@@ -1,13 +1,16 @@
 import API_URL from "@/api/endpoints";
-import { getNormal, postJson, putJson } from "@/api/fetchFilter";
-import { useAuth } from "@/hooks/useAuth";
+import { putJson } from "@/api/fetchFilter";
+import { useAuth } from "@/hooks/context/useAuth";
+import { usePhoneAuth } from "@/hooks/query/auth/usePhoneAuth";
+import { usePhoneAuthCheck } from "@/hooks/query/auth/usePhoneAuthCheck";
+import { useGetUserId } from "@/hooks/query/user/useGetUserId";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { useGlobalDialogStore } from "@/store/globalDialog.store";
-import { PhoneAuthRequest, UserUpdateRequest } from "@/types/auth";
+import { UserUpdateRequest } from "@/types/auth";
 import { BaseResponse } from "@/types/common";
 import { ChangeEvent, FormEvent } from "@/types/event";
 import { FormInputAlarm, FormInputRefs } from "@/types/form";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Error from "next/error";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -45,10 +48,13 @@ const userUpdateFormRegexFailMent: { [key: string]: string } = {
 
 export function useUserUpdateForm() {
 	// 1) [store / custom hooks] -------------------------------------------
-	const { replace } = useRouter();
+	const router = useRouter();
 	const { openDialog } = useGlobalDialogStore();
-	const { user, setUser, loginOn } = useAuth();
+	const { user, setUser } = useAuth();
 	const queryClient = useQueryClient();
+	const { data: userId } = useGetUserId();
+	const phoneAuthMutation = usePhoneAuth("CHANGE");
+	const phoneAuthCompleteMutation = usePhoneAuthCheck();
 
 	// 2) [useState / useRef] ----------------------------------------------
 	// 유저업데이트 폼
@@ -65,78 +71,6 @@ export function useUserUpdateForm() {
 	const [phoneAuthComplete, setPhoneAuthComplete] = useState<boolean>(true);
 
 	// 3) [useQuery / useMutation] -----------------------------------------
-	// 회원아이디 조회
-	const { data: userIdData } = useQuery<BaseResponse & { userId: string }>({
-		queryKey: ["wishList"],
-		queryFn: () => getNormal(getApiUrl(API_URL.AUTH_ID)),
-		enabled: loginOn,
-		refetchOnWindowFocus: false,
-		select: (data) => {
-			return data;
-		},
-	});
-	// 휴대폰 인증
-	const phoneAuthMutation = useMutation({
-		mutationFn: () =>
-			postJson<BaseResponse & { phoneAuthToken: string }, PhoneAuthRequest>(
-				getApiUrl(API_URL.AUTH_PHONE_AUTH),
-				{ phone: userUpdateForm.phone, mode: "CHANGE" },
-				{
-					["x-auth-mode"]: "required",
-				},
-			),
-		onSuccess(data) {
-			setPhoneAuthView(true);
-			setPhoneAuthToken(data.phoneAuthToken);
-			setPhoneAuthComplete(false);
-			setUserUpdateAlarm({
-				name: "phoneAuth",
-				message: "인증 번호가 발송되었습니다. 제한시간 3분",
-			});
-			setUserUpdateForm((prev) => ({
-				...prev,
-				phoneAuth: "",
-			}));
-		},
-		onError(err) {
-			console.log(err);
-		},
-	});
-	// 휴대폰 인증 확인
-	const phoneAuthCompleteMutation = useMutation({
-		mutationFn: () =>
-			postJson<BaseResponse>(getApiUrl(API_URL.AUTH_PHONE_AUTH_CHECK), {
-				phone: userUpdateForm.phone,
-				phoneAuthToken,
-				authNumber: userUpdateForm.phoneAuth,
-			}),
-		onSuccess() {
-			setPhoneAuthComplete(true);
-			setPhoneAuthView(false);
-			setUserUpdateAlarm({
-				name: "phone",
-				message: "휴대폰 인증이 완료되었습니다.",
-			});
-		},
-		onError(err) {
-			console.log(err);
-			if (["VERIFICATION_EXPIRED", "PHONEAUTH_TOKEN_UNAUTHORIZED"].includes(err.message)) {
-				setUserUpdateAlarm({
-					name: "phone",
-					message: "인증시간이 만료되었습니다.",
-					status: "FAIL",
-				});
-				setPhoneAuthView(false);
-			}
-			if (err.message === "INVALID_VERIFICATION_CODE") {
-				setUserUpdateAlarm({
-					name: "phoneAuth",
-					message: "인증번호가 일치하지 않습니다.",
-					status: "FAIL",
-				});
-			}
-		},
-	});
 	// 회원정보변경 API
 	const userUpdateMutation = useMutation<BaseResponse, Error>({
 		mutationFn: () =>
@@ -160,7 +94,7 @@ export function useUserUpdateForm() {
 					queryClient.invalidateQueries({ queryKey: ["me"] });
 				},
 			});
-			replace("/mypage/info");
+			router.replace("/mypage/info");
 		},
 	});
 
@@ -229,7 +163,7 @@ export function useUserUpdateForm() {
 			})
 		) {
 			console.log("변한게 없다!!");
-			replace("/mypage/info");
+			router.replace("/mypage/info");
 			return;
 		}
 		/*  */
@@ -261,6 +195,7 @@ export function useUserUpdateForm() {
 	};
 	// 휴대폰 인증 보내기 버튼
 	const clickPhoneAuth = () => {
+		if (phoneAuthMutation.isPending) return;
 		if (!userUpdateForm.phone) {
 			setUserUpdateAlarm({
 				name: "phone",
@@ -281,10 +216,37 @@ export function useUserUpdateForm() {
 				return;
 			}
 		}
-		phoneAuthMutation.mutate();
+		phoneAuthMutation.mutate(
+			{ phone: userUpdateForm.phone },
+			{
+				onSuccess(data) {
+					setPhoneAuthView(true);
+					setPhoneAuthToken(data.phoneAuthToken);
+					setPhoneAuthComplete(false);
+					setUserUpdateAlarm({
+						name: "phoneAuth",
+						message: "인증 번호가 발송되었습니다. 제한시간 3분",
+					});
+					setUserUpdateForm((prev) => ({
+						...prev,
+						phoneAuth: "",
+					}));
+				},
+				onError(err) {
+					console.log(err);
+				},
+			},
+		);
 	};
 	// 휴대폰 인증확인 버튼
 	const clickCheckPhoneAuth = () => {
+		if (phoneAuthCompleteMutation.isPending) return;
+		if (!phoneAuthToken) {
+			setPhoneAuthView(false);
+			setUserUpdateAlarm({ name: "phone", message: "인증번호 인증을 먼저 진행해주세요.", status: "FAIL" });
+			userUpdateFormInputRefs.current.phoneAuth?.focus();
+			return;
+		}
 		if (userUpdateAlarm?.name === "phoneAuth" && userUpdateAlarm.status === "FAIL") {
 			userUpdateFormInputRefs.current.phoneAuth?.focus();
 			return;
@@ -294,7 +256,40 @@ export function useUserUpdateForm() {
 			userUpdateFormInputRefs.current.phoneAuth?.focus();
 			return;
 		}
-		phoneAuthCompleteMutation.mutate();
+		phoneAuthCompleteMutation.mutate(
+			{
+				phoneAuthToken,
+				authNumber: userUpdateForm.phoneAuth,
+			},
+			{
+				onSuccess() {
+					setPhoneAuthComplete(true);
+					setPhoneAuthView(false);
+					setUserUpdateAlarm({
+						name: "phone",
+						message: "휴대폰 인증이 완료되었습니다.",
+					});
+				},
+				onError(err) {
+					console.log(err);
+					if (["VERIFICATION_EXPIRED", "PHONEAUTH_TOKEN_UNAUTHORIZED"].includes(err.message)) {
+						setUserUpdateAlarm({
+							name: "phone",
+							message: "인증시간이 만료되었습니다.",
+							status: "FAIL",
+						});
+						setPhoneAuthView(false);
+					}
+					if (err.message === "INVALID_VERIFICATION_CODE") {
+						setUserUpdateAlarm({
+							name: "phoneAuth",
+							message: "인증번호가 일치하지 않습니다.",
+							status: "FAIL",
+						});
+					}
+				},
+			},
+		);
 	};
 
 	// 6) [useEffect] ------------------------------------------------------
@@ -313,7 +308,7 @@ export function useUserUpdateForm() {
 
 	return {
 		userUpdateSubmit,
-		userIdData,
+		userId,
 		userUpdateForm,
 		setUserUpdateForm,
 		userUpdateAlarm,

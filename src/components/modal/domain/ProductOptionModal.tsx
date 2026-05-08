@@ -1,44 +1,35 @@
 import { useEffect, useState } from "react";
 import { OptionSelector } from "../../ui/OptionSelector";
-import { GetCartOtherOptionListResponse } from "@/types/mypage";
-import { useQuery } from "@tanstack/react-query";
-import API_URL from "@/api/endpoints";
-import { getApiUrl } from "@/lib/getBaseUrl";
-import { getNormal } from "@/api/fetchFilter";
 import { ModalFrame } from "@/components/modal/frame/ModalFrame";
 import styles from "../Modal.module.scss";
 import { ConfirmButton } from "@/components/modal/frame/ConfirmButton";
 import { ProductCounter } from "@/components/ui/ProductCounter";
 import { DomainModalPropsMap } from "@/store/modal.type";
+import { useGetProductOptions } from "@/hooks/query/product/useGetProductOptions";
 
 type ProductOptionModalProps = {
 	onClose: () => void;
 } & DomainModalPropsMap["PRODUCT_OPTION"];
 
 export const ProductOptionModal = ({ onClose, product, handleAfterCartProductOptionChange }: ProductOptionModalProps) => {
+	// 1) [store / custom hooks] -------------------------------------------
+	const { data: productOptionList, isLoading } = useGetProductOptions(product.productId);
+
 	// 2) [useState / useRef] ----------------------------------------------
 	// ✅ 선택된 옵션(productOptionId) 관리
 	const [pickId, setPickId] = useState<number>(product.productOptionId);
-	//
+	// 수량
 	const [productCount, setProductCount] = useState<number>(product.quantity);
-
-	// 3) [useQuery / useMutation] -----------------------------------------
-	// 제품상세옵션 리스트
-	const { data: optionResponse, isLoading } = useQuery<GetCartOtherOptionListResponse>({
-		queryKey: ["cartOptionProductOptionList", product.productId],
-		queryFn: () => getNormal(getApiUrl(API_URL.MY_CART_PRODUCT_OPTION), { productId: product.productId }),
-		enabled: !!product?.productId,
-	});
 
 	// 6) [useEffect] ------------------------------------------------------
 	// ✅ optionResponse 들어오면, pickId가 없거나 유효하지 않을 때 기본값 보정
 	useEffect(() => {
-		const list = optionResponse?.cartOptionProductOptionList;
+		const list = productOptionList;
 		if (!list || list.length === 0) return;
 
 		const exists = list.some((d) => d.productOptionId === pickId);
 		if (!exists) setPickId(product.productOptionId);
-	}, [optionResponse, product.productOptionId, pickId]);
+	}, [productOptionList, product.productOptionId, pickId]);
 
 	// 7) [UI helper values] -------------------------------------------------
 	const optionSelectorEle = () => {
@@ -57,8 +48,8 @@ export const ProductOptionModal = ({ onClose, product, handleAfterCartProductOpt
 		}
 
 		// 2) 데이터 없음/비정상
-		const productOptionList = optionResponse?.cartOptionProductOptionList ?? [];
-		if (productOptionList.length === 0) {
+		const productOptions = productOptionList ?? [];
+		if (productOptions.length === 0) {
 			return (
 				<OptionSelector
 					optionSelectorName="productVisualOption"
@@ -71,7 +62,7 @@ export const ProductOptionModal = ({ onClose, product, handleAfterCartProductOpt
 		}
 
 		// 3) 정상 데이터
-		const optionList = productOptionList.map((detail) => {
+		const optionList = productOptions.map((detail) => {
 			const addPriceMark = detail.addPrice > 0 ? ` (+${detail.addPrice})` : "";
 			return {
 				id: detail.productOptionId,

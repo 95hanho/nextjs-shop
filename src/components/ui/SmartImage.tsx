@@ -1,5 +1,8 @@
 import { BASIC_NO_IMAGE } from "@/lib/env.client";
 import Image from "next/image";
+import styles from "./SmartImage.module.scss";
+import { FaCopyright, FaRegCopyright } from "react-icons/fa";
+import { useState } from "react";
 
 type CommonProps = {
 	className?: string;
@@ -10,6 +13,8 @@ type CommonProps = {
 	quality?: number;
 	objectFit?: "cover" | "contain";
 	style?: React.CSSProperties;
+	copyright?: string | null;
+	copyrightUrl?: string | null;
 };
 
 type FillVariant = CommonProps & {
@@ -27,7 +32,23 @@ type FixedVariant = CommonProps & {
 
 type SmartImageProps = FillVariant | FixedVariant;
 
-export const SmartImage = ({ className = "", src = "", alt, sizes, priority, quality, objectFit = "cover", style, ...rest }: SmartImageProps) => {
+export const SmartImage = ({
+	className = "",
+	src = "",
+	alt,
+	sizes,
+	priority,
+	quality,
+	objectFit = "cover",
+	style,
+	copyright,
+	copyrightUrl,
+	...rest
+}: SmartImageProps) => {
+	// 2) [useState / useRef] ----------------------------------------------
+	// copyright hover
+	const [isCopyrightHovered, setIsCopyrightHovered] = useState(false);
+
 	// 4) [derived values / useMemo] ---------------------------------------
 	const finalSrc = src || BASIC_NO_IMAGE;
 	const finalAlt = alt || "사진없음";
@@ -37,34 +58,70 @@ export const SmartImage = ({ className = "", src = "", alt, sizes, priority, qua
 	// fill: true 케이스finalSrc
 	if ("fill" in rest && rest.fill) {
 		return (
-			<Image
-				className={className}
-				src={finalSrc}
-				alt={finalAlt}
-				fill
-				sizes={sizes ?? "(max-width: 650px) 100vw, 50vw"}
-				priority={priority}
-				quality={quality}
-				style={{ ...style, objectFit }}
-				unoptimized={isExternal || isCdn}
-			/>
+			<>
+				{copyright && (
+					<a
+						href={copyrightUrl || "#"}
+						target="_blank"
+						rel="noopener noreferrer"
+						className={styles.copyright}
+						title={copyright}
+						onMouseEnter={() => setIsCopyrightHovered(true)}
+						onMouseLeave={() => setIsCopyrightHovered(false)}
+						onClick={(e) => {
+							e.stopPropagation();
+						}}
+					>
+						{isCopyrightHovered ? <FaCopyright /> : <FaRegCopyright />}
+					</a>
+				)}
+				<Image
+					className={className}
+					src={finalSrc}
+					alt={finalAlt}
+					fill
+					sizes={sizes ?? "(max-width: 650px) 100vw, 50vw"}
+					priority={priority}
+					quality={quality}
+					style={{ ...style, objectFit }}
+					unoptimized={isExternal || isCdn}
+				/>
+			</>
 		);
 	}
 
 	// width/height 케이스
 	return (
-		<Image
-			className={className}
-			src={finalSrc}
-			alt={finalAlt}
-			width={rest.width}
-			height={rest.height}
-			sizes={sizes ?? "(max-width: 650px) 100vw, 50vw"}
-			priority={priority}
-			quality={quality}
-			style={{ ...style, objectFit }}
-			unoptimized={isExternal || isCdn}
-			// style={{ width: "100%", height: "auto", objectFit }}
-		/>
+		<>
+			{copyright && (
+				<a
+					href={copyrightUrl || "#"}
+					target="_blank"
+					rel="noopener noreferrer"
+					className={styles.copyright}
+					title={copyright}
+					onMouseEnter={() => setIsCopyrightHovered(true)}
+					onMouseLeave={() => setIsCopyrightHovered(false)}
+					onClick={(e) => {
+						e.stopPropagation();
+					}}
+				>
+					{isCopyrightHovered ? <FaCopyright /> : <FaRegCopyright />}
+				</a>
+			)}
+			<Image
+				className={className}
+				src={finalSrc}
+				alt={finalAlt}
+				width={rest.width}
+				height={rest.height}
+				sizes={sizes ?? "(max-width: 650px) 100vw, 50vw"}
+				priority={priority}
+				quality={quality}
+				style={{ ...style, objectFit }}
+				unoptimized={isExternal || isCdn}
+				// style={{ width: "100%", height: "auto", objectFit }}
+			/>
+		</>
 	);
 };

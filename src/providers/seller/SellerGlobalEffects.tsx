@@ -1,4 +1,4 @@
-import { useSellerAuth } from "@/hooks/useSellerAuth";
+import { useSellerAuth } from "@/hooks/context/useSellerAuth";
 import { useGlobalDialogStore } from "@/store/globalDialog.store";
 import { DialogResultMap } from "@/store/modal.type";
 import { useEffect } from "react";

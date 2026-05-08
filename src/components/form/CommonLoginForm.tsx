@@ -85,6 +85,21 @@ export const CommonLoginForm = ({ apiUrl, redirectTo, invalidateKeys, loginIdFie
 					content: "아이디 또는 비밀번호가 일치하지 않습니다.",
 				});
 			}
+			if (err.message === "SELLER_APPROVAL_PENDING") {
+				openDialog("ALERT", {
+					content: "관리자 승인 대기중인 계정입니다. 승인이 완료되면 로그인 가능합니다.",
+				});
+			}
+			if (err.message === "SELLER_APPROVAL_REJECTED") {
+				openDialog("ALERT", {
+					content: "관리자 승인 거부된 계정입니다. 자세한 내용은 고객센터에 문의해주세요.",
+				});
+			}
+			if (err.message === "SELLER_SUSPENDED") {
+				openDialog("ALERT", {
+					content: "정지된 계정입니다. 자세한 내용은 고객센터에 문의해주세요.",
+				});
+			}
 		},
 		onSettled(data, err, params, context) {
 			console.log(data, err, params, context);
@@ -112,7 +127,6 @@ export const CommonLoginForm = ({ apiUrl, redirectTo, invalidateKeys, loginIdFie
 	// pathname에 따라 로그인 폼에 미리 데이터 채워넣기 (개발 편의용)
 	useEffect(() => {
 		// 테스트 계정 로그인 데이터 자동 입력 (개발 편의용)
-		console.log(loginForm[loginIdField]);
 		if (loginForm[loginIdField] === "123159") {
 			if (pathname.startsWith("/user")) {
 				setLoginForm({ [loginIdField]: testUser.id, password: testUser.password });

@@ -33,6 +33,7 @@ import { getUploadImageUrl } from "@/lib/image";
 import moment from "moment";
 import "moment/locale/ko";
 import { TooltipIcon } from "@/components/ui/TooltipIcon";
+import { useRouter } from "next/navigation";
 
 interface CartProductSectionProps extends CartItemSelectCollection {
 	noResetCouponOn: () => void;
@@ -70,6 +71,7 @@ export default function CartProductSection({
 	changeMaxDiscountApplied,
 }: CartProductSectionProps) {
 	// 1) [store / custom hooks] -----------------------------------
+	const router = useRouter();
 	const queryClient = useQueryClient();
 	const { openModal } = useModalStore();
 	const { openDialog } = useGlobalDialogStore();
@@ -328,8 +330,19 @@ export default function CartProductSection({
 												<div className={styles.productItemSection}>
 													<div className={styles.productItemOverview}>
 														<div className={styles.productItemMedia}>
-															<Link href={`/product/detail/${product.productId}`} className={styles.productItemThumb}>
-																<SmartImage src={getUploadImageUrl(product.filePath)} alt={product.fileName} fill />
+															<div
+																className={styles.productItemThumb}
+																onClick={() => {
+																	router.push(`/product/detail/${product.productId}`);
+																}}
+															>
+																<SmartImage
+																	src={getUploadImageUrl(product.filePath)}
+																	alt={product.fileName}
+																	fill
+																	copyright={product.copyright}
+																	copyrightUrl={product.copyrightUrl}
+																/>
 
 																{selectDisabled && (
 																	<div className={styles.productDisabledCover}>
@@ -344,7 +357,7 @@ export default function CartProductSection({
 																		)}
 																	</div>
 																)}
-															</Link>
+															</div>
 
 															<WishButton
 																productId={product.productId}

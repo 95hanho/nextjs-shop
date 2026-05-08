@@ -2,7 +2,7 @@
 
 import API_URL from "@/api/endpoints";
 import { getNormal, postJson } from "@/api/fetchFilter";
-import { useSellerAuth } from "@/hooks/useSellerAuth";
+import { useSellerAuth } from "@/hooks/context/useSellerAuth";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import {
 	GetSellerCouponListResponse,

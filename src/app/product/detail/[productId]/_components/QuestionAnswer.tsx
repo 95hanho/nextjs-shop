@@ -11,7 +11,7 @@ import { OnOffButton } from "@/components/ui/OnOffButton";
 import clsx from "clsx";
 import moment from "moment";
 import { useGlobalDialogStore } from "@/store/globalDialog.store";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/context/useAuth";
 import { TurnToPagination } from "@/components/ui/TurnToPagination";
 
 interface QuestionAnswerProps {

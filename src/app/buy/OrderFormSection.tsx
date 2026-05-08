@@ -3,13 +3,13 @@ import { BsExclamationCircle } from "react-icons/bs";
 import ShippingAddressForm from "@/app/buy/ShippingAddressForm";
 import { AppliedProductCouponMap, BuyItemWishCoupon, CartCoupon, SellerCoupon } from "@/app/buy/BuyClient";
 import { money } from "@/lib/format";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/context/useAuth";
 import { calculateDiscount } from "@/lib/price";
 import { useEffect, useRef, useState } from "react";
 import { scrollIntoCenter } from "@/utils/ui";
 import BuyCouponSelector from "@/app/buy/BuyCouponSelector";
 import clsx from "clsx";
-import { useBuy } from "@/hooks/buy/useBuy";
+import { useBuy } from "@/hooks/context/useBuy";
 import { MaxDiscountBanner } from "@/components/buy/MaxDiscountBanner";
 
 interface OrderFormSectionProps {

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/context/useAuth";
 import { useGlobalDialogStore } from "@/store/globalDialog.store";
 import { DialogResultMap } from "@/store/modal.type";
 import { isAuthRequiredPath } from "@/utils/auth";

@@ -4,7 +4,7 @@
 import { FormActionButton } from "@/components/form/FormActionButton";
 import { FormInput } from "@/components/form/FormInput";
 import { FormPageShell } from "@/components/form/FormPageShell";
-import { usePasswordChangeForm } from "@/hooks/query/auth/form/usePasswordChangeForm";
+import { usePasswordChangeForm } from "@/hooks/form/usePasswordChangeForm";
 
 interface PasswordChangeClientProps {
 	mode: "LOGGED_IN" | "RESET";

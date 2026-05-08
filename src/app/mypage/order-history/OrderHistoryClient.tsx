@@ -7,7 +7,7 @@ import { MyOrderListResponse } from "@/types/mypage";
 import API_URL from "@/api/endpoints";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { getNormal } from "@/api/fetchFilter";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/context/useAuth";
 import { LodingWrap } from "@/components/common/LodingWrap";
 import { useMemo, useState } from "react";
 import moment from "moment/moment";
@@ -176,6 +176,8 @@ export default function OrderHistoryClient() {
 																	fill
 																	src={getUploadImageUrl(item.filePath)}
 																	alt={item.productName + " 이미지"}
+																	copyright={item.copyright}
+																	copyrightUrl={item.copyrightUrl}
 																/>
 															</Link>
 

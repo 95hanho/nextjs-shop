@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 import { useGlobalDialogStore } from "@/store/globalDialog.store";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getUploadImageUrl } from "@/lib/image";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/context/useAuth";
 import { ProductReviewItem } from "@/types/product";
 
 // 중복 리뷰 제거
@@ -114,7 +114,14 @@ export const ProductReviewModal = ({
 								className={clsx(styles.thumbItem, currentIndex === index && styles.active)}
 								onClick={() => setCurrentIndex(index)}
 							>
-								<SmartImage src={getUploadImageUrl(image.filePath)} alt={image.fileName} fill objectFit="contain" />
+								<SmartImage
+									src={getUploadImageUrl(image.filePath)}
+									alt={image.fileName}
+									fill
+									objectFit="contain"
+									copyright={image.copyright}
+									copyrightUrl={image.copyrightUrl}
+								/>
 							</button>
 						))}
 					</div>
@@ -129,7 +136,14 @@ export const ProductReviewModal = ({
 						<FaChevronLeft />
 					</button>
 					<div className={styles.reviewImageContainer}>
-						<SmartImage src={getUploadImageUrl(reviewImage.filePath)} alt={reviewImage.fileName} fill objectFit="contain" />
+						<SmartImage
+							src={getUploadImageUrl(reviewImage.filePath)}
+							alt={reviewImage.fileName}
+							fill
+							objectFit="contain"
+							copyright={reviewImage.copyright}
+							copyrightUrl={reviewImage.copyrightUrl}
+						/>
 					</div>
 					<button
 						onClick={() => {

@@ -1,15 +1,18 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { isValidDateString } from "@/utils/ui";
 import { useMutation } from "@tanstack/react-query";
 import { postJson } from "@/api/fetchFilter";
 import { BaseResponse } from "@/types/common";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import API_URL from "@/api/endpoints";
-import { JoinRequest, LoginFormData, PhoneAuthCheckRequest, PhoneAuthRequest } from "@/types/auth";
+import { JoinRequest, LoginFormData } from "@/types/auth";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, FormEvent } from "@/types/event";
 import { FormInputAlarm, FormInputRefs } from "@/types/form";
 import { User } from "@/types/user";
+import { useGlobalDialogStore } from "@/store/globalDialog.store";
+import { usePhoneAuth } from "@/hooks/query/auth/usePhoneAuth";
+import { usePhoneAuthCheck } from "@/hooks/query/auth/usePhoneAuthCheck";
 
 export interface JoinForm extends LoginFormData, User {
 	phoneAuth: string;
@@ -32,19 +35,19 @@ const initJoinForm: JoinForm = {
 	phoneAuth: "",
 	email: "",
 };
-// const testJoinForm: JoinForm = {
-// 	userId: "hoseongs",
-// 	password: "aaaaaa1!",
-// 	passwordCheck: "aaaaaa1!",
-// 	name: "한호성",
-// 	zonecode: "05718",
-// 	address: "서울 송파구 중대로 121",
-// 	addressDetail: "2층",
-// 	birthday: "1995/08/14",
-// 	phone: "01085546674",
-// 	phoneAuth: "",
-// 	email: "ehfqntuqntu@naver.com",
-// };
+const testJoinForm: JoinForm = {
+	userId: "test01",
+	password: "aaaaaa1!",
+	passwordCheck: "aaaaaa1!",
+	name: "한호성",
+	zonecode: "05718",
+	address: "서울 송파구 중대로 121",
+	addressDetail: "2층",
+	birthday: "1995/08/14",
+	phone: "01085546674",
+	phoneAuth: "",
+	email: "ehfqntuqntu@naver.com",
+};
 
 const joinFormRegex: { [key: string]: RegExp } = {
 	userId: /^[a-zA-Z][a-zA-Z0-9_]{5,14}$/,
@@ -60,9 +63,12 @@ const joinFormRegexFailMent: { [key: string]: string } = {
 	email: "이메일 형식에 일치하지 않습니다.",
 };
 
-export function useSellerJoinForm() {
+export function useUserJoinForm() {
 	// 1) [store / custom hooks] -------------------------------------------
 	const router = useRouter();
+	const { openDialog } = useGlobalDialogStore();
+	const phoneAuthMutation = usePhoneAuth("JOIN");
+	const phoneAuthCompleteMutation = usePhoneAuthCheck();
 
 	// 2) [useState / useRef] ----------------------------------------------
 	// 회원가입 폼 데이터
@@ -97,69 +103,20 @@ export function useSellerJoinForm() {
 		// 결과에 관계 없이 무언가 실행됨
 		// onSettled(a, b) {},
 	});
-	// 휴대폰 인증
-	const phoneAuthMutation = useMutation({
-		mutationFn: () =>
-			postJson<BaseResponse & { phoneAuthToken: string }, PhoneAuthRequest>(getApiUrl(API_URL.AUTH_PHONE_AUTH), {
-				phone: joinForm.phone,
-				mode: "SELLER_JOIN",
-			}),
-		onSuccess(data) {
-			setPhoneAuthView(true);
-			setPhoneAuthToken(data.phoneAuthToken);
-			setPhoneAuthComplete(false);
-			changeJoinAlarm("phoneAuth", "인증 번호가 발송되었습니다. 제한시간 3분");
-			setJoinForm((prev) => ({
-				...prev,
-				phoneAuth: "",
-			}));
-		},
-		onError(err) {
-			console.log(err);
-			if (err.message === "PHONE_DUPLICATED") {
-				changeJoinAlarm("phone", "이미 존재하는 번호입니다.", "FAIL");
-			}
-		},
-	});
-	// 휴대폰 인증 확인
-	const phoneAuthCompleteMutation = useMutation({
-		mutationFn: async () => {
-			if (!phoneAuthToken) {
-				// 인증을 다시 해야한다는 동작
-				return;
-			}
-			return postJson<BaseResponse, PhoneAuthCheckRequest>(getApiUrl(API_URL.AUTH_PHONE_AUTH_CHECK), {
-				phoneAuthToken,
-				authNumber: joinForm.phoneAuth,
-			});
-		},
-		onSuccess() {
-			setPhoneAuthComplete(true);
-			setPhoneAuthView(false);
-			changeJoinAlarm("phone", "휴대폰 인증이 완료되었습니다.");
-		},
-		onError(err) {
-			console.log(err);
-			if (["VERIFICATION_EXPIRED", "PHONEAUTH_TOKEN_UNAUTHORIZED"].includes(err.message)) {
-				changeJoinAlarm("phone", "인증시간이 만료되었습니다.", "FAIL");
-				setPhoneAuthView(false);
-			}
-			if (err.message === "INVALID_VERIFICATION_CODE") {
-				changeJoinAlarm("phoneAuth", "인증번호가 일치하지 않습니다.", "FAIL");
-			}
-		},
-	});
+
 	// 회원가입
-	const sellerRegisterMutation = useMutation({
-		mutationFn: () => postJson<BaseResponse, JoinRequest>(getApiUrl(API_URL.SELLER_REGISTRATION), { ...joinForm }),
+	const userJoinMutation = useMutation({
+		mutationFn: () => postJson<BaseResponse, JoinRequest>(getApiUrl(API_URL.AUTH_JOIN), { ...joinForm }),
 		// Mutation이 시작되기 직전에 특정 작업을 수행
-		onMutate(a) {
-			console.log(a);
-		},
+		onMutate() {},
 		onSuccess(data) {
 			console.log(data);
-			alert("회원가입이 완료되었습니다.");
-			router.push("/user");
+			openDialog("ALERT", {
+				content: "회원가입이 완료되었습니다. 로그인 페이지로 이동합니다.",
+				handleAfterClose: () => {
+					router.push("/user");
+				},
+			});
 		},
 		onError(err) {
 			console.log(err);
@@ -175,7 +132,7 @@ export function useSellerJoinForm() {
 	});
 
 	// 5) [handlers / useCallback] -----------------------------------------
-	// 회원가입 input onChange
+	// 알람 변경
 	const changeJoinAlarm = (name: JoinFormInputKeys, message: string, status: "SUCCESS" | "FAIL" = "SUCCESS") => {
 		setJoinAlarm({ name, message, status });
 	};
@@ -266,6 +223,7 @@ export function useSellerJoinForm() {
 	const joinSubmit = (e: FormEvent) => {
 		console.log("joinSubmit");
 		e.preventDefault();
+		if (userJoinMutation.isPending) return; // 중복 제출 방지
 		if (joinAlarm?.status === "FAIL") {
 			joinFormInputRefs.current[joinAlarm.name]?.focus();
 			return;
@@ -306,10 +264,11 @@ export function useSellerJoinForm() {
 		}
 		// 회원가입 로직 추가
 		console.log("회원가입 완료");
-		sellerRegisterMutation.mutate();
+		userJoinMutation.mutate();
 	};
 	// 휴대폰 인증 보내기 버튼
 	const clickPhoneAuth = () => {
+		if (phoneAuthMutation.isPending) return;
 		if (!joinForm.phone) {
 			changeJoinAlarm("phone", "휴대폰 번호를 입력해주세요.", "FAIL");
 			joinFormInputRefs.current.phone?.focus();
@@ -322,10 +281,37 @@ export function useSellerJoinForm() {
 				return;
 			}
 		}
-		phoneAuthMutation.mutate();
+		phoneAuthMutation.mutate(
+			{ phone: joinForm.phone },
+			{
+				onSuccess(data) {
+					setPhoneAuthView(true);
+					setPhoneAuthToken(data.phoneAuthToken);
+					setPhoneAuthComplete(false);
+					changeJoinAlarm("phoneAuth", "인증 번호가 발송되었습니다. 제한시간 3분");
+					setJoinForm((prev) => ({
+						...prev,
+						phoneAuth: "",
+					}));
+				},
+				onError(err) {
+					console.log(err);
+					if (err.message === "PHONE_DUPLICATED") {
+						changeJoinAlarm("phone", "이미 존재하는 번호입니다.", "FAIL");
+					}
+				},
+			},
+		);
 	};
 	// 휴대폰 인증확인 버튼
 	const clickCheckPhoneAuth = () => {
+		if (phoneAuthCompleteMutation.isPending) return;
+		if (!phoneAuthToken) {
+			setPhoneAuthView(false);
+			setJoinAlarm({ name: "phone", message: "인증번호 인증을 먼저 진행해주세요.", status: "FAIL" });
+			joinFormInputRefs.current.phoneAuth?.focus();
+			return;
+		}
 		if (joinAlarm?.name === "phoneAuth" && joinAlarm.status === "FAIL") {
 			joinFormInputRefs.current.phoneAuth?.focus();
 			return;
@@ -335,10 +321,37 @@ export function useSellerJoinForm() {
 			joinFormInputRefs.current.phoneAuth?.focus();
 			return;
 		}
-		phoneAuthCompleteMutation.mutate();
+		phoneAuthCompleteMutation.mutate(
+			{ phoneAuthToken, authNumber: joinForm.phoneAuth },
+			{
+				onSuccess() {
+					setPhoneAuthComplete(true);
+					setPhoneAuthView(false);
+					changeJoinAlarm("phone", "휴대폰 인증이 완료되었습니다.");
+				},
+				onError(err) {
+					console.log(err);
+					if (["VERIFICATION_EXPIRED", "PHONEAUTH_TOKEN_UNAUTHORIZED"].includes(err.message)) {
+						changeJoinAlarm("phone", "인증시간이 만료되었습니다.", "FAIL");
+						setPhoneAuthView(false);
+					}
+					if (err.message === "INVALID_VERIFICATION_CODE") {
+						changeJoinAlarm("phoneAuth", "인증번호가 일치하지 않습니다.", "FAIL");
+					}
+				},
+			},
+		);
 	};
 
+	// 6) [useEffect] ------------------------------------------------------
+	useEffect(() => {
+		if (joinForm.userId === "123159") {
+			setJoinForm(testJoinForm);
+		}
+	}, [joinForm.userId]);
+
 	return {
+		joinDisabled: userJoinMutation.isPending,
 		joinSubmit,
 		joinForm,
 		setJoinForm,

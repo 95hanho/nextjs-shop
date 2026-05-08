@@ -3,16 +3,17 @@ import { postJson, RequestHeaders } from "@/api/fetchFilter";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { useGlobalDialogStore } from "@/store/globalDialog.store";
 import { PhoneAuthMode, PhoneAuthRequest } from "@/types/auth";
-import { BaseResponse } from "@/types/common";
+import { SellerPhoneAuthUiResponse } from "@/types/seller";
 import { useMutation } from "@tanstack/react-query";
 
-export function usePhoneAuth(mode: PhoneAuthMode, required: boolean = false) {
+// 휴대폰 인증
+export function usePhoneAuth(mode: PhoneAuthMode) {
 	// 1) [store / custom hooks] -------------------------------------------
 	const { openDialog } = useGlobalDialogStore();
 
 	// 4) [derived values / useMemo] ---------------------------------------
 	const headers: RequestHeaders = {};
-	if (required) {
+	if (mode === "CHANGE") {
 		headers["x-auth-mode"] = "required";
 	}
 
@@ -20,7 +21,14 @@ export function usePhoneAuth(mode: PhoneAuthMode, required: boolean = false) {
 		mutationFn: ({ phone, userId }: { phone: string; userId?: string }) => {
 			const payload: PhoneAuthRequest = { phone, mode };
 			if (userId) payload.userId = userId;
-			return postJson<BaseResponse & { phoneAuthToken: string }, PhoneAuthRequest>(getApiUrl(API_URL.AUTH_PHONE_AUTH), { ...payload }, headers);
+			return postJson<SellerPhoneAuthUiResponse, PhoneAuthRequest>(getApiUrl(API_URL.AUTH_PHONE_AUTH), { ...payload }, headers);
+		},
+		onSuccess(data) {
+			if (data.testCode) {
+				openDialog("ALERT", {
+					content: "[테스트 모드] 인증번호: " + data.testCode,
+				});
+			}
 		},
 		onError(err) {
 			console.log(err);

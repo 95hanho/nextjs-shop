@@ -2,7 +2,7 @@
 
 import { FormPageShell } from "@/components/form/FormPageShell";
 import { InfoMark } from "@/components/form/InfoMark";
-import { useSellerAuth } from "@/hooks/useSellerAuth";
+import { useSellerAuth } from "@/hooks/context/useSellerAuth";
 
 export default function SellerInfoClient() {
 	const { seller } = useSellerAuth();

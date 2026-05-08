@@ -30,9 +30,9 @@ export const POST = async (nextRequest: NextRequest) => {
 			["x-forwarded-for"]: ip,
 		};
 
-		const data = await postUrlFormData<BaseResponse>(getBackendUrl(API_URL.SELLER_PHONE_AUTH), { ...payload }, headers);
+		const data = await postUrlFormData<BaseResponse & { testCode: string }>(getBackendUrl(API_URL.SELLER_PHONE_AUTH), { ...payload }, headers);
 
-		return NextResponse.json({ message: data.message, phoneAuthToken }, { status: 200 });
+		return NextResponse.json({ message: data.message, phoneAuthToken, testCode: data.testCode }, { status: 200 });
 	} catch (err: unknown) {
 		const { status, payload } = toErrorResponse(err);
 		return NextResponse.json(payload, { status });

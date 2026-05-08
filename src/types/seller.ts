@@ -2,17 +2,13 @@ import { FileInfo } from "@/types/file";
 import { BaseResponse } from "./common";
 import { AdminCoupon, Coupon } from "./mypage";
 import { ProductColorName, ProductDetail, ProductOption, ProductQnaType, ProductQnaTypeCode, ProductSize } from "./product";
+import { LoginFormData } from "@/types/auth";
 
 /* -- MODEL ----------------------------------------------------------------- */
 
 /* -- FE -------------------------------------------------------- */
 
 // 로그인폼 데이터
-export type SellerLoginForm = {
-	sellerId: string;
-	password: string;
-};
-
 export type SellerInfo = {
 	sellerName: string; // 판매자 이름(한글)
 	sellerNameEn: string; // 판매자 이름(영어)
@@ -47,6 +43,10 @@ export interface SellerPhoneAuthRequest {
 	mode: "REGISTRATION"; // 판매자 등록(회원가입) 또는 비밀번호 찾기
 	phoneAuthToken?: string; // 서버에서 생성한 인증 토큰
 }
+export interface SellerPhoneAuthUiResponse extends BaseResponse {
+	phoneAuthToken: string; // 서버에서 생성한 인증 토큰
+	testCode?: string; // 테스트용 인증번호 (실제 서비스에서는 제공하지 않음)
+}
 /* 판매자 전화번호 인증 확인 */
 export interface SellerPhoneAuthCheckRequest {
 	phoneAuthToken: string;
@@ -54,7 +54,7 @@ export interface SellerPhoneAuthCheckRequest {
 }
 
 /* 판매자 등록요청 */
-export interface SellerRegisterRequest extends SellerLoginForm, SellerInfo {}
+export interface SellerRegisterRequest extends LoginFormData<"sellerId">, SellerInfo {}
 
 /* 판매자 제품 조회 */
 type SellerProductOptionAdd = { salesCount: number; createdAt: string; updatedAt: string; displayed: boolean };

@@ -263,7 +263,13 @@ export default function ReviewWriteClient() {
 						{/* 상품 정보 */}
 						<div className={styles.orderHistoryProduct}>
 							<div className={styles.orderHistoryThumb}>
-								<SmartImage fill src={getUploadImageUrl(reviewOrderItem.filePath)} alt={reviewOrderItem.productName + " 이미지"} />
+								<SmartImage
+									fill
+									src={getUploadImageUrl(reviewOrderItem.filePath)}
+									alt={reviewOrderItem.productName + " 이미지"}
+									copyright={reviewOrderItem.copyright}
+									copyrightUrl={reviewOrderItem.copyrightUrl}
+								/>
 							</div>
 
 							<div className={styles.orderHistoryInfo}>

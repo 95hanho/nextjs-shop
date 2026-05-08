@@ -1,7 +1,7 @@
 import API_URL from "@/api/endpoints";
 import { toErrorResponse } from "@/api/error";
 import { getNormal } from "@/api/fetchFilter";
-import { useSellerAuth } from "@/hooks/useSellerAuth";
+import { useSellerAuth } from "@/hooks/context/useSellerAuth";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { GetSellerInfoResponse } from "@/types/seller";
 import { useQuery } from "@tanstack/react-query";

@@ -62,7 +62,7 @@ export const BuyProvider = ({ children, initialDefaultAddress = null, holdIds }:
 	const [paymentMethod, setPaymentMethod] = useState<"CARD" | "CASH" | null>(null);
 
 	// 3) [useQuery / useMutation] -----------------------------------------
-	// 결제하기
+	// 상품구매/결제
 	const { mutateAsync: mutateBuy } = useMutation({
 		mutationFn: (data: payRequest) => postJson(getApiUrl(API_URL.BUY_PAY), data),
 		onSuccess(data) {

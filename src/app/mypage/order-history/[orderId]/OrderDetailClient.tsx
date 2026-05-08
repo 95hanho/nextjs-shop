@@ -5,7 +5,7 @@ import styles from "./OrderDetail.module.scss";
 import { getNormal } from "@/api/fetchFilter";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import API_URL from "@/api/endpoints";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/context/useAuth";
 import { useEffect, useMemo, useState } from "react";
 import { MyOrderDetailItem, MyOrderDetailResponse } from "@/types/mypage";
 import { BsClipboard2Minus } from "react-icons/bs";
@@ -20,6 +20,7 @@ import { AddCartPopup } from "@/components/mypage/AddCartPopup";
 import { useProductCartAction } from "@/hooks/query/mypage/useProductCartAction";
 import { getUploadImageUrl } from "@/lib/image";
 import { useGlobalDialogStore } from "@/store/globalDialog.store";
+import { useRouter } from "next/navigation";
 
 type ItemSellerMap = {
 	[sellerName: string]: MyOrderDetailItem[];
@@ -27,6 +28,7 @@ type ItemSellerMap = {
 
 export default function OrderDetailClient({ orderId }: { orderId: string }) {
 	// 1) [store / custom hooks] -------------------------------------------
+	const router = useRouter();
 	const { loginOn } = useAuth();
 	const productCartAction = useProductCartAction();
 	const { openDialog } = useGlobalDialogStore();
@@ -148,11 +150,23 @@ export default function OrderDetailClient({ orderId }: { orderId: string }) {
 															</span>
 														</div>
 														<div className={styles.orderItemContent}>
-															<div className={styles.productImage}>
-																<SmartImage fill src={getUploadImageUrl(item.filePath)} />
+															<div
+																className={styles.productImage}
+																onClick={() => {
+																	router.push(`/product/detail/${item.productId}`);
+																}}
+															>
+																<SmartImage
+																	fill
+																	src={getUploadImageUrl(item.filePath)}
+																	copyright={item.copyright}
+																	copyrightUrl={item.copyrightUrl}
+																/>
 															</div>
 															<div className={styles.productInfo}>
-																<h4>{item.productName}</h4>
+																<h4>
+																	<Link href={`/product/detail/${item.productId}`}>{item.productName}</Link>
+																</h4>
 																<h5>
 																	{item.size} / {item.count}개
 																</h5>

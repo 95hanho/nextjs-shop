@@ -16,7 +16,7 @@ import {
 	ManageHoldCoupon,
 	StockHoldProduct,
 } from "@/types/buy";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/context/useAuth";
 import { BuyProvider } from "@/providers/buy/BuyProvider";
 import { calculateDiscount } from "@/lib/price";
 import { useRouter } from "next/navigation";
@@ -60,8 +60,7 @@ export default function BuyClient() {
 
 	// 3) [useQuery / useMutation] ---------------------------------
 
-	// 점유한 상품 조회
-	// invalidateQueries(["stockHold"])
+	// 점유중인 상품조회
 	const {
 		data: stockHoldData,
 		isError,

@@ -56,7 +56,14 @@ export default function ThumbnailImageSection({ productImageList }: ThumbnailIma
 					onMouseMove={handleMouseMove}
 					onMouseLeave={handleMouseLeave}
 				>
-					<SmartImage src={getUploadImageUrl(currentImage.filePath)} width={900} height={900} objectFit="contain" />
+					<SmartImage
+						src={getUploadImageUrl(currentImage.filePath)}
+						width={900}
+						height={900}
+						objectFit="contain"
+						copyright={currentImage.copyright}
+						copyrightUrl={currentImage.copyrightUrl}
+					/>
 					{/* 마우스 오버 시 확대할 곳 마우스 따라다니는 영역 */}
 					<div
 						className={styles.productImageEnlargeMouse}

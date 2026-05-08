@@ -149,7 +149,7 @@ export const FormInput = forwardRef(<T extends string>(props: FormInputProps<T>,
 				</div>
 				{alarmMessage && (
 					<p>
-						* <span>{alarmMessage}</span>
+						* <span dangerouslySetInnerHTML={{ __html: alarmMessage }}></span>
 					</p>
 				)}
 			</RightInput>

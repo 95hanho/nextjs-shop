@@ -7,9 +7,10 @@ import { generateSellerToken } from "@/lib/auth/utils/token";
 import { generateRefreshToken } from "@/lib/auth/utils/token";
 import { REFRESH_TOKEN_COOKIE_AGE, SELLER_TOKEN_COOKIE_AGE } from "@/lib/auth/utils/tokenTime";
 import { BaseResponse } from "@/types/common";
-import { SellerLoginForm, SellerLoginResponse, GetSellerInfoResponse } from "@/types/seller";
+import { SellerLoginResponse, GetSellerInfoResponse } from "@/types/seller";
 import { NextRequest, NextResponse } from "next/server";
 import { sellerWithAuth } from "@/lib/auth/seller";
+import { LoginFormData } from "@/types/auth";
 
 // 판매자 정보조회
 // - 초기패이지로딩(로그인되어있을 때), 로그인, 로그아웃, 판매자정보필요할 때, 판매자정보수정(상태변화)
@@ -32,7 +33,7 @@ export const GET = sellerWithAuth(async ({ sellerToken }) => {
 export const POST = async (nextRequest: NextRequest) => {
 	console.log("[API] 판매자 로그인");
 	try {
-		const { sellerId, password }: SellerLoginForm = await nextRequest.json();
+		const { sellerId, password }: LoginFormData<"sellerId"> = await nextRequest.json();
 		if (!sellerId) return NextResponse.json({ message: "아이디를 입력해주세요." }, { status: 400 });
 		if (!password) return NextResponse.json({ message: "비밀번호를 입력해주세요." }, { status: 400 });
 
