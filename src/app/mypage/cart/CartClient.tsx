@@ -162,7 +162,6 @@ export default function CartClient() {
 		> = {};
 
 		cartData.cartList.forEach((cart) => {
-			console.log({ productName: cart.productName, selected: cart.selected, saleStop: cart.saleStop });
 			const initPrice = (cart.finalPrice + cart.addPrice) * cart.quantity;
 			const cartItem: CartItemWithCoupon = { ...cart, discountedPrice: initPrice, discountAmount: 0 };
 
@@ -381,7 +380,6 @@ export default function CartClient() {
 
 		// 쿠폰 초기화가 필요한 경우에만 수행
 		if (noResetCoupon.current) {
-			console.log("쿠폰 초기화 불필요");
 			noResetCoupon.current = false;
 			return;
 		}

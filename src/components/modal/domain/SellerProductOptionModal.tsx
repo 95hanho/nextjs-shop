@@ -4,7 +4,7 @@ import { ModalFrame } from "@/components/modal/frame/ModalFrame";
 import { ChangeEvent, FormEvent } from "@/types/event";
 import { FormInputAlarm, FormInputRefs } from "@/types/form";
 import { AddProductOptionBase, SellerProductOption, UpdateSellerProductOptionRequest } from "@/types/seller";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import styles from "../Modal.module.scss";
 import clsx from "clsx";
 import { FaExchangeAlt } from "react-icons/fa";
@@ -97,7 +97,6 @@ export const SellerProductOptionModal = ({
 	};
 	// 옵션 등록/수정 제출
 	const optionSetSubmit = (e: FormEvent) => {
-		console.log("optionSetSubmit");
 		e.preventDefault();
 		// 알람이 있을 때는 해당 input으로 focus
 		if (optionFormAlarm?.status === "FAIL") {
@@ -146,11 +145,6 @@ export const SellerProductOptionModal = ({
 			onClose();
 		}
 	};
-
-	// 6) [useEffect] ------------------------------------------------------
-	useEffect(() => {
-		console.log({ prevSellerProductOption });
-	}, [prevSellerProductOption]);
 
 	return (
 		<ModalFrame title={!prevSellerProductOption ? "옵션 추가" : "옵션 수정"} onClose={onClose}>

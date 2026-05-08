@@ -99,7 +99,6 @@ export function useFindUserForm() {
 	};
 	// 비밀번호변경 제출
 	const findUserSubmit = (e: FormEvent) => {
-		console.log("findUserSubmit");
 		e.preventDefault();
 		if (findUserFormAlarm?.status === "FAIL") {
 			findUserFormInputRefs.current[findUserFormAlarm.name]?.focus();
@@ -127,7 +126,6 @@ export function useFindUserForm() {
 			return;
 		}
 		//
-		console.log("비밀번호변경 제출");
 	};
 	// 휴대폰 인증 보내기 버튼
 	const clickPhoneAuth = () => {
@@ -187,7 +185,6 @@ export function useFindUserForm() {
 	};
 	// 휴대폰 인증확인 버튼
 	const clickCheckPhoneAuth = () => {
-		console.log("clickCheckPhoneAuth");
 		if (phoneAuthCompleteMutation.isPending) return;
 		if (!phoneAuthToken) {
 			setPhoneAuthView(false);

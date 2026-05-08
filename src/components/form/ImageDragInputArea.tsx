@@ -312,7 +312,6 @@ export const ImageDragInputArea = <T,>({
 	// 6) [useEffect] ------------------------------------------------------
 	useEffect(() => {
 		if (!initImageList || initImageList.length === 0) return;
-		console.log(`초기 ${title} 세팅`, { initImageList });
 
 		// 초기 데이터 세팅 및 초기화
 		dragCountRef.current = 0;
@@ -328,9 +327,6 @@ export const ImageDragInputArea = <T,>({
 			deletingFileList: fileList.filter((item) => item.deleting),
 		};
 	}, [prevFileList, newFileList]);
-	useEffect(() => {
-		if (fileList.length > 0) console.log({ fileList });
-	}, [fileList]);
 
 	return (
 		<div className={styles.imageDragInputArea}>

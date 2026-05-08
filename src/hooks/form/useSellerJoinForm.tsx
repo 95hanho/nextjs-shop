@@ -153,8 +153,7 @@ export function useSellerJoinForm() {
 	// 회원가입
 	const sellerRegisterMutation = useMutation({
 		mutationFn: () => postJson<BaseResponse, SellerRegisterRequest>(getApiUrl(API_URL.SELLER_REGISTRATION), { ...joinForm }),
-		onSuccess(data) {
-			console.log(data);
+		onSuccess() {
 			openDialog("ALERT", {
 				content: "회원가입이 완료되었습니다. 로그인 페이지로 이동합니다.",
 				handleAfterClose: () => {
@@ -252,7 +251,6 @@ export function useSellerJoinForm() {
 	};
 	// 회원가입 완료
 	const joinSubmit = (e: FormEvent) => {
-		console.log("joinSubmit");
 		e.preventDefault();
 		if (joinAlarm?.status === "FAIL") {
 			joinFormInputRefs.current[joinAlarm.name]?.focus();
@@ -280,7 +278,6 @@ export function useSellerJoinForm() {
 			}
 			// 정규표현식 검사
 			else if (value && joinFormRegex[key] && !joinFormRegex[key].test(value)) {
-				console.log(joinFormRegex[key]);
 				changeAlarm = { name: key, message: joinFormRegexFailMent[key], status: "FAIL" };
 			} else if (key == "sellerId" && !idDuplCheckOk) {
 				changeAlarm = { name: key, message: "아이디 중복확인을 해주세요.", status: "FAIL" };
@@ -299,7 +296,6 @@ export function useSellerJoinForm() {
 			return;
 		}
 		// 회원가입 로직 추가
-		console.log("회원가입 완료");
 		sellerRegisterMutation.mutate();
 	};
 	// 휴대폰 인증 보내기 버튼

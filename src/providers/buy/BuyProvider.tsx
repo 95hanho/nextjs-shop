@@ -65,9 +65,7 @@ export const BuyProvider = ({ children, initialDefaultAddress = null, holdIds }:
 	// 상품구매/결제
 	const { mutateAsync: mutateBuy } = useMutation({
 		mutationFn: (data: payRequest) => postJson(getApiUrl(API_URL.BUY_PAY), data),
-		onSuccess(data) {
-			console.log("mutateBuy success", data);
-
+		onSuccess() {
 			queryClient.invalidateQueries({ queryKey: ["me"] }); // 사용자 정보 다시 가져오기(마일리지, 주문내역 등 변경된 정보 반영 위해)
 
 			// 구매 완료 페이지로
@@ -143,7 +141,6 @@ export const BuyProvider = ({ children, initialDefaultAddress = null, holdIds }:
 	}, []);
 	// 결제하기
 	const handleBuy = useCallback(() => {
-		console.log("[handleBuy] 실행");
 		if (addressAlarm?.status === "FAIL") {
 			addressFormInputRefs.current[addressAlarm.name]?.focus();
 			return;
@@ -164,7 +161,6 @@ export const BuyProvider = ({ children, initialDefaultAddress = null, holdIds }:
 			};
 			const alertKeys = Object.keys(address) as (keyof UserAddress)[];
 			for (const key of alertKeys) {
-				console.log({ key, ele: addressFormInputRefs.current[key] });
 				if (!addressFormInputRefs.current[key]) continue;
 				const value = address[key];
 				// 알림 없을 때 처음 누를 때

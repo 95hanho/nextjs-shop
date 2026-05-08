@@ -32,12 +32,6 @@ export default function MyShippingAddressClient() {
 			postJson<BaseResponse, setUserAddressRequest>(getApiUrl(API_URL.MY_ADDRESS), {
 				...address,
 			}),
-		onSuccess(data) {
-			console.log(data);
-		},
-		onError(err) {
-			console.log(err);
-		},
 	});
 	// 유저 배송지 수정/ 기본주소 변경
 	const addressUpdateMutation = useMutation({
@@ -45,12 +39,6 @@ export default function MyShippingAddressClient() {
 			putJson<BaseResponse, setUserAddressRequest>(getApiUrl(API_URL.MY_ADDRESS), {
 				...address,
 			}),
-		onSuccess(data) {
-			console.log(data);
-		},
-		onError(err) {
-			console.log(err);
-		},
 	});
 	// 유저 배송지 삭제
 	const addressDeleteMutation = useMutation({
@@ -58,12 +46,6 @@ export default function MyShippingAddressClient() {
 			deleteNormal<BaseResponse>(getApiUrl(API_URL.MY_ADDRESS_DELETE), {
 				addressId,
 			}),
-		onSuccess(data) {
-			console.log(data);
-		},
-		onError(err) {
-			console.log(err);
-		},
 	});
 
 	// 6) [useEffect] ----------------------------------------------

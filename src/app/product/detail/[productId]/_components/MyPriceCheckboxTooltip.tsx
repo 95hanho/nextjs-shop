@@ -92,8 +92,7 @@ export default function MyPriceCheckboxTooltip(props: MyPriceCheckboxTooltipProp
 							className={clsx(styles.couponDownloadBtn)}
 							onClick={() => {
 								couponDownload(coupon.couponId, {
-									onSuccess(data) {
-										console.log("couponDownload data", data);
+									onSuccess() {
 										queryClient.invalidateQueries({ queryKey: ["productCouponList", productId] });
 									},
 								});

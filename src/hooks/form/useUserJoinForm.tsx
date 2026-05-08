@@ -100,8 +100,7 @@ export function useUserJoinForm() {
 		mutationFn: () => postJson<BaseResponse, JoinRequest>(getApiUrl(API_URL.AUTH_JOIN), { ...joinForm }),
 		// Mutation이 시작되기 직전에 특정 작업을 수행
 		onMutate() {},
-		onSuccess(data) {
-			console.log(data);
+		onSuccess() {
 			openDialog("ALERT", {
 				content: "회원가입이 완료되었습니다. 로그인 페이지로 이동합니다.",
 				handleAfterClose: () => {
@@ -115,10 +114,6 @@ export function useUserJoinForm() {
 				setPhoneAuthComplete(false);
 				changeJoinAlarm("phone", "인증시간이 만료되었습니다. 다시 인증해주세요.", "FAIL");
 			}
-		},
-		// 결과에 관계 없이 무언가 실행됨
-		onSettled(a, b) {
-			console.log(a, b);
 		},
 	});
 
@@ -210,7 +205,6 @@ export function useUserJoinForm() {
 	};
 	// 회원가입 완료
 	const joinSubmit = (e: FormEvent) => {
-		console.log("joinSubmit");
 		e.preventDefault();
 		if (userJoinMutation.isPending) return; // 중복 제출 방지
 		if (joinAlarm?.status === "FAIL") {
@@ -252,7 +246,6 @@ export function useUserJoinForm() {
 			return;
 		}
 		// 회원가입 로직 추가
-		console.log("회원가입 완료");
 		userJoinMutation.mutate();
 	};
 	// 휴대폰 인증 보내기 버튼

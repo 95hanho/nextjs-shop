@@ -82,7 +82,6 @@ export default function OrderDetailClient({ orderId }: { orderId: string }) {
 			couponDiscountTotal: initCouponDiscountTotal,
 			itemSellerMap: initItemSellerMap,
 		};
-		console.log("result", result);
 		return result;
 	}, [orderDetailData]);
 

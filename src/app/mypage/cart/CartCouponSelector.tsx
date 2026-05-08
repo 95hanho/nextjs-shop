@@ -90,8 +90,7 @@ export default function CartCouponSelector(props: CartCouponSelectorProps) {
 									className={clsx(styles.couponDownloadBtn)}
 									onClick={() => {
 										couponDownload(coupon.couponId, {
-											onSuccess(data) {
-												console.log("couponDownload data", data);
+											onSuccess() {
 												if (type === "COUPON") {
 													if (props.handleAfterCouponDownload) props.handleAfterCouponDownload();
 												}

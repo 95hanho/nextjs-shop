@@ -231,7 +231,6 @@ export const SellerCouponModal = ({
 
 	// 6) [useEffect] ------------------------------------------------------
 	useEffect(() => {
-		console.log({ prevSellerCoupon });
 		if (prevSellerCoupon) {
 			setIsCheckedCouponNameDuplicate(true);
 		}

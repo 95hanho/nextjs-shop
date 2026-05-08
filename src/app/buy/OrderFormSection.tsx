@@ -257,7 +257,6 @@ export default function OrderFormSection({
 															couponChecked={couponChecked || false}
 															finalXCount={initialFinalPrice}
 															handleCheckAppliedProductCoupon={(isAdd) => {
-																console.log({ holdId: item.holdId });
 																changeAppliedProductCoupon(item.holdId, coupon, isAdd);
 															}}
 															otherUsed={otherUsed}

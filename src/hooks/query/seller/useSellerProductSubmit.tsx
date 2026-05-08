@@ -97,7 +97,6 @@ export function useSellerProductSubmit() {
 				if (type === "ADD") {
 					router.push(`/seller/product/${productId}`);
 				} else if (type === "UPDATE") {
-					console.log("이미지 설정 API 요청");
 					queryClient.invalidateQueries({ queryKey: ["sellerProductDetail", productId] });
 					openDialog("ALERT", {
 						content: "제품이 수정되었습니다.",

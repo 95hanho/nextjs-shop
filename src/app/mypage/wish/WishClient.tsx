@@ -12,7 +12,7 @@ import { ProductItem } from "@/components/product/ProductItem";
 import { ProductGrid } from "@/components/product/ProductGrid";
 import styles from "./Wish.module.scss";
 import clsx from "clsx";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useGetMenu } from "@/hooks/query/main/useGetMenu";
 
 export default function WishClient() {
@@ -99,11 +99,6 @@ export default function WishClient() {
 			wishList,
 		};
 	}, [wishListData, saleOn, sellingOn, filterSubMenuId]);
-
-	// 6) [useEffect] ------------------------------------------------------
-	useEffect(() => {
-		console.log({ subMenuList });
-	}, [subMenuList]);
 
 	if (isLoading) return null;
 	return (

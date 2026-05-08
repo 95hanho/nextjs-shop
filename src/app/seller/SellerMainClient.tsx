@@ -79,12 +79,6 @@ export default function SellerMainClient() {
 			// 기존 허용 제품 중에서 선택된 ID 중 addProductIds에 포함되지 않은 ID는 removeProductIds에 포함
 			const removeProductIds = productIds.filter((id) => !addProductIds.includes(id));
 
-			console.log("request", {
-				allowedSelectedCouponId,
-				addProductIds,
-				removeProductIds,
-			});
-
 			return postJson<BaseResponse, SetSellerCouponAllowRequest>(getApiUrl(API_URL.SELLER_COUPON_ALLOWED), {
 				couponId: allowedSelectedCouponId,
 				addProductIds,

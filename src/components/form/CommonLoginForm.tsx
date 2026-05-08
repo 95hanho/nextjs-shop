@@ -57,9 +57,6 @@ export const CommonLoginForm = ({ apiUrl, redirectTo, invalidateKeys, loginIdFie
 	// 로그인 API
 	const loginMutation = useMutation({
 		mutationFn: (obj: LoginFormData<typeof loginIdField>) => postJson<BaseResponse>(apiUrl, obj),
-		onMutate(a) {
-			console.log(a);
-		},
 		onSuccess: async () => {
 			await queryClient.invalidateQueries({ queryKey: invalidateKeys }); // 로그인 후 해당 info 초기화
 			openDialog("ALERT", {
@@ -67,11 +64,11 @@ export const CommonLoginForm = ({ apiUrl, redirectTo, invalidateKeys, loginIdFie
 				handleAfterClose: () => {
 					// ✅ state에 저장된 returnUrl 사용
 					if (returnUrl) {
-						console.log("returnUrl 존재, 이동:", returnUrl);
+						// console.log("returnUrl 존재, 이동:", returnUrl);
 						const target = decodeURIComponent(returnUrl ?? redirectTo);
 						window.location.replace(target); // ✅ 무조건 서버로 다시 요청 → middleware 확실히 탐
 					} else {
-						console.log("returnUrl 없음, 기본 이동:", redirectTo);
+						// console.log("returnUrl 없음, 기본 이동:", redirectTo);
 						router.push(redirectTo);
 					}
 				},
@@ -100,9 +97,6 @@ export const CommonLoginForm = ({ apiUrl, redirectTo, invalidateKeys, loginIdFie
 					content: "정지된 계정입니다. 자세한 내용은 고객센터에 문의해주세요.",
 				});
 			}
-		},
-		onSettled(data, err, params, context) {
-			console.log(data, err, params, context);
 		},
 	});
 
