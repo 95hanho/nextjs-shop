@@ -5,9 +5,7 @@ import { getNormal } from "@/api/fetchFilter";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import {
 	GetSellerCouponAllowResponse,
-	GetSellerCouponListResponse,
 	GetSellerProductListResponse,
-	SellerCoupon,
 	SellerProduct,
 	SetSellerCouponAllowRequest,
 	UpdateCouponStatusRequest,
@@ -23,6 +21,7 @@ import SellerReviewList from "@/app/seller/SellerReviewList";
 import SellerQuestionAnswerList from "@/app/seller/SellerQuestionAnswerList";
 import SellerProductList from "@/app/seller/SellerProductList";
 import SellerCouponList from "@/app/seller/SellerCouponList";
+import { useGetSellerCouponList } from "@/hooks/query/seller/useGetSellerCouponList";
 
 export default function SellerMainClient() {
 	// 1) [store / custom hooks] -------------------------------------------
@@ -34,21 +33,12 @@ export default function SellerMainClient() {
 	const [selectedCouponIds, setSelectedCouponIds] = useState<number[]>([]);
 	// 선택된 상품 목록
 	const [selectedProductIds, setSelectedProductIds] = useState<number[]>([]);
+	// 쿠폰 허용제품 조회용 쿠폰id
+	const [allowedSelectedCouponId, setAllowedSelectedCouponId] = useState<number | null>(null);
 
 	// 3) [useQuery / useMutation] -----------------------------------------
 	// 판매자 쿠폰 리스트 조회
-	const {
-		data: sellerCouponList = [],
-		// isFetching,
-	} = useQuery<GetSellerCouponListResponse, Error, SellerCoupon[]>({
-		queryKey: ["sellerCouponList"],
-		queryFn: () => getNormal(getApiUrl(API_URL.SELLER_COUPON)),
-		select: (data) => {
-			return data.couponList;
-		},
-		enabled: loginOn,
-		refetchOnWindowFocus: false,
-	});
+	const { data: sellerCouponList = [] } = useGetSellerCouponList();
 	// 판매자 제품 리스트 조회
 	const {
 		data: sellerProductList = [],
@@ -59,13 +49,9 @@ export default function SellerMainClient() {
 		select: (data) => {
 			return data.sellerProductList;
 		},
-
 		enabled: loginOn,
 		refetchOnWindowFocus: false,
 	});
-
-	// 쿠폰 허용제품 조회용 쿠폰id
-	const [allowedSelectedCouponId, setAllowedSelectedCouponId] = useState<number | null>(null);
 	// 판매자 쿠폰 허용 제품 조회(allowedSelectedCouponId가 null이 아닐 때만 활성화)
 	const { data: couponAllowedProductIds = [], isLoading: isCouponAllowedProductIdsLoading } = useQuery<
 		GetSellerCouponAllowResponse | null,
@@ -92,12 +78,6 @@ export default function SellerMainClient() {
 			const addProductIds = productIds.filter((id) => !couponAllowedProductIds.includes(id));
 			// 기존 허용 제품 중에서 선택된 ID 중 addProductIds에 포함되지 않은 ID는 removeProductIds에 포함
 			const removeProductIds = productIds.filter((id) => !addProductIds.includes(id));
-
-			console.log("request", {
-				allowedSelectedCouponId,
-				addProductIds,
-				removeProductIds,
-			});
 
 			return postJson<BaseResponse, SetSellerCouponAllowRequest>(getApiUrl(API_URL.SELLER_COUPON_ALLOWED), {
 				couponId: allowedSelectedCouponId,

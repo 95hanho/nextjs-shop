@@ -90,10 +90,6 @@ interface ProductSetFormProps {
 }
 
 export const ProductSetForm = ({ productId, prevProductSetData }: ProductSetFormProps) => {
-	// 1) [store / custom hooks] -------------------------------------------
-	const { sellerProductSubmit } = useSellerProductSubmit();
-	const { data: menuList } = useGetMenu();
-
 	// 2) [useState / useRef] ----------------------------------------------
 	// 제품수정 폼
 	const [productSetForm, setProductSetForm] = useState<ProductSetForm>(initProductSetForm);
@@ -103,6 +99,8 @@ export const ProductSetForm = ({ productId, prevProductSetData }: ProductSetForm
 	const productImageSetRef = useRef<ProductImageSetHandle | null>(null);
 
 	// 3) [useQuery / useMutation] -----------------------------------------
+	const { sellerProductSubmit } = useSellerProductSubmit();
+	const { data: menuList } = useGetMenu();
 	// 제품명 중복확인
 	const { mutateAsync: checkProductNameDuplicate } = useMutation({
 		mutationKey: ["productNameDuplicate"],
@@ -165,8 +163,6 @@ export const ProductSetForm = ({ productId, prevProductSetData }: ProductSetForm
 	};
 	// 제품 추가/수정 버튼 클릭
 	const handleSubmitProductSetForm = async () => {
-		console.log("handleSubmitProductSetForm");
-
 		// 알람 있으면 그대로 출력
 		if (productSetAlarm?.status === "FAIL") {
 			productSetInputRefs.current[productSetAlarm.name]?.focus();
@@ -216,7 +212,6 @@ export const ProductSetForm = ({ productId, prevProductSetData }: ProductSetForm
 			productSetInputRefs.current[changeAlarm.name]?.focus();
 			return;
 		}
-		console.log("제품 추가/수정 API 요청");
 		const imageSubmitData = productImageSetRef.current?.getSubmitData();
 		// 없을 때는 ProductImageSet에서 처리
 		if (imageSubmitData) {
@@ -231,7 +226,6 @@ export const ProductSetForm = ({ productId, prevProductSetData }: ProductSetForm
 	// 6) [useEffect] ------------------------------------------------------
 	useEffect(() => {
 		if (prevProductSetData) {
-			console.log("제품 상세정보로 폼 초기화");
 			// 초기값 넣어주고 다른 값들은 초기화
 			setProductSetForm({
 				name: prevProductSetData.name,
@@ -309,7 +303,6 @@ export const ProductSetForm = ({ productId, prevProductSetData }: ProductSetForm
 											]}
 											optionSelectorName="productColorName"
 											changeOption={(pickIdx, id) => {
-												console.log({ pickIdx, id });
 												setProductSetForm((prev) => ({
 													...prev,
 													colorName: productColorNameList[id - 1],

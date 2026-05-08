@@ -163,10 +163,6 @@ export default function ReviewWriteClient() {
 				})),
 		];
 
-		// 리뷰 작성/수정 유효성 검사
-		console.log({ reviewForm, addFiles, updateFiles, deleteImageIds });
-		// return;
-
 		// 리뷰 작성
 		if (!prevReview) {
 			writeReview

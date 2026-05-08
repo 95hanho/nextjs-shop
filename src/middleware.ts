@@ -16,7 +16,7 @@ export async function middleware(nextRequest: NextRequest) {
 	const pathname = nextRequest.nextUrl.pathname;
 
 	// middleware상태확인
-	console.log("[Middleware]", pathname, nextRequest.url, nextRequest.method, "================================");
+	// console.log("[Middleware]", pathname, nextRequest.url, nextRequest.method, "================================");
 
 	// 개발자 도구나 브라우저 내부 요청 필터링
 	// if (pathname.startsWith("/.well-known/") || pathname.startsWith("/favicon.")) {
@@ -42,11 +42,10 @@ export async function middleware(nextRequest: NextRequest) {
 	}
 	// 2) 판매자 ------------------------------------
 	if (pathname.startsWith("/seller")) {
-		console.log("[Middleware] 판매자 페이지 접근");
+		// console.log("[Middleware] 판매자 페이지 접근");
 		// 1) ✅ 모든 요청에 대해 토큰 재발급 먼저 처리
 		const { response: tokenResponse } = await sellerHandleTokenRefresh(nextRequest);
 
-		console.log(123);
 		// 로그인이 필요한 페이지가 아니면 토큰 재발급 결과만 적용된 response 반환 (쿠키 유지)
 		if (["/seller/login", "/seller/join"].some((v) => pathname.startsWith(v))) {
 			return tokenResponse;
@@ -57,7 +56,7 @@ export async function middleware(nextRequest: NextRequest) {
 	}
 	// 3) 관리자 ------------------------------------
 	if (pathname.startsWith("/admin")) {
-		console.log("[Middleware] 관리자 페이지 접근");
+		// console.log("[Middleware] 관리자 페이지 접근");
 		const { response: tokenResponse } = await adminHandleTokenRefresh(nextRequest);
 
 		// 로그인이 필요한 페이지가 아니면 토큰 재발급 결과만 적용된 response 반환 (쿠키 유지)

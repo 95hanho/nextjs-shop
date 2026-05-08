@@ -39,7 +39,7 @@ export const adminRefreshAuthFromTokensPreset: RefreshAuthPreset<"ADMIN"> = {
 	verifyRToken: verifyRefreshToken,
 	generateAToken: generateAdminToken,
 	generateRToken: generateRefreshToken,
-	reTokenApiUrl: API_URL.AUTH_TOKEN_REFRESH,
+	reTokenApiUrl: API_URL.ADMIN_TOKEN_REFRESH,
 };
 
 export const adminWithAuthPreset: WithAuthPreset<"ADMIN"> = {

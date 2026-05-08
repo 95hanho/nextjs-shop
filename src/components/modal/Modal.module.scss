@@ -21,6 +21,10 @@
 		right: 0;
 		font-size: 19px;
 		padding: 10px;
+		&:focus-visible {
+			outline: none;
+			box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.12);
+		}
 	}
 	.modalContent {
 		font-family: NotoSansKR;

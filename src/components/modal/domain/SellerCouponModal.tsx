@@ -9,13 +9,14 @@ import styles from "../Modal.module.scss";
 import clsx from "clsx";
 import { FaExchangeAlt } from "react-icons/fa";
 import { money } from "@/lib/format";
-import { getNormal } from "@/api/fetchFilter";
-import { getApiUrl } from "@/lib/getBaseUrl";
-import API_URL from "@/api/endpoints";
 import { DateInput } from "@/components/form/DateInput";
 import DatePicker from "react-datepicker";
 import { useGlobalDialogStore } from "@/store/globalDialog.store";
 import { DomainModalPropsMap } from "@/store/modal.type";
+import { getNormal } from "@/api/fetchFilter";
+import { getApiUrl } from "@/lib/getBaseUrl";
+import API_URL from "@/api/endpoints";
+import { toErrorResponse } from "@/api/error";
 
 type CouponFormInputKeys = "description" | "discountValue" | "maxDiscount" | "minimumOrderBeforeAmount" | "amount";
 type CouponFormAlarm = FormInputAlarm<CouponFormInputKeys | "startDate" | "endDate">;
@@ -57,6 +58,8 @@ export const SellerCouponModal = ({
 	const [couponForm, setCouponForm] = useState<Partial<SellerCoupon>>(prevSellerCoupon || initCouponForm);
 	const [couponFormAlarm, setCouponFormAlarm] = useState<CouponFormAlarm | null>(null);
 	const couponFormInputRefs = useRef<Partial<CouponFormInputRefs>>({});
+	// 쿠폰 설명 중복검사 완료
+	const [isCheckedCouponNameDuplicate, setIsCheckedCouponNameDuplicate] = useState(false);
 
 	// 5) [handlers / useCallback] -----------------------------------------
 	// 알람이 있을 때 해당 input으로 focus | 날짜는 datepicker 열기
@@ -103,14 +106,18 @@ export const SellerCouponModal = ({
 		// 쿠폰 이름 중복 확인
 		if (name === "description" && changeVal) {
 			if (couponFormAlarm?.message !== "이미 존재하는 쿠폰 이름입니다.") {
-				await getNormal(getApiUrl(API_URL.SELLER_COUPON_DESCRIPTION_DUPLICATE), {
-					description: changeVal,
-				}).catch((err) => {
-					if (err.message === "SELLER_COUPON_DESCRIPTION_DUPLICATED") {
+				try {
+					const data = await getNormal(getApiUrl(API_URL.SELLER_COUPON_DESCRIPTION_DUPLICATE), { description: changeVal });
+					if (data) setIsCheckedCouponNameDuplicate(true);
+				} catch (err: unknown) {
+					console.log(err);
+					setIsCheckedCouponNameDuplicate(false);
+					const { payload } = toErrorResponse(err);
+					if (payload?.message === "SELLER_COUPON_DESCRIPTION_DUPLICATED") {
 						changeAlarm = { name: "description", message: "이미 존재하는 쿠폰 이름입니다.", status: "FAIL" };
 						couponFormInputRefs.current.description?.focus();
 					}
-				});
+				}
 			}
 		}
 		// 숫자만 허용해야하는 input은 숫자만 입력받도록
@@ -140,7 +147,6 @@ export const SellerCouponModal = ({
 	};
 	// 쿠폰 등록/수정 제출
 	const couponSetSubmit = async (e: FormEvent) => {
-		console.log("couponSetSubmit");
 		e.preventDefault();
 		// 알람이 있을 때는 해당 input으로 focus
 		if (couponFormAlarm?.status === "FAIL") {
@@ -164,16 +170,12 @@ export const SellerCouponModal = ({
 			}
 			if (changeAlarm) break;
 		}
-		// 쿠폰 이름 중복 확인
-		await getNormal(getApiUrl(API_URL.SELLER_COUPON_DESCRIPTION_DUPLICATE), {
-			description: couponForm.description,
-		}).catch((err) => {
-			if (err.message === "SELLER_COUPON_DESCRIPTION_DUPLICATED") {
-				changeAlarm = { name: "description", message: "이미 존재하는 쿠폰 이름입니다.", status: "FAIL" };
-				couponFormInputRefs.current.description?.focus();
-			}
-		});
 		if (changeAlarm) {
+		}
+		// 쿠폰 이름 중복 확인
+		else if (!isCheckedCouponNameDuplicate) {
+			changeAlarm = { name: "description", message: "쿠폰 이름 중복여부를 확인해주세요.", status: "FAIL" };
+			couponFormInputRefs.current.description?.focus();
 		}
 		// 최대 할인금액 < 최소 주문금액
 		else if (Number(couponForm.maxDiscount) > Number(couponForm.minimumOrderBeforeAmount)) {
@@ -229,7 +231,9 @@ export const SellerCouponModal = ({
 
 	// 6) [useEffect] ------------------------------------------------------
 	useEffect(() => {
-		console.log({ prevSellerCoupon });
+		if (prevSellerCoupon) {
+			setIsCheckedCouponNameDuplicate(true);
+		}
 	}, [prevSellerCoupon]);
 
 	return (

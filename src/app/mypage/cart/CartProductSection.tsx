@@ -92,50 +92,14 @@ export default function CartProductSection({
 	const changeQuantityMutation = useMutation<BaseResponse, Error, UpdateCartRequest>({
 		mutationFn: ({ cartId, productOptionId, quantity }) =>
 			postJson<BaseResponse>(getApiUrl(API_URL.MY_CART), { cartId, productOptionId, quantity }),
-		// Mutation이 시작되기 직전에 특정 작업을 수행
-		// onMutate(variables) {
-		// 	console.log(variables);
-		// },
-		// onSuccess(data, variables, context) {
-		// 	console.log(data, variables, context);
-		// },
-		onError(err, variables, context) {
-			console.log(err, variables, context);
-		},
-		// 결과에 관계 없이 무언가 실행됨
-		// onSettled(data, error, variables, context) {},
 	});
 	// 장바구니 선택여부 변경
 	const changeSelectedMutation = useMutation<BaseResponse, Error, UpdateCartSelectedRequest>({
 		mutationFn: ({ cartIdList, selected }) => putJson<BaseResponse>(getApiUrl(API_URL.MY_CART), { cartIdList, selected }),
-		// Mutation이 시작되기 직전에 특정 작업을 수행
-		// onMutate(a) {
-		// 	console.log(a);
-		// },
-		// onSuccess(data) {
-		// 	console.log(data);
-		// },
-		onError(err) {
-			console.log(err);
-		},
-		// 결과에 관계 없이 무언가 실행됨
-		// onSettled(a, b) {},
 	});
 	// 장바구니 제품 삭제
 	const cartProductDeleteMutation = useMutation<BaseResponse, Error, { cartIdList: number[] }>({
 		mutationFn: ({ cartIdList }) => deleteNormal<BaseResponse>(getApiUrl(API_URL.MY_CART), { cartIdList }),
-		// Mutation이 시작되기 직전에 특정 작업을 수행
-		// onMutate(a) {
-		// 	console.log(a);
-		// },
-		// onSuccess(data) {
-		// 	console.log(data);
-		// },
-		onError(err) {
-			console.log(err);
-		},
-		// 결과에 관계 없이 무언가 실행됨
-		// onSettled(a, b) {},
 	});
 
 	// 5) [handlers / useCallback] ---------------------------------

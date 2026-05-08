@@ -30,8 +30,6 @@ export function useFindUserForm() {
 	const { push } = useRouter();
 	const params = useParams<{ type?: FindType }>(); // `type`이 있을 수도 있고 없을 수도 있음
 	const findType = params.type;
-	const phoneAuthMutation = usePhoneAuth(findType === "id" ? "IDFIND" : "PWDFIND");
-	const phoneAuthCompleteMutation = usePhoneAuthCheck();
 
 	// 2) [useState / useRef] ----------------------------------------------
 	// 비번변경 폼 데이터
@@ -47,6 +45,10 @@ export function useFindUserForm() {
 	const [phoneAuthComplete, setPhoneAuthComplete] = useState<boolean>(false);
 	// 찾은 아이디
 	const [findId, setFindId] = useState<string>("userId");
+
+	// 3) [useQuery / useMutation] -----------------------------------------
+	const phoneAuthMutation = usePhoneAuth(findType === "id" ? "IDFIND" : "PWDFIND");
+	const phoneAuthCompleteMutation = usePhoneAuthCheck();
 
 	// 5) [handlers / useCallback] -----------------------------------------
 	// 비번변경 폼 변경
@@ -97,7 +99,6 @@ export function useFindUserForm() {
 	};
 	// 비밀번호변경 제출
 	const findUserSubmit = (e: FormEvent) => {
-		console.log("findUserSubmit");
 		e.preventDefault();
 		if (findUserFormAlarm?.status === "FAIL") {
 			findUserFormInputRefs.current[findUserFormAlarm.name]?.focus();
@@ -125,7 +126,6 @@ export function useFindUserForm() {
 			return;
 		}
 		//
-		console.log("비밀번호변경 제출");
 	};
 	// 휴대폰 인증 보내기 버튼
 	const clickPhoneAuth = () => {
@@ -185,7 +185,6 @@ export function useFindUserForm() {
 	};
 	// 휴대폰 인증확인 버튼
 	const clickCheckPhoneAuth = () => {
-		console.log("clickCheckPhoneAuth");
 		if (phoneAuthCompleteMutation.isPending) return;
 		if (!phoneAuthToken) {
 			setPhoneAuthView(false);

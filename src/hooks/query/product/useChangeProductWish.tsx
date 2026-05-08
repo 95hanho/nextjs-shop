@@ -8,11 +8,5 @@ export function useChangeProductWish() {
 	return useMutation({
 		mutationKey: ["changeProductWish"],
 		mutationFn: (productId: number) => postJson<BaseResponse>(getApiUrl(API_URL.PRODUCT_WISH), { productId }),
-		onSuccess: (data) => {
-			console.log(data);
-		},
-		onError: (err) => {
-			console.log(err);
-		},
 	});
 }

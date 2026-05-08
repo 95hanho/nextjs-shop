@@ -39,7 +39,7 @@ export const sellerRefreshAuthFromTokensPreset: RefreshAuthPreset<"SELLER"> = {
 	verifyRToken: verifyRefreshToken,
 	generateAToken: generateSellerToken,
 	generateRToken: generateRefreshToken,
-	reTokenApiUrl: API_URL.AUTH_TOKEN_REFRESH,
+	reTokenApiUrl: API_URL.SELLER_TOKEN_REFRESH,
 };
 
 export const sellerWithAuthPreset: WithAuthPreset<"SELLER"> = {

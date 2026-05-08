@@ -52,9 +52,6 @@ export function useUserUpdateForm() {
 	const { openDialog } = useGlobalDialogStore();
 	const { user, setUser } = useAuth();
 	const queryClient = useQueryClient();
-	const { data: userId } = useGetUserId();
-	const phoneAuthMutation = usePhoneAuth("CHANGE");
-	const phoneAuthCompleteMutation = usePhoneAuthCheck();
 
 	// 2) [useState / useRef] ----------------------------------------------
 	// 유저업데이트 폼
@@ -71,6 +68,9 @@ export function useUserUpdateForm() {
 	const [phoneAuthComplete, setPhoneAuthComplete] = useState<boolean>(true);
 
 	// 3) [useQuery / useMutation] -----------------------------------------
+	const { data: userId } = useGetUserId();
+	const phoneAuthMutation = usePhoneAuth("CHANGE");
+	const phoneAuthCompleteMutation = usePhoneAuthCheck();
 	// 회원정보변경 API
 	const userUpdateMutation = useMutation<BaseResponse, Error>({
 		mutationFn: () =>
@@ -150,7 +150,6 @@ export function useUserUpdateForm() {
 	};
 	// 유저업데이트 완료
 	const userUpdateSubmit = (e: FormEvent) => {
-		console.log("userUpdateSubmit");
 		e.preventDefault();
 		if (userUpdateMutation.isPending) return;
 		/* 변한게 없으면 다시 그냥 유저정보보기 화면으로 */
@@ -162,7 +161,6 @@ export function useUserUpdateForm() {
 				return value === user[key];
 			})
 		) {
-			console.log("변한게 없다!!");
 			router.replace("/mypage/info");
 			return;
 		}

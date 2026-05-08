@@ -2,15 +2,12 @@ import { IoMdDownload } from "react-icons/io";
 import styles from "../ProductDetail.module.scss";
 import clsx from "clsx";
 import { discountPercent, money } from "@/lib/format";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { postJson } from "@/api/fetchFilter";
-import { getApiUrl } from "@/lib/getBaseUrl";
-import API_URL from "@/api/endpoints";
-import { BaseResponse } from "@/types/common";
+import { useQueryClient } from "@tanstack/react-query";
 import { calculateDiscount } from "@/lib/price";
 import { TooltipIcon } from "@/components/ui/TooltipIcon";
 import { ProductCouponWithDiscount } from "@/app/product/detail/[productId]/_components/ProductVisualInfo";
 import { useParams } from "next/navigation";
+import { useCouponDownload } from "@/hooks/query/mypage/useCouponDownload";
 
 type CommonProps = {
 	originPrice: number;
@@ -37,17 +34,7 @@ export default function MyPriceCheckboxTooltip(props: MyPriceCheckboxTooltipProp
 	const productId = Number(params.productId);
 
 	// 3) [useQuery / useMutation] -----------------------------------------
-	// 쿠폰 다운로드
-	const couponDownload = useMutation({
-		mutationFn: (couponId: number) => postJson<BaseResponse & { userCouponId: number }>(getApiUrl(API_URL.PRODUCT_COUPON_DOWNLOAD), { couponId }),
-		onSuccess(data) {
-			console.log("couponDownload data", data);
-			queryClient.invalidateQueries({ queryKey: ["productCouponList", productId] });
-		},
-		onError(err) {
-			console.log("couponDownload err", err);
-		},
-	});
+	const { mutate: couponDownload } = useCouponDownload();
 
 	if (type === "BASE") {
 		return (
@@ -104,7 +91,11 @@ export default function MyPriceCheckboxTooltip(props: MyPriceCheckboxTooltipProp
 						<button
 							className={clsx(styles.couponDownloadBtn)}
 							onClick={() => {
-								couponDownload.mutate(coupon.couponId);
+								couponDownload(coupon.couponId, {
+									onSuccess() {
+										queryClient.invalidateQueries({ queryKey: ["productCouponList", productId] });
+									},
+								});
 							}}
 						>
 							받기

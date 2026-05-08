@@ -1,23 +1,21 @@
 "use client";
 
 import API_URL from "@/api/endpoints";
-import { deleteNormal, getNormal, postJson, putJson } from "@/api/fetchFilter";
+import { deleteNormal, postJson, putJson } from "@/api/fetchFilter";
 import { FormPageShell } from "@/components/form/FormPageShell";
 import { LodingWrap } from "@/components/common/LodingWrap";
-import { useAuth } from "@/hooks/context/useAuth";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { useModalStore } from "@/store/modal.store";
 import { BaseResponse } from "@/types/common";
-import { GetUserAddressListResponse, setUserAddressRequest, UserAddressListItem } from "@/types/mypage";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import Error from "next/error";
+import { setUserAddressRequest, UserAddressListItem } from "@/types/mypage";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import styles from "./MyShippingAddress.module.scss";
 import { ShippingAddressList } from "@/components/address/ShippingAddressList";
+import { useGetUserAddressList } from "@/hooks/query/user/useGetUserAddressList";
 
 export default function MyShippingAddressClient() {
 	// 1) [store / custom hooks] -----------------------------------
-	const { loginOn } = useAuth();
 	const queryClient = useQueryClient();
 	const { openModal } = useModalStore();
 
@@ -27,24 +25,13 @@ export default function MyShippingAddressClient() {
 	const addressListRef = useRef<HTMLUListElement | null>(null);
 
 	// 3) [useQuery / useMutation] ---------------------------------
-	// 유저 배송지 조회
-	const { data: userAddressData, isLoading } = useQuery<GetUserAddressListResponse, Error, GetUserAddressListResponse>({
-		queryKey: ["userAddressList"],
-		queryFn: () => getNormal(getApiUrl(API_URL.MY_ADDRESS)),
-		enabled: loginOn,
-	});
+	const { data: initUserAddressList, isLoading } = useGetUserAddressList();
 	// 유저 배송지 추가
 	const addressAddMutation = useMutation({
 		mutationFn: (address: setUserAddressRequest) =>
 			postJson<BaseResponse, setUserAddressRequest>(getApiUrl(API_URL.MY_ADDRESS), {
 				...address,
 			}),
-		onSuccess(data) {
-			console.log(data);
-		},
-		onError(err) {
-			console.log(err);
-		},
 	});
 	// 유저 배송지 수정/ 기본주소 변경
 	const addressUpdateMutation = useMutation({
@@ -52,12 +39,6 @@ export default function MyShippingAddressClient() {
 			putJson<BaseResponse, setUserAddressRequest>(getApiUrl(API_URL.MY_ADDRESS), {
 				...address,
 			}),
-		onSuccess(data) {
-			console.log(data);
-		},
-		onError(err) {
-			console.log(err);
-		},
 	});
 	// 유저 배송지 삭제
 	const addressDeleteMutation = useMutation({
@@ -65,20 +46,14 @@ export default function MyShippingAddressClient() {
 			deleteNormal<BaseResponse>(getApiUrl(API_URL.MY_ADDRESS_DELETE), {
 				addressId,
 			}),
-		onSuccess(data) {
-			console.log(data);
-		},
-		onError(err) {
-			console.log(err);
-		},
 	});
 
 	// 6) [useEffect] ----------------------------------------------
 	useEffect(() => {
-		if (!isLoading && userAddressData) {
-			setUserAddressList([...userAddressData.userAddressList]);
+		if (!isLoading && initUserAddressList && initUserAddressList.length > 0) {
+			setUserAddressList([...initUserAddressList]);
 		}
-	}, [isLoading, userAddressData]);
+	}, [isLoading, initUserAddressList]);
 
 	// if (isLoading && !userAddressList.length) return null;
 	return (

@@ -12,14 +12,14 @@ type ProductOptionModalProps = {
 } & DomainModalPropsMap["PRODUCT_OPTION"];
 
 export const ProductOptionModal = ({ onClose, product, handleAfterCartProductOptionChange }: ProductOptionModalProps) => {
-	// 1) [store / custom hooks] -------------------------------------------
-	const { data: productOptionList, isLoading } = useGetProductOptions(product.productId);
-
 	// 2) [useState / useRef] ----------------------------------------------
 	// ✅ 선택된 옵션(productOptionId) 관리
 	const [pickId, setPickId] = useState<number>(product.productOptionId);
 	// 수량
 	const [productCount, setProductCount] = useState<number>(product.quantity);
+
+	// 3) [useQuery / useMutation] -----------------------------------------
+	const { data: productOptionList, isLoading } = useGetProductOptions(product.productId);
 
 	// 6) [useEffect] ------------------------------------------------------
 	// ✅ optionResponse 들어오면, pickId가 없거나 유효하지 않을 때 기본값 보정

@@ -40,7 +40,6 @@ export const SellerProvider = ({ children }: SellerProviderProps) => {
 
 	// 5) [handlers / useCallback] -----------------------------------------
 	const logout = async () => {
-		console.log("로그아웃");
 		setSeller(initSeller);
 		queryClient.setQueryData(["sellerInfo"], initSeller); // 직접 캐시 업데이트
 		await postJson(getApiUrl(API_URL.SELLER_LOGOUT));

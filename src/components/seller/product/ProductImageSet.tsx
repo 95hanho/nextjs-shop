@@ -105,7 +105,6 @@ export const ProductImageSet = forwardRef<ProductImageSetHandle, ProductImageSet
 	}, [prevImageList]);
 	useEffect(() => {
 		if (!prevImageList) return;
-		console.log("초기 이미지 리스트 세팅", { prevImageList: [...prevImageList] });
 
 		// 초기 데이터 세팅 및 초기화
 		setPrevThumbnailList(prevImageList.filter((image) => image.thumbnail).map((image) => ({ ...image, type: "prev", deleting: false })));

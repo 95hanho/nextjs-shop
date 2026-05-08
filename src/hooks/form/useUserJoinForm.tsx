@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { isValidDateString } from "@/utils/ui";
-import { useMutation } from "@tanstack/react-query";
-import { postJson } from "@/api/fetchFilter";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { getNormal, postJson } from "@/api/fetchFilter";
 import { BaseResponse } from "@/types/common";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import API_URL from "@/api/endpoints";
@@ -67,8 +67,6 @@ export function useUserJoinForm() {
 	// 1) [store / custom hooks] -------------------------------------------
 	const router = useRouter();
 	const { openDialog } = useGlobalDialogStore();
-	const phoneAuthMutation = usePhoneAuth("JOIN");
-	const phoneAuthCompleteMutation = usePhoneAuthCheck();
 
 	// 2) [useState / useRef] ----------------------------------------------
 	// 회원가입 폼 데이터
@@ -78,7 +76,7 @@ export function useUserJoinForm() {
 	// 회원가입 input들 HTMLInputElement
 	const joinFormInputRefs = useRef<Partial<JoinFormInputRefs>>({});
 	// 아이디중복여부
-	const [idDuplCheck, setIdDuplCheck] = useState<boolean>(false);
+	const [idDuplCheckOk, setIdDuplCheckOk] = useState<boolean>(false);
 	// 인증번호 화면 띄울지
 	const [phoneAuthView, setPhoneAuthView] = useState<boolean>(false);
 	// 인증번호 토큰
@@ -87,21 +85,14 @@ export function useUserJoinForm() {
 	const [phoneAuthComplete, setPhoneAuthComplete] = useState<boolean>(false);
 
 	// 3) [useQuery / useMutation] -----------------------------------------
+	const phoneAuthMutation = usePhoneAuth("JOIN");
+	const phoneAuthCompleteMutation = usePhoneAuthCheck();
 	// 아이디중복확인 mutate
-	const idDuplcheckMutation = useMutation({
-		mutationFn: (userId: string) => postJson<BaseResponse>(getApiUrl(API_URL.AUTH_ID), { userId }),
-		// Mutation이 시작되기 직전에 특정 작업을 수행
-		onMutate(a) {
-			console.log(a);
-		},
-		onSuccess(data) {
-			console.log(data);
-		},
-		onError(err) {
-			console.log(err);
-		},
-		// 결과에 관계 없이 무언가 실행됨
-		// onSettled(a, b) {},
+	const { refetch: idDuplCheck, isFetching: isIdDuplCheckFetching } = useQuery({
+		queryKey: ["idDuplCheck", joinForm.userId.trim()],
+		queryFn: () => getNormal<BaseResponse>(getApiUrl(API_URL.AUTH_ID_DUPLICATE), { userId: joinForm.userId.trim() }),
+		enabled: false,
+		retry: false,
 	});
 
 	// 회원가입
@@ -109,8 +100,7 @@ export function useUserJoinForm() {
 		mutationFn: () => postJson<BaseResponse, JoinRequest>(getApiUrl(API_URL.AUTH_JOIN), { ...joinForm }),
 		// Mutation이 시작되기 직전에 특정 작업을 수행
 		onMutate() {},
-		onSuccess(data) {
-			console.log(data);
+		onSuccess() {
 			openDialog("ALERT", {
 				content: "회원가입이 완료되었습니다. 로그인 페이지로 이동합니다.",
 				handleAfterClose: () => {
@@ -124,10 +114,6 @@ export function useUserJoinForm() {
 				setPhoneAuthComplete(false);
 				changeJoinAlarm("phone", "인증시간이 만료되었습니다. 다시 인증해주세요.", "FAIL");
 			}
-		},
-		// 결과에 관계 없이 무언가 실행됨
-		onSettled(a, b) {
-			console.log(a, b);
 		},
 	});
 
@@ -179,18 +165,16 @@ export function useUserJoinForm() {
 				changeAlarm = { name, message: joinFormRegexFailMent[name], status: "FAIL" };
 			} else {
 				if (name == "userId") {
-					await idDuplcheckMutation
-						.mutateAsync(joinForm.userId)
-						.then(() => {
-							changeAlarm = { name, message: "사용가능한 아이디입니다." };
-							setIdDuplCheck(true);
-						})
-						.catch((err) => {
-							if (err.message === "ID_DUPLICATED") {
-								changeAlarm = { name, message: "중복된 아이디가 존재합니다.", status: "FAIL" };
-								setIdDuplCheck(false);
-							}
-						});
+					if (isIdDuplCheckFetching) return;
+					const { isSuccess, error, isError } = await idDuplCheck();
+					if (isSuccess) {
+						changeAlarm = { name, message: "사용가능한 아이디입니다." };
+						setIdDuplCheckOk(true);
+					}
+					if (isError && error?.message === "ID_DUPLICATED") {
+						changeAlarm = { name, message: "중복된 아이디가 존재합니다.", status: "FAIL" };
+						setIdDuplCheckOk(false);
+					}
 				} else if (name == "password") {
 					if (joinForm.passwordCheck && joinForm.passwordCheck != changeVal) {
 						changeAlarm = { name: "passwordCheck", message: "비밀번호와 일치하지 않습니다.", status: "FAIL" };
@@ -221,7 +205,6 @@ export function useUserJoinForm() {
 	};
 	// 회원가입 완료
 	const joinSubmit = (e: FormEvent) => {
-		console.log("joinSubmit");
 		e.preventDefault();
 		if (userJoinMutation.isPending) return; // 중복 제출 방지
 		if (joinAlarm?.status === "FAIL") {
@@ -241,7 +224,7 @@ export function useUserJoinForm() {
 			// 정규표현식 검사
 			else if (joinFormRegex[key] && !joinFormRegex[key].test(value)) {
 				changeAlarm = { name: key, message: joinFormRegexFailMent[key], status: "FAIL" };
-			} else if (key == "userId" && !idDuplCheck) {
+			} else if (key == "userId" && !idDuplCheckOk) {
 				changeAlarm = { name: key, message: "아이디 중복확인을 해주세요.", status: "FAIL" };
 			} else if (key === "password" && joinForm.password !== joinForm.passwordCheck) {
 				changeAlarm = { name: "passwordCheck", message: "비밀번호와 일치하지 않습니다.", status: "FAIL" };
@@ -263,7 +246,6 @@ export function useUserJoinForm() {
 			return;
 		}
 		// 회원가입 로직 추가
-		console.log("회원가입 완료");
 		userJoinMutation.mutate();
 	};
 	// 휴대폰 인증 보내기 버튼

@@ -95,7 +95,6 @@ export const ShippingAddressEditorModal = ({ onClose, prevAddress, handleAfterSe
 		}));
 	};
 	const addressSetSubmit = (e: FormEvent) => {
-		console.log("addressSetSubmit");
 		e.preventDefault();
 		if (addressFormAlarm?.status === "FAIL") {
 			addressFormInputRefs.current[addressFormAlarm.name]?.focus();

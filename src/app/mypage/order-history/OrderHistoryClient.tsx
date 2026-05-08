@@ -72,7 +72,6 @@ export default function OrderHistoryClient() {
 		const result = {
 			myOrderList: orderHistoryData.myOrderList,
 		};
-		console.log("주문내역 데이터", result);
 		return result;
 	}, [orderHistoryData]);
 

@@ -56,14 +56,17 @@ export const DialogRoot = () => {
 	// ESC 눌러서 닫기
 	useEffect(() => {
 		const handleKey = (e: KeyboardEvent) => {
+			if (!modalType || isClosing) return;
+
 			if (e.key === "Escape") {
 				if (!escCloseAllowed) return;
 				handleClose();
 			}
 		};
+
 		window.addEventListener("keydown", handleKey);
 		return () => window.removeEventListener("keydown", handleKey);
-	}, [closeDialog, escCloseAllowed, handleClose]);
+	}, [escCloseAllowed, handleClose, isClosing, modalType]);
 
 	// 7) [UI helper values] -------------------------------------------------
 	// 모달 몸통

@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 
 // 위시 여부 확인
 export function useWishCheck(productIdList: number[]) {
+	// 1) [store / custom hooks] -------------------------------------------
 	const { loginOn } = useAuth();
 
 	return useQuery<BaseResponse & { checkedProductIdList: number[] }, Error, number[]>({

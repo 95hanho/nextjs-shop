@@ -19,8 +19,7 @@ export function useProductCheckAndHold() {
 				buyList,
 				returnUrl,
 			}),
-		onSuccess: (data) => {
-			console.log("상품 점유 성공", data);
+		onSuccess: () => {
 			router.push("/buy");
 		},
 		onError: (err) => {

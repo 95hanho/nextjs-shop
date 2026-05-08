@@ -32,7 +32,6 @@ export default function ProductDetailClient({ initProductDetailResponse }: Produ
 		productId: string;
 	}>();
 	const productId = Number(params.productId);
-	const { data: checkedProductIdList = [] } = useWishCheck([productId]);
 
 	// 2) [useState / useRef] ----------------------------------------------
 	// 리뷰섹션 요소
@@ -41,6 +40,7 @@ export default function ProductDetailClient({ initProductDetailResponse }: Produ
 	const qnaSectionRef = useRef<HTMLDivElement | null>(null);
 
 	// 3) [useQuery / useMutation] -----------------------------------------
+	const { data: checkedProductIdList = [] } = useWishCheck([productId]);
 	// 상품 상세 정보 (SSR로 받아온 데이터 활용, 필요 시 최신 데이터로 갱신)
 	const { data: productDetailResponse } = useQuery<GetProductDetailResponse>({
 		queryKey: ["productDetail", productId],

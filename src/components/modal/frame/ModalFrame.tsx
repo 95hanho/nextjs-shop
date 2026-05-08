@@ -16,7 +16,7 @@ export const ModalFrame = ({ title = "", onClose, children, modalWrapVariant, co
 		<div className={clsx(styles.modalWrap, modalWrapVariant ? styles[modalWrapVariant] : "")}>
 			<header className={styles.modalHeader}>{title}</header>
 
-			<button type="button" className={styles.modalClose} onClick={onClose} aria-label="닫기">
+			<button type="button" className={styles.modalClose} onClick={onClose} aria-label="닫기" autoFocus>
 				<BsXLg />
 			</button>
 

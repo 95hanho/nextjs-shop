@@ -17,10 +17,10 @@ const refreshAccessToken = async <R extends Role>(nextRequest: NextRequest, refr
 	const ip = xffHeader?.split(",")[0]?.trim() ?? nextRequest.headers.get("x-real-ip") ?? "unknown";
 
 	try {
-		// console.log(`[Middleware TokenRefresh:${preset.role}] 토큰 재생성 시작 =>`, {
-		// 	beforeToken: "..." + refreshToken.slice(-10),
-		// 	newRefreshToken: "..." + newRefreshToken.slice(-10),
-		// });
+		console.log(`[Middleware TokenRefresh:${preset.role}] 토큰 재생성 시작 =>`, {
+			beforeToken: "..." + refreshToken.slice(-10),
+			newRefreshToken: "..." + newRefreshToken.slice(-10),
+		});
 		const reTokenData = await postUrlFormData<BaseResponse & { [key in typeof preset.primaryKey]: number }>(
 			getBackendUrl(preset.reTokenApiUrl),
 			{
@@ -71,10 +71,10 @@ export const handleTokenRefresh = async <R extends Role>(
 	const accessToken = nextRequest.cookies.get(preset.aToken)?.value || nextRequest.headers.get(preset.aToken);
 	const refreshToken = nextRequest.cookies.get(preset.rToken)?.value || nextRequest.headers.get(preset.rToken);
 
-	console.log(`[Middleware TokenRefresh:${preset.role}] 토큰 재발급 체크 - 요청 url: ${nextRequest.url}`, {
-		[preset.aToken]: accessToken ? "..." + accessToken.slice(-10) : "없음",
-		[preset.rToken]: refreshToken ? "..." + refreshToken.slice(-10) : "없음",
-	});
+	// console.log(`[Middleware TokenRefresh:${preset.role}] 토큰 재발급 체크 - 요청 url: ${nextRequest.url}`, {
+	// 	[preset.aToken]: accessToken ? "..." + accessToken.slice(-10) : "없음",
+	// 	[preset.rToken]: refreshToken ? "..." + refreshToken.slice(-10) : "없음",
+	// });
 
 	// 1) accessToken 유효 → 그대로 통과
 	if (accessToken?.trim()) {

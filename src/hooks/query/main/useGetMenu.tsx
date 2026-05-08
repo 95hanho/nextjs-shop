@@ -10,5 +10,6 @@ export function useGetMenu() {
 		queryKey: ["mainMenu"],
 		queryFn: () => getNormal<MenuResponse>(getApiUrl(API_URL.MAIN_MENU)),
 		select: (data) => data.menuList,
+		refetchOnWindowFocus: false,
 	});
 }

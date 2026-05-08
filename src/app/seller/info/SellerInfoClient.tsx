@@ -7,8 +7,6 @@ import { useSellerAuth } from "@/hooks/context/useSellerAuth";
 export default function SellerInfoClient() {
 	const { seller } = useSellerAuth();
 
-	console.log({ seller });
-
 	if (!seller.sellerName) return null;
 	return (
 		<FormPageShell title="판매자 정보" wrapMinHeight={100} formWidth={550}>

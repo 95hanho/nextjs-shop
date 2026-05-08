@@ -6,8 +6,10 @@ import { AddCartItem } from "@/types/product";
 /** 장바구니 담기 */
 export function useProductCartAction() {
 	// 1) [store / custom hooks] -------------------------------------------
-	const { mutateAsync: checkProductCart } = useProductCartCheck();
 	const { openDialog } = useGlobalDialogStore();
+
+	// 3) [useQuery / useMutation] -----------------------------------------
+	const { mutateAsync: checkProductCart } = useProductCartCheck();
 	const addCartMutation = useAddCart();
 
 	// 5) [handlers / useCallback] -----------------------------------------

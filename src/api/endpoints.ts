@@ -26,8 +26,10 @@ const API_URL = {
 	AUTH: "/auth",
 	/** 로그아웃 */
 	AUTH_LOGOUT: "/auth/logout",
-	/** 유저아이디 조회 By인증토큰, 아이디 중복확인 */
+	/** 유저아이디 조회 By인증토큰 */
 	AUTH_ID: "/auth/id",
+	/** 아이디 중복확인 */
+	AUTH_ID_DUPLICATE: "/auth/id/duplicate",
 	/** 휴대폰 인증 */
 	AUTH_PHONE_AUTH: "/auth/phone",
 	/** 휴대폰 인증 확인 */
@@ -86,8 +88,6 @@ const API_URL = {
 	// 제품 ----------------------------------
 	/** 제품리스트 조회 */
 	PRODUCT: "/product",
-	/** 좋아요/취소 */
-	PRODUCT_LIKE: "/product/like",
 	/** 현재 회원 위시 productId 목록 조회, 위시 등록/해제 */
 	PRODUCT_WISH: "/product/wish",
 	/** 위시 여부 확인 */

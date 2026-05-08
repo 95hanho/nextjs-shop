@@ -12,12 +12,14 @@ import { usePathname } from "next/navigation";
 export default function SellerHeader() {
 	// 1) [store / custom hooks] -------------------------------------------
 	const { logout } = useSellerAuth();
-	const { data: seller } = useGetSellerInfo();
 	const pathname = usePathname();
 
 	// 2) [useState / useRef] ----------------------------------------------
 	const headerRef = useRef<HTMLElement | null>(null);
 	const [isOpen, set_isOpen] = useState<boolean>(false);
+
+	// 3) [useQuery / useMutation] -----------------------------------------
+	const { data: seller } = useGetSellerInfo();
 
 	// 5) [handlers / useCallback] -----------------------------------------
 	const menuMouseleave = () => {

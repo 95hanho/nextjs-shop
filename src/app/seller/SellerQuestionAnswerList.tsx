@@ -119,7 +119,6 @@ export default function SellerQuestionAnswerList() {
 	// 6) [useEffect] ------------------------------------------------------
 	useEffect(() => {
 		if (sellerQnaList.length > 0) {
-			console.log({ sellerQnaList });
 			const totalPage = Math.ceil(
 				sellerQnaList.filter((qna) => qnaFilterCode === "ALL" || qna.productQnaTypeCode === qnaFilterCode).length / 5,
 			);

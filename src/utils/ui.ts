@@ -10,8 +10,6 @@ export const isValidDateString = (dateStr: string): boolean => {
 	const month = Number(dateStr.slice(4, 6));
 	const day = Number(dateStr.slice(6, 8));
 
-	console.log(year, month, day);
-
 	if (year < 1900 || new Date().getFullYear() < year) return false;
 	if (month < 1 || 12 < month) return false;
 	// 윤년인지
