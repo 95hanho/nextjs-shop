@@ -60,6 +60,8 @@ export const DomainModalRoot = () => {
 	// ESC 눌러서 닫기
 	useEffect(() => {
 		const handleKey = (e: KeyboardEvent) => {
+			if (!modalType || isClosing) return;
+
 			if (e.key === "Escape") {
 				if (!escCloseAllowed) return;
 				handleClose();
@@ -67,7 +69,7 @@ export const DomainModalRoot = () => {
 		};
 		window.addEventListener("keydown", handleKey);
 		return () => window.removeEventListener("keydown", handleKey);
-	}, [closeModal, escCloseAllowed, handleClose]);
+	}, [escCloseAllowed, handleClose, isClosing, modalType]);
 
 	// 7) [UI helper values] -------------------------------------------------
 	let childrenModal: React.ReactNode = null;

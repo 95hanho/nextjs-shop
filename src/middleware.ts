@@ -46,7 +46,6 @@ export async function middleware(nextRequest: NextRequest) {
 		// 1) ✅ 모든 요청에 대해 토큰 재발급 먼저 처리
 		const { response: tokenResponse } = await sellerHandleTokenRefresh(nextRequest);
 
-		console.log(123);
 		// 로그인이 필요한 페이지가 아니면 토큰 재발급 결과만 적용된 response 반환 (쿠키 유지)
 		if (["/seller/login", "/seller/join"].some((v) => pathname.startsWith(v))) {
 			return tokenResponse;

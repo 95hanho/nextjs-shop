@@ -60,13 +60,12 @@ export default function CategoryProductListClient({ menuSubId, initialProductLis
 	// 제품리스트 조회
 	const isInitialQuery = sortCode === "POPULAR" && popularPeriodCode === "ALL";
 	const periodKey = sortCode === "POPULAR" ? popularPeriodCode : "NONE";
-	const { data, fetchNextPage, hasNextPage, isFetchingNextPage /* , isFetching */ } = useInfiniteQuery<
-		GetProductListResponse,
-		Error,
-		InfiniteData<GetProductListResponse>,
-		(string | number)[],
-		ProductListCursor | null
-	>({
+	const {
+		data: productListData,
+		fetchNextPage,
+		hasNextPage,
+		isFetchingNextPage /* , isFetching */,
+	} = useInfiniteQuery<GetProductListResponse, Error, InfiniteData<GetProductListResponse>, (string | number)[], ProductListCursor | null>({
 		queryKey: ["productList", menuSubId, sortCode, periodKey],
 		initialPageParam: null,
 		queryFn: ({ pageParam }) => {
@@ -97,8 +96,8 @@ export default function CategoryProductListClient({ menuSubId, initialProductLis
 
 	// 4) [derived values / useMemo] ---------------------------------------
 	const productList: ProductItemType[] = useMemo(() => {
-		return data?.pages.flatMap((page) => page.productList) ?? [];
-	}, [data]);
+		return productListData?.pages.flatMap((page) => page.productList) ?? [];
+	}, [productListData]);
 
 	// 4.5) [custom hooks] -----------------------------------------
 	const { data: checkedProductIdList } = useWishCheck(productList.map((p) => p.productId));

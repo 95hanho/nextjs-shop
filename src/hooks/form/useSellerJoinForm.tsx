@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { useMutation } from "@tanstack/react-query";
-import { postJson } from "@/api/fetchFilter";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { getNormal, postJson } from "@/api/fetchFilter";
 import { BaseResponse } from "@/types/common";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import API_URL from "@/api/endpoints";
@@ -82,7 +82,7 @@ export function useSellerJoinForm() {
 	// 회원가입 input들 HTMLInputElement
 	const joinFormInputRefs = useRef<Partial<JoinFormInputRefs>>({});
 	// 아이디중복여부
-	const [idDuplCheck, setIdDuplCheck] = useState<boolean>(false);
+	const [idDuplCheckOk, setIdDuplCheckOk] = useState<boolean>(false);
 	// 인증번호 화면 띄울지
 	const [phoneAuthView, setPhoneAuthView] = useState<boolean>(false);
 	// 인증번호 토큰
@@ -91,9 +91,12 @@ export function useSellerJoinForm() {
 	const [phoneAuthComplete, setPhoneAuthComplete] = useState<boolean>(false);
 
 	// 3) [useQuery / useMutation] -----------------------------------------
-	// 아이디중복확인 mutate
-	const idDuplcheckMutation = useMutation({
-		mutationFn: (sellerId: string) => postJson<BaseResponse>(getApiUrl(API_URL.SELLER_ID), { sellerId }),
+	// 아이디중복확인
+	const { refetch: idDuplCheck, isFetching: isIdDuplCheckFetching } = useQuery({
+		queryKey: ["sellerIdDuplCheck", joinForm.sellerId.trim()],
+		queryFn: () => getNormal<BaseResponse>(getApiUrl(API_URL.SELLER_ID), { sellerId: joinForm.sellerId.trim() }),
+		enabled: false,
+		retry: false,
 	});
 	// 휴대폰 인증
 	const phoneAuthMutation = useMutation({
@@ -216,18 +219,16 @@ export function useSellerJoinForm() {
 				changeAlarm = { name, message: joinFormRegexFailMent[name], status: "FAIL" };
 			} else {
 				if (name == "sellerId") {
-					await idDuplcheckMutation
-						.mutateAsync(joinForm.sellerId)
-						.then(() => {
-							changeAlarm = { name, message: "사용가능한 아이디입니다." };
-							setIdDuplCheck(true);
-						})
-						.catch((err) => {
-							if (err.message === "SELLER_ID_DUPLICATED") {
-								changeAlarm = { name, message: "중복된 아이디가 존재합니다.", status: "FAIL" };
-								setIdDuplCheck(false);
-							}
-						});
+					if (isIdDuplCheckFetching) return;
+					const { isSuccess, error, isError } = await idDuplCheck();
+					if (isSuccess) {
+						changeAlarm = { name, message: "사용가능한 아이디입니다." };
+						setIdDuplCheckOk(true);
+					}
+					if (isError && error?.message === "SELLER_ID_DUPLICATED") {
+						changeAlarm = { name, message: "중복된 아이디가 존재합니다.", status: "FAIL" };
+						setIdDuplCheckOk(false);
+					}
 				} else if (name == "password") {
 					if (joinForm.passwordCheck && joinForm.passwordCheck != changeVal) {
 						changeAlarm = { name: "passwordCheck", message: "비밀번호와 일치하지 않습니다.", status: "FAIL" };
@@ -281,7 +282,7 @@ export function useSellerJoinForm() {
 			else if (value && joinFormRegex[key] && !joinFormRegex[key].test(value)) {
 				console.log(joinFormRegex[key]);
 				changeAlarm = { name: key, message: joinFormRegexFailMent[key], status: "FAIL" };
-			} else if (key == "sellerId" && !idDuplCheck) {
+			} else if (key == "sellerId" && !idDuplCheckOk) {
 				changeAlarm = { name: key, message: "아이디 중복확인을 해주세요.", status: "FAIL" };
 			} else if (key === "password" && joinForm.password !== joinForm.passwordCheck) {
 				changeAlarm = { name: "passwordCheck", message: "비밀번호와 일치하지 않습니다.", status: "FAIL" };

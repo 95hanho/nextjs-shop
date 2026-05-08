@@ -60,17 +60,22 @@ export const refreshAuthFromTokens = async <R extends Role>(
 	const lockKey = `refresh:${preset.role}:${refreshToken.slice(-10)}`; // refreshToken 뒷부분으로 key 생성
 
 	return tokenRefreshLock.acquireOrWait(lockKey, async () => {
-		console.log(`[API TokenRefresh:${preset.role}] 토큰 갱신 시작: ${lockKey}`);
+		// console.log(`[API TokenRefresh:${preset.role}] 토큰 갱신 시작: ${lockKey}`);
 
 		const newRefreshToken = preset.generateRToken();
 		const xffHeader = nextRequest.headers.get("x-forwarded-for");
 		const ip = xffHeader?.split(",")[0]?.trim() ?? nextRequest.headers.get("x-real-ip") ?? "unknown";
 
+		console.log(`[API TokenRefresh:${preset.role}] 토큰 재생성 시작 =>`, {
+			beforeToken: "..." + refreshToken.slice(-10),
+			newRefreshToken: "..." + newRefreshToken.slice(-10),
+		});
+
 		const reTokenData = await postUrlFormData<BaseResponse & { [key in typeof preset.primaryKey]: number }>(
 			getBackendUrl(preset.reTokenApiUrl),
 			{
 				beforeToken: refreshToken,
-				[preset.rToken]: newRefreshToken,
+				refreshToken: newRefreshToken,
 			},
 			{
 				userAgent: nextRequest.headers.get("user-agent") || "",
@@ -86,10 +91,10 @@ export const refreshAuthFromTokens = async <R extends Role>(
 
 		const newAccessToken = preset.generateAToken(aTokenPayload);
 
-		console.log(`[API TokenRefresh:${preset.role}]`, {
-			[preset.newAToken]: "..." + newAccessToken.slice(-10),
-			[preset.newRToken]: "..." + newRefreshToken.slice(-10),
-		});
+		// console.log(`[API TokenRefresh:${preset.role}]`, {
+		// 	[preset.newAToken]: "..." + newAccessToken.slice(-10),
+		// 	[preset.newRToken]: "..." + newRefreshToken.slice(-10),
+		// });
 
 		return {
 			ok: true,

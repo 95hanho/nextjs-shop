@@ -5,14 +5,14 @@ import { getBackendUrl } from "@/lib/getBaseUrl";
 import { BaseResponse } from "@/types/common";
 import { NextRequest, NextResponse } from "next/server";
 
-// 판매자id 중복확인
+// 아이디 중복확인
 export const GET = async (nextRequest: NextRequest) => {
-	console.log("[API] 판매자id 중복확인");
+	console.log("[API] 아이디 중복확인");
 	try {
-		const sellerId = nextRequest.nextUrl.searchParams.get("sellerId");
-		if (!sellerId) return NextResponse.json({ message: "아이디를 입력해주세요." }, { status: 400 });
+		const userId = nextRequest.nextUrl.searchParams.get("userId");
+		if (!userId) return NextResponse.json({ message: "아이디를 입력해주세요." }, { status: 400 });
 
-		const data = await getNormal<BaseResponse>(getBackendUrl(API_URL.SELLER_ID), { sellerId });
+		const data = await getNormal<BaseResponse>(getBackendUrl(API_URL.AUTH_ID_DUPLICATE), { userId });
 		// console.log("data", data);
 
 		return NextResponse.json({ message: data.message }, { status: 200 });

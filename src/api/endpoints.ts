@@ -26,8 +26,10 @@ const API_URL = {
 	AUTH: "/auth",
 	/** 로그아웃 */
 	AUTH_LOGOUT: "/auth/logout",
-	/** 유저아이디 조회 By인증토큰, 아이디 중복확인 */
+	/** 유저아이디 조회 By인증토큰 */
 	AUTH_ID: "/auth/id",
+	/** 아이디 중복확인 */
+	AUTH_ID_DUPLICATE: "/auth/id/duplicate",
 	/** 휴대폰 인증 */
 	AUTH_PHONE_AUTH: "/auth/phone",
 	/** 휴대폰 인증 확인 */
