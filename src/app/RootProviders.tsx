@@ -24,6 +24,7 @@ function handleGlobalError(error: unknown, errorHandlers: { openDialog: OpenDial
 		case "UNAUTHORIZED":
 		case "SESSION_EXPIRED":
 		case "REFRESH_UNAUTHORIZED":
+		case "TOKEN_NOT_FOUND":
 			// 로그아웃 처리 모달
 			errorHandlers.openDialog("CONFIRM", {
 				title: "인증 오류",

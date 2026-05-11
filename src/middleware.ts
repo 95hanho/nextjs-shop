@@ -1,9 +1,9 @@
 // src/middleware.ts or /middleware.ts
-import { adminHandleAuthCheck, adminHandleTokenRefresh } from "@/lib/auth/admin";
-import { sellerHandleAuthCheck, sellerHandleTokenRefresh } from "@/lib/auth/seller";
-import { userHandleAuthCheck, userHandleTokenRefresh } from "@/lib/auth/user";
+import { adminHandleAuthCheck } from "@/lib/auth/admin";
+import { sellerHandleAuthCheck } from "@/lib/auth/seller";
+import { userHandleAuthCheck } from "@/lib/auth/user";
 import { isAuthRequiredPath } from "@/utils/auth";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 /**
  * middleware는 Edge Runtime에서 동작
@@ -27,45 +27,48 @@ export async function middleware(nextRequest: NextRequest) {
 
 	// 1) 유저 ------------------------------------
 	if (!pathname.startsWith("/seller") && !pathname.startsWith("/admin")) {
-		// 1) ✅ 모든 요청에 대해 토큰 재발급 먼저 처리
-		const { response: tokenResponse } = await userHandleTokenRefresh(nextRequest);
-
-		// 2) 로그인이 필요한 페이지는 추가 인증 체크
+		// 1) 로그인이 필요한 페이지는 추가 인증 체크
 		const needsAuth = isAuthRequiredPath(pathname);
-		// 로그인이 필요한 페이지가 아니면 토큰 재발급 결과만 적용된 response 반환 (쿠키 유지)
+		// 로그인이 필요한 페이지가 아니면 그냥 통과
 		if (!needsAuth) {
-			return tokenResponse;
+			return NextResponse.next();
 		}
 
+		// 2) ✅ 토큰 재발급 먼저 처리
+		// middleware 재발급 오류로 주석처리
+		// const { response: tokenResponse } = await userHandleTokenRefresh(nextRequest);
+
 		// 3) ✅ 토큰 재발급이 적용된 response를 전달하여 쿠키 유지
-		return userHandleAuthCheck(nextRequest, tokenResponse);
+		return userHandleAuthCheck(nextRequest, NextResponse.next());
 	}
 	// 2) 판매자 ------------------------------------
 	if (pathname.startsWith("/seller")) {
 		// console.log("[Middleware] 판매자 페이지 접근");
 		// 1) ✅ 모든 요청에 대해 토큰 재발급 먼저 처리
-		const { response: tokenResponse } = await sellerHandleTokenRefresh(nextRequest);
+		// middleware 재발급 오류로 주석처리
+		// const { response: tokenResponse } = await sellerHandleTokenRefresh(nextRequest);
 
 		// 로그인이 필요한 페이지가 아니면 토큰 재발급 결과만 적용된 response 반환 (쿠키 유지)
 		if (["/seller/login", "/seller/join"].some((v) => pathname.startsWith(v))) {
-			return tokenResponse;
+			return NextResponse.next();
 		}
 
 		// 3) ✅ 토큰 재발급이 적용된 response를 전달하여 쿠키 유지
-		return sellerHandleAuthCheck(nextRequest, tokenResponse);
+		return sellerHandleAuthCheck(nextRequest, NextResponse.next());
 	}
 	// 3) 관리자 ------------------------------------
 	if (pathname.startsWith("/admin")) {
 		// console.log("[Middleware] 관리자 페이지 접근");
-		const { response: tokenResponse } = await adminHandleTokenRefresh(nextRequest);
+		// middleware 재발급 오류로 주석처리
+		// const { response: tokenResponse } = await adminHandleTokenRefresh(nextRequest);
 
 		// 로그인이 필요한 페이지가 아니면 토큰 재발급 결과만 적용된 response 반환 (쿠키 유지)
 		if (pathname.startsWith("/admin/login")) {
-			return tokenResponse;
+			return NextResponse.next();
 		}
 
 		// 3) ✅ 토큰 재발급이 적용된 response를 전달하여 쿠키 유지
-		return adminHandleAuthCheck(nextRequest, tokenResponse);
+		return adminHandleAuthCheck(nextRequest, NextResponse.next());
 	}
 }
 
