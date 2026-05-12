@@ -3,7 +3,7 @@ import { SmartImage } from "@/components/ui/SmartImage";
 import { getUploadImageUrl } from "@/lib/image";
 import { MainProduct } from "@/types/main";
 import styles from "./ProductSliderItem.module.scss";
-import { FaChevronCircleRight, FaEye, FaStar } from "react-icons/fa";
+import { FaEye, FaStar } from "react-icons/fa";
 import { discountPercent, money } from "@/lib/format";
 import { useState } from "react";
 import clsx from "clsx";
@@ -83,7 +83,7 @@ export const ProductSliderItem = ({ product, checkedProductIdList }: { product: 
 					</div>
 
 					<Link href={`/product/detail/${product.productId}`} className={styles.detailLink}>
-						<FaChevronCircleRight />
+						{`상품보러가기 >>`}
 					</Link>
 				</div>
 			)}
