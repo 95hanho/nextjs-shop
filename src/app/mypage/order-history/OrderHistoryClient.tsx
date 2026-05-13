@@ -32,7 +32,7 @@ const highlightText = (text: string, keyword: string) => {
 };
 
 export default function OrderHistoryClient() {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const { loginOn } = useAuth();
 	const { openDialog } = useGlobalDialogStore();
 

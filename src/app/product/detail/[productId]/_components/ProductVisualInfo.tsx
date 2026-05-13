@@ -52,7 +52,7 @@ export default function ProductVisualInfo({
 	handleMoveToReviewSection,
 	wished,
 }: ProductVisualInfoProps) {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const { openDialog } = useGlobalDialogStore();
 	const { loginOn, user, isAuthLoading } = useAuth();
 	const queryClient = useQueryClient();

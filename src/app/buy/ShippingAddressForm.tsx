@@ -10,7 +10,7 @@ import { FormInput } from "@/components/form/FormInput";
 import { AddressSection } from "@/components/auth/AddressSection";
 
 export default function ShippingAddressForm() {
-	// 1) [store / custom hooks] -----------------------------------
+	// 1) [store / providers / custom hooks] -----------------------------------
 	const { openModal } = useModalStore();
 	const {
 		shippingMemo,

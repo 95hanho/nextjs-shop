@@ -70,7 +70,7 @@ export default function CartProductSection({
 	sumCouponDiscount,
 	changeMaxDiscountApplied,
 }: CartProductSectionProps) {
-	// 1) [store / custom hooks] -----------------------------------
+	// 1) [store / providers / custom hooks] -----------------------------------
 	const router = useRouter();
 	const queryClient = useQueryClient();
 	const { openModal } = useModalStore();

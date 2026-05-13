@@ -14,7 +14,7 @@ import { MenuButton } from "@/components/common/MenuButton";
 import { useGetMenu } from "@/hooks/query/main/useGetMenu";
 
 export default function Header() {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const pathname = usePathname();
 	const searchParams = useSearchParams();
 	const { logout, cartCount, orderCount } = useAuth();

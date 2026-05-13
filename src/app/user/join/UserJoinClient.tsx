@@ -9,7 +9,7 @@ import { useUserJoinForm } from "@/hooks/form/useUserJoinForm";
 
 /* 회원가입 */
 export default function UserJoinClient() {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const {
 		joinDisabled,
 		joinSubmit,

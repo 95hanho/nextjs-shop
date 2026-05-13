@@ -26,7 +26,7 @@ interface ProductItemProps {
 	};
 }
 export const ProductItem = ({ product }: ProductItemProps) => {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const router = useRouter();
 
 	// 7) [UI helper values] -------------------------------------------------

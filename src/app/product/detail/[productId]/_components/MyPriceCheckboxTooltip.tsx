@@ -26,7 +26,7 @@ type MyPriceCheckboxTooltipProps =
 
 export default function MyPriceCheckboxTooltip(props: MyPriceCheckboxTooltipProps) {
 	const { type, originPrice, finalPrice } = props;
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const queryClient = useQueryClient();
 	const params = useParams<{
 		productId: string;

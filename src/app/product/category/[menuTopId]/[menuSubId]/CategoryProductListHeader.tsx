@@ -28,7 +28,7 @@ export default function CategoryProductListHeader({
 	sortOptionList,
 	popularPeriodOptionList,
 }: CategoryProductListHeaderProps) {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const { openDialog } = useGlobalDialogStore();
 
 	return (

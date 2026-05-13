@@ -11,7 +11,7 @@ import { useRouter } from "next/navigation";
 
 // 판매자제품 추가/수정
 export function useSellerProductSubmit() {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const router = useRouter();
 	const queryClient = useQueryClient();
 	const { openDialog } = useGlobalDialogStore();

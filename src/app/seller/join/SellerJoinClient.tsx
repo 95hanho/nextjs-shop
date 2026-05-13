@@ -9,7 +9,7 @@ import Link from "next/link";
 import { useSellerJoinForm } from "@/hooks/form/useSellerJoinForm";
 
 export default function SellerJoinClient() {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const {
 		joinSubmit,
 		joinForm,

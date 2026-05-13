@@ -15,7 +15,7 @@ import { FormActionButton } from "@/components/form/FormActionButton";
 import { useGetUserId } from "@/hooks/query/user/useGetUserId";
 
 export default function UserInfoClient() {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const { user } = useAuth();
 	const { push } = useRouter();
 

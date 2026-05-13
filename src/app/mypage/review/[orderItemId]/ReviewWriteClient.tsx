@@ -43,7 +43,7 @@ type ImageItem = {
 };
 
 export default function ReviewWriteClient() {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const params = useParams();
 	const orderItemId = Number(params.orderItemId);
 	const { openDialog } = useGlobalDialogStore();

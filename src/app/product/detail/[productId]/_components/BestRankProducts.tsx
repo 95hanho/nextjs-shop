@@ -19,7 +19,7 @@ import API_URL from "@/api/endpoints";
 import { getUploadImageUrl } from "@/lib/image";
 
 export default function BestRankProducts() {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const { loginOn } = useAuth();
 	const params = useParams<{
 		productId: string;

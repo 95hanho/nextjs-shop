@@ -5,7 +5,7 @@ import { useEffect } from "react";
 
 // 판매자 인증 관련 전역 효과 처리 (로그아웃 처리)
 export function SellerGlobalEffects() {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const { logout } = useSellerAuth();
 	const { dialogResult, clearDialogResult } = useGlobalDialogStore();
 

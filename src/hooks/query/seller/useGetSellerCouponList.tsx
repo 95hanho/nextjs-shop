@@ -7,7 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 
 // 판매자 쿠폰 리스트 조회
 export function useGetSellerCouponList() {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const { loginOn } = useSellerAuth();
 
 	return useQuery<GetSellerCouponListResponse, Error, SellerCoupon[]>({

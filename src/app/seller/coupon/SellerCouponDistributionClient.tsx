@@ -16,7 +16,7 @@ import { useGlobalDialogStore } from "@/store/globalDialog.store";
 import { useGetSellerCouponList } from "@/hooks/query/seller/useGetSellerCouponList";
 
 export default function SellerCouponDistributionClient() {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const { loginOn } = useSellerAuth();
 	const { openDialog } = useGlobalDialogStore();
 	const queryClient = useQueryClient();

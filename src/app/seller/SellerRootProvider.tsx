@@ -47,7 +47,7 @@ function handleGlobalError(error: unknown, errorHandlers: { openDialog: OpenDial
 }
 
 export default function SellerRootProvider({ children }: SellerRootProviderProps) {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const { openDialog } = useGlobalDialogStore();
 
 	// 2) [useState / useRef] ----------------------------------------------

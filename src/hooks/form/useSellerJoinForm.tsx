@@ -70,7 +70,7 @@ const joinFormRegexFailMent: { [key: string]: string } = {
 };
 
 export function useSellerJoinForm() {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const router = useRouter();
 	const { openDialog } = useGlobalDialogStore();
 

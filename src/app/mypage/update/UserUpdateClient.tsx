@@ -11,7 +11,7 @@ import { useUserUpdateForm } from "@/hooks/form/useUserUpdateForm";
 import { useAuth } from "@/hooks/context/useAuth";
 
 export default function UserInfoUpdate() {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const { user } = useAuth();
 	const {
 		userUpdateSubmit,

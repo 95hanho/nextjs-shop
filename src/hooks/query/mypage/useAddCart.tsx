@@ -8,7 +8,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 // 장바구니 담기 훅
 export function useAddCart() {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const queryClient = useQueryClient();
 	const { openDialog } = useGlobalDialogStore();
 

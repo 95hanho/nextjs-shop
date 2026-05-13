@@ -32,7 +32,7 @@ interface CommonLoginFormProps {
 }
 
 export const CommonLoginForm = ({ apiUrl, redirectTo, invalidateKeys, loginIdField = "userId" }: CommonLoginFormProps) => {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const router = useRouter();
 	const queryClient = useQueryClient();
 	const searchParams = useSearchParams();

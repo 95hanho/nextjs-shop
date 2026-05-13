@@ -9,7 +9,7 @@ import { useGetAdminInfo } from "@/hooks/query/admin/useGetAdminInfo";
 import { useAdminAuth } from "@/hooks/context/useAdminAuth";
 
 export default function AdminHeader() {
-	// 1) [store / custom hooks] -----------------------------------
+	// 1) [store / providers / custom hooks] -----------------------------------
 	const { logout } = useAdminAuth();
 
 	// 2) [useState / useRef] --------------------------------------

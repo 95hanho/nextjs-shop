@@ -24,7 +24,7 @@ import SellerCouponList from "@/app/seller/SellerCouponList";
 import { useGetSellerCouponList } from "@/hooks/query/seller/useGetSellerCouponList";
 
 export default function SellerMainClient() {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const { loginOn } = useSellerAuth();
 	const queryClient = useQueryClient();
 

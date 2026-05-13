@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 
 // 상품 확인 및 점유(바로 구매하기)
 export function useProductCheckAndHold() {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const router = useRouter();
 	const { openDialog } = useGlobalDialogStore();
 

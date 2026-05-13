@@ -68,7 +68,7 @@ export type CartItemSelectCollection = {
 };
 
 export default function CartClient() {
-	// 1) [store / custom hooks] -----------------------------------
+	// 1) [store / providers / custom hooks] -----------------------------------
 	const { loginOn } = useAuth();
 	const { openDialog } = useGlobalDialogStore();
 	const router = useRouter();

@@ -14,7 +14,7 @@ import { WishButton } from "@/components/product/WishButton";
 import { getUploadImageUrl } from "@/lib/image";
 
 export default function BrandOtherProducts({ sellerOtherProducts }: { sellerOtherProducts: OtherProduct[] }) {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const { loginOn } = useAuth();
 
 	// 2) [useState / useRef] ----------------------------------------------

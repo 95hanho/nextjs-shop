@@ -17,7 +17,7 @@ type ModalCommon = {
 };
 
 export const DialogRoot = () => {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const { modalType, modalProps, closeDialog } = useGlobalDialogStore();
 
 	// 2) [useState / useRef] ----------------------------------------------

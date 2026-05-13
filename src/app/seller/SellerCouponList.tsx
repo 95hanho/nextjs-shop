@@ -31,7 +31,7 @@ export default function SellerCouponList({
 	changeAllSelectedCouponIds,
 	updateCouponStatus,
 }: CouponListProps) {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const queryClient = useQueryClient();
 	const { openModal } = useModalStore();
 	const { openDialog } = useGlobalDialogStore();

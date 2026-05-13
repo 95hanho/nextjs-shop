@@ -38,7 +38,7 @@ export const SellerProductOptionModal = ({
 	handleAfterUpdateSellerProductOption,
 	handleAfterDeleteSellerProductOption,
 }: SellerProductOptionModalProps) => {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const { openDialog } = useGlobalDialogStore();
 
 	// 2) [useState / useRef] ----------------------------------------------

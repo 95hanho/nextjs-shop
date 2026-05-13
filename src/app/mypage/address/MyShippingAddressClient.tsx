@@ -15,7 +15,7 @@ import { ShippingAddressList } from "@/components/address/ShippingAddressList";
 import { useGetUserAddressList } from "@/hooks/query/user/useGetUserAddressList";
 
 export default function MyShippingAddressClient() {
-	// 1) [store / custom hooks] -----------------------------------
+	// 1) [store / providers / custom hooks] -----------------------------------
 	const queryClient = useQueryClient();
 	const { openModal } = useModalStore();
 

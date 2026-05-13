@@ -23,7 +23,7 @@ interface QuestionAnswerProps {
 // 상품 QnA
 const QuestionAnswer = forwardRef(
 	({ sellerName, productQnaList, productQnaTypeList, isGetProductQnaSuccess }: QuestionAnswerProps, ref: React.ForwardedRef<HTMLDivElement>) => {
-		// 1) [store / custom hooks] -------------------------------------------
+		// 1) [store / providers / custom hooks] -------------------------------------------
 		const router = useRouter();
 		const { loginOn, user } = useAuth();
 		const { openDialog } = useGlobalDialogStore();

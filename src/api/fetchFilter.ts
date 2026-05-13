@@ -57,7 +57,7 @@ const applyPathParamsFromBody = <T extends BodyLike | undefined>(url: string, bo
 
 	return [newUrl, rest as T];
 };
-
+// 요청 데이터를 쿼리 스트링으로 변환 (배열 지원)
 const toSearchParams = (params: Params): URLSearchParams => {
 	const search = new URLSearchParams();
 
@@ -236,6 +236,8 @@ export function postMultipart<T>(url: string, formData: FormData, headers?: Requ
 }
 
 // x-www-form-urlencoded (POST/PUT 공용 빌더)
+// application/x-www-form-urlencoded 타입 요청값을 처리하기 위한
+// URLSearchParams는 배열 지원 안 하므로 직접 구현, path param도 지원하도록
 function urlEncodedBody(params?: Params) {
 	const sp = new URLSearchParams();
 	if (params) {
