@@ -21,7 +21,7 @@ interface ProductReviewListProps {
 }
 
 export default function ProductReviewList({ productReviewData, turnPage, openReviewModal }: ProductReviewListProps) {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const router = useRouter();
 	const { user } = useAuth();
 	const params = useParams<{

@@ -1,6 +1,6 @@
 import API_URL from "@/api/endpoints";
 import { postJson } from "@/api/fetchFilter";
-import { authContext } from "@/components/ui/context/authContext";
+import { authContext } from "@/hooks/context/authContext";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { UserInfo } from "@/types/auth";
 import { useQueryClient } from "@tanstack/react-query";
@@ -26,7 +26,7 @@ const initUser = {
 };
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const queryClient = useQueryClient();
 	const pathname = usePathname();
 

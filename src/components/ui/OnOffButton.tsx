@@ -169,7 +169,7 @@ export const OnOffButton = ({
 	onChange,
 	cursor = true,
 }: OnOffButtonProps) => {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const generatedId = useId();
 
 	// 4) [derived values / useMemo] ---------------------------------------

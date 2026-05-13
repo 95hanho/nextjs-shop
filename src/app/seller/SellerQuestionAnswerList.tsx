@@ -13,7 +13,7 @@ import { useGlobalDialogStore } from "@/store/globalDialog.store";
 import moment from "moment";
 
 export default function SellerQuestionAnswerList() {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const { loginOn } = useSellerAuth();
 	const { openDialog } = useGlobalDialogStore();
 	const queryClient = useQueryClient();

@@ -22,7 +22,7 @@ export default function OrderSummaryPanel({
 	sellerCouponDiscount,
 	deliveryFee,
 }: OrderSummaryPanelProps) {
-	// 1) [store / custom hooks] -----------------------------------
+	// 1) [store / providers / custom hooks] -----------------------------------
 	const { handleBuy, usedMileage } = useBuy();
 
 	return (

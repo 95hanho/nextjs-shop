@@ -27,7 +27,7 @@ type ItemSellerMap = {
 };
 
 export default function OrderDetailClient({ orderId }: { orderId: string }) {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const router = useRouter();
 	const { loginOn } = useAuth();
 	const { openDialog } = useGlobalDialogStore();

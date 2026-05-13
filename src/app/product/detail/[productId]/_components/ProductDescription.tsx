@@ -4,7 +4,7 @@ import styles from "../ProductDetail.module.scss";
 import { useParams } from "next/navigation";
 
 export default function ProductDescription() {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const params = useParams<{
 		productId: string;
 	}>();

@@ -38,7 +38,7 @@ export default function OrderFormSection({
 	sumCouponDiscount,
 	buyTotalFinalPrice,
 }: OrderFormSectionProps) {
-	// 1) [store / custom hooks] -----------------------------------
+	// 1) [store / providers / custom hooks] -----------------------------------
 	const { user } = useAuth();
 	const { usedMileage, setUsedMileage, changeUsedMileage, paymentMethod, setPaymentMethod } = useBuy();
 

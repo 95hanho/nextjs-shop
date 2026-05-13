@@ -8,7 +8,7 @@ import { useMutation } from "@tanstack/react-query";
 
 // 휴대폰 인증
 export function usePhoneAuth(mode: PhoneAuthMode) {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const { openDialog } = useGlobalDialogStore();
 
 	// 4) [derived values / useMemo] ---------------------------------------

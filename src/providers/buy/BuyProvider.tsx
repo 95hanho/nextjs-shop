@@ -1,10 +1,10 @@
 "use client";
 
-import { AddressAlarm, AddressFormFormInputRefs, ShippingAddressMode } from "@/components/ui/context/buyContext";
+import { AddressAlarm, AddressFormFormInputRefs, ShippingAddressMode } from "@/hooks/context/buyContext";
 import { ChangeEvent } from "@/types/event";
 import { UserAddress, UserAddressListItem } from "@/types/mypage";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { buyContext } from "@/components/ui/context/buyContext";
+import { buyContext } from "@/hooks/context/buyContext";
 import { DefaultAddress, payRequest } from "@/types/buy";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import API_URL from "@/api/endpoints";
@@ -27,7 +27,7 @@ interface BuyProviderProps {
 }
 
 export const BuyProvider = ({ children, initialDefaultAddress = null, holdIds }: BuyProviderProps) => {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const { openDialog } = useGlobalDialogStore();
 	const queryClient = useQueryClient();
 	const router = useRouter();

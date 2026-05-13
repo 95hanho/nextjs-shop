@@ -42,7 +42,7 @@ export type AppliedProductCouponMap = Record<
 >;
 
 export default function BuyClient() {
-	// 1) [store / custom hooks] -----------------------------------
+	// 1) [store / providers / custom hooks] -----------------------------------
 	const { loginOn } = useAuth();
 	const router = useRouter();
 	const { openDialog } = useGlobalDialogStore();

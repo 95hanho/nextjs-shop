@@ -16,7 +16,7 @@ import { useMemo, useState } from "react";
 import { useGetMenu } from "@/hooks/query/main/useGetMenu";
 
 export default function WishClient() {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const { loginOn } = useAuth();
 
 	// 2) [useState / useRef] ----------------------------------------------

@@ -1,6 +1,6 @@
 import API_URL from "@/api/endpoints";
 import { postJson } from "@/api/fetchFilter";
-import { sellerAuthContext } from "@/components/ui/context/authContext";
+import { sellerAuthContext } from "@/hooks/context/authContext";
 import { getApiUrl } from "@/lib/getBaseUrl";
 import { useGlobalDialogStore } from "@/store/globalDialog.store";
 import { SellerInfo } from "@/types/seller";
@@ -27,7 +27,7 @@ const initSeller = {
 };
 
 export const SellerProvider = ({ children }: SellerProviderProps) => {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const queryClient = useQueryClient();
 	const router = useRouter();
 	const { openDialog } = useGlobalDialogStore();

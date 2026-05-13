@@ -47,7 +47,7 @@ interface CategoryProductListClientProps {
 }
 
 export default function CategoryProductListClient({ menuSubId, initialProductListData, topMenuName, subMenuName }: CategoryProductListClientProps) {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const { loginOn } = useAuth();
 
 	// 2) [useState / useRef] ----------------------------------------------

@@ -26,7 +26,7 @@ const phoneRegex: RegExp = /^(010|011|016|017|018|019)\d{3,4}\d{4}$/;
 const phoneRegexFailMent: string = "휴대폰 번호 형식에 일치하지 않습니다.";
 
 export function useFindUserForm() {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const { push } = useRouter();
 	const params = useParams<{ type?: FindType }>(); // `type`이 있을 수도 있고 없을 수도 있음
 	const findType = params.type;

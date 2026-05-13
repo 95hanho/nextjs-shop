@@ -20,7 +20,7 @@ export const ConfirmModal = ({
 	reverse,
 	handleAfterOk,
 }: ConfirmModalProps) => {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const { resolveDialog } = useGlobalDialogStore();
 
 	// 7) [UI helper values] -------------------------------------------------

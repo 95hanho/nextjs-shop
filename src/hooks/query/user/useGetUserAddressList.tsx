@@ -7,7 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 
 // 유저 주소 리스트 조회
 export function useGetUserAddressList() {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const { loginOn } = useAuth();
 
 	return useQuery<GetUserAddressListResponse, Error, UserAddressListItem[]>({

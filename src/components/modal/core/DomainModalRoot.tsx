@@ -21,7 +21,7 @@ type ModalCommon = {
 };
 
 export const DomainModalRoot = () => {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const { modalType, modalProps, closeModal } = useModalStore();
 
 	// 2) [useState / useRef] ----------------------------------------------

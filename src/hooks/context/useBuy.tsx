@@ -1,4 +1,4 @@
-import { buyContext } from "@/components/ui/context/buyContext";
+import { buyContext } from "@/hooks/context/buyContext";
 import { useContext } from "react";
 
 export const useBuy = () => {

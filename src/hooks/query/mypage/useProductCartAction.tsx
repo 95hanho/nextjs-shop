@@ -5,7 +5,7 @@ import { AddCartItem } from "@/types/product";
 
 /** 장바구니 담기 */
 export function useProductCartAction() {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const { openDialog } = useGlobalDialogStore();
 
 	// 3) [useQuery / useMutation] -----------------------------------------

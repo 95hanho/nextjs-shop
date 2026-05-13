@@ -36,7 +36,7 @@ export default function CartSummaryAside({
 	//
 	buyList,
 }: CartSummaryAsideProps) {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const { openDialog } = useGlobalDialogStore();
 	const { push } = useRouter();
 

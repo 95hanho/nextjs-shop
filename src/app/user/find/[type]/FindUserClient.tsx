@@ -9,7 +9,7 @@ import { useFindUserForm } from "@/hooks/form/useFindUserForm";
 import Link from "next/link";
 
 export default function FindUserClient() {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const {
 		findType,
 		phoneAuthComplete,

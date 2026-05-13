@@ -21,10 +21,11 @@ Next.js 기반 커머스 포트폴리오 프로젝트의 프론트엔드입니�
 ## 기술 스택
 
 - Next.js : App Router 기반 라우팅 및 SSR 구현
-- React Context / Provider : 전역 모달/다이얼로그 상태 관리
 - React : 컴포넌트 기반 UI 구현
 - TypeScript : 타입 기반 데이터 구조 관리
 - TanStack Query : 서버 상태 관리 및 캐싱
+- Zustand : 전역 모달/다이얼로그 상태 관리
+- React Context / Provider : 사용자/판매자/관리자 전역 데이터 및 구매 페이지 상태 관리
 - SCSS Module : 컴포넌트 단위 스타일 관리
 - Swiper : 상품 이미지 슬라이더 구현
 - Vercel / Cafe24 : 프론트엔드 및 백엔드 배포
@@ -51,38 +52,33 @@ Next.js 기반 커머스 포트폴리오 프로젝트의 프론트엔드입니�
 
 ## 주요 구현 포인트
 
-### SSR + CSR 혼합 상품 목록
+프로젝트의 주요 설계 및 구현 내용은 [주요 구현 포인트 문서](./docs/IMPLEMENTATION.md)에 정리했습니다.
 
-초기 상품 목록은 SSR로 렌더링하고, 이후 추가 상품은 React Query의 Infinite Query를 사용해 CSR 방식으로 불러오도록 구현했습니다.
+- SSG / ISR 기반 상품 페이지 최적화
+- Next.js API Route 기반 BFF 구조
+- API 요청 공통화
+- 인증/토큰 처리 공통화
+- React Query 기반 서버 상태 관리
+- 클라이언트 상태 관리 역할 분리
+- 구매 페이지 재고 선점 흐름
 
-이를 통해 초기 진입 속도와 사용자 인터랙션을 모두 고려했습니다.
+## 주요 트러블슈팅
 
-### React Query 기반 서버 상태 관리
+프로젝트를 진행하며 발생한 주요 문제와 해결 과정은 [트러블슈팅 문서](./docs/TROUBLESHOOTING.md)에 정리했습니다.
 
-상품 목록, 리뷰, Q&A, 주문 내역 등 서버 데이터는 React Query를 사용해 관리했습니다.
-
-- queryKey 기반 캐시 관리
-- invalidateQueries를 통한 데이터 갱신
-- useInfiniteQuery를 활용한 페이지네이션
-- useMutation을 통한 등록/수정/삭제 처리
-
-### 공통 이미지 컴포넌트 SmartImage
-
-Next.js Image 사용 시 반복되는 예외 처리를 줄이기 위해 SmartImage 컴포넌트를 구현했습니다.
-
-- 기본 이미지 처리
-- CDN / 로컬 이미지 경로 대응
-- fill / fixed size 분기
-- priority 옵션 제어
+- SSR 페이지를 SSG/ISR로 전환하며 사용자별 데이터 분리
+- 빌드 환경에서 middleware 토큰 재발급 중복 요청 문제
+- API 요청 방식 중복과 오류 처리 표준화
+- 공통 다이얼로그와 도메인 모달 상태 분리
+- 상품 이미지 렌더링 예외 처리
+- 구매 진행 중 재고 선점 문제
 
 ## 문서
 
 - [디렉토리 구조](./docs/STRUCTURE.md)
+- [주요 구현 포인트](./docs/IMPLEMENTATION.md)
 - [코드 컨벤션](./docs/CONVENTION.md)
 - [트러블슈팅](./docs/TROUBLESHOOTING.md)
-- [Hydration 오류 해결](./docs/TROUBLESHOOTING.md#1-hydration-오류-해결)
-- [토큰 재발급 중복 요청 문제](./docs/TROUBLESHOOTING.md#2-토큰-재발급-중복-요청-문제)
-- [상품 이미지 최적화 문제](./docs/TROUBLESHOOTING.md#3-상품-이미지-최적화-문제)
 
 ## 실행 방법
 

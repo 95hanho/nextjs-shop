@@ -22,7 +22,7 @@ interface ProductDetailClientProps {
 }
 
 export default function ProductDetailClient({ initProductDetailResponse }: ProductDetailClientProps) {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const router = useRouter();
 	const pathname = usePathname();
 	const { loginOn } = useAuth();

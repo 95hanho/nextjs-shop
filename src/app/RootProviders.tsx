@@ -56,7 +56,7 @@ function handleGlobalError(error: unknown, errorHandlers: { openDialog: OpenDial
 }
 
 export default function RootProviders({ children }: RootProvidersProps) {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const pathname = usePathname();
 	// const { logout } = useAuth();
 	const { openDialog } = useGlobalDialogStore();

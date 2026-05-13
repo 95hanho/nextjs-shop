@@ -16,7 +16,7 @@ interface ProductSetClientProps {
 }
 
 export default function ProductUpdateClient({ productId }: ProductSetClientProps) {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const router = useRouter();
 	const { openDialog } = useGlobalDialogStore();
 

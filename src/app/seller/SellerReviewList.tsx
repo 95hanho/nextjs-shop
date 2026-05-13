@@ -14,7 +14,7 @@ import moment from "moment";
 import { getUploadImageUrl } from "@/lib/image";
 
 export default function SellerReviewList() {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const { loginOn } = useSellerAuth();
 
 	// 2) [useState / useRef] ----------------------------------------------

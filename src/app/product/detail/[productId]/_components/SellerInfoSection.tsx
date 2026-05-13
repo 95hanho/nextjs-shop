@@ -8,7 +8,7 @@ import API_URL from "@/api/endpoints";
 import { useParams } from "next/navigation";
 
 export default function SellerInfoSection({ productDetail }: { productDetail: ProductDetailResponse }) {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const params = useParams<{
 		productId: string;
 	}>();

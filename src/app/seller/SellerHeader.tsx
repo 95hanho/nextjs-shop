@@ -10,7 +10,7 @@ import { useSellerAuth } from "@/hooks/context/useSellerAuth";
 import { usePathname } from "next/navigation";
 
 export default function SellerHeader() {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const { logout } = useSellerAuth();
 	const pathname = usePathname();
 

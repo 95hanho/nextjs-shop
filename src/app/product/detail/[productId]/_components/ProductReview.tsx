@@ -31,7 +31,7 @@ interface ProductReviewProps {
 }
 // 상품 리뷰
 const ProductReview = forwardRef(({ reviewCount, reviewRate }: ProductReviewProps, ref: React.ForwardedRef<HTMLDivElement>) => {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const params = useParams<{
 		productId: string;
 	}>();

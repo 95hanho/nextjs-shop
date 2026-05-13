@@ -7,7 +7,7 @@ import { isAuthRequiredPath } from "@/utils/auth";
 
 // 공통 인증 관련 전역 효과 처리 (로그아웃 모달 닫힌 후, 인증 오류 등)
 export function AuthGlobalEffects() {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const { logout } = useAuth();
 	const { dialogResult, clearDialogResult } = useGlobalDialogStore();
 	const router = useRouter();

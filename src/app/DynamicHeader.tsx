@@ -5,7 +5,7 @@ import Header from "@/app/Header";
 import { Suspense } from "react";
 
 export default function DynamicHeader() {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const pathname = usePathname();
 
 	if (!pathname.startsWith("/seller") && !pathname.startsWith("/admin")) {

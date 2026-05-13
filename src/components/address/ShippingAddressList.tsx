@@ -18,7 +18,7 @@ type ShippingAddressListProps = { userAddressList: UserAddressListItem[] | [] } 
 );
 
 export const ShippingAddressList = forwardRef((props: ShippingAddressListProps, ref: React.ForwardedRef<HTMLUListElement>) => {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const { openDialog } = useGlobalDialogStore();
 
 	return (

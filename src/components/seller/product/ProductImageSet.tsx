@@ -33,7 +33,7 @@ export type ProductImageSetHandle = {
 };
 
 export const ProductImageSet = forwardRef<ProductImageSetHandle, ProductImageSetProps>(({ prevImageList, imageUpdatedAt }, ref) => {
-	// 1) [store / custom hooks] -------------------------------------------
+	// 1) [store / providers / custom hooks] -------------------------------------------
 	const { openDialog } = useGlobalDialogStore();
 
 	// 2) [useState / useRef] ----------------------------------------------
