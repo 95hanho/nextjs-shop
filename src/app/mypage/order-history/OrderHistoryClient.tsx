@@ -18,6 +18,7 @@ import { SmartImage } from "@/components/ui/SmartImage";
 import Link from "next/link";
 import { useGlobalDialogStore } from "@/store/globalDialog.store";
 import { getUploadImageUrl } from "@/lib/image";
+import { useRouter } from "next/navigation";
 
 // 검색어 하이라이트 함수
 const escapeRegExp = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -35,6 +36,7 @@ export default function OrderHistoryClient() {
 	// 1) [store / providers / custom hooks] -------------------------------------------
 	const { loginOn } = useAuth();
 	const { openDialog } = useGlobalDialogStore();
+	const router = useRouter();
 
 	// 2) [useState / useRef] ----------------------------------------------
 	// 검색 텍스트
@@ -170,7 +172,12 @@ export default function OrderHistoryClient() {
 
 														{/* 상품 정보 */}
 														<div className={styles.orderHistoryProduct}>
-															<Link href={`/product/detail/${item.productId}`} className={styles.orderHistoryThumb}>
+															<div
+																className={styles.orderHistoryThumb}
+																onClick={() => {
+																	router.push(`/product/detail/${item.productId}`);
+																}}
+															>
 																<SmartImage
 																	fill
 																	src={getUploadImageUrl(item.filePath)}
@@ -178,7 +185,7 @@ export default function OrderHistoryClient() {
 																	copyright={item.copyright}
 																	copyrightUrl={item.copyrightUrl}
 																/>
-															</Link>
+															</div>
 
 															<div className={styles.orderHistoryInfo}>
 																<h4 className={styles.orderHistoryBrand}>
