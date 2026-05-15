@@ -80,14 +80,25 @@ export const ProductReviewModal = ({
 			startPage: beforeCount < 3 ? prevPage : nextPage,
 		});
 
-		setReviewList(mergeUniqueReviews(prepared.reviewList));
-		setPrevPage(prepared.prevPage);
-		setNextPage(prepared.nextPage);
+		const mergedList = mergeUniqueReviews(prepared.reviewList);
+
+		setReviewList((prev) => {
+			if (prev.length === mergedList.length) return prev;
+			return mergedList;
+		});
+		setPrevPage((prev) => (prev === prepared.prevPage ? prev : prepared.prevPage));
+		setNextPage((prev) => (prev === prepared.nextPage ? prev : prepared.nextPage));
 	}, [currentIndex, reviewImageList, reviewList, prevPage, nextPage, fetchMoreReviewImages]);
 
 	// 6) [useEffect] ------------------------------------------------------
+	const initializedRef = useRef(false);
 	useEffect(() => {
-		setCurrentIndex(reviewImageList.findIndex((image) => image.reviewImageId === reviewImageId) ?? 0);
+		if (initializedRef.current) return;
+
+		const index = reviewImageList.findIndex((image) => image.reviewImageId === reviewImageId);
+
+		setCurrentIndex(index >= 0 ? index : 0);
+		initializedRef.current = true;
 	}, [reviewImageId, reviewImageList]);
 	useEffect(() => {
 		thumbRefs.current[currentIndex]?.scrollIntoView({
