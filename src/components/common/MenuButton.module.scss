@@ -35,6 +35,10 @@
 		font-size: 20px;
 	}
 	.subMenuList {
+		&.recommend {
+			font-weight: bold;
+			color: #d9534f;
+		}
 		.subMenuLink {
 		}
 		span.off {
@@ -43,7 +47,7 @@
 	}
 }
 .menuListLi {
-	min-width: 100px;
+	min-width: 150px;
 	margin-right: 10px;
 	&:nth-child(n + 2) {
 		border-left: 1px solid #d1d1d1;

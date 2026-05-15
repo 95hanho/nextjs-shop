@@ -1,4 +1,4 @@
-const authRequiredPaths = ["/mypage"]; // 로그인 필요한 경로들
+const authRequiredPaths = ["/mypage", "/buy"]; // 로그인 필요한 경로들
 
 //
 /**
