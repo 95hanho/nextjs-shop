@@ -108,12 +108,15 @@ export default function ProductVisualInfo({
 	// 4) [derived values / useMemo] ---------------------------------------
 	// 나의 가격 상세 정보 계산
 	const { totalPrice, useMileage, appliedProductCouponIds } = useMemo(() => {
+		let couponDiscountedPrice = productDetail.finalPrice;
 		let totalPrice = productDetail.finalPrice;
 		if (appliedProductCoupon.unStackable) {
+			couponDiscountedPrice -= appliedProductCoupon.unStackable.discountAmount;
 			totalPrice -= appliedProductCoupon.unStackable.discountAmount;
 		}
 		if (appliedProductCoupon.stackable.length > 0) {
 			appliedProductCoupon.stackable.forEach((coupon) => {
+				couponDiscountedPrice -= coupon.discountAmount;
 				totalPrice -= coupon.discountAmount;
 			});
 		}
@@ -123,7 +126,7 @@ export default function ProductVisualInfo({
 
 		return {
 			totalPrice,
-			useMileage: user.mileage > totalPrice ? totalPrice : user.mileage,
+			useMileage: user.mileage > couponDiscountedPrice ? couponDiscountedPrice : user.mileage,
 			appliedProductCouponIds: [
 				...(appliedProductCoupon.unStackable ? [appliedProductCoupon.unStackable.couponId] : []),
 				...appliedProductCoupon.stackable.map((coupon) => coupon.couponId),

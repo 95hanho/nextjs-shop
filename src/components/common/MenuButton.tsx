@@ -22,7 +22,7 @@ export const MenuButton = ({ menuList }: MenuButtonProps) => {
 	// 6) [useEffect] ------------------------------------------------------
 	useEffect(() => {
 		setIsReady(true);
-	}, []);
+	}, [menuList]);
 
 	return (
 		<div
@@ -58,7 +58,10 @@ export const MenuButton = ({ menuList }: MenuButtonProps) => {
 											</Link>
 										</div>
 										{menu.menuSubList.map((subMenu) => (
-											<div key={"subMenu" + subMenu.menuSubId} className={styles.subMenuList}>
+											<div
+												key={"subMenu" + subMenu.menuSubId}
+												className={clsx(styles.subMenuList, subMenu.menuSubId === 25 && styles.recommend)}
+											>
 												{subMenu.productCount === 0 ? (
 													<span className={styles.off}>{subMenu.menuName}</span>
 												) : (
@@ -68,6 +71,7 @@ export const MenuButton = ({ menuList }: MenuButtonProps) => {
 														onClick={() => setShowMenu(false)}
 													>
 														{subMenu.menuName}({subMenu.productCount})
+														{subMenu.menuSubId === 25 && <span className="p-0 m-0">·추천</span>}
 													</Link>
 												)}
 											</div>
