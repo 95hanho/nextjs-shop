@@ -272,10 +272,12 @@ export default function CartClient() {
 				...coupon,
 				used: usedSet.has(coupon.couponId),
 			})),
-			sellerCouponList: cartData.availableSellerCoupons.map((coupon) => ({
-				...coupon,
-				used: usedSet.has(coupon.couponId),
-			})),
+			sellerCouponList: Array.from(new Map(cartData.availableSellerCoupons.map((coupon) => [coupon.couponId, coupon])).values()).map(
+				(coupon) => ({
+					...coupon,
+					used: usedSet.has(coupon.couponId),
+				}),
+			),
 			cartOriginPrice,
 			cartTotalPrice,
 			cartSelfDiscount,
@@ -393,7 +395,10 @@ export default function CartClient() {
 		}
 
 		// 최초 최대 할인 쿠폰 자동 적용 로직 ==============================================================
-		const availableCouponsWithDiscountObj = cartData.availableSellerCoupons.reduce(
+
+		const availableCouponsWithDiscountObj = Array.from(
+			new Map(cartData.availableSellerCoupons.map((coupon) => [coupon.couponId, coupon])).values(),
+		).reduce(
 			(acc, coupon) => {
 				if (acc[coupon.sellerName]) acc[coupon.sellerName] = [...acc[coupon.sellerName], coupon];
 				else acc[coupon.sellerName] = [coupon];

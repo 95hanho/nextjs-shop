@@ -247,7 +247,9 @@ export default function BuyClient() {
 			buyItemList,
 			defaultAddress: stockHoldData.defaultAddress,
 			cartCouponList: stockHoldData.availableCartCoupons.map((coupon) => ({ ...coupon, used: usedSet.has(coupon.userCouponId) })),
-			sellerCouponList: stockHoldData.availableSellerCoupons.map((coupon) => ({ ...coupon, used: usedSet.has(coupon.userCouponId) })),
+			sellerCouponList: [...new Map(stockHoldData.availableSellerCoupons.map((coupon) => [coupon.couponId, coupon])).values()].map(
+				(coupon) => ({ ...coupon, used: usedSet.has(coupon.userCouponId) }),
+			),
 			isMaxDiscountApplied,
 			buyTotalOriginPrice,
 			buyTotalFinalPrice,
@@ -455,7 +457,9 @@ export default function BuyClient() {
 		if (!stockHoldData) return;
 		// console.log("최대 할인쿠폰 저장 및 초기 쿠폰을 통한 적용 쿠폰 저장.");
 
-		const availableCouponsWithDiscountObj = stockHoldData.availableSellerCoupons.reduce(
+		const availableSellerCoupons = [...new Map(stockHoldData.availableSellerCoupons.map((coupon) => [coupon.couponId, coupon])).values()];
+
+		const availableCouponsWithDiscountObj = availableSellerCoupons.reduce(
 			(acc, coupon) => {
 				if (acc[coupon.sellerName]) acc[coupon.sellerName] = [...acc[coupon.sellerName], coupon];
 				else acc[coupon.sellerName] = [coupon];
@@ -469,7 +473,7 @@ export default function BuyClient() {
 		let initMaxDiscountPrice = 0;
 		const initUsedCouponIds: number[] = [];
 		const userCopponIdToCouponMap: Record<number, AvailableCartCouponAtBuy | AvailableSellerCouponAtBuy> = {};
-		[...stockHoldData.availableCartCoupons, ...stockHoldData.availableSellerCoupons].forEach((coupon) => {
+		[...stockHoldData.availableCartCoupons, ...availableSellerCoupons].forEach((coupon) => {
 			userCopponIdToCouponMap[coupon.userCouponId] = coupon;
 		});
 
