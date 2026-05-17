@@ -22,7 +22,8 @@ export default function SellerInfoClient() {
 				title="사업 소재지 주소"
 				infoVal={
 					<span>
-						({seller.businessZipcode}){seller.businessAddress}
+						{seller.businessZipcode && `(${seller.businessZipcode})`}
+						{seller.businessAddress}
 					</span>
 				}
 			/>
