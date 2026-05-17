@@ -171,8 +171,11 @@ export default function ReviewWriteClient() {
 					rating: reviewForm.rating,
 					orderItemId,
 				})
-				.then((response) => {
-					reviewImageSubmit(response.reviewId);
+				.then(async (response) => {
+					await reviewImageSubmit(response.reviewId);
+				})
+				.catch(() => {
+					reviewFailure();
 				});
 		}
 		// 리뷰 수정
@@ -183,37 +186,57 @@ export default function ReviewWriteClient() {
 					content: reviewForm.content,
 					rating: reviewForm.rating,
 				})
-				.then(() => {
-					reviewImageSubmit(prevReview.reviewId);
+				.then(async () => {
+					if (await reviewImageSubmit(prevReview.reviewId)) {
+						reviewImageSuccess();
+					}
+				})
+				.catch(() => {
+					reviewFailure();
 				});
 		}
+		async function reviewImageSubmit(reviewId: number) {
+			let result = true;
+			if (addFiles.length > 0) {
+				const addFilesMeta = addFiles.map((item, index) => {
+					const clientKey = `new-file-${index}-${item.sortKey}`;
 
-		function reviewImageSubmit(reviewId: number) {
-			const addFilesMeta = addFiles.map((item, index) => {
-				const clientKey = `new-file-${index}-${item.sortKey}`;
-
-				return {
-					clientKey,
-					sortKey: item.sortKey,
-					fileName: item.file.name,
-				};
-			});
-			setReviewImage
-				.mutateAsync({
-					files: [...addFiles.map((file) => file.file)], // File 객체 배열로 변환
-					reviewId,
-					addFiles: addFilesMeta,
-					updateFiles,
-					deleteImageIds,
-				})
-				.then(() => {
-					openDialog("ALERT", {
-						content: prevReview ? "리뷰가 수정되었습니다." : "리뷰가 작성되었습니다.",
-						handleAfterClose: () => {
-							router.push(`/product/detail/${reviewOrderItem?.productId}?tab=review`);
-						},
-					});
+					return {
+						clientKey,
+						sortKey: item.sortKey,
+						fileName: item.file.name,
+					};
 				});
+				await setReviewImage
+					.mutateAsync({
+						files: [...addFiles.map((file) => file.file)], // File 객체 배열로 변환
+						reviewId,
+						addFiles: addFilesMeta,
+						updateFiles,
+						deleteImageIds,
+					})
+					.catch(() => {
+						result = false;
+						reviewFailure();
+					});
+			}
+			return result;
+		}
+		function reviewImageSuccess() {
+			openDialog("ALERT", {
+				content: prevReview ? "리뷰가 수정되었습니다." : "리뷰가 작성되었습니다.",
+				handleAfterClose: () => {
+					router.push(`/product/detail/${reviewOrderItem?.productId}?tab=review`);
+				},
+			});
+		}
+		function reviewFailure() {
+			openDialog("ALERT", {
+				content: "리뷰 작성에 실패했습니다. 잠시 후 다시 시도해주세요.",
+				handleAfterClose: () => {
+					router.push(`/product/detail/${reviewOrderItem?.productId}?tab=review`);
+				},
+			});
 		}
 	};
 
