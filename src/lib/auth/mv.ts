@@ -1,62 +1,23 @@
-import { postUrlFormData } from "@/api/fetchFilter";
-import { BaseResponse } from "@/types/common";
-import { getBackendUrl } from "@/lib/getBaseUrl";
-import { REFRESH_TOKEN_COOKIE_AGE } from "@/lib/auth/utils/tokenTime";
 import { isProd } from "@/lib/env.common";
-import { toErrorResponse } from "@/api/error";
+import { INTERNAL_REFRESH_SECRET } from "@/lib/env.server";
 import { NextRequest, NextResponse } from "next/server";
-import { tokenRefreshLock } from "@/lib/auth/utils/lock";
-import { KeyOf, MiddlewareAuthCheckPreset, MiddlewareTokenRefreshPreset, Role } from "@/lib/auth/types";
+import { MiddlewareAuthCheckPreset, MiddlewareTokenRefreshPreset, Role } from "@/lib/auth/types";
 
-/**
- * Middleware에서 사용할 토큰 재발급 함수
- */
-const refreshAccessToken = async <R extends Role>(nextRequest: NextRequest, refreshToken: string, preset: MiddlewareTokenRefreshPreset<R>) => {
-	const newRefreshToken = await preset.generateRTokenForMiddleware();
-	const xffHeader = nextRequest.headers.get("x-forwarded-for");
-	const ip = xffHeader?.split(",")[0]?.trim() ?? nextRequest.headers.get("x-real-ip") ?? "unknown";
+const callInternalTokenRefresh = async (nextRequest: NextRequest, role: Role) => {
+	return fetch(`${nextRequest.nextUrl.origin}/api/internal/token-refresh`, {
+		method: "POST",
+		headers: {
+			cookie: nextRequest.headers.get("cookie") ?? "",
+			"x-internal-refresh-secret": INTERNAL_REFRESH_SECRET,
+			"x-auth-role": role,
+		},
+		cache: "no-store",
+	});
+};
 
-	try {
-		console.log(`[Middleware TokenRefresh:${preset.role}] 토큰 재생성 시작 =>`, {
-			beforeToken: "..." + refreshToken.slice(-10),
-			newRefreshToken: "..." + newRefreshToken.slice(-10),
-		});
-		const reTokenData = await postUrlFormData<BaseResponse & { [key in typeof preset.primaryKey]: number }>(
-			getBackendUrl(preset.reTokenApiUrl),
-			{
-				beforeToken: refreshToken,
-				refreshToken: newRefreshToken,
-			},
-			{
-				userAgent: nextRequest.headers.get("user-agent") || "",
-				["x-forwarded-for"]: ip,
-			},
-		);
-		// console.log(`[Middleware TokenRefresh:${preset.role}] 토큰 재생성 완료`, reTokenData);
-
-		const primaryKey = preset.primaryKey as KeyOf<R, "primaryKey">;
-		const aTokenPayload = {
-			[primaryKey]: reTokenData[primaryKey],
-		} as Record<KeyOf<R, "primaryKey">, number>;
-
-		const newAccessToken = await preset.generateATokenForMiddleware(aTokenPayload);
-
-		return {
-			success: true,
-			newAccessToken,
-			newRefreshToken,
-		};
-	} catch (err: unknown) {
-		console.error(`[Middleware TokenRefresh:${preset.role}] 토큰 재생성 중 오류`, err);
-		const { status } = toErrorResponse(err);
-
-		// 토큰 자체가 문제인 케이스(예시)
-		if (status === 401 || status === 403) {
-			return { success: false, invalidateCookies: true };
-		}
-
-		// 일시 장애로 보고 유지
-		return { success: false, invalidateCookies: false };
+const applySetCookies = (source: Response, target: NextResponse) => {
+	for (const cookie of source.headers.getSetCookie?.() ?? []) {
+		target.headers.append("Set-Cookie", cookie);
 	}
 };
 
@@ -67,20 +28,13 @@ export const handleTokenRefresh = async <R extends Role>(
 	nextRequest: NextRequest,
 	preset: MiddlewareTokenRefreshPreset<R>,
 ): Promise<{ response: NextResponse; newAccessToken?: string; newRefreshToken?: string }> => {
-	// console.log("프리셋 체크", preset);
 	const accessToken = nextRequest.cookies.get(preset.aToken)?.value || nextRequest.headers.get(preset.aToken);
 	const refreshToken = nextRequest.cookies.get(preset.rToken)?.value || nextRequest.headers.get(preset.rToken);
-
-	// console.log(`[Middleware TokenRefresh:${preset.role}] 토큰 재발급 체크 - 요청 url: ${nextRequest.url}`, {
-	// 	[preset.aToken]: accessToken ? "..." + accessToken.slice(-10) : "없음",
-	// 	[preset.rToken]: refreshToken ? "..." + refreshToken.slice(-10) : "없음",
-	// });
 
 	// 1) accessToken 유효 → 그대로 통과
 	if (accessToken?.trim()) {
 		try {
 			await preset.verifyATokenForMiddleware(accessToken);
-			// console.log(`[Middleware TokenRefresh:${preset.role}] ${preset.aToken} 유효`);
 			return { response: NextResponse.next() };
 		} catch {
 			console.warn(`[Middleware TokenRefresh:${preset.role}] ${preset.aToken} 만료됨`);
@@ -95,73 +49,58 @@ export const handleTokenRefresh = async <R extends Role>(
 	// 3) refreshToken 검증
 	try {
 		await preset.verifyRTokenForMiddleware(refreshToken);
-		// console.log(`[Middleware TokenRefresh:${preset.role}] ${preset.rToken} 유효`);
 	} catch {
 		console.error(`[Middleware TokenRefresh:${preset.role}] ${preset.rToken} 만료됨`);
 		return { response: NextResponse.next() };
 	}
 
-	// 4) accessToken 없음 → ✅ Lock을 사용하여 중복 갱신 방지 (토큰 재발급)
-	// 새 탭 동시 열기 등으로 refreshToken이 유효한 상태에서 여러 요청이 동시에 들어올 수 있기 때문에, Lock을 사용하여 하나의 요청만 토큰 재발급을 수행하도록 함.
-	const lockKey = `mw-refresh:${preset.role}:${refreshToken.slice(-10)}`;
+	// 4) Node API로 위임하여 refresh 로직·Lock·캐시를 API와 공유
+	try {
+		console.log(`[Middleware TokenRefresh:${preset.role}] 내부 refresh API 호출 =>`, {
+			beforeToken: "..." + refreshToken.slice(-10),
+		});
 
-	const result = await tokenRefreshLock.acquireOrWait(lockKey, async () => {
-		// console.log(`[Middleware TokenLock:${preset.role}] 토큰 갱신 시작: ${lockKey}`);
-		return refreshAccessToken(nextRequest, refreshToken, preset);
-	});
+		const internalRes = await callInternalTokenRefresh(nextRequest, preset.role);
 
-	if (result.success) {
+		if (internalRes.status === 401 || internalRes.status === 403) {
+			const response = NextResponse.next();
+			response.cookies.set(preset.aToken, "", {
+				path: "/",
+				httpOnly: true,
+				secure: isProd,
+				sameSite: "strict",
+				maxAge: 0,
+			});
+			response.cookies.set(preset.rToken, "", {
+				path: "/",
+				httpOnly: true,
+				secure: isProd,
+				sameSite: "strict",
+				maxAge: 0,
+			});
+			return { response };
+		}
+
+		if (!internalRes.ok) {
+			console.error(`[Middleware TokenRefresh:${preset.role}] 내부 refresh API 실패`, internalRes.status);
+			return { response: NextResponse.next() };
+		}
+
+		const body = (await internalRes.json().catch(() => ({ refreshed: false }))) as { refreshed?: boolean };
+		if (!body.refreshed) {
+			return { response: NextResponse.next() };
+		}
+
 		const response = NextResponse.next();
-		response.cookies.set(preset.aToken, result.newAccessToken!, {
-			httpOnly: true,
-			secure: isProd,
-			sameSite: "strict",
-			path: "/",
-			maxAge: preset.aTokenCookieAge,
-		});
-		response.cookies.set(preset.rToken, result.newRefreshToken!, {
-			httpOnly: true,
-			secure: isProd,
-			sameSite: "strict",
-			path: "/",
-			maxAge: REFRESH_TOKEN_COOKIE_AGE,
-		});
+		applySetCookies(internalRes, response);
 
-		console.log(`[Middleware TokenRefresh:${preset.role}] 토큰 쿠키 재설정 완료`, {
-			newAccessToken: "..." + result.newAccessToken!.slice(-10),
-			newRefreshToken: "..." + result.newRefreshToken!.slice(-10),
-		});
+		console.log(`[Middleware TokenRefresh:${preset.role}] 토큰 쿠키 재설정 완료 (내부 API)`);
 
-		return {
-			response,
-			// newAccessToken: result.newAccessToken,
-			// newRefreshToken: result.newRefreshToken,
-		};
+		return { response };
+	} catch (err: unknown) {
+		console.error(`[Middleware TokenRefresh:${preset.role}] 내부 refresh API 호출 중 오류`, err);
+		return { response: NextResponse.next() };
 	}
-
-	const response = NextResponse.next();
-
-	if (result.invalidateCookies) {
-		response.cookies.set(preset.aToken, "", {
-			path: "/",
-			httpOnly: true,
-			secure: isProd,
-			sameSite: "strict",
-			maxAge: 0,
-		});
-
-		response.cookies.set(preset.rToken, "", {
-			path: "/",
-			httpOnly: true,
-			secure: isProd,
-			sameSite: "strict",
-			maxAge: 0,
-		});
-	}
-
-	console.log(`[Middleware TokenRefresh:${preset.role}] 토큰 재발급 체크 완료`);
-
-	return { response };
 };
 
 /**
@@ -175,7 +114,6 @@ const redirectToLogin = <R extends Role>(nextRequest: NextRequest, message: stri
 
 	const response = NextResponse.redirect(new URL(loginUrl, nextRequest.url));
 
-	// ✅ 쿠키 확실히 만료(옵션 일치)
 	response.cookies.set(preset.aToken, "", {
 		path: "/",
 		httpOnly: true,
@@ -210,13 +148,11 @@ export const handleAuthCheck = async <R extends Role>(
 		[preset.rToken]: refreshToken ? "..." + refreshToken.slice(-10) : "없음",
 	});
 
-	// 1) refreshToken 없음 → 로그인 페이지로 리다이렉트
 	if (!refreshToken?.trim()) {
 		console.log(`[Middleware AuthCheck:${preset.role}] ${preset.rToken} 없음 → 로그인 페이지로 리다이렉트`);
 		return redirectToLogin(nextRequest, "need_login", preset);
 	}
 
-	// 2) refreshToken 검증
 	try {
 		await preset.verifyRTokenForMiddleware(refreshToken);
 	} catch {
@@ -224,18 +160,15 @@ export const handleAuthCheck = async <R extends Role>(
 		return redirectToLogin(nextRequest, "need_login", preset);
 	}
 
-	// 여기부터는 refreshToken이 "존재 + 유효"인 상태
-	// 4) accessToken 유효 → 그실패해도 페이지 접근은 허용 (API에서 최종 권한 확인)
 	if (accessToken?.trim()) {
 		try {
 			await preset.verifyATokenForMiddleware(accessToken);
-			// console.log(`[Middleware AuthCheck:${preset.role}] ${preset.rToken} 유효 - ${preset.aToken} 유효`);
 		} catch {
 			console.warn(`[Middleware AuthCheck:${preset.role}] ${preset.aToken} 만료 - ${preset.rToken} 유효하므로 baseResponse로 통과 / 확인 필요`);
 		}
 		return baseResponse;
 	}
-	// 5) refreshToken 유효 → 페이지 접근은 허용 (accessToken 없음/미확인 다음 요청에서 반영/재발급될 수 있음, baseResponse로 통과)
+
 	console.log(`[Middleware AuthCheck:${preset.role}] ${preset.rToken} 유효 - ${preset.aToken} 없음 - ${preset.rToken} 유효하므로 통과 / 확인 필요`);
 	return baseResponse;
 };
