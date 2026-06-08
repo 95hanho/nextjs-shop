@@ -8,6 +8,9 @@ const parseEnvBoolean = (value: string | undefined, defaultValue: boolean): bool
 
 /** middleware에서 accessToken 재발급 처리 여부 (기본: false) */
 export const MIDDLEWARE_TOKEN_REFRESH_ENABLED = parseEnvBoolean(process.env.MIDDLEWARE_TOKEN_REFRESH_ENABLED, false);
+
+/** middleware → Node 내부 refresh API 호출 시 사용하는 시크릿 (미설정 시 JWT_SECRET 사용) */
+export const INTERNAL_REFRESH_SECRET = process.env.INTERNAL_REFRESH_SECRET ?? process.env.JWT_SECRET ?? "";
 // =========================================
 // JWT 인증키
 // =========================================

@@ -1,12 +1,30 @@
+import { isHttpError } from "@/api/error";
 import { postUrlFormData } from "@/api/fetchFilter";
 import { NextRequest, NextResponse } from "next/server";
 import { BaseResponse } from "@/types/common";
 import { isProd } from "@/lib/env.common";
+import { getCachedTokenRefresh, setCachedTokenRefresh } from "@/lib/auth/refreshCache";
 import { REFRESH_TOKEN_COOKIE_AGE } from "@/lib/auth/utils/tokenTime";
 import { Token } from "@/types/token";
 import { AutoRefreshResult, AuthHandler, KeyOf, RefreshAuthPreset, Role, WithAuthPreset } from "@/lib/auth/types";
 import { tokenRefreshLock } from "@/lib/auth/utils/lock";
 import { getBackendUrl } from "@/lib/getBaseUrl";
+
+const buildRefreshLockKey = (role: Role, refreshToken: string) => `refresh:${role}:${refreshToken.slice(-10)}`;
+
+const buildRefreshSuccess = <R extends Role>(
+	preset: RefreshAuthPreset<R>,
+	primaryValue: number,
+	newAccessToken: string,
+	newRefreshToken: string,
+): AutoRefreshResult<R> => {
+	return {
+		ok: true,
+		[preset.primaryKey]: primaryValue,
+		[preset.newAToken]: newAccessToken,
+		[preset.newRToken]: newRefreshToken,
+	} as AutoRefreshResult<R>;
+};
 
 /**
  *  토큰 재발급
@@ -56,11 +74,23 @@ export const refreshAuthFromTokens = async <R extends Role>(
 		};
 	}
 
+	const cached = getCachedTokenRefresh(preset.role, refreshToken);
+	if (cached) {
+		console.log(`[API TokenRefresh:${preset.role}] 캐시된 토큰 재사용 =>`, {
+			beforeToken: "..." + refreshToken.slice(-10),
+			newRefreshToken: "..." + cached.newRefreshToken.slice(-10),
+		});
+		return buildRefreshSuccess(preset, cached.primaryValue, cached.newAccessToken, cached.newRefreshToken);
+	}
+
 	// 4) ✅ Lock을 사용하여 중복 갱신 방지
-	const lockKey = `refresh:${preset.role}:${refreshToken.slice(-10)}`; // refreshToken 뒷부분으로 key 생성
+	const lockKey = buildRefreshLockKey(preset.role, refreshToken);
 
 	return tokenRefreshLock.acquireOrWait(lockKey, async () => {
-		// console.log(`[API TokenRefresh:${preset.role}] 토큰 갱신 시작: ${lockKey}`);
+		const cachedInLock = getCachedTokenRefresh(preset.role, refreshToken);
+		if (cachedInLock) {
+			return buildRefreshSuccess(preset, cachedInLock.primaryValue, cachedInLock.newAccessToken, cachedInLock.newRefreshToken);
+		}
 
 		const newRefreshToken = preset.generateRToken();
 		const xffHeader = nextRequest.headers.get("x-forwarded-for");
@@ -71,37 +101,50 @@ export const refreshAuthFromTokens = async <R extends Role>(
 			newRefreshToken: "..." + newRefreshToken.slice(-10),
 		});
 
-		const reTokenData = await postUrlFormData<BaseResponse & { [key in typeof preset.primaryKey]: number }>(
-			getBackendUrl(preset.reTokenApiUrl),
-			{
-				beforeToken: refreshToken,
-				refreshToken: newRefreshToken,
-			},
-			{
-				userAgent: nextRequest.headers.get("user-agent") || "",
-				["x-forwarded-for"]: ip,
-			},
-		);
-		// console.log(`[API TokenRefresh:${preset.role}] 토큰 재생성 완료 ${reTokenData}`);
+		try {
+			const reTokenData = await postUrlFormData<BaseResponse & { [key in typeof preset.primaryKey]: number }>(
+				getBackendUrl(preset.reTokenApiUrl),
+				{
+					beforeToken: refreshToken,
+					refreshToken: newRefreshToken,
+				},
+				{
+					userAgent: nextRequest.headers.get("user-agent") || "",
+					["x-forwarded-for"]: ip,
+				},
+			);
 
-		const primaryKey = preset.primaryKey as KeyOf<R, "primaryKey">;
-		const aTokenPayload = {
-			[primaryKey]: reTokenData[primaryKey],
-		} as Record<KeyOf<R, "primaryKey">, number>;
+			const primaryKey = preset.primaryKey as KeyOf<R, "primaryKey">;
+			const aTokenPayload = {
+				[primaryKey]: reTokenData[primaryKey],
+			} as Record<KeyOf<R, "primaryKey">, number>;
 
-		const newAccessToken = preset.generateAToken(aTokenPayload);
+			const newAccessToken = preset.generateAToken(aTokenPayload);
 
-		// console.log(`[API TokenRefresh:${preset.role}]`, {
-		// 	[preset.newAToken]: "..." + newAccessToken.slice(-10),
-		// 	[preset.newRToken]: "..." + newRefreshToken.slice(-10),
-		// });
+			setCachedTokenRefresh(preset.role, refreshToken, {
+				primaryValue: reTokenData[preset.primaryKey],
+				newAccessToken,
+				newRefreshToken,
+			});
 
-		return {
-			ok: true,
-			[preset.primaryKey]: reTokenData[preset.primaryKey],
-			[preset.newAToken]: newAccessToken,
-			[preset.newRToken]: newRefreshToken,
-		};
+			return buildRefreshSuccess(preset, reTokenData[preset.primaryKey], newAccessToken, newRefreshToken);
+		} catch (err: unknown) {
+			const cachedAfterRace = getCachedTokenRefresh(preset.role, refreshToken);
+			if (cachedAfterRace) {
+				console.warn(`[API TokenRefresh:${preset.role}] Spring refresh 실패, 캐시된 토큰 재사용 =>`, {
+					beforeToken: "..." + refreshToken.slice(-10),
+					message: isHttpError(err) ? err.message : "UNKNOWN",
+				});
+				return buildRefreshSuccess(
+					preset,
+					cachedAfterRace.primaryValue,
+					cachedAfterRace.newAccessToken,
+					cachedAfterRace.newRefreshToken,
+				);
+			}
+
+			throw err;
+		}
 	});
 };
 
