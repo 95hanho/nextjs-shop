@@ -1,4 +1,13 @@
 export const SERVER_URL = process.env.SERVER_URL ?? "";
+
+const parseEnvBoolean = (value: string | undefined, defaultValue: boolean): boolean => {
+	if (value === undefined || value.trim() === "") return defaultValue;
+	const normalized = value.trim().toLowerCase();
+	return normalized === "true" || normalized === "1" || normalized === "on" || normalized === "yes";
+};
+
+/** middleware에서 accessToken 재발급 처리 여부 (기본: false) */
+export const MIDDLEWARE_TOKEN_REFRESH_ENABLED = parseEnvBoolean(process.env.MIDDLEWARE_TOKEN_REFRESH_ENABLED, false);
 // =========================================
 // JWT 인증키
 // =========================================
