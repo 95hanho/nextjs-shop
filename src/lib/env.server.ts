@@ -1,16 +1,4 @@
 export const SERVER_URL = process.env.SERVER_URL ?? "";
-
-const parseEnvBoolean = (value: string | undefined, defaultValue: boolean): boolean => {
-	if (value === undefined || value.trim() === "") return defaultValue;
-	const normalized = value.trim().toLowerCase();
-	return normalized === "true" || normalized === "1" || normalized === "on" || normalized === "yes";
-};
-
-/** middleware에서 accessToken 재발급 처리 여부 (기본: false) */
-export const MIDDLEWARE_TOKEN_REFRESH_ENABLED = parseEnvBoolean(process.env.MIDDLEWARE_TOKEN_REFRESH_ENABLED, false);
-
-/** middleware → Node 내부 refresh API 호출 시 사용하는 시크릿 (미설정 시 JWT_SECRET 사용) */
-export const INTERNAL_REFRESH_SECRET = process.env.INTERNAL_REFRESH_SECRET ?? process.env.JWT_SECRET ?? "";
 // =========================================
 // JWT 인증키
 // =========================================
