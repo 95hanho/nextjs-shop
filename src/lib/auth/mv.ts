@@ -56,7 +56,7 @@ export const handleTokenRefresh = async <R extends Role>(
 
 	// 4) Node API로 위임하여 refresh 로직·Lock·캐시를 API와 공유
 	try {
-		console.log(`[Middleware TokenRefresh:${preset.role}] 내부 refresh API 호출 =>`, {
+		console.log(`[Middleware TokenRefresh:${preset.role}] 토큰 재발급 시작, 내부 refresh API 호출 =>`, {
 			beforeToken: "..." + refreshToken.slice(-10),
 		});
 

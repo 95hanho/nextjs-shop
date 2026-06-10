@@ -49,7 +49,7 @@ export const refreshAuthFromTokens = async <R extends Role>(
 			return { ok: true, [preset.primaryKey]: token[preset.primaryKey] };
 		} catch {
 			// accessToken 만료 → 아래에서 refreshToken으로 처리
-			console.warn(`[API refreshAuthFromTokens:${preset.role}] accessToken 만료됨!!!`);
+			console.warn(`[refreshAuthFromTokens:${preset.role}] accessToken 만료됨!!!`);
 		}
 	}
 
@@ -76,7 +76,7 @@ export const refreshAuthFromTokens = async <R extends Role>(
 
 	const cached = getCachedTokenRefresh(preset.role, refreshToken);
 	if (cached) {
-		console.log(`[API TokenRefresh:${preset.role}] 캐시된 토큰 재사용 =>`, {
+		console.log(`[refreshAuthFromTokens:${preset.role}] 캐시된 토큰 재사용 =>`, {
 			beforeToken: "..." + refreshToken.slice(-10),
 			newRefreshToken: "..." + cached.newRefreshToken.slice(-10),
 		});
@@ -96,7 +96,7 @@ export const refreshAuthFromTokens = async <R extends Role>(
 		const xffHeader = nextRequest.headers.get("x-forwarded-for");
 		const ip = xffHeader?.split(",")[0]?.trim() ?? nextRequest.headers.get("x-real-ip") ?? "unknown";
 
-		console.log(`[API TokenRefresh:${preset.role}] 토큰 재생성 시작 =>`, {
+		console.log(`[refreshAuthFromTokens:${preset.role}] 토큰 재생성 시작 =>`, {
 			beforeToken: "..." + refreshToken.slice(-10),
 			newRefreshToken: "..." + newRefreshToken.slice(-10),
 		});
@@ -131,7 +131,7 @@ export const refreshAuthFromTokens = async <R extends Role>(
 		} catch (err: unknown) {
 			const cachedAfterRace = getCachedTokenRefresh(preset.role, refreshToken);
 			if (cachedAfterRace) {
-				console.warn(`[API TokenRefresh:${preset.role}] Spring refresh 실패, 캐시된 토큰 재사용 =>`, {
+				console.warn(`[refreshAuthFromTokens:${preset.role}] Spring refresh 실패, 캐시된 토큰 재사용 =>`, {
 					beforeToken: "..." + refreshToken.slice(-10),
 					message: isHttpError(err) ? err.message : "UNKNOWN",
 				});
