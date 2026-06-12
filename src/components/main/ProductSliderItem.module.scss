@@ -1,6 +1,6 @@
 .productItem {
 	position: relative;
-	height: 300px;
+	height: clamp(180px, 28vw, 300px);
 	width: auto;
 
 	img {
@@ -10,56 +10,102 @@
 		display: block;
 	}
 }
+
 .productInfo {
 	position: absolute;
 	width: 100%;
 	bottom: 0;
-	padding: 25px 8px 24px 12px;
+	padding: 20px 8px 18px 12px;
 	display: flex;
 	flex-direction: column;
 	z-index: 2;
-	background-color: rgba(255, 255, 255, 0.35);
+	color: #fff;
+	background: linear-gradient(to top, rgba(0, 0, 0, 0.78) 0%, rgba(0, 0, 0, 0.45) 55%, transparent 100%);
+	opacity: 0;
+	transform: translateY(6px);
+	transition: opacity 0.25s ease, transform 0.25s ease;
+
+	a {
+		color: inherit;
+	}
 }
+
+/* 호버 시 오버레이 표시 */
+.productItem:hover .productInfo {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+/* 터치 디바이스: 호버 없으므로 항상 표시 */
+@media (hover: none) {
+	.productInfo {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.productBrand {
+	font-size: 11px;
+	opacity: 0.8;
+	margin-bottom: 2px;
+}
+
 .productName {
 	font-weight: 500;
+	font-size: 13px;
 }
 
 .productPrice {
 	font-weight: 600;
+	font-size: 14px;
+	margin-top: 3px;
 }
+
 .productMeta {
 	display: flex;
-	font-size: 14px;
+	font-size: 12px;
 	align-items: center;
+	margin-top: 3px;
 
 	> div {
 		display: inline-flex;
 		align-items: center;
+
 		.metaCount {
-			margin-top: 3px;
+			margin-top: 1px;
 		}
 	}
+
 	.metaWish {
-		margin-right: 5px;
-		color: #f00;
+		margin-right: 6px;
+		color: #ff8888;
 	}
+
 	.metaRate {
-		color: #e79278;
+		color: #f9c74f;
 	}
+
 	.metaIcon {
 		margin-right: 4px;
 	}
 }
+
 .detailLink {
-	position: absolute;
-	right: 5px;
-	top: 1px;
-	z-index: 3;
-	font-size: 20px;
-	color: #000;
-	letter-spacing: 1px;
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	margin-top: 8px;
+	font-size: 12px;
 	font-weight: 600;
+	color: #fff;
+	letter-spacing: 0.5px;
+	width: fit-content;
+
 	&:hover {
 		text-decoration: underline;
 	}
+}
+
+.detailLinkIcon {
+	font-size: 11px;
 }

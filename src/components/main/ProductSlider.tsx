@@ -46,7 +46,7 @@ export const ProductSlider = ({ productList, right, checkedProductIdList }: Prod
 					items={productList}
 					loop
 					slidesPerView="auto"
-					spaceBetween={0}
+					spaceBetween={6}
 					speed={700}
 					autoplay={{
 						delay: 2500,

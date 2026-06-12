@@ -9,7 +9,7 @@ export default function MainClient({ productList }: { productList: MainProduct[]
 	const { data: checkedProductIdList = [] } = useWishCheck(productList.map((p) => p.productId));
 
 	return (
-		<div>
+		<div className="flex flex-col gap-2">
 			<ProductSlider productList={productList.slice(0, 10)} checkedProductIdList={checkedProductIdList} />
 			<ProductSlider productList={productList.slice(10, 20)} right checkedProductIdList={checkedProductIdList} />
 			<ProductSlider productList={productList.slice(20, 30)} checkedProductIdList={checkedProductIdList} />
