@@ -1,3 +1,4 @@
+// 요청 Method별 빠른 처리하기 위한 26.06.12
 import { HttpError, isHttpError, isRecord } from "@/api/error";
 import { BASE_URL } from "@/lib/env.client";
 
